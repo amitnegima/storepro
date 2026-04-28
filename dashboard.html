@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🏬 Store Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f2f5;--card:#fff;--ink:#111;--ink2:#374151;--ink3:#6b7280;--ink4:#9ca3af;--brand:#0c831f;--brand-bg:#e8faed;--brand-dk:#096b18;--blue:#2563eb;--blue-bg:#eff6ff;--orange:#ea580c;--orange-bg:#fff7ed;--red:#dc2626;--red-bg:#fef2f2;--yellow:#d97706;--yellow-bg:#fffbeb;--line:#e5e7eb;--f:'DM Sans',system-ui,sans-serif;--r:8px;--r2:12px;--r3:16px;--sh:0 1px 3px rgba(0,0,0,.06);--sh2:0 4px 12px rgba(0,0,0,.08)}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100dvh}
+
+/* PIN Lock */
+.lock{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#065a14,var(--brand));display:flex;align-items:center;justify-content:center;padding:20px}.lock.hidden{display:none}
+.lock-box{background:var(--card);border-radius:var(--r3);padding:36px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.lock-box h2{font-size:18px;font-weight:700;margin:8px 0 4px}.lock-box p{font-size:13px;color:var(--ink3);margin-bottom:20px}
+.pin-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+.pin-inputs input{width:48px;height:56px;text-align:center;font:700 22px var(--f);border:2px solid var(--line);border-radius:var(--r2);outline:none;background:var(--bg);color:var(--ink);-webkit-text-security:disc}.pin-inputs input:focus{border-color:var(--brand);background:var(--card)}
+.pin-inputs input.shake{animation:shake .4s ease}
+.pin-err{color:var(--red);font-size:12px;font-weight:600;min-height:18px;margin-bottom:12px}
+.pin-submit{width:100%;height:46px;border:none;border-radius:var(--r);background:var(--brand);color:#fff;font:700 15px var(--f);cursor:pointer}.pin-submit:hover{background:var(--brand-dk)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+/* Top Bar */
+.top{background:linear-gradient(135deg,#065a14,var(--brand));color:#fff;padding:14px 20px;position:sticky;top:0;z-index:50}
+.top-row1{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.top h1{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+.top-actions{display:flex;align-items:center;gap:6px}
+.top-btn{background:rgba(255,255,255,.18);border:none;color:#fff;font:600 11px var(--f);padding:7px 12px;border-radius:var(--r);cursor:pointer;display:flex;align-items:center;gap:4px}.top-btn:hover{background:rgba(255,255,255,.3)}
+
+/* Main Tabs */
+.main-tabs{display:flex;max-width:960px;margin:0 auto;padding:0 20px;border-bottom:2px solid var(--line);background:var(--card)}
+.main-tab{flex:1;padding:12px 0;text-align:center;font:700 13px var(--f);color:var(--ink3);cursor:pointer;border-bottom:2.5px solid transparent;transition:.15s;position:relative}.main-tab:hover{color:var(--ink)}.main-tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+.tab-alert{position:absolute;top:6px;right:calc(50% - 40px);width:8px;height:8px;border-radius:50%;background:var(--red);display:none}
+.tab-alert.show{display:block;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.low-stock-banner{background:var(--red-bg);border:1px solid #fca5a5;border-radius:var(--r2);padding:10px 14px;margin-bottom:10px;font-size:12px;color:var(--red);display:none}
+.low-stock-banner.show{display:block}
+.low-stock-banner strong{font-weight:700}
+.stock-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px}
+.sb-ok{background:var(--brand-bg);color:var(--brand)}.sb-low{background:var(--orange-bg);color:var(--orange)}.sb-out{background:var(--red-bg);color:var(--red)}
+.main-panel{display:none;max-width:960px;margin:0 auto}.main-panel.active{display:block}
+
+/* Date row (orders) */
+.top-row2{display:flex;align-items:center;gap:8px;margin-top:10px;overflow-x:auto;scrollbar-width:none}.top-row2::-webkit-scrollbar{display:none}
+.date-chip{height:32px;padding:0 12px;border:1.5px solid rgba(255,255,255,.25);border-radius:var(--r);background:transparent;color:rgba(255,255,255,.8);font:600 11px var(--f);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px}.date-chip:hover{background:rgba(255,255,255,.12)}.date-chip.active{background:#fff;color:var(--brand);border-color:#fff;font-weight:700}
+.date-chip input[type=date]{background:transparent;border:none;color:inherit;font:inherit;cursor:pointer;width:110px;outline:none}.date-chip input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7}.date-chip.active input[type=date]::-webkit-calendar-picker-indicator{filter:none}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:12px 20px}
+.stat{background:var(--card);border-radius:var(--r2);padding:12px 10px;text-align:center;border:1px solid var(--line);cursor:pointer;transition:.2s}.stat:hover{box-shadow:var(--sh);transform:translateY(-1px)}.stat.active{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-bg)}
+.stat-n{font-size:22px;font-weight:800;line-height:1.1}.stat-l{font-size:9px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}.stat-rev{font-size:12px;color:var(--ink2);margin-top:4px;font-weight:700}
+.s-total .stat-n{color:var(--ink)}.s-new .stat-n{color:var(--brand)}.s-conf .stat-n{color:var(--blue)}.s-pack .stat-n{color:var(--orange)}.s-done .stat-n{color:var(--ink3)}
+
+/* Filter bar */
+.filter-bar{padding:8px 20px;display:flex;gap:8px;align-items:center}
+.search-box{flex:1;position:relative}.search-box input{width:100%;height:36px;padding:0 12px 0 34px;border:1.5px solid var(--line);border-radius:var(--r);font:500 12px var(--f);background:var(--card);color:var(--ink);outline:none}.search-box input:focus{border-color:var(--brand)}.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--ink4)}
+.sort-btn{height:36px;padding:0 12px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--card);font:600 11px var(--f);color:var(--ink3);cursor:pointer;white-space:nowrap}.sort-btn.active{background:var(--brand-bg);border-color:var(--brand);color:var(--brand)}
+
+/* Orders */
+.orders{padding:6px 20px 100px;display:flex;flex-direction:column;gap:8px}
+.empty{text-align:center;padding:48px 16px;color:var(--ink4);font-size:13px}
+.order{background:var(--card);border-radius:var(--r2);border:1px solid var(--line);overflow:hidden;transition:.2s}.order:hover{box-shadow:var(--sh2);border-color:var(--brand);transform:translateY(-1px)}
+.order.new-pulse{animation:newPulse 2s ease infinite}
+.order.order-done{opacity:.65}.order.order-done:hover{opacity:1}
+@keyframes newPulse{0%,100%{border-color:var(--line)}50%{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}}
+.order-head{padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.order-mode-icon{width:34px;height:34px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}.mi-pickup{background:var(--brand-bg)}.mi-delivery{background:var(--blue-bg)}
+.order-info{flex:1;min-width:0}.order-top-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.order-id{font-size:11px;font-weight:700;color:var(--brand)}.order-ago{font-size:10px;color:var(--ink4);margin-left:auto}
+.order-name{font-size:13px;font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-meta{font-size:10px;color:var(--ink4);display:flex;gap:6px}
+.order-right{text-align:right;flex-shrink:0}.order-amt{font-size:14px;font-weight:700}.order-cnt{font-size:10px;color:var(--ink4)}
+.status-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase}
+.st-new{background:var(--brand-bg);color:var(--brand)}.st-conf{background:var(--blue-bg);color:var(--blue)}.st-pack{background:var(--orange-bg);color:var(--orange)}.st-done{background:#f3f4f6;color:var(--ink3)}.st-cancel{background:var(--red-bg);color:var(--red)}
+.order-body{display:none;border-top:1px solid var(--line);padding:12px 14px}.order.open .order-body{display:block}
+.ob-section{margin-bottom:10px}.ob-label{font-size:10px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.ob-items{font-size:12px;color:var(--ink2);line-height:1.7}
+.ob-item-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line)}.ob-item-row:last-child{border-bottom:none}
+.ob-item-name{font-weight:600;color:var(--ink);flex:1;min-width:0}.ob-item-price{font-weight:700;color:var(--ink);flex-shrink:0;margin-left:8px}
+.ob-contact{display:flex;gap:6px;flex-wrap:wrap}.ob-chip{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--ink2);background:var(--bg);padding:5px 10px;border-radius:var(--r)}.ob-chip a{color:var(--brand);font-weight:700;text-decoration:none}
+.ob-addr{font-size:11px;color:var(--ink2);background:var(--yellow-bg);padding:8px 12px;border-radius:var(--r);border-left:3px solid var(--yellow)}
+.sa{display:flex;gap:6px;flex-wrap:wrap}
+.sa-comment{width:100%;margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.sa-comment-shop{background:#eff6ff;border-left:3px solid #2563eb;padding:8px 12px;border-radius:0 6px 6px 0;font-size:11px;color:#1e3a5f;line-height:1.5}
+.sa-comment-shop .cl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#2563eb;margin-bottom:2px}
+.sa-comment-cust{background:#fff8ed;border-left:3px solid #f59e0b;padding:8px 12px;border-radius:0 6px 6px 0;font-size:11px;color:#7a5a00;line-height:1.5;font-style:italic}
+.sa-comment-cust .cl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#b8860b;margin-bottom:2px;font-style:normal}
+.sa-btn.sa-msg{background:#eff6ff;color:#2563eb;border:1.5px solid #bfdbfe}
+.sa-btn{height:36px;padding:0 14px;border:none;border-radius:var(--r);font:700 11px var(--f);cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s;flex:1;justify-content:center;min-width:80px}.sa-btn:active{transform:scale(.95)}
+.sa-confirm{background:var(--blue);color:#fff}.sa-pack{background:var(--orange);color:#fff}.sa-done{background:var(--brand);color:#fff}.sa-cancel{background:var(--card);color:var(--red);border:1.5px solid var(--line)}.sa-wa{background:#25d366;color:#fff}.sa-call{background:var(--card);color:var(--ink2);border:1.5px solid var(--line)}
+.sa-print{background:var(--card);color:var(--ink2);border:1.5px solid var(--line)}.sa-print:hover{background:var(--bg)}
+
+/* Config Panel */
+.cfg-panel{padding:12px 20px 100px}
+.cfg-search{width:100%;height:36px;padding:0 12px;border:1.5px solid var(--line);border-radius:var(--r);font:500 12px var(--f);background:var(--card);color:var(--ink);outline:none;margin-bottom:10px}.cfg-search:focus{border-color:var(--brand)}
+.cfg-item{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:12px 14px;margin-bottom:6px;transition:.15s}
+.cfg-item:hover{border-color:var(--brand);box-shadow:var(--sh)}
+.cfg-item.changed{border-left:3px solid var(--brand);background:var(--brand-bg)}
+.cfg-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.cfg-key{font-size:11px;font-weight:700;color:var(--brand);flex-shrink:0;min-width:100px}
+.cfg-badge{font-size:8px;font-weight:700;padding:2px 6px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em}
+.cfg-badge.req{background:var(--red-bg);color:var(--red)}.cfg-badge.fee{background:var(--orange-bg);color:var(--orange)}.cfg-badge.seo{background:var(--blue-bg);color:var(--blue)}.cfg-badge.ui{background:rgba(168,85,247,.1);color:#8b5cf6}
+.cfg-row{display:flex;gap:8px;align-items:center}
+.cfg-val{flex:1;height:34px;padding:0 10px;border:1.5px solid var(--line);border-radius:var(--r);font:500 12px var(--f);color:var(--ink);outline:none;transition:.2s}.cfg-val:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(12,131,31,.08)}
+.cfg-val-long{height:56px;padding:6px 10px;resize:none;font:500 11px var(--f)}
+.cfg-save{height:34px;padding:0 14px;border:none;border-radius:var(--r);background:var(--brand);color:#fff;font:700 11px var(--f);cursor:pointer;flex-shrink:0;transition:.15s}.cfg-save:hover{background:var(--brand-dk)}.cfg-save:active{transform:scale(.95)}
+.cfg-save.saved{background:var(--brand-bg);color:var(--brand)}
+.cfg-history{font-size:10px;color:var(--ink4);margin-top:4px;display:none}.cfg-item:hover .cfg-history{display:block}
+.cfg-history span{color:var(--ink3)}
+.cfg-add{background:var(--card);border:2px dashed var(--line);border-radius:var(--r2);padding:12px;text-align:center;cursor:pointer;color:var(--ink3);font:600 12px var(--f);transition:.15s}.cfg-add:hover{border-color:var(--brand);color:var(--brand)}
+.cfg-hist-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px;margin-bottom:12px}
+.cfg-hist-title{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.cfg-hist-title button{font:600 10px var(--f);color:var(--red);background:0;border:0;cursor:pointer;padding:2px 8px}
+.cfg-hist-list{max-height:200px;overflow-y:auto}
+.cfg-hist-entry{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:11px}
+.cfg-hist-entry:last-child{border-bottom:none}
+.cfg-hist-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0;margin-top:5px}
+.cfg-hist-key{font-weight:700;color:var(--ink)}
+.cfg-hist-old{color:var(--red);text-decoration:line-through}
+.cfg-hist-new{color:var(--brand);font-weight:600}
+.cfg-hist-time{color:var(--ink4);font-size:9px;margin-left:auto;flex-shrink:0;white-space:nowrap}
+
+/* Products Panel */
+.prod-panel{padding:12px 20px 100px}
+.prod-bar{display:flex;gap:8px;margin-bottom:10px}
+.prod-search{flex:1;height:36px;padding:0 12px;border:1.5px solid var(--line);border-radius:var(--r);font:500 12px var(--f);background:var(--card);color:var(--ink);outline:none}.prod-search:focus{border-color:var(--brand)}
+.prod-add-btn{height:36px;padding:0 14px;border:none;border-radius:var(--r);background:var(--brand);color:#fff;font:700 12px var(--f);cursor:pointer;white-space:nowrap}.prod-add-btn:hover{background:var(--brand-dk)}
+.prod-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);margin-bottom:6px;overflow:hidden}.prod-card:hover{box-shadow:var(--sh)}
+.prod-card.prod-oos{opacity:.6;border-left:3px solid var(--red)}
+.prod-head{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer}
+.prod-img{width:40px;height:40px;border-radius:var(--r);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden}.prod-img img{width:100%;height:100%;object-fit:cover}
+.prod-info{flex:1;min-width:0}.prod-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.prod-meta{font-size:10px;color:var(--ink3);display:flex;gap:6px}
+.prod-price{font-size:14px;font-weight:700;color:var(--brand);flex-shrink:0}
+.prod-body{display:none;border-top:1px solid var(--line);padding:14px}.prod-card.open .prod-body{display:block}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-group{display:flex;flex-direction:column;gap:3px}.form-group.full{grid-column:1/-1}
+.form-label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase}
+.form-input{height:34px;padding:0 10px;border:1.5px solid var(--line);border-radius:var(--r);font:500 12px var(--f);color:var(--ink);outline:none}.form-input:focus{border-color:var(--brand)}
+.form-textarea{height:56px;padding:6px 10px;border:1.5px solid var(--line);border-radius:var(--r);font:500 12px var(--f);color:var(--ink);outline:none;resize:none}.form-textarea:focus{border-color:var(--brand)}
+.form-actions{display:flex;gap:6px;grid-column:1/-1;margin-top:4px}
+
+/* Size/Addon builder rows */
+.builder-row{display:flex;gap:6px;align-items:center}
+.builder-row input{height:30px;padding:0 8px;border:1.5px solid var(--line);border-radius:var(--r);font:500 12px var(--f);outline:none}
+.builder-row input:focus{border-color:var(--brand)}
+.builder-row .br-name{flex:2;min-width:0}
+.builder-row .br-price{flex:1;min-width:60px}
+.builder-row .br-del{width:28px;height:28px;border:none;background:var(--red-bg);color:var(--red);border-radius:50%;cursor:pointer;font-size:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center}.builder-row .br-del:hover{background:var(--red);color:#fff}
+
+.btn{height:36px;padding:0 16px;border:none;border-radius:var(--r);font:700 12px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}.btn:active{transform:scale(.96)}
+.btn-green{background:var(--brand);color:#fff}.btn-green:hover{background:var(--brand-dk)}
+.btn-red{background:var(--red-bg);color:var(--red)}.btn-gray{background:var(--bg);color:var(--ink3);border:1px solid var(--line)}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:16px}.modal-bg.open{display:flex}
+.modal{background:var(--card);border-radius:var(--r3);max-width:440px;width:100%;max-height:85vh;overflow-y:auto;padding:20px}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:14px}
+
+/* WhatsApp notification modal */
+.wa-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:20px}.wa-modal-bg.open{display:flex}
+.wa-modal{background:#fff;border-radius:16px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.wa-modal-status{padding:24px 24px 16px;text-align:center}
+.wa-modal-check{width:56px;height:56px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.wa-modal-check.confirm{background:#e8faed;color:#0c831f}
+.wa-modal-check.cancel{background:#fef2f2;color:#dc2626}
+.wa-modal-check.packed{background:#fff4eb;color:#f59e0b}
+.wa-modal-check.delivered{background:#eff6ff;color:#2563eb}
+.wa-modal-title{font-size:17px;font-weight:800;color:#1a1a1a;margin-bottom:4px}
+.wa-modal-sub{font-size:12px;color:#7a7a7a;line-height:1.5}
+.wa-modal-divider{height:1px;background:#ebebeb}
+.wa-modal-wa{padding:16px 24px 20px;text-align:center;background:#fafafa}
+.wa-modal-wa-q{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.wa-modal-wa-hint{font-size:11px;color:#7a7a7a;margin-bottom:14px}
+.wa-modal-preview{background:#fff;border:1px solid #ebebeb;border-radius:8px;padding:12px;margin-bottom:14px;text-align:left;font-size:11px;color:#3d3d3d;line-height:1.6;max-height:100px;overflow-y:auto;border-left:3px solid #25d366;white-space:pre-wrap}
+.wa-modal-btns{display:flex;gap:8px}
+.wa-modal-btn{flex:1;height:42px;border:none;border-radius:8px;font:700 12px 'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+.wa-modal-btn:active{transform:scale(.96)}
+.wa-modal-btn-skip{background:#f0f0f0;color:#7a7a7a}.wa-modal-btn-skip:hover{background:#e5e5e5}
+.wa-modal-btn-wa{background:#25d366;color:#fff}.wa-modal-btn-wa:hover{background:#1da851}
+/* Message Modal */
+.msg-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:20px}.msg-modal-bg.open{display:flex}
+.msg-modal{background:#fff;border-radius:16px;max-width:400px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.msg-modal-hdr{padding:16px 20px;border-bottom:1px solid #ebebeb;display:flex;align-items:center;justify-content:space-between}
+.msg-modal-hdr-info{display:flex;align-items:center;gap:10px}
+.msg-modal-avatar{width:36px;height:36px;border-radius:50%;background:#e8faed;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.msg-modal-name{font-size:14px;font-weight:700;color:#1a1a1a}
+.msg-modal-oid{font-size:10px;color:#7a7a7a;font-family:monospace}
+.msg-modal-close{width:28px;height:28px;border:none;background:#f0f0f0;border-radius:50%;cursor:pointer;font-size:12px}
+.msg-modal-body{padding:16px 20px}
+.msg-modal-prev{font-size:11px;color:#7a7a7a;margin-bottom:10px;background:#fafafa;padding:8px 12px;border-radius:8px;border-left:3px solid #d9d9d9;display:none}
+.msg-modal-prev-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#b0b0b0;margin-bottom:2px}
+.msg-quick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.msg-quick-btn{padding:6px 12px;border:1px solid #ebebeb;border-radius:20px;background:#fafafa;font:500 11px 'DM Sans',sans-serif;color:#3d3d3d;cursor:pointer;transition:.15s}
+.msg-quick-btn:hover{background:#e8faed;border-color:#0c831f;color:#0c831f}
+.msg-textarea{width:100%;min-height:80px;padding:12px;border:1.5px solid #ebebeb;border-radius:10px;font:500 13px 'DM Sans',sans-serif;outline:none;resize:vertical;color:#1a1a1a;line-height:1.5;font-family:'DM Sans',sans-serif}.msg-textarea:focus{border-color:#0c831f}
+.msg-textarea::placeholder{color:#b0b0b0}
+.msg-modal-foot{padding:12px 20px;border-top:1px solid #ebebeb;display:flex;gap:8px}
+.msg-modal-btn{flex:1;height:40px;border:none;border-radius:8px;font:700 12px 'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+.msg-modal-btn:active{transform:scale(.96)}
+.msg-save{background:#0c831f;color:#fff}.msg-save:hover{background:#065a14}
+.msg-save-wa{background:#25d366;color:#fff}.msg-save-wa:hover{background:#1da851}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;padding:10px 20px;border-radius:var(--r2);font:600 12px var(--f);z-index:200;opacity:0;transition:.3s}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.loading{text-align:center;padding:48px}.loading-spin{width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 8px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+@media(max-width:640px){.top h1{font-size:15px}.stats{gap:4px;padding:8px 12px}.stat{padding:8px 4px}.stat-n{font-size:16px}.stat-rev{display:none}.filter-bar,.cfg-panel,.prod-panel{padding-left:12px;padding-right:12px}.orders{padding:4px 12px 100px}.sa{flex-direction:column}.cfg-item{flex-wrap:wrap}.cfg-key{min-width:auto;width:100%}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- PIN Lock -->
+<div class="lock" id="lockScreen"><div class="lock-box"><div style="font-size:36px">🔐</div><h2>Store Dashboard</h2><p>Enter PIN to manage your store</p><div class="pin-inputs"><input type="tel" maxlength="1" id="p1" oninput="pinNext(this,2)" onkeydown="pinBack(event,0)" autofocus><input type="tel" maxlength="1" id="p2" oninput="pinNext(this,3)" onkeydown="pinBack(event,1)"><input type="tel" maxlength="1" id="p3" oninput="pinNext(this,4)" onkeydown="pinBack(event,2)"><input type="tel" maxlength="1" id="p4" oninput="pinNext(this,0)" onkeydown="pinBack(event,3)"></div><div class="pin-err" id="pinErr"></div><button class="pin-submit" onclick="checkPin()">Unlock</button></div></div>
+
+<!-- Top Bar -->
+<div class="top"><div class="top-row1"><h1>🏬 Store Dashboard</h1><div class="top-actions"><span style="font-size:10px;opacity:.6" id="lastUpdate"></span><button class="top-btn" onclick="playNotif()" title="Test notification sound">🔔</button><button class="top-btn" onclick="refreshCurrentTab()" id="refreshBtn">↻</button><button class="top-btn" onclick="lockDashboard()">🔒</button></div></div><div class="top-row2" id="dateRow"></div></div>
+
+<!-- Main Tabs -->
+<div class="main-tabs"><div class="main-tab active" onclick="switchMain('orders',this)">📋 Orders</div><div class="main-tab" onclick="switchMain('config',this)">⚙️ Settings</div><div class="main-tab" onclick="switchMain('products',this)">📦 Products<span class="tab-alert" id="stockAlert"></span></div></div>
+
+<!-- ORDERS PANEL -->
+<div class="main-panel active" id="panelOrders">
+<div class="stats"><div class="stat s-total active" onclick="filterStat('all')"><div class="stat-n" id="cntAll">-</div><div class="stat-l">All</div><div class="stat-rev" id="revAll"></div></div><div class="stat s-new" onclick="filterStat('new')"><div class="stat-n" id="cntNew">-</div><div class="stat-l">New</div><div class="stat-rev" id="revNew"></div></div><div class="stat s-conf" onclick="filterStat('confirmed')"><div class="stat-n" id="cntConf">-</div><div class="stat-l">Confirmed</div><div class="stat-rev" id="revConf"></div></div><div class="stat s-pack" onclick="filterStat('packed')"><div class="stat-n" id="cntPack">-</div><div class="stat-l">Packed</div><div class="stat-rev" id="revPack"></div></div><div class="stat s-done" onclick="filterStat('done')"><div class="stat-n" id="cntDone">-</div><div class="stat-l">Done</div><div class="stat-rev" id="revDone"></div></div></div>
+<div class="filter-bar"><div class="search-box"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg><input type="text" id="searchInput" placeholder="Search orders..." oninput="applyFilters()"></div><button class="sort-btn" id="sortBtn" onclick="toggleSort()">🕐 Newest First</button></div>
+<div class="orders" id="ordersList"><div class="loading"><div class="loading-spin"></div></div></div>
+</div>
+
+<!-- CONFIG PANEL -->
+<div class="main-panel" id="panelConfig">
+<div class="cfg-panel">
+<input type="text" class="cfg-search" id="cfgSearch" placeholder="Search config keys..." oninput="renderConfig()">
+<div class="cfg-hist-panel" id="cfgHistPanel" style="display:none">
+<div class="cfg-hist-title"><span>📜 Recent Changes</span><button onclick="clearConfigHistory()">Clear</button></div>
+<div class="cfg-hist-list" id="cfgHistList"></div>
+</div>
+<div id="configList"><div class="loading"><div class="loading-spin"></div></div></div>
+<div class="cfg-add" onclick="addConfigRow()">+ Add Config Key</div>
+</div>
+</div>
+
+<!-- PRODUCTS PANEL -->
+<div class="main-panel" id="panelProducts">
+<div class="prod-panel"><div class="low-stock-banner" id="lowStockBanner"></div><div class="prod-bar"><input type="text" class="prod-search" id="prodSearch" placeholder="Search products..." oninput="renderProducts()"><button class="prod-add-btn" onclick="openAddProduct()">+ Add</button></div><div id="productList"><div class="loading"><div class="loading-spin"></div></div></div></div>
+</div>
+
+<!-- Add/Edit Product Modal -->
+<div class="modal-bg" id="addModal" onclick="if(event.target===this)this.classList.remove('open')"><div class="modal"><h3 id="modalTitle">Add Product</h3><div class="form-grid">
+<div class="form-group full"><label class="form-label">Name *</label><input class="form-input" id="fName" placeholder="Paneer Butter Masala"></div>
+<div class="form-group full"><label class="form-label">Hindi Name</label><input class="form-input" id="fHindi" placeholder="पनीर बटर मसाला"></div>
+<div class="form-group"><label class="form-label">Category *</label><input class="form-input" id="fCat" placeholder="Mains, Chinese, Breads" list="catList"><datalist id="catList"></datalist></div>
+<div class="form-group"><label class="form-label">Price *</label><input class="form-input" id="fPrice" type="number" placeholder="220"></div>
+<div class="form-group"><label class="form-label">MRP</label><input class="form-input" id="fMrp" type="number" placeholder="280"></div>
+<div class="form-group"><label class="form-label">Unit</label><input class="form-input" id="fUnit" placeholder="1 bowl, 1 plate, 6 pcs"></div>
+<div class="form-group"><label class="form-label">Veg / Non-Veg</label><select class="form-input" id="fVeg"><option value="yes">🟢 Veg</option><option value="no">🔴 Non-Veg</option></select></div>
+<div class="form-group"><label class="form-label">Stock</label><select class="form-input" id="fStock"><option value="in stock">In Stock</option><option value="out of stock">Out of Stock</option></select></div>
+<div class="form-group full"><label class="form-label">Sizes <span style="font-weight:400;color:var(--ink3)">(e.g. Half Plate, Full Plate)</span></label>
+<div id="sizesBuilder" style="display:flex;flex-direction:column;gap:6px"></div>
+<input class="form-input" id="fSizes" type="hidden">
+<button type="button" class="btn btn-gray" style="height:30px;font-size:10px;margin-top:4px" onclick="addSizeRow()">+ Add Size</button>
+</div>
+<div class="form-group full"><label class="form-label">Add-ons <span style="font-weight:400;color:var(--ink3)">(optional extras)</span></label>
+<div id="addonsBuilder" style="display:flex;flex-direction:column;gap:6px"></div>
+<input class="form-input" id="fAddons" type="hidden">
+<button type="button" class="btn btn-gray" style="height:30px;font-size:10px;margin-top:4px" onclick="addAddonRow()">+ Add Add-on</button>
+</div>
+<div class="form-group"><label class="form-label">Spice Level</label><select class="form-input" id="fSpicy"><option value="">-</option><option value="Mild">🌶 Mild</option><option value="Medium">🌶🌶 Medium</option><option value="Spicy">🌶🌶🌶 Spicy</option></select></div>
+<div class="form-group"><label class="form-label">Prep Time</label><input class="form-input" id="fPrep" placeholder="15 min"></div>
+<div class="form-group"><label class="form-label">Serves</label><input class="form-input" id="fServes" placeholder="1-2"></div>
+<div class="form-group"><label class="form-label">Rating</label><input class="form-input" id="fRating" type="number" step="0.1" min="0" max="5" placeholder="4.5"></div>
+<div class="form-group"><label class="form-label">Flags</label>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+<label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer"><input type="checkbox" id="fBestseller"> ⭐ Bestseller</label>
+<label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer"><input type="checkbox" id="fCombo"> 🍱 Combo</label>
+<label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer"><input type="checkbox" id="fQuickQty"> ⚡ Quick Qty</label>
+</div></div>
+<div class="form-group full"><label class="form-label">Image URL</label><input class="form-input" id="fImage" placeholder="https://..."></div>
+<div class="form-group full"><label class="form-label">Description</label><textarea class="form-textarea" id="fDesc" placeholder="Creamy tomato gravy with paneer cubes"></textarea></div>
+<div class="form-actions"><button class="btn btn-green" id="modalSaveBtn" onclick="saveProduct()">Save</button><button class="btn btn-gray" onclick="$('addModal').classList.remove('open')">Cancel</button></div></div></div></div>
+
+<!-- Message Modal -->
+<div class="msg-modal-bg" id="msgModalBg" onclick="if(event.target===this)closeMsgModal()">
+<div class="msg-modal">
+<div class="msg-modal-hdr">
+<div class="msg-modal-hdr-info">
+<div class="msg-modal-avatar" id="msgAvatar">👤</div>
+<div><div class="msg-modal-name" id="msgName">Customer</div><div class="msg-modal-oid" id="msgOid">#ORD-XXX</div></div>
+</div>
+<button class="msg-modal-close" onclick="closeMsgModal()">✕</button>
+</div>
+<div class="msg-modal-body">
+<div class="msg-modal-prev" id="msgPrev"><div class="msg-modal-prev-label">Previous messages</div><div id="msgPrevText"></div></div>
+<div class="msg-quick" id="msgQuick"></div>
+<textarea class="msg-textarea" id="msgText" placeholder="Type your message here..."></textarea>
+</div>
+<div class="msg-modal-foot">
+<button class="msg-modal-btn msg-save" onclick="submitMsg(false)">💬 Notify Customer</button>
+<button class="msg-modal-btn msg-save-wa" onclick="submitMsg(true)">📱 Send via WhatsApp</button>
+</div>
+</div>
+</div>
+
+<!-- WhatsApp notification modal -->
+<div class="wa-modal-bg" id="waModalBg">
+<div class="wa-modal">
+<div class="wa-modal-status" id="waModalStatus"></div>
+<div class="wa-modal-divider"></div>
+<div class="wa-modal-wa">
+<div class="wa-modal-wa-q">Would you like to notify the customer on WhatsApp?</div>
+<div class="wa-modal-wa-hint">The order status is already updated in your sheet</div>
+<div class="wa-modal-preview" id="waModalPreview"></div>
+<div class="wa-modal-btns">
+<button class="wa-modal-btn wa-modal-btn-skip" onclick="closeWaModal()">Skip</button>
+<button class="wa-modal-btn wa-modal-btn-wa" onclick="sendWaFromModal()">📱 Send on WhatsApp</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var DEFAULT_STORE_SHEET="";
+var DEFAULT_SCRIPT="";
+var SHEET_ID="",SCRIPT_URL="";
+var allOrders=[],activeFilter='all',selectedDate='today',sortByPriority=false,prevNewCount=-1;
+var configData=[],productData=[],productHeaders=[],editingRow=null,currentTab='orders',orderInterval=null;
+
+function $(id){return document.getElementById(id)}
+function getConfigVal(key,def){if(!configData||!configData.length)return def||'';var k=key.toLowerCase().replace(/\s+/g,'');for(var i=0;i<configData.length;i++){if(configData[i].key.toLowerCase().replace(/\s+/g,'')===k)return configData[i].value}return def||''}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+function formatOrderItems(itemStr){
+  if(!itemStr)return '<span style="color:var(--ink4)">No items</span>';
+  var items=itemStr.split(/\n|,(?=\s*\d+x\s)/).filter(function(s){return s.trim()});
+  if(items.length<=1&&itemStr.indexOf('=')<0){
+    // Simple text, no structure — show as-is
+    return '<div style="white-space:pre-wrap">'+esc(itemStr)+'</div>';
+  }
+  var html='';
+  items.forEach(function(item){
+    item=item.trim();
+    if(!item)return;
+    var parts=item.split(/\s*=\s*/);
+    var name=parts[0]||item;
+    var price=parts[1]||'';
+    html+='<div class="ob-item-row"><span class="ob-item-name">'+esc(name)+'</span>'+(price?'<span class="ob-item-price">'+esc(price)+'</span>':'')+'</div>';
+  });
+  return html;
+}
+function showToast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
+function sendCmd(params,cb){var img=new Image();var done=false;img.onload=img.onerror=function(){if(!done){done=true;if(cb)cb()}};img.src=SCRIPT_URL+'?'+params;setTimeout(function(){if(!done){done=true;if(cb)cb()}},5000)}
+
+// ═══ JSONP LOADER ═══
+function loadSheet(name,cb){
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){cb(r)};
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&_t='+Date.now();
+  s.onerror=function(){cb(null)};
+  document.body.appendChild(s);
+}
+
+// Smart parser: handles both normal cols and merged cols
+function parseSheetRows(r){
+  if(!r||!r.table)return{headers:[],rows:[]};
+  var cols=r.table.cols||[];
+  var allRows=r.table.rows||[];
+  if(!allRows.length)return{headers:[],rows:[]};
+  var headers=[];var dataRows=allRows;
+  
+  // Get raw col labels (before any normalization)
+  var colLabels=cols.map(function(c){return(c.label||'').trim()});
+  var firstRaw=colLabels[0]||'';
+  
+  // Detect if Google merged multiple headers into one label
+  // Normal: "Order ID" (1-3 words, one column name)
+  // Merged: "Order ID Date & Time Mode Customer Name" (many words = multiple columns merged)
+  var isMerged=(!firstRaw)||(firstRaw.split(/\s+/).length>3);
+  
+  if(!isMerged&&colLabels.filter(function(l){return l}).length>1){
+    // Normal: cols have proper separate labels
+    headers=colLabels;
+  }else{
+    // Merged or missing: first data row is headers
+    var hRow=allRows[0];
+    if(hRow&&hRow.c){
+      for(var h=0;h<hRow.c.length;h++){
+        var hc=hRow.c[h];
+        var hv='';if(hc){if(hc.v!=null)hv=String(hc.v).trim();else if(hc.f!=null)hv=String(hc.f).trim()}
+        headers.push(hv);
+      }
+    }
+    dataRows=allRows.slice(1);
+  }
+  
+  // Parse data rows — prefer .f for dates/numbers (Google returns Date objects in .v)
+  var parsed=[];
+  dataRows.forEach(function(row){
+    var o={};
+    headers.forEach(function(h,i){
+      var c=row.c&&row.c[i];
+      var v='';
+      if(c){
+        // Use .f (formatted) first for reliable strings, fall back to .v
+        if(c.f!=null)v=String(c.f).trim();
+        else if(c.v!=null)v=String(c.v).trim();
+      }
+      var key=h.toLowerCase().replace(/\s+/g,'');
+      if(key)o[key]=v;
+    });
+    parsed.push(o);
+  });
+  return{headers:headers,rows:parsed};
+}
+
+// ═══ MAIN TAB SWITCHING ═══
+function switchMain(tab,el){
+  currentTab=tab;
+  document.querySelectorAll('.main-tab').forEach(function(t){t.classList.remove('active')});el.classList.add('active');
+  document.querySelectorAll('.main-panel').forEach(function(p){p.classList.remove('active')});
+  $('panel'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+  // Show/hide date row (only for orders)
+  $('dateRow').style.display=tab==='orders'?'flex':'none';
+  if(tab==='config'){
+    // Pause order polling while loading config
+    if(orderInterval){clearInterval(orderInterval);orderInterval=null}
+    if(configData.length){
+      renderConfig();
+    }else{
+      loadConfig();
+    }
+  }else if(tab==='products'){
+    if(orderInterval){clearInterval(orderInterval);orderInterval=null}
+    if(productData.length){
+      renderProducts();
+    }else{
+      loadProducts();
+    }
+  }else if(tab==='orders'){
+    // Resume polling when back on orders tab
+    loadOrders();
+    if(!orderInterval){
+      orderInterval=setInterval(function(){
+        var isTyping=document.activeElement&&(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA');
+        var modalOpen=$('msgModalBg').classList.contains('open')||$('waModalBg').classList.contains('open')||$('addModal').classList.contains('open');
+        if(isTyping||modalOpen)return;
+        silentRefreshOrders();
+      },20000);
+    }
+  }
+}
+function refreshCurrentTab(){
+  if(currentTab==='orders')loadOrders();
+  else if(currentTab==='config')loadConfig();
+  else if(currentTab==='products')loadProducts();
+}
+
+// ═══════════════════════════════════
+// ORDERS TAB
+// ═══════════════════════════════════
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function yesterdayStr(){var d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function parseOrderDate(ds){if(!ds)return null;var p=ds.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(p)return p[3]+'-'+p[2].padStart(2,'0')+'-'+p[1].padStart(2,'0');var d=new Date(ds);if(!isNaN(d))return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');return null}
+function timeAgo(ds){if(!ds)return '';var d;var p=ds.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s*(\d{1,2}):(\d{2}):?(\d{2})?\s*(am|pm)?/i);if(p){var h=parseInt(p[4]),m=parseInt(p[5]);if(p[7]){if(p[7].toLowerCase()==='pm'&&h!==12)h+=12;if(p[7].toLowerCase()==='am'&&h===12)h=0}d=new Date(p[3],p[2]-1,p[1],h,m,p[6]?parseInt(p[6]):0)}else d=new Date(ds);if(isNaN(d))return '';var diff=Math.floor((Date.now()-d)/1000);if(diff<60)return 'Just now';if(diff<3600)return Math.floor(diff/60)+'m';if(diff<86400)return Math.floor(diff/3600)+'h';return Math.floor(diff/86400)+'d'}
+function buildDateChips(){
+  var t=todayStr(),y=yesterdayStr();
+  // Count orders per date for badges
+  var todayCnt=allOrders.filter(function(o){return o.dateKey===t}).length;
+  var yesterdayCnt=allOrders.filter(function(o){return o.dateKey===y}).length;
+  var weekDates={};
+  for(var i=0;i<7;i++){var d=new Date();d.setDate(d.getDate()-i);var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');weekDates[ds]=true}
+  var weekCnt=allOrders.filter(function(o){return weekDates[o.dateKey]}).length;
+  
+  var h='';
+  h+='<div class="date-chip'+(selectedDate==='today'?' active':'')+'" onclick="setDate(\'today\')">Today'+(todayCnt?' <b>'+todayCnt+'</b>':'')+'</div>';
+  h+='<div class="date-chip'+(selectedDate==='yesterday'?' active':'')+'" onclick="setDate(\'yesterday\')">Yesterday'+(yesterdayCnt?' <b>'+yesterdayCnt+'</b>':'')+'</div>';
+  h+='<div class="date-chip'+(selectedDate==='week'?' active':'')+'" onclick="setDate(\'week\')">7 Days'+(weekCnt?' <b>'+weekCnt+'</b>':'')+'</div>';
+  h+='<div class="date-chip'+(selectedDate==='all'?' active':'')+'" onclick="setDate(\'all\')">All <b>'+allOrders.length+'</b></div>';
+  h+='<div class="date-chip'+(selectedDate!=='today'&&selectedDate!=='yesterday'&&selectedDate!=='all'&&selectedDate!=='week'?' active':'')+'"><input type="date" value="'+(selectedDate!=='today'&&selectedDate!=='yesterday'&&selectedDate!=='all'&&selectedDate!=='week'?selectedDate:'')+'" onchange="setDate(this.value)" max="'+t+'"></div>';
+  $('dateRow').innerHTML=h;
+}
+function setDate(d){selectedDate=d;buildDateChips();applyFilters()}
+function loadOrders(){$('refreshBtn').innerHTML='<span style="display:inline-block;animation:spin .6s linear infinite">↻</span>';loadSheet('Orders',function(r){$('refreshBtn').innerHTML='↻';
+  if(!r||!r.table||!r.table.rows||!r.table.rows.length){$('ordersList').innerHTML='<div class="empty">No orders yet.</div>';return}
+  
+  var parsed=parseSheetRows(r);
+  
+  // Failsafe: if parseSheetRows returns no rows, try raw row-based parsing
+  if(!parsed.rows.length&&r.table.rows.length>1){
+    var hRow=r.table.rows[0];
+    var rawHeaders=[];
+    if(hRow&&hRow.c){for(var h=0;h<hRow.c.length;h++){var hc=hRow.c[h];var hv='';if(hc){if(hc.v!=null)hv=String(hc.v).trim();else if(hc.f!=null)hv=String(hc.f).trim()}rawHeaders.push(hv)}}
+    var rawRows=[];
+    for(var ri=1;ri<r.table.rows.length;ri++){
+      var row=r.table.rows[ri];var o={};
+      rawHeaders.forEach(function(hd,i){var c=row.c&&row.c[i];var v='';if(c){if(c.f!=null)v=String(c.f).trim();else if(c.v!=null)v=String(c.v).trim()}var key=hd.toLowerCase().replace(/\s+/g,'');if(key)o[key]=v});
+      rawRows.push(o);
+    }
+    if(rawRows.length)parsed={headers:rawHeaders,rows:rawRows};
+  }
+  
+  // Another failsafe: if STILL no rows, try using cols as headers + all rows as data
+  if(!parsed.rows.length&&r.table.rows.length>=1){
+    var colH=(r.table.cols||[]).map(function(c){return(c.label||'').trim()});
+    if(colH.filter(function(h){return h}).length>1){
+      var cRows=[];
+      r.table.rows.forEach(function(row){
+        var o={};
+        colH.forEach(function(hd,i){var c=row.c&&row.c[i];var v='';if(c){if(c.f!=null)v=String(c.f).trim();else if(c.v!=null)v=String(c.v).trim()}var key=hd.toLowerCase().replace(/\s+/g,'');if(key)o[key]=v});
+        cRows.push(o);
+      });
+      if(cRows.length)parsed={headers:colH,rows:cRows};
+    }
+  }
+  
+  if(!parsed.rows.length){$('ordersList').innerHTML='<div class="empty">No orders found.</div>';return}
+  
+  allOrders=parsed.rows.map(function(o){
+    return{
+      id:o.orderid||o['orderid']||'',
+      date:o['date&time']||o['datetime']||o.date||'',
+      dateKey:parseOrderDate(o['date&time']||o['datetime']||o.date||''),
+      mode:(o.mode||'').toLowerCase(),
+      name:o.customername||o['customername']||o.name||'',
+      phone:o.phone||'',
+      email:o.email||'',
+      address:o.address||'',
+      items:o.items||'',
+      total:parseFloat(o['total(₹)']||o['total']||o.total||'0')||0,
+      status:(o.status||'new').toLowerCase().trim(),
+      comment:o.shopkeepercomment||o['shopkeepercomment']||o.comment||'',
+      notes:o.ordernotes||o['ordernotes']||o.notes||'',
+      payment:o.payment||''
+    }
+  }).filter(function(o){return o.id}).reverse();
+  var nc=allOrders.filter(function(o){return o.status==='new'}).length;if(nc>0&&(prevNewCount===-1||nc>prevNewCount))playNotif();prevNewCount=nc;$('lastUpdate').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  
+  // Auto-fallback: if "Today" selected but no orders today, switch to "All"
+  if(selectedDate==='today'){
+    var t=todayStr();
+    var todayOrders=allOrders.filter(function(o){return o.dateKey===t});
+    if(!todayOrders.length&&allOrders.length>0){
+      selectedDate='all';
+      buildDateChips();
+    }
+  }
+  
+  applyFilters()})}
+function statusPriority(s){if(s==='new')return 0;if(s==='confirmed')return 1;if(s==='packed')return 2;if(s==='out for delivery'||s==='outfordelivery')return 3;if(s==='cancelled')return 5;return 4}
+function isDone(s){return s==='delivered'||s==='picked up'||s==='done'||s==='completed'}
+function getFilteredOrders(){var t=todayStr(),y=yesterdayStr(),list=allOrders;
+  if(selectedDate==='today')list=list.filter(function(o){return o.dateKey===t});
+  else if(selectedDate==='yesterday')list=list.filter(function(o){return o.dateKey===y});
+  else if(selectedDate==='week'){
+    var weekDates={};for(var i=0;i<7;i++){var d=new Date();d.setDate(d.getDate()-i);var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');weekDates[ds]=true}
+    list=list.filter(function(o){return weekDates[o.dateKey]});
+  }
+  else if(selectedDate!=='all')list=list.filter(function(o){return o.dateKey===selectedDate});if(activeFilter!=='all')list=list.filter(function(o){if(activeFilter==='new')return o.status==='new';if(activeFilter==='confirmed')return o.status==='confirmed';if(activeFilter==='packed')return o.status==='packed'||o.status==='out for delivery'||o.status==='outfordelivery';if(activeFilter==='done')return isDone(o.status)||o.status==='cancelled';return true});var q=($('searchInput').value||'').toLowerCase();if(q)list=list.filter(function(o){return(o.name+o.phone+o.id+o.items).toLowerCase().indexOf(q)>=0});if(sortByPriority)list.sort(function(a,b){return statusPriority(a.status)-statusPriority(b.status)});return list}
+function applyFilters(){updateStats();renderOrders()}
+function filterStat(f){activeFilter=f;document.querySelectorAll('.stat').forEach(function(el){el.classList.remove('active')});var m={all:0,new:1,confirmed:2,packed:3,done:4};document.querySelectorAll('.stat')[m[f]].classList.add('active');applyFilters()}
+function toggleSort(){sortByPriority=!sortByPriority;$('sortBtn').classList.toggle('active',sortByPriority);$('sortBtn').textContent=sortByPriority?'⚡ Priority':'🕐 Newest First';applyFilters()}
+function updateStats(){var t=todayStr(),y=yesterdayStr(),dated=allOrders;
+  if(selectedDate==='today')dated=dated.filter(function(o){return o.dateKey===t});
+  else if(selectedDate==='yesterday')dated=dated.filter(function(o){return o.dateKey===y});
+  else if(selectedDate==='week'){var wd={};for(var i=0;i<7;i++){var d=new Date();d.setDate(d.getDate()-i);var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');wd[ds]=true}dated=dated.filter(function(o){return wd[o.dateKey]})}
+  else if(selectedDate!=='all')dated=dated.filter(function(o){return o.dateKey===selectedDate});var n=0,c=0,p=0,d=0,rn=0,rc=0,rp=0,rd=0,rt=0;dated.forEach(function(o){rt+=o.total;if(o.status==='new'){n++;rn+=o.total}else if(o.status==='confirmed'){c++;rc+=o.total}else if(o.status==='packed'){p++;rp+=o.total}else if(isDone(o.status)){d++;rd+=o.total}});$('cntAll').textContent=dated.length;$('cntNew').textContent=n;$('cntConf').textContent=c;$('cntPack').textContent=p;$('cntDone').textContent=d;$('revAll').textContent='₹'+rt.toLocaleString('en-IN');$('revNew').textContent='₹'+rn.toLocaleString('en-IN');$('revConf').textContent='₹'+rc.toLocaleString('en-IN');$('revPack').textContent='₹'+rp.toLocaleString('en-IN');$('revDone').textContent='₹'+rd.toLocaleString('en-IN')}
+function statusBadge(s){if(s==='new')return '<span class="status-badge st-new">● New</span>';if(s==='confirmed')return '<span class="status-badge st-conf">● Confirmed</span>';if(s==='packed')return '<span class="status-badge st-pack">● Packed</span>';if(s==='out for delivery'||s==='outfordelivery')return '<span class="status-badge st-pack">🛵 Out for Delivery</span>';if(s==='cancelled')return '<span class="status-badge st-cancel">✕ Cancelled</span>';return '<span class="status-badge st-done">✓ Done</span>'}
+function actionBtns(o){var s=o.status,h='',safeId=esc(o.id),safePhone=o.phone.replace(/\D/g,'');
+  // Contact buttons
+  if(o.phone){
+    h+='<button class="sa-btn sa-wa" onclick="event.stopPropagation();window.open(\'https://wa.me/91'+safePhone+'\',\'_blank\')">📱 WhatsApp</button>';
+    h+='<button class="sa-btn sa-call" onclick="event.stopPropagation();location.href=\'tel:+91'+safePhone+'\'">📞 Call</button>';
+  }
+  // Status progression buttons with WhatsApp notification
+  if(s==='new'){
+    h+='<button class="sa-btn sa-confirm" onclick="event.stopPropagation();askAndUpdateStatus(\''+safeId+'\',\'Confirmed\',false)">✅ Confirm Order</button>';
+    h+='<button class="sa-btn sa-cancel" onclick="event.stopPropagation();askAndUpdateStatus(\''+safeId+'\',\'Cancelled\',true)">❌ Cancel</button>';
+  }else if(s==='confirmed'){
+    h+='<button class="sa-btn sa-pack" onclick="event.stopPropagation();askAndUpdateStatus(\''+safeId+'\',\'Packed\',false)">📦 Ready / Packed</button>';
+  }else if(s==='packed'){
+    if(o.mode==='delivery'){
+      h+='<button class="sa-btn sa-done" onclick="event.stopPropagation();askAndUpdateStatus(\''+safeId+'\',\'Out for Delivery\',false)">🛵 Out for Delivery</button>';
+    }else{
+      h+='<button class="sa-btn sa-done" onclick="event.stopPropagation();askAndUpdateStatus(\''+safeId+'\',\'Picked Up\',false)">🏪 Picked Up</button>';
+    }
+  }else if(s==='out for delivery'||s==='outfordelivery'){
+    h+='<button class="sa-btn sa-done" onclick="event.stopPropagation();askAndUpdateStatus(\''+safeId+'\',\'Delivered\',false)">✅ Delivered</button>';
+  }
+  // Comment button (add message to any order)
+  h+='<button class="sa-btn sa-msg" onclick="event.stopPropagation();sendCustomMessage(\''+safeId+'\')">💬 Send Message</button>';
+  h+='<button class="sa-btn sa-print" onclick="event.stopPropagation();printReceipt(\''+safeId+'\')">🖨️ Receipt</button>';
+  // Show existing comments with nice UI
+  if(o.notes||o.comment){
+    h+='<div class="sa-comment">';
+    if(o.notes)h+='<div class="sa-comment-cust"><div class="cl">📝 Customer Notes</div>"'+esc(o.notes)+'"</div>';
+    if(o.comment){
+      var comments=o.comment.split(' | ');
+      comments.forEach(function(c){
+        if(c.trim())h+='<div class="sa-comment-shop"><div class="cl">💬 Your Message</div>'+esc(c.trim())+'</div>';
+      });
+    }
+    h+='</div>';
+  }
+  return h;
+}
+
+// Send custom WhatsApp message to customer
+var _msgOrderId='';
+
+function sendCustomMessage(orderId){
+  var o=allOrders.find(function(x){return x.id===orderId});
+  if(!o){showToast('Order not found');return}
+  _msgOrderId=orderId;
+  
+  // Set header info
+  $('msgAvatar').textContent=o.name?o.name.charAt(0).toUpperCase():'👤';
+  $('msgName').textContent=o.name||'Customer';
+  $('msgOid').textContent='#'+orderId+(o.phone?' · '+o.phone:'');
+  
+  // Show previous comments if any
+  var prev=$('msgPrev');
+  if(o.comment){
+    prev.style.display='block';
+    $('msgPrevText').textContent=o.comment;
+  }else{
+    prev.style.display='none';
+  }
+  
+  // Quick reply templates
+  var templates=[
+    {text:'Your order is being prepared 🍳',label:'Preparing'},
+    {text:'Almost ready, 10 more minutes ⏱️',label:'10 min'},
+    {text:'Item is out of stock, please call us',label:'Out of stock'},
+    {text:'Your order is packed and ready! 📦',label:'Ready'},
+    {text:'Driver is on the way 🛵',label:'On the way'},
+    {text:'Delivered successfully! Thank you 🙏',label:'Delivered'},
+    {text:'Sorry for the delay, your order will arrive soon',label:'Delayed'},
+    {text:'Please collect your order from the counter',label:'Pickup'}
+  ];
+  
+  var quickHtml='';
+  templates.forEach(function(t){
+    quickHtml+='<button class="msg-quick-btn" onclick="$(\'msgText\').value=\''+t.text.replace(/'/g,"\\'")+'\';$(\'msgText\').focus()">'+t.label+'</button>';
+  });
+  $('msgQuick').innerHTML=quickHtml;
+  
+  // Clear textarea
+  $('msgText').value='';
+  
+  // Show modal
+  $('msgModalBg').classList.add('open');
+  setTimeout(function(){$('msgText').focus()},200);
+}
+
+function closeMsgModal(){
+  $('msgModalBg').classList.remove('open');
+  _msgOrderId='';
+}
+
+function submitMsg(sendWhatsApp){
+  var msg=$('msgText').value.trim();
+  if(!msg){$('msgText').style.borderColor='#dc2626';setTimeout(function(){$('msgText').style.borderColor=''},1000);return}
+  
+  var o=allOrders.find(function(x){return x.id===_msgOrderId});
+  if(!o){closeMsgModal();return}
+  
+  // Save to sheet
+  sendCmd('action=updateStatus&orderId='+encodeURIComponent(_msgOrderId)+'&comment='+encodeURIComponent(msg));
+  o.comment=(o.comment?o.comment+' | ':'')+msg;
+  applyFilters();
+  
+  // Refresh from sheet after 2s
+  setTimeout(loadOrders,2000);
+  
+  if(sendWhatsApp&&o.phone){
+    var phone=o.phone.replace(/\D/g,'');
+    if(phone.length===10)phone='91'+phone;
+    var shopName=getConfigVal('shopname','Our Store');
+    var waMsg='Hi '+o.name+',\n\nRegarding your order *#'+_msgOrderId+'* from *'+shopName+'*:\n\n'+msg;
+    window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(waMsg),'_blank');
+    showToast('✓ Customer notified + WhatsApp opened');
+  }else{
+    showToast('✓ Customer notified — visible on order tracking');
+  }
+  
+  closeMsgModal();
+}
+function renderOrders(){
+  var list=getFilteredOrders(),el=$('ordersList');
+  if(!list.length){el.innerHTML='<div class="empty">'+(selectedDate==='today'?'No orders today yet. They will appear automatically.':'No orders found.')+'</div>';return}
+  el.innerHTML=list.map(function(o){
+    var ic=o.items.split(/[,\n]+/).filter(function(s){return s.trim()}).length;
+    var payBadge=o.payment==='upi'?'📲 UPI':'💵 COD';
+    return '<div class="order'+(o.status==='new'?' new-pulse':'')+(isDone(o.status)||o.status==='cancelled'?' order-done':'')+'" onclick="this.classList.toggle(\'open\')">'
+    +'<div class="order-head">'
+    +'<div class="order-mode-icon '+(o.mode==='delivery'?'mi-delivery':'mi-pickup')+'">'+(o.mode==='delivery'?'🛵':'🏪')+'</div>'
+    +'<div class="order-info">'
+    +'<div class="order-top-row"><span class="order-id">'+esc(o.id)+'</span>'+statusBadge(o.status)+'<span class="order-ago">'+timeAgo(o.date)+'</span></div>'
+    +'<div class="order-name">'+esc(o.name||'Customer')+'</div>'
+    +'<div class="order-meta"><span>📅 '+esc(o.date)+'</span><span>'+payBadge+'</span></div>'
+    +'</div>'
+    +'<div class="order-right"><div class="order-amt">₹'+o.total.toLocaleString('en-IN')+'</div><div class="order-cnt">'+ic+' item'+(ic>1?'s':'')+'</div></div>'
+    +'</div>'
+    +'<div class="order-body">'
+    +'<div class="ob-section"><div class="ob-label">Items Ordered</div><div class="ob-items">'+formatOrderItems(o.items)+'</div></div>'
+    +'<div class="ob-section"><div class="ob-label">Contact</div><div class="ob-contact">'
+    +(o.phone?'<div class="ob-chip">📞 <a href="tel:+91'+o.phone.replace(/\D/g,'')+'">'+esc(o.phone)+'</a></div>':'')
+    +(o.email?'<div class="ob-chip">✉️ '+esc(o.email)+'</div>':'')
+    +'<div class="ob-chip">'+(o.mode==='delivery'?'🛵 Delivery':'🏪 Pickup')+'</div>'
+    +'<div class="ob-chip">'+payBadge+'</div>'
+    +'</div></div>'
+    +(o.address?'<div class="ob-section"><div class="ob-label">Delivery Address</div><div class="ob-addr">📍 '+esc(o.address)+'</div></div>':'')
+    +(o.notes?'<div class="ob-section"><div class="ob-label">📝 Customer Notes</div><div class="ob-addr" style="font-style:italic;color:var(--orange)">\"'+esc(o.notes)+'\"</div></div>':'')
+    +'<div class="ob-section"><div class="ob-label">Actions</div><div class="sa">'+actionBtns(o)+'</div></div>'
+    +'</div></div>'
+  }).join('');
+}
+var _pendingWaUrl='';
+
+function updateStatus(id,s,comment){
+  if(!SCRIPT_URL){showToast('⚠️ OrderScript not configured in Config tab.')}
+  
+  // ALWAYS update sheet first
+  var params='action=updateStatus&orderId='+encodeURIComponent(id)+'&newStatus='+encodeURIComponent(s);
+  if(comment)params+='&comment='+encodeURIComponent(comment);
+  sendCmd(params);
+  
+  // Update local state immediately for responsive UI
+  allOrders.forEach(function(o){if(o.id===id){o.status=s.toLowerCase();if(comment)o.comment=(o.comment?o.comment+' | ':'')+comment}});
+  applyFilters();
+  if(window.gtag)gtag('event','order_status_update',{order_id:id,new_status:s});
+  
+  // Refresh from sheet after 2s to sync with server
+  setTimeout(loadOrders,2000);
+  
+  // Build WhatsApp message
+  var o=allOrders.find(function(x){return x.id===id});
+  if(!o||!o.phone){showToast('✓ '+s+' — Status updated');return}
+  
+  var phone=o.phone.replace(/\D/g,'');
+  if(phone.length===10)phone='91'+phone;
+  var shopName=getConfigVal('shopname','Our Store');
+  var msg='',icon='✅',iconClass='confirm';
+  var sl=s.toLowerCase();
+  
+  if(sl==='confirmed'){
+    msg='✅ *Order Confirmed!*\n\nHi '+o.name+', your order *#'+id+'* has been confirmed by *'+shopName+'*.\n\n🍽️ Your food is being prepared.';
+    icon='✅';iconClass='confirm';
+  }else if(sl==='packed'){
+    msg='📦 *Order Packed!*\n\nHi '+o.name+', your order *#'+id+'* is packed and ready!'+(o.mode==='delivery'?'\n\n🛵 Will be out for delivery soon.':'\n\n🏪 Please pick it up from the counter.');
+    icon='📦';iconClass='packed';
+  }else if(sl==='out for delivery'){
+    msg='🛵 *Out for Delivery!*\n\nHi '+o.name+', your order *#'+id+'* is on its way!\n\nYour food will arrive shortly. — *'+shopName+'*';
+    icon='🛵';iconClass='packed';
+  }else if(sl==='delivered'){
+    msg='🎉 *Order Delivered!*\n\nHi '+o.name+', your order *#'+id+'* has been delivered.\n\nThank you for ordering from *'+shopName+'*! 🙏';
+    icon='🎉';iconClass='delivered';
+  }else if(sl==='picked up'){
+    msg='🎉 *Order Complete!*\n\nHi '+o.name+', thank you for picking up order *#'+id+'*.\n\nEnjoy your food! — *'+shopName+'* 🙏';
+    icon='🎉';iconClass='delivered';
+  }else if(sl==='cancelled'){
+    msg='❌ *Order Cancelled*\n\nHi '+o.name+', sorry, your order *#'+id+'* has been cancelled.'+(comment?'\n\nReason: '+comment:'')+'\n\nPlease contact *'+shopName+'* for more info.';
+    icon='❌';iconClass='cancel';
+  }
+  if(comment&&sl!=='cancelled')msg+='\n\n💬 Message: '+comment;
+  msg+='\n\n📋 Items: '+o.items;
+  msg+='\n💰 Total: ₹'+o.total;
+  
+  // Show beautiful modal
+  _pendingWaUrl='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+  
+  var statusHtml='<div class="wa-modal-check '+iconClass+'">'+icon+'</div>';
+  statusHtml+='<div class="wa-modal-title">Order '+esc(s)+'!</div>';
+  statusHtml+='<div class="wa-modal-sub">Order <strong>#'+esc(id)+'</strong> has been updated to <strong>'+esc(s)+'</strong><br>for customer <strong>'+esc(o.name)+'</strong> ('+esc(o.phone)+')</div>';
+  
+  $('waModalStatus').innerHTML=statusHtml;
+  $('waModalPreview').textContent=msg;
+  $('waModalBg').classList.add('open');
+}
+
+function closeWaModal(){
+  $('waModalBg').classList.remove('open');
+  _pendingWaUrl='';
+  showToast('✓ Status updated (WhatsApp skipped)');
+}
+
+function sendWaFromModal(){
+  $('waModalBg').classList.remove('open');
+  if(_pendingWaUrl)window.open(_pendingWaUrl,'_blank');
+  _pendingWaUrl='';
+  showToast('✓ Status updated + WhatsApp sent');
+}
+
+// Show comment dialog before status update
+function askAndUpdateStatus(id,status,requireComment){
+  if(requireComment||status==='Cancelled'){
+    var comment=prompt('Add a message for the customer'+(status==='Cancelled'?' (reason for cancellation)':'')+':');
+    if(comment===null)return; // user pressed Cancel
+    updateStatus(id,status,comment||'');
+  }else{
+    updateStatus(id,status,'');
+  }
+}
+// ══ NOTIFICATION SYSTEM ══
+var notifEnabled=true;
+var _audioCtx=null;
+
+function getAudioCtx(){
+  if(!_audioCtx){
+    try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
+  }
+  if(_audioCtx&&_audioCtx.state==='suspended')_audioCtx.resume();
+  return _audioCtx;
+}
+
+function playNotif(){
+  if(!notifEnabled)return;
+  
+  // 1. Sound — loud urgent notification chime
+  try{
+    var ctx=getAudioCtx();
+    if(ctx){
+      // Triple ascending chime — louder
+      playTone(ctx,523,0,0.2,0.5);      // C5
+      playTone(ctx,659,0.22,0.2,0.5);   // E5
+      playTone(ctx,784,0.44,0.3,0.5);   // G5
+      // Repeat after 1 second
+      setTimeout(function(){
+        var c2=getAudioCtx();
+        if(c2){
+          playTone(c2,523,0,0.2,0.5);
+          playTone(c2,659,0.22,0.2,0.5);
+          playTone(c2,784,0.44,0.3,0.5);
+        }
+      },1200);
+      // Third repeat — even more urgent
+      setTimeout(function(){
+        var c3=getAudioCtx();
+        if(c3){
+          playTone(c3,784,0,0.15,0.4);
+          playTone(c3,988,0.18,0.15,0.4);
+          playTone(c3,1047,0.36,0.25,0.4);
+        }
+      },2500);
+    }
+  }catch(e){console.log('Sound error:',e)}
+  
+  // 2. Vibration (mobile)
+  try{if(navigator.vibrate)navigator.vibrate([200,100,200,100,400])}catch(e){}
+  
+  // 3. Browser notification
+  try{
+    if(Notification&&Notification.permission==='granted'){
+      var shopName=getConfigVal('shopname','Your Store');
+      new Notification('🔔 New Order!',{
+        body:'A new order has been placed on '+shopName,
+        icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="24" font-size="24">🛒</text></svg>',
+        tag:'storepro-new-order',
+        requireInteraction:true
+      });
+    }else if(Notification&&Notification.permission!=='denied'){
+      Notification.requestPermission();
+    }
+  }catch(e){}
+  
+  // 4. Visual banner
+  showNewOrderBanner();
+  
+  // 5. Flash title
+  flashTitle();
+}
+
+function playTone(ctx,freq,start,duration,vol){
+  var o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type='sine';
+  o.frequency.setValueAtTime(freq,ctx.currentTime+start);
+  g.gain.setValueAtTime(vol||0.5,ctx.currentTime+start);
+  g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+start+duration);
+  o.start(ctx.currentTime+start);
+  o.stop(ctx.currentTime+start+duration);
+}
+
+// Visual banner that slides down from top
+function showNewOrderBanner(){
+  // Remove existing banner if any
+  var old=document.getElementById('newOrderBanner');
+  if(old)old.remove();
+  
+  var banner=document.createElement('div');
+  banner.id='newOrderBanner';
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:600;background:linear-gradient(135deg,#0c831f,#22c55e);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideDown .4s ease;font-family:var(--f)';
+  banner.innerHTML='<div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;animation:bounce 0.5s ease infinite alternate">🔔</div><div><div style="font-size:14px;font-weight:800">New Order Received!</div><div style="font-size:11px;opacity:.9">Tap to view the order details</div></div></div><button onclick="dismissBanner()" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0">✕</button>';
+  banner.onclick=function(e){
+    if(e.target.tagName==='BUTTON')return;
+    dismissBanner();
+    // Scroll to newest order
+    var orders=document.querySelectorAll('.order');
+    if(orders.length)orders[0].classList.add('open');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  document.body.appendChild(banner);
+  
+  // Auto-dismiss after 15 seconds
+  setTimeout(dismissBanner,15000);
+}
+
+function dismissBanner(){
+  var b=document.getElementById('newOrderBanner');
+  if(b){b.style.animation='slideUp .3s ease forwards';setTimeout(function(){if(b.parentNode)b.remove()},300)}
+}
+
+// Flash page title to get attention
+var _titleFlashInterval=null;
+function flashTitle(){
+  if(_titleFlashInterval)clearInterval(_titleFlashInterval);
+  var origTitle=document.title;
+  var flash=true;
+  _titleFlashInterval=setInterval(function(){
+    document.title=flash?'🔔 NEW ORDER!':origTitle;
+    flash=!flash;
+  },1000);
+  // Stop flashing after 30 seconds or when page gets focus
+  setTimeout(function(){stopFlash(origTitle)},30000);
+  window.addEventListener('focus',function handler(){stopFlash(origTitle);window.removeEventListener('focus',handler)});
+}
+
+function stopFlash(origTitle){
+  if(_titleFlashInterval){clearInterval(_titleFlashInterval);_titleFlashInterval=null}
+  document.title=origTitle||'🏬 Store Dashboard';
+}
+
+// Request notification permission and unlock audio on first interaction
+document.addEventListener('click',function initNotif(){
+  try{
+    if(Notification&&Notification.permission==='default')Notification.requestPermission();
+    // Unlock AudioContext
+    getAudioCtx();
+  }catch(e){}
+  document.removeEventListener('click',initNotif);
+},{once:true});
+
+// Also unlock on PIN submit specifically
+function unlockAudio(){try{getAudioCtx()}catch(e){}}
+
+function printReceipt(orderId){
+  var o=allOrders.find(function(x){return x.id===orderId});if(!o)return;
+  var items=o.items.split(/[,\n]+/).map(function(it){return it.trim()}).filter(Boolean);
+  var mode=o.mode==='delivery'?'🚚 Delivery':'🏪 Pickup';
+  var status=o.status.charAt(0).toUpperCase()+o.status.slice(1);
+  var shopName=getConfigVal('shopname','Store');
+  var shopAddr=getConfigVal('address','');
+  var shopPhone=getConfigVal('phone','');
+  var upiId=getConfigVal('upi','');
+  var currency=getConfigVal('currency','₹');
+  var upiUrl=upiId?'upi://pay?pa='+encodeURIComponent(upiId)+'&pn='+encodeURIComponent(shopName)+'&am='+o.total+'&cu=INR&tn='+encodeURIComponent('Order '+o.id):'';
+  
+  var w=window.open('','_blank','width=440,height=750');
+  var html='<!DOCTYPE html><html><head><title>Receipt '+esc(o.id)+'</title>';
+  html+='<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>';
+  html+='<style>';
+  html+='*{margin:0;padding:0;box-sizing:border-box}';
+  html+='body{font-family:-apple-system,Helvetica,Arial,sans-serif;padding:24px;max-width:380px;margin:0 auto;color:#1a1a1a;font-size:13px;background:#fff}';
+  html+='.header{text-align:center;padding-bottom:16px;border-bottom:2px solid #1a1a1a}';
+  html+='.shop-name{font-size:18px;font-weight:800;letter-spacing:0.5px}';
+  html+='.shop-info{font-size:10px;color:#666;margin-top:3px;line-height:1.5}';
+  html+='.order-id-box{text-align:center;padding:12px 0;border-bottom:1px dashed #ccc}';
+  html+='.order-id{font-size:18px;font-weight:800;font-family:monospace;letter-spacing:2px;color:#0c831f}';
+  html+='.order-date{font-size:10px;color:#888;margin-top:4px}';
+  html+='.section{padding:10px 0;border-bottom:1px dashed #ddd}';
+  html+='.section-h{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin-bottom:6px}';
+  html+='.info-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}';
+  html+='.info-row .label{color:#888}';
+  html+='.item{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px dotted #eee}';
+  html+='.item:last-child{border-bottom:none}';
+  html+='.item-num{color:#888;width:20px;flex-shrink:0}';
+  html+='.item-name{flex:1}';
+  html+='.item-price{font-weight:600;text-align:right;flex-shrink:0;margin-left:8px}';
+  html+='.total-box{padding:12px 0;border-top:2px solid #1a1a1a;border-bottom:2px solid #1a1a1a;margin:8px 0}';
+  html+='.total-row{display:flex;justify-content:space-between;font-size:20px;font-weight:800}';
+  html+='.payment-info{text-align:center;padding:8px 0;font-size:11px;color:#666}';
+  html+='.payment-badge{display:inline-block;padding:3px 10px;border-radius:4px;font-weight:700;font-size:11px}';
+  html+='.pay-cod{background:#fff4eb;color:#f59e0b}';
+  html+='.pay-upi{background:#e8faed;color:#0c831f}';
+  html+='.qr-section{text-align:center;padding:16px 0;border-bottom:1px dashed #ddd}';
+  html+='.qr-title{font-size:11px;font-weight:700;color:#0c831f;margin-bottom:8px}';
+  html+='.qr-box{display:inline-block;padding:8px;border:2px solid #0c831f;border-radius:8px;background:#fff}';
+  html+='.qr-hint{font-size:10px;color:#888;margin-top:8px}';
+  html+='.upi-id{font-size:11px;color:#0c831f;font-weight:700;margin-top:4px;font-family:monospace}';
+  html+='.notes-box{background:#fff8ed;border-left:3px solid #f59e0b;padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0;font-size:11px;color:#7a5a00;line-height:1.5}';
+  html+='.notes-box .notes-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#b8860b;margin-bottom:3px}';
+  html+='.comment-box{background:#eff6ff;border-left:3px solid #2563eb;padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0;font-size:11px;color:#1e3a5f;line-height:1.5}';
+  html+='.comment-box .comment-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#2563eb;margin-bottom:3px}';
+  html+='.status-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700}';
+  html+='.st-new{background:#e8faed;color:#0c831f}';
+  html+='.st-confirmed{background:#eff6ff;color:#2563eb}';
+  html+='.st-packed{background:#fff4eb;color:#f59e0b}';
+  html+='.st-ofd{background:#fff4eb;color:#ea580c}';
+  html+='.st-delivered{background:#f3f4f6;color:#666}';
+  html+='.st-cancelled{background:#fef2f2;color:#dc2626}';
+  html+='.footer{text-align:center;padding:16px 0;font-size:10px;color:#aaa;line-height:1.6}';
+  html+='.footer strong{color:#666}';
+  html+='.print-btn{text-align:center;margin-top:16px}';
+  html+='.print-btn button{padding:12px 32px;font-size:14px;font-weight:700;background:#0c831f;color:#fff;border:none;border-radius:8px;cursor:pointer}';
+  html+='@media print{.print-btn{display:none}body{padding:12px}}';
+  html+='</style></head><body>';
+  
+  // Header
+  html+='<div class="header">';
+  html+='<div class="shop-name">'+esc(shopName)+'</div>';
+  if(shopAddr)html+='<div class="shop-info">'+esc(shopAddr)+'</div>';
+  if(shopPhone)html+='<div class="shop-info">📞 '+esc(shopPhone)+(upiId?' | UPI: '+esc(upiId):'')+'</div>';
+  html+='</div>';
+  
+  // Order ID
+  html+='<div class="order-id-box">';
+  html+='<div class="order-id">'+esc(o.id)+'</div>';
+  html+='<div class="order-date">'+esc(o.date)+'</div>';
+  html+='</div>';
+  
+  // Customer info
+  html+='<div class="section"><div class="section-h">Customer Details</div>';
+  html+='<div class="info-row"><span class="label">Name</span><span>'+esc(o.name)+'</span></div>';
+  html+='<div class="info-row"><span class="label">Phone</span><span>'+esc(o.phone)+'</span></div>';
+  html+='<div class="info-row"><span class="label">Mode</span><span>'+mode+'</span></div>';
+  if(o.address)html+='<div class="info-row"><span class="label">Address</span><span style="text-align:right;max-width:200px;font-size:11px">'+esc(o.address)+'</span></div>';
+  
+  // Status
+  var stClass='st-new';
+  if(o.status==='confirmed')stClass='st-confirmed';
+  else if(o.status==='packed')stClass='st-packed';
+  else if(o.status.indexOf('out for')>=0)stClass='st-ofd';
+  else if(o.status==='delivered'||o.status==='picked up')stClass='st-delivered';
+  else if(o.status==='cancelled')stClass='st-cancelled';
+  html+='<div class="info-row"><span class="label">Status</span><span class="status-badge '+stClass+'">'+esc(status)+'</span></div>';
+  html+='<div class="info-row"><span class="label">Payment</span><span class="payment-badge '+(o.payment==='upi'?'pay-upi':'pay-cod')+'">'+esc(o.payment==='upi'?'UPI / Online':'Cash on '+(o.mode==='delivery'?'Delivery':'Pickup'))+'</span></div>';
+  html+='</div>';
+  
+  // Customer notes
+  if(o.notes){
+    html+='<div class="notes-box"><div class="notes-label">📝 Customer Notes</div>"'+esc(o.notes)+'"</div>';
+  }
+  
+  // Shopkeeper comments
+  if(o.comment){
+    html+='<div class="comment-box"><div class="comment-label">💬 Shopkeeper Notes</div>'+esc(o.comment)+'</div>';
+  }
+  
+  // Items
+  html+='<div class="section"><div class="section-h">Items Ordered</div>';
+  items.forEach(function(it,i){
+    var parts=it.split('=');
+    html+='<div class="item"><span class="item-num">'+(i+1)+'.</span><span class="item-name">'+esc(parts[0].trim())+'</span>';
+    if(parts[1])html+='<span class="item-price">'+esc(parts[1].trim())+'</span>';
+    html+='</div>';
+  });
+  html+='</div>';
+  
+  // Total
+  html+='<div class="total-box"><div class="total-row"><span>TOTAL</span><span>'+currency+o.total.toLocaleString('en-IN')+'</span></div></div>';
+  
+  // UPI QR Code
+  if(upiId&&o.payment==='upi'){
+    html+='<div class="qr-section">';
+    html+='<div class="qr-title">Scan to Pay via UPI</div>';
+    html+='<div class="qr-box" id="receiptQr"></div>';
+    html+='<div class="upi-id">'+esc(upiId)+'</div>';
+    html+='<div class="qr-hint">'+currency+o.total.toLocaleString('en-IN')+' · Scan with any UPI app</div>';
+    html+='</div>';
+  }else if(upiId){
+    // Show QR even for COD orders (in case they want to pay online)
+    html+='<div class="qr-section" style="opacity:.7">';
+    html+='<div class="qr-title" style="color:#888">Pay Online (Optional)</div>';
+    html+='<div class="qr-box" id="receiptQr" style="border-color:#ccc"></div>';
+    html+='<div class="upi-id" style="color:#888">'+esc(upiId)+'</div>';
+    html+='<div class="qr-hint">Scan to pay '+currency+o.total.toLocaleString('en-IN')+' via UPI</div>';
+    html+='</div>';
+  }
+  
+  // Footer
+  html+='<div class="footer">Thank you for ordering! 🙏<br>Visit again — <strong>'+esc(shopName)+'</strong><br><br>This is a computer-generated receipt</div>';
+  html+='<div class="print-btn"><button onclick="window.print()">🖨️ Print Receipt</button></div>';
+  
+  // QR generation script
+  if(upiId){
+    html+='<script>window.onload=function(){try{var el=document.getElementById("receiptQr");var url=el.getAttribute("data-url");new QRCode(el,{text:url,width:150,height:150,colorDark:"#1a1a1a",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M})}catch(e){}}<\/script>';
+    // Add data attribute to QR box
+    html=html.replace('id="receiptQr"','id="receiptQr" data-url="'+esc(upiUrl)+'"');
+  }
+  
+  html+='</body></html>';
+  w.document.write(html);
+  w.document.close();
+}
+
+// ═══════════════════════════════════
+// CONFIG TAB — with history tracking
+// ═══════════════════════════════════
+var configHistory=[];
+try{configHistory=JSON.parse(localStorage.getItem('sl_config_history_'+SHEET_ID)||'[]')}catch(e){configHistory=[]}
+
+function getConfigCategory(key){
+  var k=key.toLowerCase();
+  if(['shopname','phone','whatsapp','address','orderscript','upi','email'].indexOf(k)>=0)return{badge:'req',label:'Required'};
+  if(k.indexOf('fee')>=0||k.indexOf('delivery')>=0||k.indexOf('minorder')>=0||k.indexOf('discount')>=0||k.indexOf('night')>=0)return{badge:'fee',label:'Fee'};
+  if(['ogimage','analyticsid','shoptype','city','mapembed','maplink'].indexOf(k)>=0)return{badge:'seo',label:'SEO'};
+  if(k.indexOf('hero')>=0||k.indexOf('tagline')>=0||k.indexOf('logo')>=0||k.indexOf('brand')>=0||k.indexOf('theme')>=0||k.indexOf('announcement')>=0||k.indexOf('search')>=0||k.indexOf('hi_')>=0)return{badge:'ui',label:'UI'};
+  return null;
+}
+
+function getLastChange(key){
+  var entry=null;
+  for(var i=configHistory.length-1;i>=0;i--){
+    if(configHistory[i].key===key){entry=configHistory[i];break}
+  }
+  return entry;
+}
+
+function loadConfig(){loadSheet('Config',function(r){
+  // Don't clear configData if already populated by initDashboard
+  var newConfig=[];
+  if(r&&r.table&&r.table.rows){
+    r.table.rows.forEach(function(row){
+      var c0=row.c&&row.c[0],c1=row.c&&row.c[1];
+      var k='',v='';
+      if(c0){if(c0.f!=null)k=String(c0.f).trim();else if(c0.v!=null)k=String(c0.v).trim()}
+      if(c1){if(c1.f!=null)v=String(c1.f).trim();else if(c1.v!=null)v=String(c1.v).trim()}
+      if(!k||k.toLowerCase()==='key')return; // skip header row
+      newConfig.push({key:k,value:v});
+    });
+  }
+  if(newConfig.length)configData=newConfig;
+  if(!SCRIPT_URL){configData.forEach(function(c){if(c.key.toLowerCase().replace(/\s+/g,'')==='orderscript'&&c.value)SCRIPT_URL=c.value})}
+  renderConfig();renderConfigHistory()})}
+
+function renderConfig(){
+  var q=($('cfgSearch')?$('cfgSearch').value:'').toLowerCase();
+  var list=configData;
+  if(q)list=list.filter(function(c){return(c.key+c.value).toLowerCase().indexOf(q)>=0});
+  if(!list.length){$('configList').innerHTML='<div class="empty">'+(q?'No keys match "'+esc(q)+'"':'No config found.')+'</div>';return}
+  $('configList').innerHTML=list.map(function(c){
+    var idx=configData.indexOf(c);
+    var cat=getConfigCategory(c.key);
+    var lastChange=getLastChange(c.key);
+    var isLong=c.value.length>50||c.key.toLowerCase().indexOf('map')>=0||c.key.toLowerCase().indexOf('script')>=0;
+    var h='<div class="cfg-item" id="cfgItem-'+idx+'">';
+    h+='<div class="cfg-top"><div class="cfg-key">'+esc(c.key)+'</div>';
+    if(cat)h+='<span class="cfg-badge '+cat.badge+'">'+cat.label+'</span>';
+    h+='</div>';
+    h+='<div class="cfg-row">';
+    h+=isLong?'<textarea class="cfg-val cfg-val-long" id="cfg-'+idx+'">'+esc(c.value)+'</textarea>':'<input class="cfg-val" id="cfg-'+idx+'" value="'+esc(c.value)+'">';
+    h+='<button class="cfg-save" id="cfgBtn-'+idx+'" onclick="saveConfig('+idx+')">Save</button>';
+    h+='</div>';
+    if(lastChange){
+      h+='<div class="cfg-history"><span>Last changed: </span>'+timeAgoShort(lastChange.time)+' — <span class="cfg-hist-old">'+esc((lastChange.old||'').substring(0,30))+'</span> → <span class="cfg-hist-new">'+esc((lastChange.new||'').substring(0,30))+'</span></div>';
+    }
+    h+='</div>';
+    return h;
+  }).join('');
+}
+
+function saveConfig(i){
+  var c=configData[i],el=$('cfg-'+i);
+  var oldVal=c.value;
+  var newVal=el.value.trim();
+  if(oldVal===newVal){showToast('No changes to save');return}
+  // Save to sheet
+  sendCmd('action=updateConfig&key='+encodeURIComponent(c.key)+'&value='+encodeURIComponent(newVal),function(){
+    // Record in history
+    configHistory.push({key:c.key,old:oldVal,new:newVal,time:Date.now()});
+    // Keep only last 50 entries
+    if(configHistory.length>50)configHistory=configHistory.slice(-50);
+    try{localStorage.setItem('sl_config_history_'+SHEET_ID,JSON.stringify(configHistory))}catch(e){}
+    configData[i].value=newVal;
+    // Visual feedback
+    var btn=$('cfgBtn-'+i);
+    btn.textContent='✓ Saved';btn.classList.add('saved');
+    setTimeout(function(){btn.textContent='Save';btn.classList.remove('saved')},2000);
+    var item=$('cfgItem-'+i);
+    item.classList.add('changed');
+    setTimeout(function(){item.classList.remove('changed')},3000);
+    showToast('✓ '+c.key+' updated');
+    renderConfigHistory();
+  });
+}
+
+function addConfigRow(){
+  var k=prompt('Config key name:');if(!k)return;
+  var v=prompt('Value for '+k+':');if(v===null)return;
+  sendCmd('action=updateConfig&key='+encodeURIComponent(k)+'&value='+encodeURIComponent(v),function(){
+    configData.push({key:k,value:v});
+    configHistory.push({key:k,old:'(new)',new:v,time:Date.now()});
+    try{localStorage.setItem('sl_config_history_'+SHEET_ID,JSON.stringify(configHistory))}catch(e){}
+    renderConfig();renderConfigHistory();
+    showToast('✓ '+k+' added');
+  });
+}
+
+function renderConfigHistory(){
+  if(!configHistory.length){$('cfgHistPanel').style.display='none';return}
+  $('cfgHistPanel').style.display='block';
+  var recent=configHistory.slice(-10).reverse();
+  $('cfgHistList').innerHTML=recent.map(function(h){
+    return '<div class="cfg-hist-entry"><div class="cfg-hist-dot"></div><div><span class="cfg-hist-key">'+esc(h.key)+'</span> '
+      +(h.old==='(new)'?'<span class="cfg-hist-new">created</span>':'<span class="cfg-hist-old">'+esc((h.old||'').substring(0,25)+(h.old&&h.old.length>25?'...':''))+'</span> → <span class="cfg-hist-new">'+esc((h.new||'').substring(0,25)+(h.new&&h.new.length>25?'...':''))+'</span>')
+      +'</div><span class="cfg-hist-time">'+timeAgoShort(h.time)+'</span></div>';
+  }).join('');
+}
+
+function clearConfigHistory(){
+  if(!confirm('Clear all config change history?'))return;
+  configHistory=[];
+  try{localStorage.removeItem('sl_config_history_'+SHEET_ID)}catch(e){}
+  renderConfigHistory();showToast('History cleared');
+}
+
+function timeAgoShort(ts){
+  if(!ts)return'';
+  var diff=Math.floor((Date.now()-ts)/1000);
+  if(diff<60)return'Just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  if(diff<604800)return Math.floor(diff/86400)+'d ago';
+  return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+}
+
+// ═══════════════════════════════════
+// PRODUCTS TAB
+// ═══════════════════════════════════
+function loadProducts(){loadSheet('Products',function(r){productData=[];productHeaders=[];
+  var parsed=parseSheetRows(r);
+  productHeaders=parsed.headers;
+  parsed.rows.forEach(function(o,i){
+    o._row=i+2; // sheet row number (1-indexed + header)
+    if(o.name)productData.push(o);
+  });
+  renderProducts()})}
+function renderProducts(){
+  var q=($('prodSearch').value||'').toLowerCase(),list=productData;
+  if(q)list=list.filter(function(p){return(p.name+(p.category||'')+(p.hindiname||'')).toLowerCase().indexOf(q)>=0});
+  var thresholdCfg=configData.find(function(c){return c.key.toLowerCase().replace(/\s+/g,'')==='lowstockthreshold'});
+  var threshold=parseInt(thresholdCfg?thresholdCfg.value:'5')||5;
+  var lowItems=productData.filter(function(p){var qty=parseInt(p.quantity||p.qty||'');return!isNaN(qty)&&qty>0&&qty<=threshold});
+  var outItems=productData.filter(function(p){var s=(p.stock||'').toLowerCase();return s.indexOf('out')>=0});
+  var banner=$('lowStockBanner'),alert=$('stockAlert');
+  if(lowItems.length||outItems.length){
+    var msg='';
+    if(outItems.length)msg+='<strong>'+outItems.length+' out of stock</strong>';
+    if(lowItems.length)msg+=(msg?' · ':'')+'<strong>'+lowItems.length+' low stock</strong>';
+    banner.innerHTML='⚠️ '+msg;banner.classList.add('show');alert.classList.add('show');
+  }else{banner.classList.remove('show');alert.classList.remove('show')}
+  
+  // Populate category datalist
+  var cats={};productData.forEach(function(p){if(p.category)cats[p.category]=1});
+  var dl=$('catList');if(dl)dl.innerHTML=Object.keys(cats).map(function(c){return '<option value="'+esc(c)+'">'}).join('');
+  
+  // Count by category
+  var catCount={};list.forEach(function(p){var c=p.category||'Other';catCount[c]=(catCount[c]||0)+1});
+  
+  if(!list.length){$('productList').innerHTML='<div class="empty">'+(q?'No match':'No products yet. Click + to add.')+'</div>';return}
+  
+  $('productList').innerHTML=list.map(function(p){
+    var isVeg=(p.veg||'').toLowerCase()==='yes'||(p.veg||'').toLowerCase()==='veg';
+    var isOOS=(p.stock||'').toLowerCase().indexOf('out')>=0;
+    var isBest=(p.bestseller||'').toLowerCase()==='yes';
+    var isCombo=(p.combo||'').toLowerCase()==='yes';
+    var hasSize=p.sizes||'';
+    var hasAddon=p.addons||'';
+    var hi=p.image&&p.image.indexOf('http')===0;
+    
+    var badges='';
+    if(isBest)badges+='<span style="background:#fff4eb;color:#f59e0b;font:700 9px var(--f);padding:2px 6px;border-radius:3px">⭐ Best</span> ';
+    if(isCombo)badges+='<span style="background:#f3e8ff;color:#7c3aed;font:700 9px var(--f);padding:2px 6px;border-radius:3px">🍱 Combo</span> ';
+    if(isOOS)badges+='<span style="background:#fef2f2;color:#dc2626;font:700 9px var(--f);padding:2px 6px;border-radius:3px">Out</span> ';
+    
+    var html='<div class="prod-card'+(isOOS?' prod-oos':'')+'" onclick="this.classList.toggle(\'open\')">';
+    html+='<div class="prod-head">';
+    html+='<div class="prod-img">'+(hi?'<img src="'+esc(p.image)+'">':'<span style="font-size:20px">'+(isVeg?'🟢':'🔴')+'</span>')+'</div>';
+    html+='<div class="prod-info">';
+    html+='<div class="prod-name">'+esc(p.name)+' '+badges+'</div>';
+    if(p.hindiname)html+='<div style="font-size:10px;color:var(--ink3);font-family:serif">'+esc(p.hindiname)+'</div>';
+    html+='<div class="prod-meta"><span>'+esc(p.category||'')+'</span>';
+    if(p.unit)html+='<span>'+esc(p.unit)+'</span>';
+    if(hasSize)html+='<span style="color:var(--blue)">📐 Sizes</span>';
+    if(hasAddon)html+='<span style="color:var(--orange)">➕ Addons</span>';
+    html+='</div></div>';
+    html+='<div class="prod-price">₹'+esc(p.price||'0')+(p.mrp&&p.mrp!==p.price?'<div style="font-size:10px;text-decoration:line-through;color:var(--ink4);font-weight:500">₹'+esc(p.mrp)+'</div>':'')+'</div>';
+    html+='</div>';
+    
+    // Expandable details
+    html+='<div class="prod-body"><div class="form-grid">';
+    html+='<div class="form-group"><div class="form-label">Category</div><div>'+esc(p.category||'-')+'</div></div>';
+    html+='<div class="form-group"><div class="form-label">Price</div><div style="font-weight:700">₹'+esc(p.price||'0')+'</div></div>';
+    if(p.mrp)html+='<div class="form-group"><div class="form-label">MRP</div><div>₹'+esc(p.mrp)+'</div></div>';
+    html+='<div class="form-group"><div class="form-label">Veg/NV</div><div>'+(isVeg?'🟢 Veg':'🔴 Non-Veg')+'</div></div>';
+    html+='<div class="form-group"><div class="form-label">Stock</div><div style="'+(isOOS?'color:var(--red);font-weight:700':'')+'">'+esc(p.stock||'In Stock')+'</div></div>';
+    if(p.spicy)html+='<div class="form-group"><div class="form-label">Spice</div><div>'+esc(p.spicy)+'</div></div>';
+    if(p.preptime)html+='<div class="form-group"><div class="form-label">Prep Time</div><div>'+esc(p.preptime)+'</div></div>';
+    if(p.serves)html+='<div class="form-group"><div class="form-label">Serves</div><div>'+esc(p.serves)+'</div></div>';
+    if(p.rating)html+='<div class="form-group"><div class="form-label">Rating</div><div>⭐ '+esc(p.rating)+'</div></div>';
+    if(hasSize)html+='<div class="form-group full"><div class="form-label">📐 Sizes</div><div style="font-size:11px;display:flex;gap:4px;flex-wrap:wrap">'+hasSize.split(',').map(function(s){return '<span style="background:var(--blue-bg);color:var(--blue);padding:2px 8px;border-radius:4px;font-weight:600">'+esc(s.trim())+'</span>'}).join('')+'</div></div>';
+    if(hasAddon)html+='<div class="form-group full"><div class="form-label">➕ Add-ons</div><div style="font-size:11px;display:flex;gap:4px;flex-wrap:wrap">'+hasAddon.split(',').map(function(a){return '<span style="background:var(--orange-bg);color:var(--orange);padding:2px 8px;border-radius:4px;font-weight:600">'+esc(a.trim())+'</span>'}).join('')+'</div></div>';
+    if(p.description)html+='<div class="form-group full"><div class="form-label">Description</div><div style="font-size:11px;color:var(--ink3)">'+esc(p.description)+'</div></div>';
+    html+='<div class="form-actions"><button class="btn btn-green" onclick="event.stopPropagation();openEditProduct('+p._row+')">✏️ Edit</button><button class="btn btn-red" onclick="event.stopPropagation();delProduct('+p._row+',\''+esc(p.name).replace(/'/g,'')+'\')">🗑️ Delete</button></div>';
+    html+='</div></div></div>';
+    return html;
+  }).join('');
+}
+function addSizeRow(name,price){
+  var div=document.createElement('div');div.className='builder-row';
+  div.innerHTML='<input class="br-name" placeholder="Size name (e.g. Half)" value="'+esc(name||'')+'"><input class="br-price" type="number" placeholder="₹ Price" value="'+(price||'')+'"><button class="br-del" onclick="this.parentElement.remove();syncSizes()">✕</button>';
+  div.querySelectorAll('input').forEach(function(inp){inp.addEventListener('input',syncSizes)});
+  $('sizesBuilder').appendChild(div);
+}
+function addAddonRow(name,price){
+  var div=document.createElement('div');div.className='builder-row';
+  div.innerHTML='<input class="br-name" placeholder="Add-on name" value="'+esc(name||'')+'"><input class="br-price" type="number" placeholder="₹ Price" value="'+(price||'')+'"><button class="br-del" onclick="this.parentElement.remove();syncAddons()">✕</button>';
+  div.querySelectorAll('input').forEach(function(inp){inp.addEventListener('input',syncAddons)});
+  $('addonsBuilder').appendChild(div);
+}
+function syncSizes(){
+  var parts=[];
+  $('sizesBuilder').querySelectorAll('.builder-row').forEach(function(row){
+    var n=row.querySelector('.br-name').value.trim();
+    var p=row.querySelector('.br-price').value.trim();
+    if(n&&p)parts.push(n+':'+p);
+  });
+  $('fSizes').value=parts.join(',');
+}
+function syncAddons(){
+  var parts=[];
+  $('addonsBuilder').querySelectorAll('.builder-row').forEach(function(row){
+    var n=row.querySelector('.br-name').value.trim();
+    var p=row.querySelector('.br-price').value.trim();
+    if(n)parts.push(n+':'+(p||'0'));
+  });
+  $('fAddons').value=parts.join(',');
+}
+function populateBuilder(type,value){
+  var container=$(type==='sizes'?'sizesBuilder':'addonsBuilder');
+  container.innerHTML='';
+  if(!value)return;
+  // Parse "Half:50,Full:90" or "Half:50 Full:90"
+  var items=value.split(/[,]+/);
+  if(items.length===1&&items[0].indexOf(' ')>0){
+    items=items[0].split(/\s+(?=[A-Z])/);
+  }
+  items.forEach(function(item){
+    var kv=item.trim().split(':');
+    if(kv[0]){
+      if(type==='sizes')addSizeRow(kv[0].trim(),kv[1]?kv[1].trim():'');
+      else addAddonRow(kv[0].trim(),kv[1]?kv[1].trim():'');
+    }
+  });
+}
+
+function openAddProduct(){editingRow=null;$('modalTitle').textContent='Add Product';$('modalSaveBtn').textContent='Add';$('fName').value='';$('fHindi').value='';$('fCat').value='';$('fPrice').value='';$('fMrp').value='';$('fUnit').value='';$('fVeg').value='yes';$('fStock').value='in stock';$('fSizes').value='';$('fAddons').value='';$('fSpicy').value='';$('fPrep').value='';$('fServes').value='';$('fRating').value='';$('fBestseller').checked=false;$('fCombo').checked=false;$('fQuickQty').checked=false;$('fImage').value='';$('fDesc').value='';populateBuilder('sizes','');populateBuilder('addons','');$('addModal').classList.add('open');$('fName').focus()}
+function openEditProduct(row){var p=productData.find(function(x){return x._row===row});if(!p)return;editingRow=row;$('modalTitle').textContent='Edit: '+p.name;$('modalSaveBtn').textContent='Save';$('fName').value=p.name||'';$('fHindi').value=p.hindiname||p.hindi_name||'';$('fCat').value=p.category||'';$('fPrice').value=p.price||'';$('fMrp').value=p.mrp||'';$('fUnit').value=p.unit||'';$('fVeg').value=(p.veg||'yes').toLowerCase()==='no'?'no':'yes';$('fStock').value=p.stock||'in stock';$('fSizes').value=p.sizes||'';$('fAddons').value=p.addons||'';populateBuilder('sizes',p.sizes||'');populateBuilder('addons',p.addons||'');$('fSpicy').value=p.spicy||p.spicelevel||'';$('fPrep').value=p.preptime||p.prepTime||'';$('fServes').value=p.serves||'';$('fRating').value=p.rating||'';$('fBestseller').checked=(p.bestseller||'').toLowerCase()==='yes';$('fCombo').checked=(p.combo||'').toLowerCase()==='yes';$('fQuickQty').checked=(p.quickqty||'').toLowerCase()==='yes';$('fImage').value=p.image||'';$('fDesc').value=p.description||'';$('addModal').classList.add('open')}
+function saveProduct(){var n=$('fName').value.trim(),pr=$('fPrice').value.trim();if(!n||!pr){alert('Name and price required');return}syncSizes();syncAddons();var params='action='+(editingRow?'updateProduct':'addProduct');if(editingRow)params+='&row='+editingRow;params+='&name='+encodeURIComponent(n);params+='&hindiname='+encodeURIComponent($('fHindi').value.trim());params+='&category='+encodeURIComponent($('fCat').value.trim());params+='&price='+encodeURIComponent(pr);params+='&mrp='+encodeURIComponent($('fMrp').value.trim());params+='&unit='+encodeURIComponent($('fUnit').value.trim());params+='&veg='+encodeURIComponent($('fVeg').value);params+='&stock='+encodeURIComponent($('fStock').value);params+='&sizes='+encodeURIComponent($('fSizes').value.trim());params+='&addons='+encodeURIComponent($('fAddons').value.trim());params+='&spicy='+encodeURIComponent($('fSpicy').value);params+='&prepTime='+encodeURIComponent($('fPrep').value.trim());params+='&serves='+encodeURIComponent($('fServes').value.trim());params+='&rating='+encodeURIComponent($('fRating').value.trim());params+='&bestseller='+encodeURIComponent($('fBestseller').checked?'yes':'');params+='&combo='+encodeURIComponent($('fCombo').checked?'yes':'');params+='&quickqty='+encodeURIComponent($('fQuickQty').checked?'yes':'');params+='&image='+encodeURIComponent($('fImage').value.trim());params+='&description='+encodeURIComponent($('fDesc').value.trim());sendCmd(params,function(){$('addModal').classList.remove('open');showToast('✓ '+(editingRow?'Updated':'Added'));if(window.gtag)gtag('event',editingRow?'product_updated':'product_added',{product_name:n,price:parseFloat(pr)});setTimeout(loadProducts,1500)})}
+function delProduct(row,name){if(!confirm('Delete "'+name+'"?'))return;sendCmd('action=deleteProduct&row='+row,function(){showToast('✓ Deleted');if(window.gtag)gtag('event','product_deleted',{product_name:name});setTimeout(loadProducts,1500)})}
+
+// ═══════════════════════════════════
+// PIN + INIT
+// ═══════════════════════════════════
+var dashPIN='',dashPINHash='';
+var pinAttempts=0,pinLockUntil=0;
+try{pinAttempts=parseInt(sessionStorage.getItem('pin_attempts')||'0');pinLockUntil=parseInt(sessionStorage.getItem('pin_lockuntil')||'0')}catch(e){}
+
+function pinNext(el,n){if(el.value.length===1&&n>0)$('p'+n).focus();if(n===0&&el.value.length===1)checkPin()}
+function pinBack(e,i){if(e.key==='Backspace'&&i>0&&e.target.value==='')$('p'+i).focus()}
+
+function checkPin(){
+  unlockAudio(); // Unlock audio on user gesture
+  if(pinLockUntil&&Date.now()<pinLockUntil){
+    var mins=Math.ceil((pinLockUntil-Date.now())/60000);
+    $('pinErr').textContent='Too many attempts. Try in '+mins+' min.';
+    return;
+  }
+  var entered=($('p1').value||'')+($('p2').value||'')+($('p3').value||'')+($('p4').value||'');
+  if(entered.length<4)return;
+  
+  sha256(entered).then(function(enteredHash){
+    var match=false;
+    if(dashPINHash&&enteredHash===dashPINHash){
+      match=true;handlePinResult(match);return;
+    }
+    if(dashPIN){
+      sha256(dashPIN).then(function(storedHash){
+        if(enteredHash===storedHash)match=true;
+        handlePinResult(match);
+      });return;
+    }
+    handlePinResult(match);
+  });
+}
+
+function sha256(str){
+  var encoder=new TextEncoder();
+  return crypto.subtle.digest('SHA-256',encoder.encode(str)).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+  });
+}
+
+function handlePinResult(match){
+  if(match){
+    pinAttempts=0;
+    sessionStorage.setItem('pin_attempts','0');
+    sessionStorage.removeItem('pin_lockuntil');
+    sessionStorage.setItem('dash_unlocked','1');
+    sessionStorage.setItem('dash_unlock_time',String(Date.now()));
+    $('lockScreen').classList.add('hidden');
+    startDashboard();
+  }else{
+    pinAttempts++;
+    sessionStorage.setItem('pin_attempts',String(pinAttempts));
+    if(pinAttempts>=5){
+      pinLockUntil=Date.now()+5*60*1000;
+      sessionStorage.setItem('pin_lockuntil',String(pinLockUntil));
+      $('pinErr').textContent='Too many wrong attempts. Locked for 5 minutes.';
+    }else{
+      $('pinErr').textContent='Wrong PIN ('+(5-pinAttempts)+' attempts left)';
+    }
+    document.querySelectorAll('.pin-inputs input').forEach(function(el){el.classList.add('shake');setTimeout(function(){el.classList.remove('shake')},400)});
+    setTimeout(function(){$('p1').value='';$('p2').value='';$('p3').value='';$('p4').value='';$('p1').focus()},500);
+  }
+}
+
+function lockDashboard(){
+  sessionStorage.removeItem('dash_unlocked');
+  sessionStorage.removeItem('dash_unlock_time');
+  $('lockScreen').classList.remove('hidden');
+  $('p1').value='';$('p2').value='';$('p3').value='';$('p4').value='';$('p1').focus();
+  if(orderInterval)clearInterval(orderInterval);
+}
+
+function isDashSessionValid(){
+  var unlocked=sessionStorage.getItem('dash_unlocked');
+  var time=parseInt(sessionStorage.getItem('dash_unlock_time')||'0');
+  if(!unlocked)return false;
+  // Session expires after 4 hours
+  if(time&&Date.now()-time>4*60*60*1000){lockDashboard();return false}
+  return true;
+}
+
+function startDashboard(){
+  buildDateChips();loadOrders();
+  // Smart sync polling — 20s interval but skips if user is actively interacting
+  if(orderInterval)clearInterval(orderInterval);
+  orderInterval=setInterval(function(){
+    // Skip sync if user is typing in search, message modal is open, or WA modal is open
+    var isTyping=document.activeElement&&(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA');
+    var modalOpen=$('msgModalBg').classList.contains('open')||$('waModalBg').classList.contains('open')||$('addModal').classList.contains('open');
+    if(isTyping||modalOpen)return;
+    // Silent refresh — don't show spinner, don't change scroll position
+    silentRefreshOrders();
+  },20000);
+}
+
+function silentRefreshOrders(){
+  loadSheet('Orders',function(r){
+    if(!r||!r.table||!r.table.rows||!r.table.rows.length)return;
+    var parsed=parseSheetRows(r);
+    if(!parsed.rows.length)return;
+    
+    var newOrders=parsed.rows.map(function(o){
+      return{
+        id:o.orderid||o['orderid']||'',
+        date:o['date&time']||o['datetime']||o.date||'',
+        dateKey:parseOrderDate(o['date&time']||o['datetime']||o.date||''),
+        mode:(o.mode||'').toLowerCase(),
+        name:o.customername||o['customername']||o.name||'',
+        phone:o.phone||'',email:o.email||'',address:o.address||'',items:o.items||'',
+        total:parseFloat(o['total(₹)']||o['total']||o.total||'0')||0,
+        status:(o.status||'new').toLowerCase().trim(),
+        comment:o.shopkeepercomment||o['shopkeepercomment']||o.comment||'',
+        notes:o.ordernotes||o['ordernotes']||o.notes||'',
+        payment:o.payment||''
+      }
+    }).filter(function(o){return o.id}).reverse();
+    
+    // Check for new orders
+    var nc=newOrders.filter(function(o){return o.status==='new'}).length;
+    if(nc>0&&nc>prevNewCount)playNotif();
+    prevNewCount=nc;
+    
+    // Only update if data changed (compare order count or IDs)
+    var oldIds=allOrders.map(function(o){return o.id+o.status}).join(',');
+    var newIds=newOrders.map(function(o){return o.id+o.status}).join(',');
+    if(oldIds!==newIds){
+      // Save scroll position and open state
+      var scrollY=window.scrollY;
+      var openIds=[];
+      document.querySelectorAll('.order.open').forEach(function(el){
+        var idEl=el.querySelector('.order-id');
+        if(idEl)openIds.push(idEl.textContent);
+      });
+      
+      allOrders=newOrders;
+      applyFilters();
+      
+      // Restore scroll and open states
+      window.scrollTo(0,scrollY);
+      openIds.forEach(function(oid){
+        document.querySelectorAll('.order-id').forEach(function(el){
+          if(el.textContent===oid){
+            var order=el.closest('.order');
+            if(order)order.classList.add('open');
+          }
+        });
+      });
+    }
+    $('lastUpdate').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  });
+}
+
+function initDashboard(){loadSheet('Config',function(r){
+  var gaId='';
+  configData=[]; // Populate configData immediately so getConfigVal works for receipts
+  if(r&&r.table&&r.table.rows)r.table.rows.forEach(function(row){
+    var c0=row.c&&row.c[0],c1=row.c&&row.c[1];
+    var k=c0?(c0.f!=null?String(c0.f).trim():(c0.v!=null?String(c0.v).trim():'')):'';
+    var v=c1?(c1.f!=null?String(c1.f).trim():(c1.v!=null?String(c1.v).trim():'')):'';
+    var kn=k.toLowerCase().replace(/\s+/g,'');
+    if(kn==='key'||!kn)return; // Skip header row
+    configData.push({key:k,value:v}); // Store for getConfigVal
+    if(kn==='dashboardpin'||kn==='dashpin'||kn==='pin')dashPIN=v;
+    if(kn==='pinhash'||kn==='dashboardpinhash')dashPINHash=v;
+    if(kn==='analyticsid')gaId=v;
+    if(kn==='orderscript'&&v)SCRIPT_URL=v;
+    if(kn==='shopname'&&v)document.querySelector('.top h1').textContent='🏬 '+v;
+  });
+  // GA4
+  if(gaId&&!window._gaLoaded){
+    window._gaLoaded=true;
+    var gs=document.createElement('script');gs.async=true;gs.src='https://www.googletagmanager.com/gtag/js?id='+gaId;document.head.appendChild(gs);
+    window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
+    gtag('js',new Date());gtag('config',gaId,{page_title:'Store Dashboard'});
+  }
+  // Auth check
+  if(!dashPIN&&!dashPINHash){
+    // No PIN configured — open directly
+    $('lockScreen').classList.add('hidden');startDashboard();
+  }else if(isDashSessionValid()){
+    // Valid session — skip PIN
+    $('lockScreen').classList.add('hidden');startDashboard();
+  }else{
+    // Show PIN screen
+    // Check if locked out
+    if(pinLockUntil&&Date.now()<pinLockUntil){
+      var mins=Math.ceil((pinLockUntil-Date.now())/60000);
+      $('pinErr').textContent='Locked. Try in '+mins+' min.';
+    }
+    setTimeout(function(){$('p1').focus()},300);
+  }
+})}
+function resolveStore(cb){
+  var p=new URLSearchParams(window.location.search);
+  // Direct sheet ID
+  if(p.get('shop')){SHEET_ID=p.get('shop');SCRIPT_URL=p.get('script')||DEFAULT_SCRIPT;cb();return}
+  var slug=p.get('store');
+  // No params — show help or redirect
+  if(!slug){
+    if(window.location.protocol!=='file:'){window.location.replace(window.location.href.split('dashboard.html')[0]);return}
+    document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:linear-gradient(135deg,#f0fdf4,#f5f5f5)"><div style="text-align:center;max-width:420px"><div style="font-size:64px;margin-bottom:8px">🏬</div><h1 style="font-size:24px;font-weight:800;color:#0c831f;margin-bottom:8px">StorePro Dashboard</h1><p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">Use the dashboard link given to you:<br><br><code style="background:#e8faed;padding:4px 10px;border-radius:6px;font-size:12px;color:#0c831f">dashboard.html?store=your-store-name</code></p><a href="https://wa.me/919760684971?text=Hi!%20I%20need%20my%20dashboard%20link" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#25d366;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">📱 Get my link</a></div></div>';
+    return;
+  }
+  // Lookup slug in master registry
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table){showDashNotFound(slug);return}
+    var parsed=parseSheetRows(r);
+    var found=false;
+    parsed.rows.forEach(function(o){
+      if(found)return;
+      var rowSlug=(o.slug||'').toLowerCase().trim();
+      if(rowSlug===slug.toLowerCase()){
+        SHEET_ID=o.sheetid||'';
+        SCRIPT_URL=o.scripturl||o.script||DEFAULT_SCRIPT;
+        var shopName=o.shopname||o.slug||slug;
+        document.querySelector('.top h1').textContent='🏬 '+shopName;
+        found=true;
+      }
+    });
+    if(!SHEET_ID){showDashNotFound(slug);return}
+    if(!SCRIPT_URL)SCRIPT_URL=DEFAULT_SCRIPT;
+    cb();
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();
+  s.onerror=function(){showDashNotFound(slug)};
+  document.body.appendChild(s);
+}
+function showDashNotFound(slug){var safe=slug.replace(/[<>"'&]/g,'');document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:#f5f5f5"><div style="text-align:center;max-width:400px"><div style="font-size:64px;margin-bottom:12px">🔍</div><h1 style="font-size:22px;font-weight:700;margin-bottom:8px">Dashboard not found</h1><p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">Store <strong>"'+safe+'"</strong> not found or inactive.</p><a href="https://wa.me/919760684971?text=Hi!%20I%20need%20help%20with%20store%20'+encodeURIComponent(safe)+'" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:#0c831f;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">📱 Contact Support</a></div></div>'}
+resolveStore(function(){initDashboard()});
+</script>
+</body>
+</html>

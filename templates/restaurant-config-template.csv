@@ -1,0 +1,44 @@
+Key,Value
+ShopName,Spice Garden Restaurant
+HeroTagline,Authentic North Indian Cuisine
+HeroTitle,Spice Garden Restaurant
+HeroImage,
+Tagline,Hot food delivered fast
+LogoEmoji,🍽️
+Phone,919999999999
+WhatsApp,919999999999
+Email,contact@spicegarden.in
+Address,123 Main Road, Sector 15, Dehradun, Uttarakhand 248001
+City,Dehradun
+ShopType,Restaurant
+Timing,11:00-23:00
+Currency,₹
+Rating,4.5
+EstimatedDeliveryTime,30-45 min
+DeliveryTime,30-45 min
+DeliveryInfo,Hot food delivered to your door
+MinOrder,199
+DeliveryFee,30
+FreeDelivery,499
+PackingFee,20
+HandlingFee,0
+PlatformFee,0
+Taxes,0
+Discount,0
+RestaurantLat,30.3165
+RestaurantLng,78.0322
+MaxDeliveryRadius,5
+UPI,spicegarden@paytm
+DashboardPIN,1234
+PINHash,
+BrandColor,#e63946
+Theme,
+AnalyticsID,
+OGImage,
+Announcement,
+SearchHint,Search dishes...
+hi_search,खोजें...
+hi_deals,आज के ऑफर
+MapEmbed,
+MapLink,
+OrderScript,

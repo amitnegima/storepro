@@ -1,0 +1,75 @@
+name,hindiname,category,price,mrp,unit,description,image,veg,bestseller,combo,quickqty,rating,prepTime,serves,sizes,addons,spicy,stock,sortorder
+Veg Thali,वेज थाली,Combos,180,220,1 thali,Dal + 2 sabzi + 4 roti + rice + raita + salad + sweet,,yes,yes,yes,,4.8,15 min,1,,,Medium,in stock,1
+Paneer Special Thali,पनीर स्पेशल थाली,Combos,250,300,1 thali,Paneer sabzi + dal + 4 butter roti + rice + raita + sweet,,yes,,yes,,4.9,18 min,1,,,Medium,in stock,2
+Family Combo (4 People),फैमिली कॉम्बो,Combos,799,950,1 pack,2 sabzi + dal + 12 roti + rice + raita + 4 salad + sweet,,yes,,yes,,4.8,25 min,4,,,Medium,in stock,3
+Chilli Paneer,चिल्ली पनीर,Chinese,120,,1 plate,Crispy paneer tossed in spicy Indo-Chinese sauce,,yes,yes,,,4.7,12 min,2,"Dry Half:120,Dry Full:180,Gravy Half:140,Gravy Full:200","Extra Paneer:50,Extra Gravy:30",Spicy,in stock,4
+Veg Manchurian,वेज मंचूरियन,Chinese,100,,1 plate,Vegetable balls in tangy Indo-Chinese sauce,,yes,yes,,,4.6,12 min,2,"Dry Half:100,Dry Full:160,Gravy Half:120,Gravy Full:180","Extra Gravy:20",Spicy,in stock,5
+Mushroom Chilli,मशरूम चिल्ली,Chinese,130,,1 plate,Mushroom tossed in spicy Chinese sauce,,yes,,,,4.5,12 min,2,"Dry Half:130,Dry Full:200,Gravy Half:150,Gravy Full:220",,Spicy,in stock,6
+Baby Corn Chilli,बेबी कॉर्न चिल्ली,Chinese,120,,1 plate,Baby corn in spicy Indo-Chinese sauce,,yes,,,,4.4,12 min,2,"Dry Half:120,Dry Full:180,Gravy Half:140,Gravy Full:200",,Spicy,in stock,7
+Paneer 65,पनीर 65,Chinese,140,,1 plate,Deep fried paneer in spicy masala coating,,yes,,,,4.6,10 min,2,"Half:140,Full:220",,Spicy,in stock,8
+Veg Hakka Noodles,हक्का नूडल्स,Chinese,80,,1 plate,Stir-fried noodles with vegetables,,yes,yes,,,4.5,10 min,1-2,"Half:80,Full:140","Egg:30,Schezwan Sauce:0",Medium,in stock,9
+Schezwan Noodles,शेजवान नूडल्स,Chinese,100,,1 plate,Spicy Schezwan style noodles,,yes,,,,4.5,10 min,1-2,"Half:100,Full:160","Egg:30,Extra Veggies:20",Spicy,in stock,10
+Chowmein,चाउमीन,Chinese,60,,1 plate,Classic Indian-Chinese stir fried noodles,,yes,yes,,,4.4,8 min,1,"Half:60,Full:100","Egg:20,Extra Veggies:15",Medium,in stock,11
+Veg Fried Rice,वेज फ्राइड राइस,Chinese,80,,1 plate,Wok-tossed rice with mixed vegetables,,yes,,,,4.4,10 min,1-2,"Half:80,Full:140","Egg:30,Schezwan:0",Medium,in stock,12
+Schezwan Fried Rice,शेजवान फ्राइड राइस,Chinese,100,,1 plate,Spicy Schezwan style fried rice,,yes,,,,4.5,10 min,1-2,"Half:100,Full:160","Egg:30,Paneer:50",Spicy,in stock,13
+Manchow Soup,मनचाऊ सूप,Chinese,70,,1 bowl,Spicy Indo-Chinese soup with crispy noodles,,yes,,,,4.3,8 min,1,"Half:70,Full:120",,Medium,in stock,14
+Hot & Sour Soup,हॉट एंड सॉर सूप,Chinese,70,,1 bowl,Tangy spicy vegetable soup,,yes,,,,4.3,8 min,1,"Half:70,Full:120",,Spicy,in stock,15
+Veg Spring Roll,स्प्रिंग रोल,Chinese,80,,4 pcs,Crispy rolls stuffed with mixed vegetables,,yes,,,,4.4,8 min,1-2,,,Mild,in stock,16
+Veg Momos,वेज मोमोज़,Momos,70,,8 pcs,Steamed dumplings with vegetable filling,,yes,yes,,,4.7,12 min,1-2,"Steamed:70,Fried:90,Tandoori:110","Extra Chutney:0",Medium,in stock,17
+Paneer Momos,पनीर मोमोज़,Momos,90,,8 pcs,Paneer filled momos with red chutney,,yes,,,,4.6,12 min,1-2,"Steamed:90,Fried:110,Tandoori:130","Extra Chutney:0",Medium,in stock,18
+Cheese Corn Momos,चीज़ कॉर्न मोमोज़,Momos,100,,8 pcs,Cheesy corn filled momos,,yes,,,,4.5,12 min,1-2,"Steamed:100,Fried:120",,Mild,in stock,19
+Kurkure Momos,कुरकुरे मोमोज़,Momos,100,,8 pcs,Extra crispy fried momos with crunchy coating,,yes,,,,4.6,12 min,1-2,,"Mayo Dip:15,Schezwan Dip:10",Medium,in stock,20
+Paneer Butter Masala,पनीर बटर मसाला,North Indian,140,,1 bowl,Creamy tomato gravy with cottage cheese cubes,,yes,yes,,,4.8,15 min,2,"Half:140,Full:220","Extra Paneer:50,Extra Gravy:30",Medium,in stock,21
+Shahi Paneer,शाही पनीर,North Indian,150,,1 bowl,Rich creamy paneer in cashew gravy,,yes,,,,4.7,15 min,2,"Half:150,Full:240","Extra Paneer:50",Mild,in stock,22
+Kadhai Paneer,कढ़ाई पनीर,North Indian,140,,1 bowl,Paneer cooked with capsicum in kadhai masala,,yes,,,,4.6,15 min,2,"Half:140,Full:220","Extra Paneer:50",Medium,in stock,23
+Palak Paneer,पालक पनीर,North Indian,130,,1 bowl,Cottage cheese in creamy spinach gravy,,yes,,,,4.5,15 min,2,"Half:130,Full:200","Extra Paneer:50",Mild,in stock,24
+Matar Paneer,मटर पनीर,North Indian,130,,1 bowl,Paneer and peas in tomato gravy,,yes,,,,4.4,15 min,2,"Half:130,Full:200",,Medium,in stock,25
+Dal Makhani,दाल मखनी,North Indian,100,,1 bowl,Slow cooked black lentils with cream and butter,,yes,yes,,,4.8,20 min,2,"Half:100,Full:160","Extra Butter:15",Mild,in stock,26
+Dal Tadka,दाल तड़का,North Indian,80,,1 bowl,Yellow lentils with ghee tadka,,yes,,,,4.5,12 min,2,"Half:80,Full:130","Extra Ghee:10",Mild,in stock,27
+Chana Masala,छोले मसाला,North Indian,90,,1 bowl,Spicy chickpea curry Punjabi style,,yes,,,,4.5,12 min,2,"Half:90,Full:150",,Spicy,in stock,28
+Aloo Gobi,आलू गोबी,North Indian,80,,1 bowl,Dry potato cauliflower curry,,yes,,,,4.3,12 min,2,"Half:80,Full:130",,Medium,in stock,29
+Mix Veg,मिक्स वेज,North Indian,90,,1 bowl,Seasonal mixed vegetables curry,,yes,,,,4.4,12 min,2,"Half:90,Full:150",,Medium,in stock,30
+Rajma,राजमा,North Indian,90,,1 bowl,Kidney beans in thick onion tomato gravy,,yes,,,,4.5,15 min,2,"Half:90,Full:150",,Medium,in stock,31
+Tandoori Roti,तंदूरी रोटी,Breads,12,,1 piece,Whole wheat bread from tandoor,,yes,,,yes,4.6,5 min,1,"",Butter:5,,in stock,32
+Butter Naan,बटर नान,Breads,35,,1 piece,Soft leavened bread with butter,,yes,yes,,yes,4.8,5 min,1,,,,in stock,33
+Garlic Naan,लहसुन नान,Breads,45,,1 piece,Naan with garlic and coriander,,yes,,,yes,4.6,5 min,1,,,,in stock,34
+Lachha Paratha,लच्छा पराठा,Breads,40,,1 piece,Layered crispy flaky paratha,,yes,,,yes,4.5,7 min,1,,,,in stock,35
+Aloo Paratha,आलू पराठा,Breads,50,,1 piece,Stuffed potato paratha with butter,,yes,yes,,yes,4.8,8 min,1,"","Curd:15,Pickle:0,Extra Butter:10",,in stock,36
+Paneer Paratha,पनीर पराठा,Breads,60,,1 piece,Stuffed paneer paratha with butter,,yes,,,yes,4.7,8 min,1,"","Curd:15,Pickle:0",,in stock,37
+Plain Rice,सादा चावल,Rice,60,,1 plate,Steamed basmati rice,,yes,,,,4,8 min,1-2,,,,in stock,38
+Jeera Rice,जीरा राइस,Rice,80,,1 plate,Cumin tempered basmati rice,,yes,,,,4.4,10 min,1-2,,,,in stock,39
+Veg Pulao,वेज पुलाव,Rice,100,,1 plate,Fragrant rice with mixed vegetables,,yes,,,,4.5,12 min,1-2,"","Raita:20",Mild,in stock,40
+Veg Biryani,वेज बिरयानी,Rice,120,,1 plate,Aromatic layered biryani with vegetables,,yes,yes,,,4.6,18 min,1,"Half:120,Full:200","Raita:20",Medium,in stock,41
+Pani Puri,पानी पूरी,Street Food,40,,6 pcs,Crispy puris with spicy mint water,,yes,yes,,yes,4.8,3 min,1,,,Spicy,in stock,42
+Dahi Puri,दही पूरी,Street Food,50,,6 pcs,Puris with sweet curd and chutneys,,yes,,,,4.5,3 min,1,,,Mild,in stock,43
+Bhel Puri,भेल पूरी,Street Food,50,,1 plate,Puffed rice with tangy chutneys,,yes,,,,4.5,3 min,1,,,Medium,in stock,44
+Sev Puri,सेव पूरी,Street Food,60,,6 pcs,Crispy puris topped with sev and chutneys,,yes,,,,4.4,3 min,1,,,Medium,in stock,45
+Aloo Tikki,आलू टिक्की,Street Food,40,,2 pcs,Crispy spiced potato patties with chutneys,,yes,,,,4.6,5 min,1,"",Curd:10,Spicy,in stock,46
+Aloo Tikki Chaat,आलू टिक्की चाट,Street Food,60,,1 plate,Tikki topped with curd sev and chutneys,,yes,,,,4.7,5 min,1,,,Spicy,in stock,47
+Vada Pav,वड़ा पाव,Street Food,30,,1 piece,Mumbai style spicy potato vada in pav,,yes,yes,,yes,4.7,5 min,1,"","Extra Chutney:0",Spicy,in stock,48
+Pav Bhaji,पाव भाजी,Street Food,80,,1 plate,Spicy mashed vegetables with butter pav,,yes,,,,4.6,12 min,1-2,"Half:80,Full:140","Extra Pav:15,Extra Butter:10,Cheese:25",Medium,in stock,49
+Samosa,समोसा,Street Food,20,,1 piece,Crispy pastry with spiced potato filling,,yes,yes,,yes,4.6,5 min,1,,,Medium,in stock,50
+Bread Pakoda,ब्रेड पकोड़ा,Street Food,30,,1 piece,Stuffed bread fritter with potato filling,,yes,,,yes,4.4,5 min,1,,,Medium,in stock,51
+Veg Sandwich,वेज सैंडविच,Sandwiches,60,,1 piece,Grilled sandwich with vegetables,,yes,,,,4.3,7 min,1,"Regular:60,Cheese:80","Extra Cheese:20,Mayo:10",Mild,in stock,52
+Paneer Sandwich,पनीर सैंडविच,Sandwiches,80,,1 piece,Grilled paneer sandwich with mint chutney,,yes,,,,4.5,7 min,1,"Regular:80,Cheese:100","Extra Cheese:20",Medium,in stock,53
+Club Sandwich,क्लब सैंडविच,Sandwiches,100,,1 piece,Triple layer veg sandwich with fries,,yes,,,,4.5,10 min,1,"Regular:100,Cheese:120","French Fries:40",Mild,in stock,54
+Cheese Grilled Sandwich,चीज़ ग्रिल्ड सैंडविच,Sandwiches,80,,1 piece,Loaded cheese grilled sandwich,,yes,yes,,,4.6,7 min,1,"","Extra Cheese:25",Mild,in stock,55
+French Fries,फ्रेंच फ्राइज़,Sides,70,,1 plate,Crispy golden seasoned fries,,yes,,,yes,4.4,5 min,1-2,"Regular:70,Large:110","Cheese Dip:25,Mayo:10,Peri Peri:15",,in stock,56
+Peri Peri Fries,पेरी पेरी फ्राइज़,Sides,90,,1 plate,Spicy peri peri seasoned fries,,yes,,,yes,4.5,5 min,1-2,"Regular:90,Large:130","Cheese Dip:25",Spicy,in stock,57
+Onion Rings,प्याज़ के रिंग,Sides,80,,1 plate,Crispy battered onion rings,,yes,,,,4.3,7 min,1-2,"","Mayo:10",,in stock,58
+Boondi Raita,बूंदी रायता,Sides,30,,1 bowl,Yogurt with crispy boondi pearls,,yes,,,,4.4,2 min,2,,,,in stock,59
+Green Salad,हरा सलाद,Sides,20,,1 plate,Fresh onion cucumber tomato salad,,yes,,,,4,2 min,2,,,,in stock,60
+Papad,पापड़,Sides,10,,2 pcs,Roasted or fried papad,,yes,,,yes,4.2,2 min,1-2,"Roasted:10,Fried:15",,Mild,in stock,61
+Masala Chai,मसाला चाय,Beverages,15,,1 cup,Hot Indian spiced tea with milk,,yes,yes,,yes,4.7,5 min,1,"","Extra Strong:0",,in stock,62
+Lassi Sweet,मीठी लस्सी,Beverages,40,,1 glass,Traditional sweet yogurt drink,,yes,,,,4.6,3 min,1,"Regular:40,Large:60",,in stock,63
+Lassi Salt,नमकीन लस्सी,Beverages,40,,1 glass,Salted yogurt drink with cumin,,yes,,,,4.5,3 min,1,"Regular:40,Large:60",,in stock,64
+Cold Coffee,कोल्ड कॉफ़ी,Beverages,80,,1 glass,Iced coffee with cream,,yes,,,,4.5,5 min,1,"Regular:80,Large:120","Whipped Cream:15,Extra Shot:20",,in stock,65
+Fresh Lime Soda,नींबू सोडा,Beverages,40,,1 glass,Refreshing lime soda,,yes,,,,4.4,3 min,1,"Sweet:40,Salt:40,Mixed:40",,in stock,66
+Mango Shake,मैंगो शेक,Beverages,70,,1 glass,Thick mango milkshake,,yes,,,,4.6,5 min,1,"Regular:70,Large:100",,in stock,67
+Cold Drink,कोल्ड ड्रिंक,Beverages,30,,300ml,Coke / Pepsi / Sprite / Thumbs Up,,yes,,,,4,1 min,1,,,,in stock,68
+Water Bottle,पानी,Beverages,20,,1L,Mineral water bottle,,yes,,,,4,1 min,2,,,,in stock,69
+Gulab Jamun,गुलाब जामुन,Desserts,30,,2 pcs,Soft milk dumplings in sugar syrup,,yes,yes,,,4.7,3 min,1,,,,in stock,70
+Rasgulla,रसगुल्ला,Desserts,30,,2 pcs,Spongy cottage cheese balls in syrup,,yes,,,,4.5,3 min,1,,,,in stock,71
+Gajar Halwa,गाजर का हलवा,Desserts,60,,1 bowl,Warm carrot pudding with nuts,,yes,,,,4.7,5 min,1-2,,,,in stock,72
+Rabri,रबड़ी,Desserts,50,,1 bowl,Thick sweetened milk with cardamom and nuts,,yes,,,,4.5,3 min,1,,,,in stock,73
+Kulfi,कुल्फी,Desserts,40,,1 piece,Traditional Indian frozen dessert,,yes,,,,4.6,2 min,1,"Malai:40,Pista:50,Mango:50",,in stock,74

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>StorePro Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#1a1d27;--card2:#22252f;--ink:#f0f0f0;--ink2:#a0a4b0;--ink3:#6b6f7e;--green:#22c55e;--green-bg:rgba(34,197,94,.12);--blue:#3b82f6;--blue-bg:rgba(59,130,246,.12);--orange:#f59e0b;--orange-bg:rgba(245,158,11,.12);--red:#ef4444;--red-bg:rgba(239,68,68,.12);--purple:#a855f7;--purple-bg:rgba(168,85,247,.12);--line:rgba(255,255,255,.06);--line2:rgba(255,255,255,.1);--f:'DM Sans',system-ui,sans-serif;--r:8px;--r2:12px;--r3:16px}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100dvh}
+
+/* Lock */
+.lock{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}.lock.hidden{display:none}
+.lock-box{background:var(--card);border:1px solid var(--line2);border-radius:var(--r3);padding:40px 32px;max-width:380px;width:100%;text-align:center}
+.lock-box h2{font-size:20px;margin:12px 0 4px}.lock-box p{font-size:13px;color:var(--ink2);margin-bottom:20px}
+.lock-pwd-wrap{position:relative;margin-bottom:4px}
+.lock-input{width:100%;height:48px;background:var(--bg);border:1.5px solid var(--line2);border-radius:var(--r);color:var(--ink);font:500 15px var(--f);padding:0 44px 0 16px;outline:none;transition:.2s}.lock-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.lock-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:transparent;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:14px}.lock-toggle:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+.lock-err{color:var(--red);font-size:12px;min-height:20px;margin:8px 0;font-weight:600}
+.lock-btn{width:100%;height:46px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font:700 14px var(--f);cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}.lock-btn:hover{filter:brightness(1.1)}.lock-btn:active{transform:scale(.98)}.lock-btn:disabled{opacity:.6;cursor:not-allowed}
+.lock-reset{margin-top:12px;font-size:11px;color:var(--ink3)}
+.lock-reset a{color:var(--blue);cursor:pointer;text-decoration:none}.lock-reset a:hover{text-decoration:underline}
+
+/* Top */
+.top{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);max-width:1200px;margin:0 auto}
+.top-left{display:flex;align-items:center;gap:12px}
+.top-logo{width:36px;height:36px;border-radius:var(--r);background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+.top h1{font-size:17px;font-weight:700}.top-sub{font-size:11px;color:var(--ink3)}
+.top-actions{display:flex;gap:6px}
+.top-btn{height:34px;padding:0 14px;border:1px solid var(--line2);border-radius:var(--r);background:transparent;color:var(--ink2);font:600 12px var(--f);cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s}.top-btn:hover{background:var(--card2);color:var(--ink)}
+.top-btn.add{background:var(--green);color:#fff;border:none}.top-btn.add:hover{filter:brightness(1.1)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:16px 24px;max-width:1200px;margin:0 auto}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;cursor:pointer;transition:.15s}.stat:hover{border-color:var(--line2)}
+.stat-label{font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.stat-val{font-size:24px;font-weight:700;margin-top:3px;line-height:1}
+.stat-sub{font-size:10px;color:var(--ink3);margin-top:3px}
+.sv-green{color:var(--green)}.sv-blue{color:var(--blue)}.sv-orange{color:var(--orange)}.sv-purple{color:var(--purple)}.sv-red{color:var(--red)}
+
+/* Filter */
+.filter{max-width:1200px;margin:0 auto;padding:10px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.search{flex:1;min-width:180px;position:relative}
+.search input{width:100%;height:36px;padding:0 12px 0 34px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font:500 12px var(--f);outline:none}.search input:focus{border-color:var(--blue)}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink3)}
+.pill-btn{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:20px;background:transparent;color:var(--ink3);font:600 11px var(--f);cursor:pointer;transition:.15s;white-space:nowrap}.pill-btn:hover{background:var(--card2);color:var(--ink)}.pill-btn.active{background:var(--blue-bg);color:var(--blue);border-color:rgba(59,130,246,.3)}
+
+/* Stores */
+.stores{max-width:1200px;margin:0 auto;padding:6px 24px 80px}
+.empty{text-align:center;padding:48px 20px;color:var(--ink3)}
+.store{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);margin-bottom:8px;overflow:hidden;transition:.2s}.store:hover{border-color:var(--line2)}
+.store.inactive{opacity:.5}
+.store-head{padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.store-avatar{width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.sa-grocery{background:var(--green-bg)}.sa-pharmacy{background:var(--blue-bg)}.sa-salon{background:var(--purple-bg)}.sa-restaurant{background:var(--orange-bg)}.sa-default{background:var(--blue-bg)}
+.store-info{flex:1;min-width:0}
+.store-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-meta{display:flex;gap:8px;font-size:10px;color:var(--ink3);margin-top:1px;flex-wrap:wrap}
+.store-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.plan-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+.pb-free{background:var(--green-bg);color:var(--green)}.pb-starter{background:var(--blue-bg);color:var(--blue)}.pb-pro{background:var(--purple-bg);color:var(--purple)}.pb-expired{background:var(--red-bg);color:var(--red)}
+.store-revenue{text-align:right}.store-rev-amt{font-size:13px;font-weight:700}.store-rev-orders{font-size:9px;color:var(--ink3)}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sd-active{background:var(--green);box-shadow:0 0 6px var(--green)}.sd-expiring{background:var(--orange);animation:pulse 1.5s infinite}.sd-inactive{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Store body (expanded) */
+.store-body{display:none;border-top:1px solid var(--line);padding:14px 16px}.store.open .store-body{display:block}
+.sb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:12px}
+.sb-item{background:var(--bg);border-radius:var(--r);padding:8px 12px}
+.sb-item-label{font-size:9px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+.sb-item-val{font-size:12px;font-weight:600;margin-top:2px;word-break:break-all}
+.sb-actions{display:flex;gap:6px;flex-wrap:wrap}
+.sb-btn{height:32px;padding:0 14px;border:1px solid var(--line2);border-radius:var(--r);background:var(--card2);color:var(--ink2);font:600 11px var(--f);cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s;white-space:nowrap}.sb-btn:hover{background:var(--bg);color:var(--ink)}
+.sb-open{border-color:rgba(34,197,94,.3);color:var(--green)}.sb-dash{border-color:rgba(59,130,246,.3);color:var(--blue)}
+.sb-wa{border-color:rgba(37,211,102,.3);color:#25d366}.sb-sheet{border-color:rgba(245,158,11,.3);color:var(--orange)}
+.sb-toggle{border:none;padding:0 14px}.sb-toggle.active{background:var(--green-bg);color:var(--green)}.sb-toggle.inactive{background:var(--red-bg);color:var(--red)}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;padding:16px}.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--line2);border-radius:var(--r3);max-width:520px;width:100%;max-height:85vh;overflow-y:auto;padding:24px}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mg-f{display:flex;flex-direction:column;gap:4px}.mg-f.full{grid-column:1/-1}
+.mg-l{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+.mg-i{height:38px;padding:0 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none}.mg-i:focus{border-color:var(--blue)}
+.mg-s{height:38px;padding:0 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none;-webkit-appearance:none}
+.mg-btns{display:flex;gap:8px;grid-column:1/-1;margin-top:8px}
+.mg-btn{height:40px;padding:0 20px;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}.mg-btn:active{transform:scale(.97)}
+.mg-save{background:var(--green);color:#fff}.mg-save:hover{filter:brightness(1.1)}
+.mg-cancel{background:var(--card2);color:var(--ink2);border:1px solid var(--line2)}.mg-cancel:hover{background:var(--bg)}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#fff;color:#111;padding:10px 20px;border-radius:var(--r2);font:600 12px var(--f);z-index:400;opacity:0;transition:.3s;box-shadow:0 4px 20px rgba(0,0,0,.3)}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* Tools panel */
+.tools-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:300;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}.tools-bg.open{display:flex}
+.tools-box{background:var(--card);border:1px solid var(--line2);border-radius:var(--r3);max-width:700px;width:100%;padding:0}
+.tools-hdr{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.tools-hdr h3{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+.tools-close{width:32px;height:32px;border-radius:var(--r);border:1px solid var(--line2);background:transparent;color:var(--ink2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}.tools-close:hover{background:var(--card2)}
+.tools-body{padding:20px 24px}
+.tool-sec{margin-bottom:24px}
+.tool-sec-h{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tool-sec-h::after{content:'';flex:1;height:1px;background:var(--line)}
+.tool-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap}
+.tool-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+.tool-label{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase}
+.tool-input{height:38px;padding:0 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none}.tool-input:focus{border-color:var(--blue)}
+.tool-output{width:100%;padding:10px 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 11px var(--f);color:var(--green);background:var(--bg);min-height:38px;word-break:break-all;cursor:pointer;transition:.15s;font-family:monospace}.tool-output:hover{border-color:var(--green)}
+.tool-btn{height:38px;padding:0 16px;border:none;border-radius:var(--r);font:700 12px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s;white-space:nowrap}.tool-btn:active{transform:scale(.96)}
+.tool-btn-blue{background:var(--blue);color:#fff}.tool-btn-blue:hover{filter:brightness(1.1)}
+.tool-btn-green{background:var(--green);color:#fff}.tool-btn-green:hover{filter:brightness(1.1)}
+.tool-btn-ghost{background:var(--card2);color:var(--ink2);border:1px solid var(--line2)}.tool-btn-ghost:hover{background:var(--bg)}
+
+/* Sheet viewer */
+.sv-tabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.sv-tab{padding:6px 14px;border:1px solid var(--line2);border-radius:var(--r);background:transparent;color:var(--ink3);font:600 11px var(--f);cursor:pointer;transition:.15s}.sv-tab:hover{background:var(--card2)}.sv-tab.active{background:var(--blue-bg);color:var(--blue);border-color:rgba(59,130,246,.3)}
+.sv-table-wrap{max-height:350px;overflow:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.sv-table{width:100%;border-collapse:collapse;font-size:11px}
+.sv-table th{position:sticky;top:0;background:var(--card2);color:var(--ink2);font-weight:700;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+.sv-table td{padding:6px 10px;border-bottom:1px solid var(--line);color:var(--ink);white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.sv-table tr:hover td{background:rgba(59,130,246,.05)}
+.sv-empty{padding:24px;text-align:center;color:var(--ink3);font-size:12px}
+.sv-info{font-size:10px;color:var(--ink3);margin-top:6px}
+
+@media(max-width:640px){.stats{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px}.stat{padding:10px 12px}.stat-val{font-size:18px}.store-head{padding:10px 12px}.sb-grid{grid-template-columns:1fr 1fr}.filter{padding:8px 12px}.stores{padding:4px 12px 80px}.mg{grid-template-columns:1fr}.top-actions .top-btn span{display:none}}
+</style>
+</head>
+<body>
+
+<!-- Lock -->
+<div class="lock" id="lockScreen"><div class="lock-box"><div style="font-size:36px;margin-bottom:4px">🔐</div><h2>StorePro Admin</h2><p>Enter your admin password</p><div class="lock-pwd-wrap"><input class="lock-input" type="password" id="adminPwd" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkAdmin()" autocomplete="off"><button class="lock-toggle" id="pwdToggle" onclick="togglePwdVisibility()" type="button" title="Show password">👁</button></div><div class="lock-err" id="adminErr"></div><button class="lock-btn" onclick="checkAdmin()">Unlock</button><div class="lock-reset">Password is stored in Master Registry → Settings tab</div></div></div>
+
+<!-- Top -->
+<div class="top">
+<div class="top-left"><div class="top-logo">K</div><div><h1>StorePro Admin</h1><div class="top-sub" id="topSub">Loading...</div></div></div>
+<div class="top-actions">
+<button class="top-btn add" onclick="openAddStore()">+ <span>Add Store</span></button>
+<button class="top-btn" onclick="openTools()">🛠️ <span>Tools</span></button>
+<button class="top-btn" id="refreshBtn" onclick="loadStores()">↻ <span>Refresh</span></button>
+<button class="top-btn" onclick="lockAdmin()">🔒</button>
+</div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+<div class="stat"><div class="stat-label">Total Stores</div><div class="stat-val sv-blue" id="sTotal">-</div><div class="stat-sub" id="sActive"></div></div>
+<div class="stat"><div class="stat-label">Revenue</div><div class="stat-val sv-green" id="sRevenue">₹0</div><div class="stat-sub" id="sOrders"></div></div>
+<div class="stat"><div class="stat-label">Paid Plans</div><div class="stat-val sv-purple" id="sPaid">0</div><div class="stat-sub" id="sMrr"></div></div>
+<div class="stat"><div class="stat-label">Expiring</div><div class="stat-val sv-orange" id="sExpiring">0</div><div class="stat-sub">need renewal</div></div>
+<div class="stat"><div class="stat-label">Inactive</div><div class="stat-val sv-red" id="sInactive">0</div><div class="stat-sub">stores off</div></div>
+</div>
+
+<!-- Filter -->
+<div class="filter">
+<div class="search"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg><input type="text" id="searchInput" placeholder="Search stores..." oninput="renderStores()"></div>
+<button class="pill-btn active" onclick="setFilter('all',this)">All</button>
+<button class="pill-btn" onclick="setFilter('active',this)">Active</button>
+<button class="pill-btn" onclick="setFilter('inactive',this)">Inactive</button>
+<button class="pill-btn" onclick="setFilter('free',this)">Free</button>
+<button class="pill-btn" onclick="setFilter('paid',this)">Paid</button>
+<button class="pill-btn" onclick="setFilter('expiring',this)">Expiring</button>
+</div>
+
+<div class="stores" id="storesList"><div class="empty">Loading stores...</div></div>
+
+<!-- Add/Edit Store Modal -->
+<div class="modal-bg" id="storeModal" onclick="if(event.target===this)this.classList.remove('open')">
+<div class="modal">
+<h3 id="modalTitle">🏬 Add New Store</h3>
+<div class="mg">
+<div class="mg-f full"><div class="mg-l">Shop Name *</div><input class="mg-i" id="mShop" placeholder="Sharma General Store"></div>
+<div class="mg-f"><div class="mg-l">Slug *</div><input class="mg-i" id="mSlug" placeholder="sharma-grocery"></div>
+<div class="mg-f"><div class="mg-l">Sheet ID *</div><input class="mg-i" id="mSheet" placeholder="Google Sheet ID"></div>
+<div class="mg-f"><div class="mg-l">Owner Name</div><input class="mg-i" id="mOwner" placeholder="Rajesh Sharma"></div>
+<div class="mg-f"><div class="mg-l">Phone</div><input class="mg-i" id="mPhone" placeholder="9876543210"></div>
+<div class="mg-f"><div class="mg-l">Shop Type</div>
+<select class="mg-s" id="mType"><option value="Grocery">🛒 Grocery</option><option value="Pharmacy">💊 Pharmacy</option><option value="Restaurant">🍽️ Restaurant</option><option value="Bakery">🍰 Bakery</option><option value="Hardware">🔧 Hardware</option><option value="Clothing">👕 Clothing</option><option value="Electronics">📱 Electronics</option><option value="Salon">💇 Salon</option><option value="Flowers">🌸 Flowers</option><option value="Other">Other</option></select></div>
+<div class="mg-f"><div class="mg-l">City</div><input class="mg-i" id="mCity" placeholder="Dehradun"></div>
+<div class="mg-f"><div class="mg-l">Plan</div>
+<select class="mg-s" id="mPlan"><option value="Free">Free</option><option value="Starter">Starter ₹499</option><option value="Pro">Pro ₹999</option></select></div>
+<div class="mg-f"><div class="mg-l">Plan Expiry</div><input class="mg-i" id="mExpiry" type="date"></div>
+<div class="mg-f"><div class="mg-l">Active</div>
+<select class="mg-s" id="mActive"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+<div class="mg-f full"><div class="mg-l">Script URL</div><input class="mg-i" id="mScript" placeholder="Apps Script deployment URL"></div>
+<div class="mg-f full"><div class="mg-l">Store URL <button type="button" onclick="autoGenUrl()" style="background:var(--blue-bg);color:var(--blue);border:none;padding:2px 8px;border-radius:4px;font:600 9px var(--f);cursor:pointer;margin-left:6px">Auto Generate</button></div><input class="mg-i" id="mUrl" placeholder="https://storepro.in/?store=slug"></div>
+<div class="mg-f full"><div class="mg-l">Dashboard URL <button type="button" onclick="autoGenDash()" style="background:var(--blue-bg);color:var(--blue);border:none;padding:2px 8px;border-radius:4px;font:600 9px var(--f);cursor:pointer;margin-left:6px">Auto Generate</button></div><input class="mg-i" id="mDashUrl" placeholder="https://storepro.in/dashboard.html?store=slug"></div>
+<div class="mg-btns">
+<button class="mg-btn mg-save" id="modalSaveBtn" onclick="saveStore()">Save Store</button>
+<button class="mg-btn mg-cancel" onclick="document.getElementById('storeModal').classList.remove('open')">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Tools Modal -->
+<div class="tools-bg" id="toolsBg" onclick="if(event.target===this)this.classList.remove('open')">
+<div class="tools-box">
+<div class="tools-hdr"><h3>🛠️ Admin Tools</h3><button class="tools-close" onclick="$('toolsBg').classList.remove('open')">✕</button></div>
+<div class="tools-body">
+
+<!-- Tool 1: PIN Hash Generator -->
+<div class="tool-sec">
+<div class="tool-sec-h">PIN Hash Generator</div>
+<p style="font-size:11px;color:var(--ink3);margin-bottom:10px;line-height:1.5">Generate a SHA-256 hash for a dashboard PIN. Add the hash as <code style="background:var(--bg);padding:1px 6px;border-radius:4px">PINHash</code> in the store's Config sheet for secure authentication.</p>
+<div class="tool-row">
+<div class="tool-field"><div class="tool-label">Enter PIN</div><input class="tool-input" id="toolPin" type="text" maxlength="10" placeholder="e.g. 9999" oninput="generatePinHash()"></div>
+<button class="tool-btn tool-btn-blue" onclick="generatePinHash()">Generate Hash</button>
+</div>
+<div class="tool-output" id="toolPinHash" onclick="copyToClipboard(this.textContent,'Hash copied!')" title="Click to copy">Enter a PIN above...</div>
+<div style="display:flex;gap:6px;margin-top:6px">
+<button class="tool-btn tool-btn-ghost" onclick="copyToClipboard($('toolPinHash').textContent,'Hash copied!')">📋 Copy Hash</button>
+<button class="tool-btn tool-btn-ghost" onclick="generateRandomPin()">🎲 Random PIN</button>
+</div>
+</div>
+
+<!-- Tool 2: Sheet Data Viewer -->
+<div class="tool-sec">
+<div class="tool-sec-h">Sheet Data Viewer</div>
+<p style="font-size:11px;color:var(--ink3);margin-bottom:10px;line-height:1.5">View data from any store's Google Sheet. Select a store or enter a Sheet ID directly.</p>
+<div class="tool-row">
+<div class="tool-field"><div class="tool-label">Store</div>
+<select class="tool-input" id="svStore" onchange="onStoreSelect()">
+<option value="">Select a store...</option>
+</select></div>
+<div class="tool-field" style="flex:1.5"><div class="tool-label">Or enter Sheet ID</div><input class="tool-input" id="svSheetId" placeholder="Google Sheet ID"></div>
+<button class="tool-btn tool-btn-blue" onclick="loadSheetViewer()">Load</button>
+</div>
+<div class="sv-tabs" id="svTabs"></div>
+<div class="sv-table-wrap" id="svTableWrap" style="display:none"><table class="sv-table" id="svTable"></table></div>
+<div class="sv-info" id="svInfo"></div>
+</div>
+
+<!-- Tool 3: Password Hash Generator -->
+<div class="tool-sec">
+<div class="tool-sec-h">Password Hash Generator</div>
+<p style="font-size:11px;color:var(--ink3);margin-bottom:10px;line-height:1.5">Generate SHA-256 hash for any password. Useful for verifying admin passwords.</p>
+<div class="tool-row">
+<div class="tool-field"><div class="tool-label">Enter Password</div><input class="tool-input" id="toolPwd" type="text" placeholder="Your password"></div>
+<button class="tool-btn tool-btn-blue" onclick="generatePwdHash()">Generate</button>
+</div>
+<div class="tool-output" id="toolPwdHash" onclick="copyToClipboard(this.textContent,'Hash copied!')" title="Click to copy">Enter a password above...</div>
+</div>
+
+</div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var REGISTRY_SCRIPT="https://script.google.com/macros/s/AKfycbz5HRLQlaFx5eB-PUR9QqU9zBHLhK9Qt4MIE_TZcXsbD4XeGHacuhY2VAOGRaAC0tik6A/exec";
+var SITE_URL="https://storepro.in";
+var ADMIN_TOKEN=""; // Set after successful login
+
+var allStores=[],activeFilter='all',editingRow=null;
+var loginAttempts=0,lockUntil=0;
+try{loginAttempts=parseInt(sessionStorage.getItem('admin_attempts')||'0');lockUntil=parseInt(sessionStorage.getItem('admin_lockuntil')||'0')}catch(e){}
+
+function $(id){return document.getElementById(id)}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function showToast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
+
+// ══ AUTH — Always verify against Settings tab in Master Registry ══
+// Settings tab must have: AdminPasswordHash = SHA-256 hash of your password
+// Generate the hash using the Tools panel → Password Hash Generator
+
+function togglePwdVisibility(){
+  var inp=$('adminPwd'),btn=$('pwdToggle');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈'}
+  else{inp.type='password';btn.textContent='👁'}
+}
+
+function checkAdmin(){
+  if(lockUntil&&Date.now()<lockUntil){
+    var mins=Math.ceil((lockUntil-Date.now())/60000);
+    $('adminErr').textContent='Too many attempts. Try again in '+mins+' min.';
+    return;
+  }
+  var pwd=$('adminPwd').value;
+  if(!pwd){$('adminErr').textContent='Enter password';return}
+  
+  $('adminErr').textContent='';
+  var btn=document.querySelector('.lock-btn');
+  btn.innerHTML='<span style="display:inline-block;animation:spin .6s linear infinite">↻</span> Verifying...';btn.disabled=true;
+  
+  // Hash the entered password
+  sha256Admin(pwd).then(function(enteredHash){
+    // Load Settings tab from Master Registry to get stored hash
+    loadSettingsTab(function(settings){
+      btn.innerHTML='Unlock';btn.disabled=false;
+      
+      if(!settings){
+        $('adminErr').textContent='Could not load Settings tab. Check your Master Registry sheet.';
+        return;
+      }
+      
+      var storedHash=settings.adminpasswordhash||settings.adminpwdhash||settings.passwordhash||'';
+      var storedRawPwd=settings.adminpassword||'';
+      
+      if(!storedHash&&!storedRawPwd){
+        $('adminErr').textContent='No AdminPasswordHash found in Settings tab. Add it first.';
+        return;
+      }
+      
+      var match=false;
+      
+      // Method 1: Compare against stored hash (recommended)
+      if(storedHash&&enteredHash===storedHash){
+        match=true;
+      }
+      
+      // Method 2: Compare against raw password via hash (backward compatible)
+      if(!match&&storedRawPwd){
+        sha256Admin(storedRawPwd).then(function(rawHash){
+          if(enteredHash===rawHash)match=true;
+          finishAuth(match,pwd);
+        });
+        return;
+      }
+      
+      finishAuth(match,pwd);
+    });
+  });
+}
+
+function finishAuth(match,pwd){
+  if(match){
+    // On HTTPS, also get a server token for write operations
+    if(window.location.protocol!=='file:'&&REGISTRY_SCRIPT){
+      fetch(REGISTRY_SCRIPT+'?action=verifyAdmin&pwd='+encodeURIComponent(pwd))
+        .then(function(r){return r.json()})
+        .then(function(data){
+          onLoginSuccess(data.token||'local_verified');
+        })
+        .catch(function(){
+          onLoginSuccess('local_verified');
+        });
+    }else{
+      onLoginSuccess('local_verified');
+    }
+  }else{
+    onLoginFail('Wrong password');
+  }
+}
+
+function loadSettingsTab(cb){
+  var origSetResponse=window.google&&window.google.visualization&&window.google.visualization.Query?window.google.visualization.Query.setResponse:null;
+  
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  
+  window.google.visualization.Query.setResponse=function(r){
+    // Restore original handler
+    if(origSetResponse)window.google.visualization.Query.setResponse=origSetResponse;
+    
+    if(!r||!r.table||!r.table.rows){cb(null);return}
+    var settings={};
+    (r.table.rows||[]).forEach(function(row){
+      var k=row.c&&row.c[0]&&row.c[0].v!=null?String(row.c[0].v).trim().toLowerCase().replace(/\s+/g,''):'';
+      var v=row.c&&row.c[1]&&row.c[1].v!=null?String(row.c[1].v).trim():'';
+      if(k)settings[k]=v;
+    });
+    cb(settings);
+  };
+  
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Settings&_t='+Date.now();
+  s.onerror=function(){cb(null)};
+  document.body.appendChild(s);
+}
+
+function sha256Admin(str){
+  var encoder=new TextEncoder();
+  return crypto.subtle.digest('SHA-256',encoder.encode(str)).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+  });
+}
+
+function onLoginSuccess(token){
+  ADMIN_TOKEN=token;
+  sessionStorage.setItem('admin_token',token);
+  sessionStorage.setItem('admin_ok','1');
+  sessionStorage.setItem('admin_time',String(Date.now()));
+  loginAttempts=0;sessionStorage.setItem('admin_attempts','0');
+  sessionStorage.removeItem('admin_lockuntil');
+  $('lockScreen').classList.add('hidden');
+  loadStores();
+}
+
+function onLoginFail(msg){
+  loginAttempts++;
+  sessionStorage.setItem('admin_attempts',String(loginAttempts));
+  if(loginAttempts>=5){
+    lockUntil=Date.now()+5*60*1000;
+    sessionStorage.setItem('admin_lockuntil',String(lockUntil));
+    $('adminErr').textContent='Too many attempts. Locked for 5 minutes.';
+  }else{
+    $('adminErr').textContent=msg+' ('+(5-loginAttempts)+' attempts left)';
+  }
+  $('adminPwd').value='';$('adminPwd').focus();
+}
+
+function lockAdmin(){
+  ADMIN_TOKEN='';
+  sessionStorage.removeItem('admin_ok');
+  sessionStorage.removeItem('admin_token');
+  sessionStorage.removeItem('admin_time');
+  $('lockScreen').classList.remove('hidden');
+  $('adminPwd').value='';$('adminPwd').type='password';$('pwdToggle').textContent='👁';
+  $('adminPwd').focus();
+}
+
+function isSessionValid(){
+  var tok=sessionStorage.getItem('admin_token');
+  var time=parseInt(sessionStorage.getItem('admin_time')||'0');
+  if(!tok||!time)return false;
+  if(Date.now()-time>2*60*60*1000){lockAdmin();return false}
+  ADMIN_TOKEN=tok;
+  return true;
+}
+
+function sendCmd(params,cb){
+  var img=new Image();var done=false;
+  img.onload=img.onerror=function(){if(!done){done=true;if(cb)cb()}};
+  img.src=REGISTRY_SCRIPT+'?'+params+'&token='+encodeURIComponent(ADMIN_TOKEN)+'&_t='+Date.now();
+  setTimeout(function(){if(!done){done=true;if(cb)cb()}},5000);
+}
+
+// ══ LOAD STORES ══
+function loadStores(){
+  $('refreshBtn').innerHTML='<span style="display:inline-block;animation:spin .6s linear infinite">↻</span>';
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    $('refreshBtn').innerHTML='↻ <span>Refresh</span>';
+    if(!r||!r.table){$('storesList').innerHTML='<div class="empty">No Stores tab found.</div>';return}
+    var cols=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim().replace(/\s+/g,'')});
+    allStores=[];
+    (r.table.rows||[]).forEach(function(row,idx){
+      var o={};cols.forEach(function(k,i){var c=row.c&&row.c[i];if(!c){o[k]='';return}o[k]=c.v!=null?String(c.v).trim():''});
+      var s={
+        _row:idx+2,
+        slug:o.slug||'',
+        sheetId:o.sheetid||'',
+        scriptUrl:o.scripturl||'',
+        owner:o.ownername||'',
+        phone:o.ownerphone||'',
+        shop:o.shopname||'',
+        type:(o.shoptype||'grocery').toLowerCase(),
+        city:o.city||'',
+        plan:(o.plan||'free').toLowerCase(),
+        planExpiry:o.planexpiry||'',
+        active:(o.active||'yes').toLowerCase()==='yes',
+        url:o.url||'',
+        dashUrl:o.dashboardurl||o.dashurl||'',
+        totalRevenue:parseFloat(o.totalrevenue||'0')||0,
+        totalOrders:parseInt(o.totalorders||'0')||0,
+        monthlyFee:parseFloat(o.monthlyfee||'0')||0
+      };
+      if(s.slug||s.sheetId)allStores.push(s);
+    });
+    updateStats();renderStores();
+    $('topSub').textContent=allStores.length+' stores registered';
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();
+  s.onerror=function(){$('refreshBtn').innerHTML='↻ <span>Refresh</span>';$('storesList').innerHTML='<div class="empty">Could not load registry.</div>'};
+  document.body.appendChild(s);
+}
+
+// ══ DATE HELPERS ══
+function parseDate(ds){if(!ds)return null;ds=String(ds).trim();var gd=ds.match(/Date\((\d{4}),(\d+),(\d+)\)/);if(gd)return new Date(parseInt(gd[1]),parseInt(gd[2]),parseInt(gd[3]));var p=ds.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);if(p)return new Date(p[3],p[2]-1,p[1]);var iso=ds.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);if(iso)return new Date(iso[1],iso[2]-1,iso[3]);var d=new Date(ds);return isNaN(d)?null:d}
+function daysUntilExpiry(ds){var d=parseDate(ds);if(!d)return null;var now=new Date();now.setHours(0,0,0,0);return Math.ceil((d-now)/(1000*60*60*24))}
+function isExpiringSoon(ds){var d=daysUntilExpiry(ds);return d!==null&&d>=0&&d<=7}
+function isExpired(ds){var d=daysUntilExpiry(ds);return d!==null&&d<0}
+function expiryLabel(ds,plan){if(!ds||plan==='free')return'—';var d=daysUntilExpiry(ds);if(d===null)return esc(ds);if(d<0)return'<span style="color:var(--red)">Expired '+Math.abs(d)+'d ago</span>';if(d===0)return'<span style="color:var(--red)">Expires today!</span>';if(d<=7)return'<span style="color:var(--orange)">'+d+'d left</span>';return esc(ds)+' <span style="color:var(--ink3)">('+d+'d)</span>'}
+
+// ══ STATS ══
+function updateStats(){
+  var total=allStores.length,active=0,paid=0,expiring=0,inactive=0,rev=0,orders=0,mrr=0;
+  allStores.forEach(function(s){if(s.active)active++;else inactive++;if(s.plan!=='free'){paid++;mrr+=s.monthlyFee}if(isExpiringSoon(s.planExpiry)||(isExpired(s.planExpiry)&&s.plan!=='free'))expiring++;rev+=s.totalRevenue;orders+=s.totalOrders});
+  $('sTotal').textContent=total;$('sActive').textContent=active+' active';$('sRevenue').textContent='₹'+rev.toLocaleString('en-IN');$('sOrders').textContent=orders+' orders';$('sPaid').textContent=paid;$('sMrr').textContent='MRR ₹'+mrr.toLocaleString('en-IN');$('sExpiring').textContent=expiring;$('sInactive').textContent=inactive;
+}
+
+// ══ FILTER ══
+function setFilter(f,el){activeFilter=f;document.querySelectorAll('.pill-btn').forEach(function(b){b.classList.remove('active')});el.classList.add('active');renderStores()}
+function getFiltered(){var list=allStores,q=($('searchInput').value||'').toLowerCase();if(q)list=list.filter(function(s){return(s.shop+s.slug+s.owner+s.city+s.phone+s.type+s.plan).toLowerCase().indexOf(q)>=0});if(activeFilter==='active')list=list.filter(function(s){return s.active});else if(activeFilter==='inactive')list=list.filter(function(s){return!s.active});else if(activeFilter==='free')list=list.filter(function(s){return s.plan==='free'});else if(activeFilter==='paid')list=list.filter(function(s){return s.plan!=='free'});else if(activeFilter==='expiring')list=list.filter(function(s){return isExpiringSoon(s.planExpiry)||isExpired(s.planExpiry)});return list}
+
+// ══ RENDER ══
+function typeAvatar(t){var i={grocery:'🛒',pharmacy:'💊',salon:'💇',restaurant:'🍽️',hardware:'🔧',clothing:'👕',bakery:'🍰',electronics:'📱',flowers:'🌸'};var c={grocery:'sa-grocery',pharmacy:'sa-pharmacy',salon:'sa-salon',restaurant:'sa-restaurant'};return'<div class="store-avatar '+(c[t]||'sa-default')+'">'+(i[t]||'🏪')+'</div>'}
+function planBadge(s){if(isExpired(s.planExpiry)&&s.plan!=='free')return'<span class="plan-badge pb-expired">Expired</span>';if(s.plan==='pro')return'<span class="plan-badge pb-pro">Pro</span>';if(s.plan==='starter')return'<span class="plan-badge pb-starter">Starter</span>';return'<span class="plan-badge pb-free">Free</span>'}
+function statusDot(s){if(!s.active)return'<div class="status-dot sd-inactive" title="Inactive"></div>';if(isExpiringSoon(s.planExpiry))return'<div class="status-dot sd-expiring" title="Expiring"></div>';return'<div class="status-dot sd-active" title="Active"></div>'}
+
+function renderStores(){
+  var list=getFiltered(),el=$('storesList');
+  if(!list.length){el.innerHTML='<div class="empty">No stores match this filter.</div>';return}
+  el.innerHTML=list.map(function(s){
+    var storeUrl=s.url||SITE_URL+'/?store='+encodeURIComponent(s.slug);
+    var dashUrl=s.dashUrl||SITE_URL+'/dashboard.html?store='+encodeURIComponent(s.slug);
+    var sheetUrl='https://docs.google.com/spreadsheets/d/'+s.sheetId+'/edit';
+    return '<div class="store'+(s.active?'':' inactive')+'" onclick="this.classList.toggle(\'open\')">'
+      +'<div class="store-head">'+statusDot(s)+typeAvatar(s.type)
+      +'<div class="store-info"><div class="store-name">'+esc(s.shop||s.slug)+'</div><div class="store-meta"><span>'+esc(s.city||'—')+'</span><span>'+esc(s.owner||'—')+'</span><span>'+esc(s.slug)+'</span></div></div>'
+      +'<div class="store-right">'+planBadge(s)+'<div class="store-revenue"><div class="store-rev-amt">₹'+s.totalRevenue.toLocaleString('en-IN')+'</div><div class="store-rev-orders">'+s.totalOrders+' orders</div></div></div></div>'
+      +'<div class="store-body"><div class="sb-grid">'
+      +'<div class="sb-item"><div class="sb-item-label">Owner</div><div class="sb-item-val">'+esc(s.owner||'—')+'</div></div>'
+      +'<div class="sb-item"><div class="sb-item-label">Phone</div><div class="sb-item-val">'+esc(s.phone||'—')+'</div></div>'
+      +'<div class="sb-item"><div class="sb-item-label">Type</div><div class="sb-item-val">'+esc(s.type)+'</div></div>'
+      +'<div class="sb-item"><div class="sb-item-label">Plan</div><div class="sb-item-val">'+esc(s.plan)+' — ₹'+s.monthlyFee+'/mo</div></div>'
+      +'<div class="sb-item"><div class="sb-item-label">Expiry</div><div class="sb-item-val">'+expiryLabel(s.planExpiry,s.plan)+'</div></div>'
+      +'<div class="sb-item"><div class="sb-item-label">Sheet ID</div><div class="sb-item-val" style="font-size:10px">'+esc(s.sheetId.substring(0,20))+'...</div></div>'
+      +'</div>'
+      +'<div class="sb-actions">'
+      +'<button class="sb-btn sb-toggle '+(s.active?'active':'inactive')+'" onclick="event.stopPropagation();toggleStore('+s._row+','+(s.active?'false':'true')+',\''+esc(s.shop).replace(/'/g,'')+'\')">'+(s.active?'✓ Active — Disable':'✕ Inactive — Enable')+'</button>'
+      +'<button class="sb-btn" onclick="event.stopPropagation();openEditStore('+s._row+')">✏️ Edit</button>'
+      +'<button class="sb-btn sb-open" onclick="event.stopPropagation();window.open(\''+storeUrl+'\',\'_blank\')">🌐 Store</button>'
+      +'<button class="sb-btn sb-dash" onclick="event.stopPropagation();window.open(\''+dashUrl+'\',\'_blank\')">📊 Dashboard</button>'
+      +'<button class="sb-btn sb-sheet" onclick="event.stopPropagation();window.open(\''+sheetUrl+'\',\'_blank\')">📋 Sheet</button>'
+      +(s.phone?'<button class="sb-btn sb-wa" onclick="event.stopPropagation();window.open(\'https://wa.me/91'+s.phone.replace(/\D/g,'')+'\',\'_blank\')">📱 WhatsApp</button>':'')
+      +'</div></div></div>';
+  }).join('');
+}
+
+// ══ TOGGLE ACTIVE/INACTIVE ══
+function toggleStore(row,setActive,name){
+  if(!confirm((setActive?'Enable':'Disable')+' "'+name+'"?'))return;
+  if(REGISTRY_SCRIPT){
+    sendCmd('action=updateRegistry&row='+row+'&column=Active&value='+(setActive?'Yes':'No'),function(){
+      showToast((setActive?'✓ Enabled':'✕ Disabled')+': '+name);
+    });
+    allStores.forEach(function(s){if(s._row===row)s.active=setActive});
+    renderStores();updateStats();
+  }else{
+    alert('To '+(setActive?'enable':'disable')+' this store:\n\n1. Open the Master Registry Google Sheet\n2. Find row '+row+'\n3. Set the "Active" column to '+(setActive?'"Yes"':'"No"'));
+  }
+}
+
+// ══ ADD/EDIT STORE ══
+function openAddStore(){
+  editingRow=null;$('modalTitle').textContent='🏬 Add New Store';$('modalSaveBtn').textContent='Add Store';
+  $('mShop').value='';$('mSlug').value='';$('mSheet').value='';$('mOwner').value='';$('mPhone').value='';$('mType').value='Grocery';$('mCity').value='';$('mPlan').value='Free';$('mExpiry').value='';$('mActive').value='Yes';$('mScript').value='';$('mUrl').value='';$('mDashUrl').value='';
+  $('storeModal').classList.add('open');$('mShop').focus();
+  $('mShop').oninput=function(){
+    var slug=this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,40);
+    $('mSlug').value=slug;
+    $('mUrl').value=SITE_URL+'/?store='+slug;
+    $('mDashUrl').value=SITE_URL+'/dashboard.html?store='+slug;
+  };
+}
+function autoGenUrl(){var slug=$('mSlug').value.trim();if(slug)$('mUrl').value=SITE_URL+'/?store='+slug;else alert('Enter a slug first')}
+function autoGenDash(){var slug=$('mSlug').value.trim();if(slug)$('mDashUrl').value=SITE_URL+'/dashboard.html?store='+slug;else alert('Enter a slug first')}
+
+function openEditStore(row){
+  var s=allStores.find(function(x){return x._row===row});if(!s)return;
+  editingRow=row;$('modalTitle').textContent='✏️ Edit: '+s.shop;$('modalSaveBtn').textContent='Save Changes';
+  $('mShop').value=s.shop;$('mSlug').value=s.slug;$('mSheet').value=s.sheetId;$('mOwner').value=s.owner;$('mPhone').value=s.phone;
+  $('mType').value=s.type.charAt(0).toUpperCase()+s.type.slice(1);$('mCity').value=s.city;
+  $('mPlan').value=s.plan.charAt(0).toUpperCase()+s.plan.slice(1);
+  var exp=parseDate(s.planExpiry);$('mExpiry').value=exp?exp.toISOString().split('T')[0]:'';
+  $('mActive').value=s.active?'Yes':'No';$('mScript').value=s.scriptUrl;
+  $('mUrl').value=s.url||SITE_URL+'/?store='+s.slug;
+  $('mDashUrl').value=s.dashUrl||SITE_URL+'/dashboard.html?store='+s.slug;
+  $('mShop').oninput=null;
+  $('storeModal').classList.add('open');
+}
+
+function saveStore(){
+  var shop=$('mShop').value.trim(),slug=$('mSlug').value.trim(),sheet=$('mSheet').value.trim();
+  if(!shop||!slug){alert('Shop name and slug are required');return}
+  if(!editingRow&&!sheet){alert('Sheet ID is required for new stores');return}
+
+  var storeUrl=$('mUrl').value.trim()||SITE_URL+'/?store='+slug;
+  var dashUrl=$('mDashUrl').value.trim()||SITE_URL+'/dashboard.html?store='+slug;
+
+  if(REGISTRY_SCRIPT){
+    var params='action='+(editingRow?'updateStoreRow':'addStoreRow');
+    if(editingRow)params+='&row='+editingRow;
+    params+='&Slug='+encodeURIComponent(slug);
+    params+='&SheetID='+encodeURIComponent(sheet);
+    params+='&ShopName='+encodeURIComponent(shop);
+    params+='&OwnerName='+encodeURIComponent($('mOwner').value.trim());
+    params+='&OwnerPhone='+encodeURIComponent($('mPhone').value.trim());
+    params+='&ShopType='+encodeURIComponent($('mType').value);
+    params+='&City='+encodeURIComponent($('mCity').value.trim());
+    params+='&Plan='+encodeURIComponent($('mPlan').value);
+    params+='&PlanExpiry='+encodeURIComponent($('mExpiry').value);
+    params+='&Active='+encodeURIComponent($('mActive').value);
+    params+='&ScriptURL='+encodeURIComponent($('mScript').value.trim());
+    params+='&URL='+encodeURIComponent(storeUrl);
+    params+='&DashBoardURL='+encodeURIComponent(dashUrl);
+    sendCmd(params,function(){
+      showToast('✓ '+(editingRow?'Updated':'Added')+': '+shop);
+      setTimeout(loadStores,2000);
+    });
+    $('storeModal').classList.remove('open');
+  }else{
+    var info=(editingRow?'UPDATE':'ADD')+' this to Master Registry → Stores tab:\n\n';
+    info+='Slug: '+slug+'\n';
+    info+='SheetID: '+sheet+'\n';
+    info+='OwnerName: '+$('mOwner').value.trim()+'\n';
+    info+='OwnerPhone: '+$('mPhone').value.trim()+'\n';
+    info+='ShopName: '+shop+'\n';
+    info+='ShopType: '+$('mType').value+'\n';
+    info+='City: '+$('mCity').value.trim()+'\n';
+    info+='Plan: '+$('mPlan').value+'\n';
+    info+='PlanExpiry: '+$('mExpiry').value+'\n';
+    info+='Active: '+$('mActive').value+'\n';
+    info+='URL: '+storeUrl+'\n';
+    info+='DashBoardURL: '+dashUrl+'\n';
+    if(editingRow)info+='\n(Update row '+editingRow+')';
+    else info+='\n(Add as new row)';
+    // Copy to clipboard
+    try{navigator.clipboard.writeText(info);showToast('Copied to clipboard — paste into your sheet')}catch(e){showToast('See alert for details')}
+    alert(info);
+    $('storeModal').classList.remove('open');
+  }
+}
+
+// ══ INIT ══
+if(isSessionValid()){$('lockScreen').classList.add('hidden');loadStores()}else{$('adminPwd').focus()}
+
+// ══════════════════════════════════
+// TOOLS
+// ══════════════════════════════════
+function openTools(){
+  $('toolsBg').classList.add('open');
+  // Populate store dropdown
+  var sel=$('svStore');
+  sel.innerHTML='<option value="">Select a store...</option>';
+  allStores.forEach(function(s){
+    sel.innerHTML+='<option value="'+esc(s.sheetId)+'" data-name="'+esc(s.shop)+'">'+esc(s.shop||s.slug)+' ('+esc(s.slug)+')</option>';
+  });
+}
+
+function sha256Admin(str){
+  var encoder=new TextEncoder();
+  return crypto.subtle.digest('SHA-256',encoder.encode(str)).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+  });
+}
+
+// Tool 1: PIN Hash Generator
+function generatePinHash(){
+  var pin=$('toolPin').value.trim();
+  if(!pin){$('toolPinHash').textContent='Enter a PIN above...';return}
+  sha256Admin(pin).then(function(hash){
+    $('toolPinHash').textContent=hash;
+  });
+}
+
+function generateRandomPin(){
+  var pin=String(Math.floor(1000+Math.random()*9000));
+  $('toolPin').value=pin;
+  generatePinHash();
+  showToast('Random PIN: '+pin);
+}
+
+// Tool 2: Sheet Data Viewer
+var svCurrentSheetId='',svSheetTabs=['Config','Products','Orders','Offers'];
+
+function onStoreSelect(){
+  var sel=$('svStore');
+  if(sel.value){
+    $('svSheetId').value=sel.value;
+  }
+}
+
+function loadSheetViewer(){
+  svCurrentSheetId=$('svSheetId').value.trim()||$('svStore').value;
+  if(!svCurrentSheetId){showToast('Enter a Sheet ID or select a store');return}
+  // Show tab buttons
+  $('svTabs').innerHTML=svSheetTabs.map(function(t,i){
+    return '<button class="sv-tab'+(i===0?' active':'')+'" onclick="loadSheetTab(\''+t+'\',this)">'+t+'</button>';
+  }).join('');
+  loadSheetTab('Config',document.querySelector('.sv-tab'));
+}
+
+function loadSheetTab(tabName,el){
+  // Highlight active tab
+  document.querySelectorAll('.sv-tab').forEach(function(t){t.classList.remove('active')});
+  if(el)el.classList.add('active');
+  
+  $('svTableWrap').style.display='block';
+  $('svTable').innerHTML='<tr><td class="sv-empty">Loading '+esc(tabName)+'...</td></tr>';
+  $('svInfo').textContent='';
+
+  if(!window._svGoogle)window._svGoogle={};
+  if(!window._svGoogle.visualization)window._svGoogle.visualization={};
+  if(!window._svGoogle.visualization.Query)window._svGoogle.visualization.Query={};
+  
+  window._svGoogle.visualization.Query.setResponse=function(r){
+    if(!r||!r.table||!r.table.rows||!r.table.rows.length){
+      $('svTable').innerHTML='<tr><td class="sv-empty">No data found in "'+esc(tabName)+'" tab.</td></tr>';
+      $('svInfo').textContent='';
+      return;
+    }
+    var cols=r.table.cols.map(function(c){return c.label||'Col '+(c.id||'')});
+    var rows=r.table.rows;
+    
+    var html='<thead><tr>';
+    html+='<th>#</th>';
+    cols.forEach(function(c){if(c.trim())html+='<th>'+esc(c)+'</th>'});
+    html+='</tr></thead><tbody>';
+    
+    rows.forEach(function(row,i){
+      html+='<tr><td style="color:var(--ink3)">'+(i+2)+'</td>';
+      cols.forEach(function(c,j){
+        if(!c.trim())return;
+        var cell=row.c&&row.c[j];
+        var val=cell&&cell.v!=null?String(cell.v).trim():'';
+        if(val.length>50)val=val.substring(0,47)+'...';
+        html+='<td title="'+esc(cell&&cell.v!=null?String(cell.v):'')+'">'+esc(val)+'</td>';
+      });
+      html+='</tr>';
+    });
+    html+='</tbody>';
+    $('svTable').innerHTML=html;
+    $('svInfo').textContent=rows.length+' rows · '+cols.filter(function(c){return c.trim()}).length+' columns · Sheet: '+svCurrentSheetId.substring(0,15)+'...';
+  };
+  
+  // Use a separate callback to avoid conflicts with store loading
+  var origSetResponse=window.google&&window.google.visualization&&window.google.visualization.Query?window.google.visualization.Query.setResponse:null;
+  var prevSetResponse=window.google&&window.google.visualization?window.google.visualization.Query.setResponse:null;
+  
+  // Temporarily override
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=window._svGoogle.visualization.Query.setResponse;
+  
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+svCurrentSheetId+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(tabName)+'&_t='+Date.now();
+  s.onerror=function(){
+    $('svTable').innerHTML='<tr><td class="sv-empty">Failed to load. Check Sheet ID and tab name.</td></tr>';
+  };
+  document.body.appendChild(s);
+}
+
+// Tool 3: Password Hash Generator
+function generatePwdHash(){
+  var pwd=$('toolPwd').value;
+  if(!pwd){$('toolPwdHash').textContent='Enter a password above...';return}
+  sha256Admin(pwd).then(function(hash){
+    $('toolPwdHash').textContent=hash;
+  });
+}
+
+// Helper
+function copyToClipboard(text,msg){
+  if(!text||text.indexOf('Enter')===0||text.indexOf('...')>0)return;
+  navigator.clipboard.writeText(text).then(function(){showToast(msg||'Copied!')}).catch(function(){
+    var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast(msg||'Copied!');
+  });
+}
+</script>
+</body>
+</html>

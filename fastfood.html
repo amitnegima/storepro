@@ -1,0 +1,2600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c831f">
+<title>Fast Food — StorePro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--white:#fff;--bg:#fafafa;--card:#fff;--ink:#1a1a1a;--ink2:#3d3d3d;--ink3:#7a7a7a;--ink4:#b0b0b0;--brand:#0c831f;--brand-bg:#e8faed;--brand-dk:#065a14;--green:#0c831f;--green-bg:#e8faed;--orange:#f59e0b;--orange-bg:#fff4eb;--red:#dc2626;--red-bg:#fdecea;--line:#ebebeb;--line2:#d9d9d9;--sh:0 1px 4px rgba(0,0,0,.05);--sh2:0 4px 16px rgba(0,0,0,.08);--sh3:0 8px 32px rgba(0,0,0,.12);--r:8px;--r2:12px;--r3:16px;--pill:100px;--f:'DM Sans',system-ui,sans-serif;--ease:cubic-bezier(.4,0,.2,1);--mw:780px;--px:max(16px,env(safe-area-inset-left,16px))}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100dvh;line-height:1.5}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Top */
+.top{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;padding:12px var(--px);display:flex;align-items:center;gap:12px;max-width:var(--mw);margin:0 auto}
+.top-back{width:36px;height:36px;border-radius:50%;background:var(--bg);border:1px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}.top-back:hover{background:var(--line)}
+.top-info{flex:1;min-width:0}
+.top-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-meta{font-size:11px;color:var(--ink3);display:flex;align-items:center;gap:6px;margin-top:1px}
+.top-status{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:10px;padding:2px 8px;border-radius:20px}.ts-open{background:var(--green-bg);color:var(--green)}.ts-closed{background:var(--red-bg);color:var(--red)}
+.top-cart-icon{width:36px;height:36px;border-radius:50%;background:var(--bg);position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.top-cart-icon:hover{background:var(--brand-bg)}
+.top-cart-badge{position:absolute;top:-2px;right:-2px;background:var(--brand);color:#fff;font:800 10px var(--f);min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:2px solid var(--white)}
+.top-cart-badge.pop{animation:pop .3s var(--ease)}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--brand-dk),var(--brand))}
+.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.45;mix-blend-mode:overlay}
+.hero-content{position:relative;max-width:var(--mw);margin:0 auto;padding:14px var(--px) 14px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;gap:4px}
+.hero-tagline{font-size:11px;opacity:.85;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.hero-blessing{font-size:11px;opacity:.95;font-weight:600;letter-spacing:.1em;text-shadow:0 1px 4px rgba(0,0,0,.3);padding:3px 14px;background:rgba(255,255,255,.15);backdrop-filter:blur(4px);border-radius:20px;display:inline-block;align-self:flex-start;border:1px solid rgba(255,255,255,.2);color:#fbbf24}
+.hero-title{font-size:24px;font-weight:800;line-height:1.15;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+.hero-info{display:flex;gap:8px;margin-top:6px;font-size:11px;font-weight:600;flex-wrap:wrap}
+.hero-info span{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.15);backdrop-filter:blur(4px);padding:3px 10px;border-radius:var(--pill)}
+.hero-cta{background:#fff;color:var(--brand);border:none;padding:8px 18px;border-radius:var(--pill);font:800 12px var(--f);cursor:pointer;margin-top:8px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:.2s var(--ease);letter-spacing:.04em;align-self:flex-start}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.25)}.hero-cta:active{transform:scale(.97)}
+.hero-cta::after{content:'→';font-size:16px;transition:.2s}
+.hero-cta:hover::after{transform:translateX(3px)}
+
+/* Filters */
+.filters{background:var(--white);border-bottom:1px solid var(--line);padding:10px var(--px);max-width:var(--mw);margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:nowrap;position:sticky;top:61px;z-index:49;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
+.veg-toggle{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer;padding:4px 10px;border-radius:var(--pill);transition:.15s;border:1px solid transparent;flex-shrink:0;white-space:nowrap}
+.veg-toggle.active{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.veg-toggle .swt{position:relative;width:32px;height:18px;background:var(--line2);border-radius:20px;transition:.2s}
+.veg-toggle .swt::before{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.veg-toggle.active .swt{background:var(--green)}.veg-toggle.active .swt::before{transform:translateX(14px)}
+
+.search-wrap{flex:1;min-width:140px;position:relative}
+.search-input{width:100%;height:36px;padding:0 32px 0 34px;border:1.5px solid var(--line);border-radius:var(--r);font:500 13px var(--f);background:var(--bg);outline:none}.search-input:focus{border-color:var(--brand);background:var(--white)}
+.search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:none;background:var(--line);color:var(--ink3);border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center}.search-clear:hover{background:var(--ink4);color:#fff}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--ink3)}
+
+/* Category nav */
+.cat-nav{background:var(--white);border-bottom:1px solid var(--line);max-width:var(--mw);margin:0 auto;display:flex;gap:6px;overflow-x:scroll;overflow-y:hidden;scrollbar-width:none;position:sticky;top:113px;z-index:48;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;padding:0 var(--px);box-sizing:border-box}.cat-nav::-webkit-scrollbar{display:none}
+.cat-nav::after{content:'';min-width:var(--px);flex-shrink:0}
+.cat-nav-btn{padding:10px 16px;font:600 12px var(--f);color:var(--ink3);background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;white-space:nowrap;transition:.15s;flex-shrink:0}.cat-nav-btn:hover{color:var(--ink2)}.cat-nav-btn.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:700}
+
+/* Scroll fade hint on right edge */
+.cat-nav-wrap{position:relative;max-width:var(--mw);margin:0 auto}
+.cat-nav-wrap::after{content:'';position:absolute;top:0;right:0;bottom:0;width:40px;background:linear-gradient(90deg,transparent,var(--white));pointer-events:none;z-index:1}
+
+/* Menu */
+.menu{max-width:var(--mw);margin:0 auto;padding:8px 0 120px}
+.menu-section{padding:16px var(--px) 8px;background:var(--white);margin-bottom:8px}
+.menu-section-title{font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.menu-section-count{font-size:11px;color:var(--ink4);font-weight:500}
+
+.dish{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);transition:.2s;cursor:pointer}
+.dish:hover{background:rgba(0,0,0,.015)}
+.dish:last-child{border-bottom:none}
+.dish.oos{opacity:.6;cursor:default}
+.dish.oos:hover{background:transparent}
+.dish-info{flex:1;min-width:0}
+.dish-tag{display:inline-block;width:14px;height:14px;border:2px solid;border-radius:3px;margin-bottom:6px;position:relative;flex-shrink:0}
+.dish-tag::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%}
+.dish-tag.veg{border-color:var(--green)}.dish-tag.veg::after{background:var(--green)}
+.dish-tag.nv{border-color:var(--red)}.dish-tag.nv::after{background:var(--red)}
+.dish-name{font-size:14px;font-weight:700;line-height:1.3}
+.dish-bestseller{display:inline-flex;align-items:center;gap:3px;background:var(--orange-bg);color:var(--orange);font:700 9px var(--f);padding:2px 6px;border-radius:4px;margin-left:6px}
+.dish-price-row{display:flex;align-items:center;gap:6px;margin-top:4px}
+.dish-price{font-size:14px;font-weight:800;color:var(--ink)}
+.dish-mrp{font-size:12px;color:var(--ink4);text-decoration:line-through}
+.dish-off{font-size:10px;color:var(--green);font-weight:700;background:var(--green-bg);padding:1px 6px;border-radius:3px}
+.dish-desc{font-size:12px;color:var(--ink3);margin-top:6px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dish-meta{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11px;color:var(--ink3)}
+.dish-meta span{display:inline-flex;align-items:center;gap:3px}
+.dish-rating{color:var(--green);font-weight:700}
+
+/* Inline add button — below dish info on left side */
+.dish-add-inline{background:var(--brand);color:#fff;border:none;padding:7px 16px;border-radius:var(--r);font:700 12px var(--f);cursor:pointer;margin-top:10px;display:inline-flex;align-items:center;gap:4px;transition:.15s;letter-spacing:.02em}
+.dish-add-inline:hover{filter:brightness(1.1)}.dish-add-inline:active{transform:scale(.96)}
+
+/* Inline stepper — left side quantity control */
+.dish-info-actions{display:flex;align-items:center;gap:10px;margin-top:10px}
+.dish-stepper-inline{display:flex;align-items:center;border:1.5px solid var(--brand);border-radius:var(--r);overflow:hidden}
+.dish-stepper-inline button{width:30px;height:28px;border:none;background:var(--brand-bg);color:var(--brand);font:700 15px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center}.dish-stepper-inline button:hover{background:var(--brand);color:#fff}
+.dish-stepper-inline span{min-width:28px;text-align:center;color:var(--brand);font:700 13px var(--f)}
+.dish-item-total{font-size:13px;font-weight:800;color:var(--brand)}
+.dish-oos-tag{font-size:11px;color:var(--red);font-weight:700;margin-top:8px;background:var(--red-bg);padding:4px 10px;border-radius:var(--r);display:inline-block}
+.dish-img-area{width:120px;height:120px;flex-shrink:0;position:relative}
+.dish-img{width:100%;height:100%;border-radius:var(--r2);object-fit:cover;background:var(--bg)}
+.dish-img-ph{width:100%;height:100%;border-radius:var(--r2);background:linear-gradient(135deg,var(--bg),var(--card));display:flex;align-items:center;justify-content:center;font-size:36px;opacity:.4;border:1px solid var(--line)}
+.dish-add-btn{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);height:32px;min-width:80px;padding:0 16px;border:1.5px solid var(--brand);border-radius:var(--r);background:var(--white);color:var(--brand);font:700 12px var(--f);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:.15s;letter-spacing:.04em}.dish-add-btn:hover{background:var(--brand);color:#fff}.dish-add-btn:active{transform:translateX(-50%) scale(.95)}
+.dish-stepper{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);height:32px;display:flex;align-items:center;border:1.5px solid var(--brand);border-radius:var(--r);overflow:hidden;background:var(--brand);box-shadow:0 2px 8px rgba(230,57,70,.25)}
+.dish-stepper button{width:30px;height:100%;border:none;background:transparent;color:#fff;font:700 16px var(--f);cursor:pointer}.dish-stepper button:hover{background:rgba(255,255,255,.15)}
+.dish-stepper span{min-width:28px;text-align:center;color:#fff;font:700 13px var(--f)}
+.dish-customize{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.95);backdrop-filter:blur(4px);font:600 9px var(--f);color:var(--brand);padding:3px 8px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.04em}
+
+/* Customization modal */
+.cust-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;align-items:flex-end;justify-content:center}
+.cust-bg.open{display:flex;animation:fadeIn .2s}
+.cust-box{background:var(--white);border-radius:var(--r3) var(--r3) 0 0;max-width:var(--mw);width:100%;max-height:85vh;overflow-y:auto;animation:slideUp .25s var(--ease);padding:0}
+.cust-hdr{padding:16px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--white);z-index:5;display:flex;align-items:center;justify-content:space-between}
+.cust-title{font-size:16px;font-weight:800}
+.cust-close{width:32px;height:32px;border:none;background:var(--bg);border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.cust-body{padding:16px 20px}
+.cust-section{margin-bottom:16px}
+.cust-sec-h{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;color:var(--ink2)}
+.cust-sec-sub{font-size:10px;color:var(--ink4);font-weight:600;margin-left:6px}
+.cust-options{display:flex;flex-direction:column;gap:6px}
+.cust-opt{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1.5px solid var(--line);border-radius:var(--r);cursor:pointer;transition:.15s}
+.cust-opt:hover{border-color:var(--ink3)}
+.cust-opt.selected{border-color:var(--brand);background:var(--brand-bg)}
+.cust-opt-left{display:flex;align-items:center;gap:8px}
+.cust-opt-radio{width:16px;height:16px;border:2px solid var(--line2);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.cust-opt.selected .cust-opt-radio{border-color:var(--brand)}
+.cust-opt.selected .cust-opt-radio::after{content:'';width:8px;height:8px;background:var(--brand);border-radius:50%}
+.cust-opt-name{font-size:13px;font-weight:600}
+.cust-opt-price{font-size:12px;font-weight:700;color:var(--ink)}
+.cust-opt-price.free{color:var(--green)}
+.cust-checkbox{width:18px;height:18px;border:2px solid var(--line2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.cust-opt.selected .cust-checkbox{background:var(--brand);border-color:var(--brand)}.cust-opt.selected .cust-checkbox::after{content:'✓';color:#fff;font-size:11px;font-weight:800}
+.cust-instructions{width:100%;min-height:60px;padding:10px 12px;border:1.5px solid var(--line);border-radius:var(--r);font:500 13px var(--f);outline:none;resize:vertical;font-family:var(--f)}.cust-instructions:focus{border-color:var(--brand)}
+.cust-foot{position:sticky;bottom:0;background:var(--white);padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.cust-qty{display:flex;align-items:center;border:1.5px solid var(--brand);border-radius:var(--r);overflow:hidden;height:42px}
+.cust-qty button{width:32px;height:100%;border:none;background:var(--brand-bg);color:var(--brand);font:700 16px var(--f);cursor:pointer}.cust-qty button:hover{background:var(--brand);color:#fff}
+.cust-qty span{min-width:28px;text-align:center;font:700 14px var(--f);color:var(--brand);padding:0 4px}
+.cust-add{flex:1;height:42px;background:var(--brand);color:#fff;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:0 16px}.cust-add:hover{filter:brightness(1.1)}
+.cust-add-price{background:rgba(255,255,255,.2);padding:4px 8px;border-radius:4px;font-weight:800}
+
+/* Sticky cart bar */
+/* Store Info Section */
+.store-info-section{max-width:var(--mw);margin:20px auto;padding:0 var(--px)}
+.store-info-hdr{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.store-map{width:100%;height:200px;border-radius:var(--r2);overflow:hidden;background:var(--bg);border:1px solid var(--line);margin-bottom:12px}
+.store-map iframe{width:100%;height:100%;border:0}
+.store-map-link{display:block;width:100%;height:100%;background:var(--bg);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink3);font-size:12px;font-weight:600}
+.store-info-details{display:flex;flex-direction:column;gap:8px}
+.store-info-row{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);transition:.15s}
+.store-info-row:hover{border-color:var(--brand)}
+.store-info-row a{color:var(--brand);font-weight:700;text-decoration:none}
+.store-info-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.store-info-text{flex:1;font-size:12px;color:var(--ink2);line-height:1.5}
+.store-info-text strong{color:var(--ink);font-weight:700}
+.store-wa-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:#25d366;color:#fff;border-radius:var(--r);font:700 13px var(--f);text-decoration:none;transition:.15s;border:none;cursor:pointer;width:100%}
+.store-wa-btn:hover{background:#1da851}
+.store-wa-btn svg{width:20px;height:20px;fill:#fff}
+
+/* Footer */
+.store-footer{max-width:var(--mw);margin:0 auto;padding:24px var(--px) 120px;border-top:1px solid var(--line)}
+.footer-inner{text-align:center}
+.footer-brand{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.footer-links{font-size:11px;color:var(--ink3);line-height:1.6;margin-bottom:12px}
+.footer-powered{font-size:10px;color:var(--ink4);padding-top:12px;border-top:1px solid var(--line)}
+.footer-powered strong{color:var(--brand);font-weight:700}
+
+/* Floating WhatsApp Button */
+.wa-float{position:fixed;bottom:80px;right:16px;width:52px;height:52px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);z-index:80;transition:.3s;cursor:pointer;text-decoration:none}
+.wa-float:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(37,211,102,.5)}
+.wa-float:active{transform:scale(.95)}
+.wa-float.with-cart{bottom:140px}
+
+.cart-bar{position:fixed;bottom:0;left:0;right:0;z-index:90;transform:translateY(100%);transition:.3s var(--ease);pointer-events:none}.cart-bar.show{transform:translateY(0);pointer-events:auto}
+.cart-bar-in{max-width:var(--mw);margin:0 auto;padding:0 var(--px) env(safe-area-inset-bottom)}
+.cart-bar-card{background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;border-radius:var(--r3) var(--r3) 0 0;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 -4px 24px rgba(0,0,0,.15)}
+.cart-bar-card:hover{filter:brightness(1.08)}
+.cb-left{display:flex;align-items:center;gap:10px}
+.cb-count{background:rgba(255,255,255,.25);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.cb-text{display:flex;flex-direction:column}
+.cb-items{font-weight:800;font-size:13px}.cb-total{font-size:11px;opacity:.9}
+.cb-free-msg{font-size:10px;opacity:.9;margin-top:2px;display:flex;align-items:center;gap:4px}
+.cb-free-bar{width:60px;height:4px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden}
+.cb-free-fill{height:100%;background:#fff;border-radius:2px;transition:.3s}
+.cb-go{font-weight:800;font-size:13px;display:flex;align-items:center;gap:6px}
+
+/* Cart drawer */
+.cart-drawer{position:fixed;top:0;right:0;bottom:0;width:100%;max-width:420px;background:var(--white);z-index:150;transform:translateX(100%);transition:transform .3s var(--ease);display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(0,0,0,.1)}
+.cart-drawer.open{transform:translateX(0)}
+.cart-drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:140;opacity:0;pointer-events:none;transition:.3s}
+.cart-drawer-bg.open{opacity:1;pointer-events:auto}
+.cd-hdr{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.cd-title{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+.cd-close{width:32px;height:32px;border:none;background:var(--bg);border-radius:50%;cursor:pointer;font-size:14px}
+.cd-body{flex:1;overflow-y:auto;padding:0 20px}
+.cd-empty{padding:48px 20px;text-align:center;color:var(--ink4);font-size:13px}
+.cart-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px}
+.ci-cust{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.4}
+.ci-rm{font:600 11px var(--f);color:var(--red);background:0;border:0;cursor:pointer;margin-top:4px;padding:0;opacity:.7}.ci-rm:hover{opacity:1}
+.ci-q{display:flex;align-items:center;border:1.5px solid var(--brand);border-radius:var(--r);overflow:hidden}
+.ci-q button{width:26px;height:26px;border:none;background:var(--brand-bg);color:var(--brand);font:700 14px var(--f);cursor:pointer}.ci-q button:hover{background:var(--brand);color:#fff}
+.ci-q span{width:24px;text-align:center;font:700 12px var(--f);color:var(--brand)}
+.ci-price{font-size:13px;font-weight:800;margin-top:4px}
+
+.cd-ft{padding:14px 20px;border-top:1px solid var(--line);background:var(--bg)}
+.cd-row{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);padding:3px 0}
+.cd-row.total{font-size:15px;font-weight:800;color:var(--ink);padding:8px 0;border-top:2px solid var(--ink);margin-top:6px}
+.cd-min-warn{background:var(--orange-bg);color:var(--orange);font:600 11px var(--f);padding:8px 12px;border-radius:var(--r);margin-bottom:10px;text-align:center}
+.cd-go{width:100%;height:46px;background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;border:none;border-radius:var(--r);font:800 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;letter-spacing:.04em}.cd-go:hover{filter:brightness(1.08)}.cd-go:disabled{background:var(--line2);cursor:not-allowed;filter:none}
+
+/* Checkout drawer */
+.co-drawer{position:fixed;inset:0;background:var(--white);z-index:200;display:none;flex-direction:column;animation:slideUp .3s var(--ease)}
+.co-drawer.open{display:flex}
+.co-hdr{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--white);z-index:5}
+.co-back{width:36px;height:36px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
+.co-title{font-size:16px;font-weight:800;flex:1}
+.co-body{flex:1;overflow-y:auto;padding:16px 20px;max-width:var(--mw);margin:0 auto;width:100%}
+.co-section{margin-bottom:20px}
+.co-sec-h{font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.co-input{width:100%;height:42px;padding:0 14px;border:1.5px solid var(--line);border-radius:var(--r);font:500 13px var(--f);outline:none;background:var(--white)}.co-input:focus{border-color:var(--brand)}
+.co-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.co-row .co-input{margin:0}
+.co-textarea{width:100%;min-height:70px;padding:10px 14px;border:1.5px solid var(--line);border-radius:var(--r);font:500 13px var(--f);outline:none;resize:vertical;font-family:var(--f);background:var(--white)}.co-textarea:focus{border-color:var(--brand)}
+.co-loc-btn{width:100%;height:42px;border:1.5px dashed var(--brand);border-radius:var(--r);background:var(--brand-bg);color:var(--brand);font:700 12px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;transition:.15s}.co-loc-btn:hover{background:var(--brand);color:#fff;border-style:solid}.co-loc-btn:disabled{opacity:.6;cursor:wait}
+.co-loc-status{font-size:11px;color:var(--ink3);margin-bottom:8px;padding:6px 10px;border-radius:6px}
+.co-loc-status.ok{background:var(--green-bg);color:var(--green)}
+.co-loc-status.err{background:var(--red-bg);color:var(--red)}
+
+.co-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.co-mode-btn{padding:14px;border:2px solid var(--line);border-radius:var(--r2);background:var(--white);cursor:pointer;text-align:center;transition:.15s}
+.co-mode-btn:hover{border-color:var(--ink3)}
+.co-mode-btn.active{border-color:var(--brand);background:var(--brand-bg)}
+.co-mode-icon{font-size:24px;margin-bottom:4px}
+.co-mode-title{font-size:13px;font-weight:800}
+.co-mode-sub{font-size:10px;color:var(--ink3);margin-top:2px}
+
+.co-pay{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.co-pay-btn{padding:12px 8px;border:2px solid var(--line);border-radius:var(--r2);background:var(--white);cursor:pointer;text-align:center;transition:.15s}
+.co-pay-btn.active{border-color:var(--brand);background:var(--brand-bg)}
+.co-pay-icon{font-size:18px;margin-bottom:2px}
+.co-pay-name{font-size:11px;font-weight:700}
+
+/* UPI Payment Section */
+.upi-section{margin-top:12px;background:var(--bg);border-radius:var(--r2);padding:16px;text-align:center}
+.upi-note{font-size:11px;color:var(--ink3);margin-bottom:12px;line-height:1.5}
+.upi-qr-box{display:flex;justify-content:center;margin-bottom:12px}
+.upi-qr{background:#fff;padding:10px;border-radius:var(--r);display:inline-block;box-shadow:0 2px 8px rgba(0,0,0,.06);border:1px solid var(--line)}
+.upi-id-display{font-size:12px;color:var(--ink2);margin-bottom:12px;background:var(--white);padding:8px 12px;border-radius:var(--r);border:1px dashed var(--line2);word-break:break-all}
+.upi-id-display strong{color:var(--brand);font-weight:800}
+.upi-apps{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.upi-app-btn{padding:8px 14px;border-radius:var(--r);font:700 11px var(--f);cursor:pointer;text-decoration:none;text-align:center;border:1.5px solid var(--line);transition:.15s;display:inline-flex;align-items:center;gap:4px;color:var(--ink2);background:var(--white)}
+.upi-app-btn:hover{border-color:var(--ink3)}
+.upi-app-btn.gpay{border-color:#4285f4;color:#4285f4;background:#f0f5ff}
+.upi-app-btn.gpay:hover{background:#4285f4;color:#fff}
+.upi-app-btn.ppay{border-color:#5f259f;color:#5f259f;background:#f5f0ff}
+.upi-app-btn.ppay:hover{background:#5f259f;color:#fff}
+.upi-app-btn.paytm{border-color:#00b9f1;color:#00b9f1;background:#f0fbff}
+.upi-app-btn.paytm:hover{background:#00b9f1;color:#fff}
+.upi-app-btn.copy{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
+.upi-app-btn.copy:hover{background:var(--brand);color:#fff}
+
+.co-bill{background:var(--bg);border-radius:var(--r2);padding:14px}
+.co-bill-row{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);padding:4px 0}
+.co-bill-row.total{font-size:16px;font-weight:800;color:var(--ink);border-top:2px solid var(--ink);padding-top:8px;margin-top:6px}
+.co-bill-row.free{color:var(--green);font-weight:700}
+
+.co-footer{padding:14px 20px;border-top:1px solid var(--line);background:var(--white);position:sticky;bottom:0;max-width:var(--mw);margin:0 auto;width:100%}
+.co-place-btn{width:100%;height:50px;background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;border:none;border-radius:var(--r2);font:800 14px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:0 18px;letter-spacing:.04em}.co-place-btn:hover{filter:brightness(1.08)}.co-place-btn:disabled{background:var(--line2);cursor:not-allowed;filter:none}
+.co-place-arrow{font-size:18px}
+
+/* Order success */
+/* Order Confirmation Modal */
+.confirm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:250;align-items:flex-end;justify-content:center;padding:0}
+.confirm-bg.open{display:flex;animation:fadeIn .2s}
+.confirm-box{background:var(--white);border-radius:var(--r3) var(--r3) 0 0;max-width:var(--mw);width:100%;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;animation:slideUp .3s var(--ease)}
+.confirm-hdr{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--white);position:sticky;top:0;z-index:5}
+.confirm-title{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+.confirm-close{width:32px;height:32px;border:none;background:var(--bg);border-radius:50%;cursor:pointer;font-size:14px}
+.confirm-body{flex:1;overflow-y:auto;padding:18px 20px;background:var(--bg)}
+.confirm-section{background:var(--white);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px}
+.confirm-sec-h{font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.confirm-sec-h .edit-link{color:var(--brand);font-weight:700;font-size:11px;cursor:pointer;text-decoration:none;text-transform:none;letter-spacing:0}
+.confirm-sec-h .edit-link:hover{text-decoration:underline}
+.confirm-info-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px}
+.confirm-info-icon{flex-shrink:0;width:22px;font-size:15px;text-align:center}
+.confirm-info-content{flex:1;min-width:0}
+.confirm-info-label{font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.confirm-info-value{font-size:13px;font-weight:600;color:var(--ink);margin-top:1px;word-wrap:break-word}
+.confirm-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.confirm-item:last-child{border-bottom:none}
+.confirm-item-info{flex:1;min-width:0}
+.confirm-item-name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px}
+.confirm-item-tag{display:inline-block;width:11px;height:11px;border:1.5px solid;border-radius:2px;flex-shrink:0;position:relative}
+.confirm-item-tag::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%}
+.confirm-item-tag.veg{border-color:var(--green)}.confirm-item-tag.veg::after{background:var(--green)}
+.confirm-item-tag.nv{border-color:var(--red)}.confirm-item-tag.nv::after{background:var(--red)}
+.confirm-item-cust{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.4}
+.confirm-item-qty{font-size:11px;color:var(--ink3);margin-top:2px;font-weight:600}
+.confirm-item-price{font-size:14px;font-weight:800;text-align:right;flex-shrink:0;color:var(--ink)}
+.confirm-bill-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:var(--ink2)}
+.confirm-bill-row strong{font-weight:700;color:var(--ink)}
+.confirm-bill-row.discount{color:var(--green);font-weight:700}
+.confirm-bill-row.free{color:var(--green);font-weight:700}
+.confirm-bill-row.total{font-size:17px;font-weight:800;color:var(--ink);border-top:2px solid var(--ink);padding-top:10px;margin-top:8px}
+.confirm-bill-row.savings{font-size:11px;color:var(--green);font-weight:700;background:var(--green-bg);padding:6px 10px;border-radius:6px;margin-top:8px;justify-content:center;gap:4px}
+.confirm-foot{padding:12px 20px;border-top:1px solid var(--line);background:var(--white);display:flex;gap:10px}
+.confirm-cancel{flex:1;height:46px;background:var(--bg);color:var(--ink2);border:1px solid var(--line2);border-radius:var(--r2);font:700 13px var(--f);cursor:pointer}
+.confirm-cancel:hover{background:var(--line)}
+.confirm-confirm{flex:2;height:46px;background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;border:none;border-radius:var(--r2);font:800 14px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.04em}
+.confirm-confirm:hover{filter:brightness(1.1)}.confirm-confirm:active{transform:scale(.98)}
+.confirm-confirm:disabled{opacity:.6;cursor:wait}
+
+/* Veg-only theme upgrades */
+.veg-only-banner{background:linear-gradient(135deg,#065a14,#0c831f);color:#fff;padding:5px var(--px);text-align:center;max-width:var(--mw);margin:0 auto;display:flex;align-items:center;justify-content:center;gap:8px;font:700 11px var(--f);position:relative;overflow:hidden}
+.veg-only-banner::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent 0,transparent 10px,rgba(255,255,255,.05) 10px,rgba(255,255,255,.05) 20px)}
+.veg-only-banner-content{position:relative;display:flex;align-items:center;gap:8px}
+.veg-only-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:2px solid #fff;border-radius:3px;background:rgba(255,255,255,.15);position:relative}
+.veg-only-icon::after{content:'';width:8px;height:8px;background:#fff;border-radius:50%}
+.veg-locked-toggle{background:linear-gradient(135deg,#065a14,#0c831f);color:#fff;padding:5px 12px;border-radius:var(--pill);font:800 11px var(--f);display:inline-flex;align-items:center;gap:5px;cursor:default;border:1px solid rgba(255,255,255,.2)}
+
+.success-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:300;align-items:center;justify-content:center;padding:20px}.success-bg.open{display:flex;animation:fadeIn .2s}
+.success-box{background:var(--white);border-radius:var(--r3);max-width:340px;width:100%;padding:32px 24px;text-align:center;animation:slideUp .3s var(--ease)}
+.success-icon{width:80px;height:80px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px}
+.success-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.success-sub{font-size:13px;color:var(--ink2);margin-bottom:6px}
+.success-id{font-size:11px;color:var(--ink3);font-family:monospace;background:var(--bg);padding:6px 12px;border-radius:6px;display:inline-block;margin:8px 0}
+.success-time{font-size:13px;color:var(--brand);font-weight:700;margin:12px 0}
+.success-btn{width:100%;height:42px;background:var(--brand);color:#fff;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;margin-top:12px}.success-btn:hover{filter:brightness(1.1)}
+
+/* Order Tracking */
+.track-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:300;align-items:center;justify-content:center;padding:20px}.track-bg.open{display:flex;animation:fadeIn .2s}
+.track-box{background:var(--white);border-radius:var(--r3);max-width:420px;width:100%;max-height:85vh;overflow-y:auto;animation:slideUp .3s var(--ease);padding:0}
+.track-hdr{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:2}
+.track-title{font-size:16px;font-weight:800}
+.track-close{width:32px;height:32px;border:none;background:var(--bg);border-radius:50%;cursor:pointer;font-size:14px}
+.track-body{padding:20px}
+.track-oid{font:800 13px var(--f);color:var(--brand);background:var(--brand-bg);padding:6px 12px;border-radius:var(--r);display:inline-block;margin-bottom:16px;font-family:monospace;letter-spacing:.04em}
+
+/* Timeline */
+.track-timeline{position:relative;padding-left:28px;margin-bottom:20px}
+.track-timeline::before{content:'';position:absolute;left:10px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.track-step{position:relative;padding:10px 0;padding-left:12px}
+.track-dot{position:absolute;left:-22px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--line);border:2px solid var(--white);z-index:1}
+.track-step.done .track-dot{background:var(--brand)}
+.track-step.active .track-dot{background:var(--brand);box-shadow:0 0 0 4px var(--brand-bg);animation:pulse 2s infinite}
+.track-step.cancelled .track-dot{background:var(--red)}
+.track-step-title{font-size:13px;font-weight:700;color:var(--ink3)}
+.track-step.done .track-step-title,.track-step.active .track-step-title{color:var(--ink)}
+.track-step.cancelled .track-step-title{color:var(--red)}
+.track-step-sub{font-size:11px;color:var(--ink4);margin-top:2px}
+.track-step.active .track-step-sub{color:var(--brand);font-weight:600}
+
+/* Comment from shopkeeper */
+.track-comment{background:var(--bg);border-left:3px solid var(--brand);padding:10px 14px;border-radius:0 var(--r) var(--r) 0;margin:12px 0;font-size:12px;color:var(--ink2);line-height:1.5}
+.track-comment-label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+
+/* Order summary in tracking */
+.track-items{background:var(--bg);border-radius:var(--r2);padding:14px;margin-bottom:16px}
+.track-items-h{font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.track-item{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--line)}
+.track-item:last-child{border-bottom:none}
+.track-item-name{color:var(--ink);font-weight:600}
+.track-item-price{color:var(--ink2);font-weight:700}
+.track-total{display:flex;justify-content:space-between;font-size:15px;font-weight:800;padding-top:8px;margin-top:8px;border-top:2px solid var(--ink)}
+.track-contact{display:flex;gap:8px;margin-top:12px}
+.track-contact a{flex:1;padding:10px;border:1.5px solid var(--brand);border-radius:var(--r);text-align:center;text-decoration:none;font:700 12px var(--f);color:var(--brand);transition:.15s}
+.track-contact a:hover{background:var(--brand);color:#fff}
+
+/* Track Order Input */
+.track-input-box{padding:28px 20px;text-align:center}
+.track-input-icon{font-size:48px;margin-bottom:12px}
+.track-input-title{font-size:18px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.track-input-sub{font-size:12px;color:var(--ink3);margin-bottom:20px;line-height:1.5}
+.track-input-wrap{position:relative;max-width:320px;margin:0 auto 12px}
+.track-input-field{width:100%;height:48px;padding:0 48px 0 16px;border:2px solid var(--line);border-radius:var(--r2);font:700 15px var(--f);color:var(--ink);background:var(--white);outline:none;text-transform:uppercase;letter-spacing:.08em;text-align:center;font-family:monospace}.track-input-field:focus{border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-bg)}
+.track-input-field::placeholder{font:500 12px var(--f);color:var(--ink4);text-transform:none;letter-spacing:0;font-family:var(--f)}
+.track-input-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:none;background:var(--brand);color:#fff;border-radius:var(--r);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.15s}.track-input-go:hover{filter:brightness(1.1)}.track-input-go:active{transform:translateY(-50%) scale(.92)}
+.track-input-hint{font-size:11px;color:var(--ink4);margin-top:8px}
+.track-input-recent{max-width:320px;margin:16px auto 0;text-align:left}
+.track-input-recent-h{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.track-recent-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:var(--r);margin-bottom:4px;cursor:pointer;transition:.15s;border:1px solid transparent}
+.track-recent-item:hover{border-color:var(--brand);background:var(--brand-bg)}
+.track-recent-id{font:700 12px monospace;color:var(--brand);letter-spacing:.04em}
+.track-recent-date{font-size:10px;color:var(--ink4)}
+.track-recent-arrow{color:var(--ink4);font-size:14px}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:10px 16px;border-radius:var(--r2);font:600 12px var(--f);z-index:400;opacity:0;transition:.3s;box-shadow:0 4px 20px rgba(0,0,0,.3);max-width:90%}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink3)}
+.shimmer{background:linear-gradient(90deg,#eee,#f5f5f5,#eee);background-size:200% 100%;animation:shimmer 1.5s infinite}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* Daily Special Card — vibrant attention-grabbing hero */
+.daily-special{max-width:var(--mw);margin:10px auto;padding:0 var(--px)}
+.daily-special-card{position:relative;border-radius:var(--r3);overflow:hidden;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.18);transition:.3s var(--ease);background:#2d1a0e}
+.daily-special-card:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.25)}
+.daily-special-img{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.daily-special-img-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.daily-special-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.6) 100%)}
+.daily-special-content{position:relative;padding:16px 18px;display:flex;align-items:flex-end;gap:14px;min-height:160px;z-index:1}
+.daily-special-badge{position:absolute;top:12px;right:12px;background:#fbbf24;color:#78350f;font:900 10px var(--f);padding:5px 11px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.1em;display:inline-flex;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:2}
+.daily-special-badge::before{content:'';width:7px;height:7px;background:#dc2626;border-radius:50%;animation:dsBlink 1.2s ease infinite;box-shadow:0 0 4px #dc2626}
+@keyframes dsBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.daily-special-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.daily-special-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.95;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.daily-special-name{font-size:22px;font-weight:900;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.5);margin:0}
+.daily-special-name-hi{font-family:'Tiro Devanagari Hindi','Noto Sans Devanagari',serif;font-size:14px;opacity:.92;font-weight:500;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.daily-special-desc{font-size:11px;opacity:.9;text-shadow:0 1px 4px rgba(0,0,0,.6);max-width:320px;line-height:1.4}
+.daily-special-price{background:#fff;color:var(--brand);padding:10px 16px;border-radius:var(--r2);font:900 20px var(--f);box-shadow:0 6px 20px rgba(0,0,0,.3);flex-shrink:0;display:flex;flex-direction:column;align-items:center;line-height:1;align-self:flex-end}
+.daily-special-price small{font-size:9px;opacity:.7;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;color:#888}
+.daily-special-cta{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--brand);font:900 11px var(--f);padding:8px 16px;border:none;border-radius:var(--pill);margin-top:6px;align-self:flex-start;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:.2s var(--ease);letter-spacing:.04em;text-transform:uppercase;cursor:pointer;position:relative;z-index:3}
+.daily-special-cta:hover{transform:translateX(3px);box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.daily-special-cta:active{transform:translateX(3px) scale(.96)}
+.daily-special-cta::after{content:'→';font-size:14px}
+
+@media(max-width:640px){.daily-special-name{font-size:18px}.daily-special-content{min-height:130px;padding:14px 14px}.daily-special-price{font-size:17px;padding:8px 12px}}
+
+/* Free delivery banner */
+.free-del-banner{max-width:var(--mw);margin:0 auto;padding:8px var(--px);background:var(--brand-bg);display:flex;align-items:center;justify-content:center;gap:6px;font:700 12px var(--f);color:var(--brand)}
+.free-del-banner span{background:var(--brand);color:#fff;padding:2px 8px;border-radius:var(--pill);font-size:11px}
+
+/* Call to Order Banner */
+.call-banner{background:var(--brand);color:#fff;padding:10px var(--px);max-width:var(--mw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line)}
+.call-banner-text{font-size:12px;font-weight:700;flex:1;display:flex;align-items:center;gap:6px}
+.call-now-btn{background:#fff;color:var(--brand);border:none;padding:6px 16px;border-radius:var(--pill);font:800 12px var(--f);cursor:pointer;display:flex;align-items:center;gap:5px;text-decoration:none;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.call-now-btn:hover{filter:brightness(1.05);transform:scale(1.03)}.call-now-btn:active{transform:scale(.97)}
+
+/* Combo/Thali badge */
+.combo-badge{display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;font:700 9px var(--f);padding:2px 8px;border-radius:4px;margin-left:6px;text-transform:uppercase;letter-spacing:.04em}
+
+/* Family pack / Combo card */
+.combo-card{background:linear-gradient(135deg,#faf5ff,#fff);border:2px solid #a855f7;border-radius:var(--r2);padding:14px;margin:8px 0;display:flex;gap:14px;align-items:center;position:relative;overflow:hidden}
+.combo-card::before{content:'COMBO';position:absolute;top:8px;right:-30px;background:#a855f7;color:#fff;font:800 9px var(--f);padding:2px 32px;transform:rotate(35deg);letter-spacing:.04em}
+.combo-card .dish-img-area{width:90px;height:90px}
+
+/* Quick qty buttons */
+.qty-quick{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.qty-quick-btn{background:var(--bg);color:var(--ink2);border:1px solid var(--line);padding:3px 10px;border-radius:var(--pill);font:700 10px var(--f);cursor:pointer;transition:.15s}
+.qty-quick-btn:hover{background:var(--brand-bg);color:var(--brand);border-color:var(--brand)}.qty-quick-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.qty-custom-input{width:60px;height:24px;padding:0 6px;border:1px solid var(--line);border-radius:var(--pill);font:700 10px var(--f);color:var(--ink);background:var(--white);outline:none;text-align:center;-moz-appearance:textfield}
+.qty-custom-input::-webkit-outer-spin-button,.qty-custom-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.qty-custom-input:focus{border-color:var(--brand);background:var(--brand-bg)}
+
+/* Hindi text */
+.hi-name{font-family:'Tiro Devanagari Hindi','Noto Sans Devanagari',serif;font-size:13px;color:var(--ink3);font-weight:500;margin-top:1px;line-height:1.2}
+
+/* Dish actions row */
+.dish-actions{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);display:flex;gap:4px;align-items:center}
+
+/* Truck driver / Quick bites section header */
+.section-icon{font-size:18px;margin-right:6px}
+
+/* Desktop optimization */
+@media(min-width:768px){
+  .menu{padding:8px 0 120px}
+  .menu-section{padding:20px var(--px) 12px}
+  .menu-section-title{font-size:18px;margin-bottom:16px}
+  .dish{padding:16px 0;gap:16px}
+  .dish-img-area{width:140px;height:140px}
+  .dish-name{font-size:15px}
+  .dish-desc{font-size:13px}
+  .dish-price{font-size:16px}
+  .hero{height:200px}
+  .hero-title{font-size:28px}
+  .hero-tagline{font-size:14px}
+  .daily-special{margin:16px auto}
+  .daily-special-content{padding:24px 24px 22px;min-height:160px}
+  .daily-special-name{font-size:28px}
+  .daily-special-price{font-size:22px;padding:10px 18px}
+}
+
+/* Mobile-specific tweaks */
+@media(max-width:640px){
+  .dish-img-area{width:100px;height:100px}
+  .daily-special-name{font-size:18px}
+  .daily-special-content{padding:14px 14px 12px;min-height:100px;gap:10px}
+  .daily-special-price{font-size:15px;padding:6px 10px}
+  .daily-special-price small{font-size:8px}
+  .hero-cta{padding:8px 16px;font-size:12px}
+  .filters{gap:8px}
+  .veg-toggle{padding:3px 8px;font-size:11px}
+  .veg-toggle .swt{width:28px;height:16px}
+  .veg-toggle .swt::before{width:12px;height:12px}
+  .veg-toggle.active .swt::before{transform:translateX(12px)}
+  .search-input{height:34px;font-size:12px}
+  .cat-nav-btn{padding:9px 12px;font-size:11px}
+  .qty-quick{gap:3px}
+  .qty-quick-btn{padding:2px 8px;font-size:9px}
+  .qty-custom-input{width:50px;height:22px;font-size:9px}
+  .menu-section{padding:14px var(--px) 6px}
+  .menu-section-title{font-size:14px}
+  .dish-name{font-size:13px}
+  .dish-desc{font-size:11px}
+  .dish-meta{font-size:10px}
+}
+
+/* Tablet */
+@media(min-width:641px) and (max-width:767px){
+  .dish-img-area{width:120px;height:120px}
+  .daily-special-name{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<!-- Top -->
+<div class="top">
+<button class="top-back" onclick="goBack()" title="Back">←</button>
+<div class="top-info">
+<div class="top-name" id="topName"><span class="shimmer" style="display:inline-block;width:140px;height:14px;border-radius:4px"></span></div>
+<div class="top-meta"><span class="shimmer" style="display:inline-block;width:80px;height:12px;border-radius:4px"></span></div>
+</div>
+<div class="top-cart-icon" onclick="showTrackInput()" title="Track Order" style="font-size:14px;margin-right:4px">📋</div><div class="top-cart-icon" onclick="openCart()">🛒<span class="top-cart-badge" id="cartBadge" style="display:none">0</span></div>
+</div>
+
+<!-- Hero — hidden until config loads -->
+<div class="hero" id="heroBox" style="display:none">
+<div class="hero-bg-img" id="heroBgImg"></div>
+<div class="hero-content">
+<div class="hero-blessing" id="heroBlessing" style="display:none"></div>
+<div class="hero-tagline" id="heroTagline"></div>
+<div class="hero-title" id="heroTitle"></div>
+<div class="hero-info">
+<span id="heroDeliveryTime"></span>
+<span id="heroMinOrder"></span>
+<span id="heroRating"></span>
+</div>
+<button class="hero-cta" onclick="scrollToMenu()">Browse Full Menu</button>
+</div>
+</div>
+
+<!-- Loading state shown before data loads -->
+<div id="loadingHero" class="hero" style="min-height:100px">
+<div class="hero-content" style="gap:10px;justify-content:center;padding:20px var(--px)">
+<div class="shimmer" style="width:120px;height:10px;border-radius:4px;opacity:.5"></div>
+<div class="shimmer" style="width:200px;height:22px;border-radius:6px;opacity:.5"></div>
+<div style="display:flex;gap:8px;margin-top:4px">
+<div class="shimmer" style="width:80px;height:22px;border-radius:20px;opacity:.4"></div>
+<div class="shimmer" style="width:70px;height:22px;border-radius:20px;opacity:.4"></div>
+<div class="shimmer" style="width:60px;height:22px;border-radius:20px;opacity:.4"></div>
+</div>
+</div>
+</div>
+
+<!-- Daily Special -->
+<div id="dailySpecial" style="display:none"></div>
+
+<!-- Call to Order banner -->
+<div class="call-banner" id="callBanner" style="display:none">
+<div class="call-banner-text">📞 <span>Call us to place your order</span></div>
+<div style="display:flex;gap:6px;align-items:center"><a href="#" class="call-now-btn" id="callNowBtn">📞 Call</a><a href="#" class="call-now-btn" id="callNowBtn2" style="display:none">📞 Call 2</a></div>
+</div>
+
+<!-- Free delivery banner — shown if FreeDelivery is configured -->
+<div id="freeDeliveryBanner" style="display:none"></div>
+
+<!-- Filters — hidden until data loads -->
+<div class="filters" id="filtersBar" style="display:none">
+<label class="veg-toggle" id="vegToggle" onclick="toggleVegOnly()">
+<span>🟢 Veg only</span>
+<span class="swt"></span>
+</label>
+<div class="search-wrap">
+<svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg>
+<div style="flex:1;position:relative;min-width:140px"><input type="text" class="search-input" id="searchInput" placeholder="Search dishes..." oninput="renderMenu();toggleSearchClear()"><button class="search-clear" id="searchClear" onclick="$('searchInput').value='';renderMenu();this.style.display='none'" style="display:none">✕</button></div>
+</div>
+</div>
+
+<!-- Category nav -->
+<div class="cat-nav-wrap"><div class="cat-nav" id="catNav" style="display:none"></div></div>
+
+<!-- Menu -->
+<div class="menu" id="menu">
+<div style="padding:16px var(--px);max-width:var(--mw);margin:0 auto">
+<div class="shimmer" style="width:100px;height:16px;border-radius:4px;margin-bottom:16px"></div>
+<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #ebebeb"><div style="flex:1"><div class="shimmer" style="width:80px;height:12px;border-radius:3px;margin-bottom:8px"></div><div class="shimmer" style="width:160px;height:14px;border-radius:4px;margin-bottom:6px"></div><div class="shimmer" style="width:60px;height:14px;border-radius:4px;margin-bottom:6px"></div><div class="shimmer" style="width:220px;height:10px;border-radius:3px"></div></div><div class="shimmer" style="width:100px;height:100px;border-radius:12px;flex-shrink:0"></div></div>
+<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #ebebeb"><div style="flex:1"><div class="shimmer" style="width:80px;height:12px;border-radius:3px;margin-bottom:8px"></div><div class="shimmer" style="width:140px;height:14px;border-radius:4px;margin-bottom:6px"></div><div class="shimmer" style="width:50px;height:14px;border-radius:4px;margin-bottom:6px"></div><div class="shimmer" style="width:200px;height:10px;border-radius:3px"></div></div><div class="shimmer" style="width:100px;height:100px;border-radius:12px;flex-shrink:0"></div></div>
+<div style="display:flex;gap:12px;padding:14px 0"><div style="flex:1"><div class="shimmer" style="width:80px;height:12px;border-radius:3px;margin-bottom:8px"></div><div class="shimmer" style="width:180px;height:14px;border-radius:4px;margin-bottom:6px"></div><div class="shimmer" style="width:70px;height:14px;border-radius:4px;margin-bottom:6px"></div><div class="shimmer" style="width:190px;height:10px;border-radius:3px"></div></div><div class="shimmer" style="width:100px;height:100px;border-radius:12px;flex-shrink:0"></div></div>
+</div>
+</div>
+
+<!-- Store Info: Map + Address + WhatsApp -->
+<div id="storeInfoSection" style="display:none">
+<div class="store-info-section">
+<div class="store-info-hdr">📍 Visit Us</div>
+<div id="storeMap" class="store-map"></div>
+<div class="store-info-details" id="storeInfoDetails"></div>
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="store-footer" id="storeFooter">
+<div class="footer-inner">
+<div class="footer-brand" id="footerBrand"></div>
+<div class="footer-links">
+<span id="footerAddr"></span>
+</div>
+<div class="footer-powered">Powered by <strong>StorePro</strong> — ₹0 infrastructure</div>
+</div>
+</footer>
+
+<!-- Floating WhatsApp button -->
+<a href="#" id="waFloat" class="wa-float" style="display:none" target="_blank">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.96 7.96 0 01-4.11-1.14L4.5 19.5l.64-3.39A7.963 7.963 0 014 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg>
+</a>
+
+<!-- Cart bar -->
+<div class="cart-bar" id="cartBar">
+<div class="cart-bar-in">
+<div class="cart-bar-card" onclick="openCart()">
+<div class="cb-left">
+<div class="cb-count" id="cbCount">0</div>
+<div class="cb-text"><div class="cb-items" id="cbItems">0 items added</div><div class="cb-total" id="cbTotal">View cart</div><div class="cb-free-msg" id="cbFreeMsg" style="display:none"></div></div>
+</div>
+<div class="cb-go">View Cart →</div>
+</div>
+</div>
+</div>
+
+<!-- Customization modal -->
+<div class="cust-bg" id="custBg" onclick="if(event.target===this)closeCust()">
+<div class="cust-box">
+<div class="cust-hdr"><div class="cust-title" id="custTitle">Customize</div><button class="cust-close" onclick="closeCust()">✕</button></div>
+<div class="cust-body" id="custBody"></div>
+<div class="cust-foot">
+<div class="cust-qty">
+<button onclick="custQty(-1)">−</button><span id="custQtyVal">1</span><button onclick="custQty(1)">+</button>
+</div>
+<button class="cust-add" onclick="addCustomized()">
+<span>Add to Cart</span>
+<span class="cust-add-price" id="custAddPrice">₹0</span>
+</button>
+</div>
+</div>
+</div>
+
+<!-- Cart drawer -->
+<div class="cart-drawer-bg" id="cartBg" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+<div class="cd-hdr"><div class="cd-title">🛒 Your Cart</div><button class="cd-close" onclick="closeCart()">✕</button></div>
+<div class="cd-body" id="cdBody"></div>
+<div class="cd-ft" id="cdFooter" style="display:none"></div>
+</div>
+
+<!-- Checkout drawer -->
+<div class="co-drawer" id="coDrawer">
+<div class="co-hdr"><button class="co-back" onclick="closeCheckout()">←</button><div class="co-title">Checkout</div></div>
+<div class="co-body" id="coBody"></div>
+<div class="co-footer">
+<button class="co-place-btn" id="placeBtn" onclick="placeOrder()">
+<span>Place Order</span>
+<span><span id="placeBtnTotal">₹0</span> <span class="co-place-arrow">→</span></span>
+</button>
+</div>
+</div>
+
+<!-- Order Confirmation Modal -->
+<div class="confirm-bg" id="confirmBg" onclick="if(event.target===this)closeConfirm()">
+<div class="confirm-box">
+<div class="confirm-hdr">
+<div class="confirm-title">📋 Confirm Your Order</div>
+<button class="confirm-close" onclick="closeConfirm()">✕</button>
+</div>
+<div class="confirm-body" id="confirmBody"></div>
+<div class="confirm-foot">
+<button class="confirm-cancel" onclick="closeConfirm()">Edit</button>
+<button class="confirm-confirm" id="confirmBtn" onclick="finalizeOrder()">
+<span>✓ Confirm & Place Order</span>
+</button>
+</div>
+</div>
+</div>
+
+<!-- Order success -->
+<div class="success-bg" id="successBg">
+<div class="success-box">
+<div class="success-icon">✓</div>
+<div class="success-title">Order Placed!</div>
+<div class="success-sub">Your delicious food is being prepared</div>
+<div class="success-id" id="successId"></div>
+<div class="success-time" id="successTime">⏱️ Arriving in 30-45 min</div>
+<button class="success-btn" onclick="trackOrder(document.getElementById('successId').textContent)">📋 Track My Order</button>
+<button class="success-btn" style="background:var(--bg);color:var(--ink2);margin-top:6px" onclick="closeSuccess()">Continue Browsing</button>
+</div>
+</div>
+
+<!-- Track Order Modal -->
+<div class="track-bg" id="trackBg" onclick="if(event.target===this)closeTrack()">
+<div class="track-box">
+<div class="track-hdr"><div class="track-title">Track Your Order</div><button class="track-close" onclick="closeTrack()">✕</button></div>
+<div class="track-body" id="trackBody"></div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ CONFIG ══
+var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var SHEET_ID="",SCRIPT_URL="";
+var DEFAULT_PHONE="",DEFAULT_WA="";
+
+// State
+var config={},allDishes=[],dishes=[],cart=[],filtered=[],activeCat="All",searchTerm="",vegOnly=false;
+var activeMode='delivery',activePayment='cod';
+var currentCustomDish=null,custQtySelected=1,custSelections={};
+
+// Restore cart and customer
+// Cart and customer loaded after SHEET_ID is resolved in init()
+var savedCustomer={};
+
+function $(id){return document.getElementById(id)}
+function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML}
+function dsImgFail(){var c=document.getElementById('dsCard');if(c){var img=c.querySelector('.daily-special-img-el');if(img)img.style.display='none';c.style.background='linear-gradient(135deg,var(--brand-dk),var(--brand))'}}
+function showToast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
+function cfg(k,d){return(config[(k||'').toLowerCase().replace(/\s+/g,'')]||d||'').trim?(config[(k||'').toLowerCase().replace(/\s+/g,'')]||d||'').trim():(config[(k||'').toLowerCase().replace(/\s+/g,'')]||d||'')}
+function fnum(n){return parseFloat(n||0)}
+
+// ══ DATA LOADING ══
+function loadSheet(name,cb){
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=cb;
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&_t='+Date.now();
+  s.onerror=function(){cb(null)};
+  document.body.appendChild(s);
+}
+function parseRows(r){
+  if(!r||!r.table||!r.table.rows||!r.table.rows.length)return[];
+  
+  var colLabels=(r.table.cols||[]).map(function(c){return(c.label||'').trim()});
+  var firstRaw=colLabels[0]||'';
+  var headers=[];
+  var dataRows=r.table.rows;
+  
+  // Detect if cols have proper labels or if headers are merged/missing
+  if(firstRaw&&firstRaw.split(/\s+/).length<=3&&colLabels.filter(function(l){return l}).length>1){
+    headers=colLabels;
+  }else{
+    // Use row 0 as headers
+    var hRow=r.table.rows[0];
+    if(hRow&&hRow.c){
+      for(var h=0;h<hRow.c.length;h++){
+        var hc=hRow.c[h];
+        var hv='';if(hc){if(hc.f!=null)hv=String(hc.f).trim();else if(hc.v!=null)hv=String(hc.v).trim()}
+        headers.push(hv);
+      }
+    }
+    dataRows=r.table.rows.slice(1);
+  }
+  
+  var results=[];
+  for(var i=0;i<dataRows.length;i++){
+    var row=dataRows[i];
+    var o={};
+    headers.forEach(function(hd,j){
+      var c=row.c&&row.c[j];
+      var v='';
+      if(c){if(c.f!=null)v=String(c.f).trim();else if(c.v!=null)v=String(c.v).trim()}
+      o[hd.toLowerCase().trim().replace(/\s+/g,'')]=v;
+    });
+    results.push(o);
+  }
+  return results;
+}
+
+// ══ STORE RESOLUTION ══
+function resolveStore(cb){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('shop')){SHEET_ID=p.get('shop');SCRIPT_URL=p.get('script')||'';cb();return}
+  var slug=p.get('store');
+  if(!slug){
+    document.body.innerHTML='<div style="padding:40px 20px;text-align:center;font-family:DM Sans,sans-serif"><div style="font-size:48px">🍽️</div><h1 style="margin:12px 0 8px;font-size:22px">Restaurant URL needed</h1><p style="color:#666;font-size:13px">Add ?store=restaurant-slug to the URL</p></div>';
+    return;
+  }
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table||!r.table.rows||!r.table.rows.length){showNotFound(slug);return}
+    // Smart header detection
+    var colLabels=(r.table.cols||[]).map(function(c){return(c.label||'').trim()});
+    var firstRaw=colLabels[0]||'';
+    var headers=[];var dataRows=r.table.rows;
+    if(firstRaw&&firstRaw.split(/\s+/).length<=3&&colLabels.filter(function(l){return l}).length>1){
+      headers=colLabels;
+    }else{
+      var hRow=r.table.rows[0];
+      if(hRow&&hRow.c){for(var h=0;h<hRow.c.length;h++){var hc=hRow.c[h];var hv='';if(hc){if(hc.f!=null)hv=String(hc.f).trim();else if(hc.v!=null)hv=String(hc.v).trim()}headers.push(hv)}}
+      dataRows=r.table.rows.slice(1);
+    }
+    var found=false;
+    for(var i=0;i<dataRows.length;i++){
+      if(found)break;
+      var row=dataRows[i];var o={};
+      headers.forEach(function(hd,j){var c=row.c&&row.c[j];var v='';if(c){if(c.f!=null)v=String(c.f).trim();else if(c.v!=null)v=String(c.v).trim()}o[hd.toLowerCase().replace(/\s+/g,'')]=v});
+      if((o.slug||'').toLowerCase()===slug.toLowerCase()){
+        SHEET_ID=o.sheetid||'';
+        SCRIPT_URL=o.scripturl||'';
+        found=true;
+      }
+    }
+    if(!SHEET_ID){showNotFound(slug);return}
+    cb();
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();
+  document.body.appendChild(s);
+}
+
+function showNotFound(slug){
+  var safe=String(slug).replace(/[<>"'&]/g,'');
+  document.body.innerHTML='<div style="padding:40px 20px;text-align:center;font-family:DM Sans,sans-serif"><div style="font-size:48px">🔍</div><h1 style="margin:12px 0 8px;font-size:22px">Restaurant not found</h1><p style="color:#666;font-size:13px">"'+safe+'" doesn\'t exist or is no longer active.</p></div>';
+}
+
+// ══ INIT ══
+function init(){
+  resolveStore(function(){
+    loadSheet('Config',function(r){
+      config={};if(r&&r.table){
+        (r.table.rows||[]).forEach(function(row){
+          var c0=row.c&&row.c[0],c1=row.c&&row.c[1];
+          var k=c0?(c0.f!=null?String(c0.f).trim():(c0.v!=null?String(c0.v).trim():'')):'';
+          var v='';
+          if(c1){if(c1.f!=null)v=String(c1.f).trim();else if(c1.v!=null)v=String(c1.v).trim()}
+          if(k.toLowerCase()==='key')return;
+          var kn=k.toLowerCase().replace(/\s+/g,'');
+          if(kn)config[kn]=v;
+        });
+      }
+      applyConfig();
+      loadSheet('Products',function(r2){
+        allDishes=r2?parseRows(r2).filter(function(p){return p.name}):[];
+        if(!allDishes.length){loadSheet('Menu',function(r3){allDishes=r3?parseRows(r3).filter(function(p){return p.name}):[];finishLoad()})}
+        else finishLoad();
+      });
+    });
+  });
+}
+
+function finishLoad(){
+  // Load cart now that SHEET_ID is resolved
+  try{var sc=localStorage.getItem('rest_cart_'+SHEET_ID);if(sc)cart=JSON.parse(sc)}catch(e){}
+  try{savedCustomer=JSON.parse(localStorage.getItem('rest_cust_'+SHEET_ID)||'{}')}catch(e){}
+  
+  // Show filters and category nav
+  var fb=$('filtersBar');if(fb)fb.style.display='';
+  var cn=$('catNav');if(cn)cn.style.display='';
+  var cnw=cn?cn.parentElement:null;if(cnw&&cnw.classList.contains('cat-nav-wrap'))cnw.style.position='sticky';
+  
+  if(!allDishes.length){
+    $('menu').innerHTML='<div class="empty-state"><div style="font-size:48px;margin-bottom:8px">🍽️</div><strong>No dishes available</strong><p style="font-size:12px;margin-top:6px">Menu coming soon</p></div>';
+    return;
+  }
+  syncCartPrices();
+  renderMenu();
+  buildCatNav();
+  updateCartBar();
+  renderDailySpecial();
+  setInterval(refreshMenu,60000);
+}
+
+function refreshMenu(){
+  loadSheet('Products',function(r){
+    var fresh=r?parseRows(r).filter(function(p){return p.name}):[];
+    if(fresh.length){
+      allDishes=fresh;
+      syncCartPrices();
+      try{localStorage.setItem('rest_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}
+      renderMenu();updateCartBar();
+    }
+  });
+}
+
+// ══ APPLY CONFIG ══
+var isVegOnlyRestaurant=false;
+
+function applyConfig(){
+  // Read OrderScript from Config (if not already set from registry)
+  var configScript=cfg('orderscript','');
+  if(configScript&&!SCRIPT_URL)SCRIPT_URL=configScript;
+  
+  var name=cfg('shopname','Fast Food Corner');
+  document.title=name+' — Order Online';
+  
+  // Update top bar — replace shimmer with real data
+  $('topName').innerHTML=esc(name);
+  var topMeta=$('topName').parentElement.querySelector('.top-meta');
+  if(topMeta)topMeta.innerHTML='<span class="top-status" id="topStatus">●</span><span id="topTime">--</span>';
+  
+  // Show real hero, hide loading
+  var loadingHero=$('loadingHero');
+  if(loadingHero)loadingHero.style.display='none';
+  $('heroBox').style.display='block';
+  
+  $('heroTitle').textContent=name;
+  
+  // Blessing / Title2 (e.g. "!! Jai Shri Balaji Maharaj !!")
+  var blessing=cfg('herotitle2','')||cfg('blessing','')||cfg('subtitle','');
+  if(blessing){
+    var bEl=$('heroBlessing');
+    bEl.textContent=blessing;
+    bEl.style.display='inline-block';
+  }
+  
+  if(cfg('herotagline'))$('heroTagline').textContent=cfg('herotagline');
+  else if(cfg('tagline'))$('heroTagline').textContent=cfg('tagline');
+  else $('heroTagline').textContent='Quick bites, big flavors';
+  
+  // Hero background
+  if(cfg('heroimage'))$('heroBgImg').style.backgroundImage='url('+cfg('heroimage')+')';
+  
+  // Hero info chips
+  var dt=cfg('estimateddeliverytime')||cfg('deliverytime')||'30-45 min';
+  $('heroDeliveryTime').textContent='⏱️ '+dt;
+  var min=cfg('minorder')||'199';
+  $('heroMinOrder').textContent='💰 Min '+(cfg('currency','₹'))+min;
+  var rating=cfg('rating')||'4.5';
+  $('heroRating').textContent='⭐ '+rating;
+  
+  // ═══ VEG-ONLY RESTAURANT SUPPORT ═══
+  // Check all possible key names
+  var vegVal=cfg('vegonly','')||cfg('purevegetarian','')||cfg('vegrestaurant','')||cfg('pureveg','')||cfg('veg','')||'';
+  vegVal=String(vegVal).toLowerCase().trim();
+  isVegOnlyRestaurant=(vegVal==='yes'||vegVal==='true'||vegVal==='1'||vegVal==='veg'||vegVal==='pure veg');
+  
+  if(isVegOnlyRestaurant){
+    // Switch entire theme to green
+    var rs=document.documentElement.style;
+    rs.setProperty('--brand','#0c831f');
+    rs.setProperty('--brand-bg','#e8faed');
+    rs.setProperty('--brand-dk','#065a14');
+    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content','#0c831f');
+    
+    // Update hero gradient to green
+    var heroBox=document.querySelector('.hero');
+    if(heroBox)heroBox.style.background='linear-gradient(135deg, #065a14, #0c831f)';
+    
+    // Auto-enable veg filter and lock it
+    vegOnly=true;
+    var vt=$('vegToggle');
+    if(vt){
+      // Replace toggle with locked badge
+      vt.outerHTML='<div class="veg-locked-toggle" id="vegToggle"><span class="veg-only-icon" style="width:14px;height:14px;border-color:#fff"></span><span>Pure Veg</span><span style="font-size:9px;opacity:.8">🔒</span></div>';
+      // Add click handler to new element
+      setTimeout(function(){
+        var newVt=$('vegToggle');
+        if(newVt){
+          newVt.addEventListener('click',function(){
+            showToast('🟢 We serve only pure vegetarian food');
+          });
+        }
+      },50);
+    }
+    
+    // Add veg-only banner above hero (better than just a chip)
+    var top=document.querySelector('.top');
+    if(top){
+      var banner=document.createElement('div');
+      banner.className='veg-only-banner';
+      banner.innerHTML='<div class="veg-only-banner-content"><span class="veg-only-icon"></span><span>100% PURE VEGETARIAN</span><span class="veg-only-icon"></span></div>';
+      top.parentNode.insertBefore(banner,top.nextSibling);
+    }
+    
+    // Add veg badge in hero
+    var heroInfo=document.querySelector('.hero-info');
+    if(heroInfo){
+      var badge=document.createElement('span');
+      badge.innerHTML='🟢 100% Vegetarian';
+      badge.style.background='rgba(255,255,255,.25)';
+      badge.style.color='#fff';
+      badge.style.fontWeight='800';
+      heroInfo.prepend(badge);
+    }
+  }
+  
+  // Brand color (overrides veg theme if set explicitly)
+  var brandColor=cfg('brandcolor','');
+  if(brandColor){
+    var r=document.documentElement.style;
+    r.setProperty('--brand',brandColor);
+    var hex=brandColor.replace('#','');
+    var rr=parseInt(hex.substring(0,2),16),gg=parseInt(hex.substring(2,4),16),bb=parseInt(hex.substring(4,6),16);
+    r.setProperty('--brand-bg','rgba('+rr+','+gg+','+bb+',.08)');
+    r.setProperty('--brand-dk','rgb('+Math.max(0,rr-40)+','+Math.max(0,gg-40)+','+Math.max(0,bb-40)+')');
+    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brandColor);
+  }
+  
+  // Open/closed status
+  var timing=cfg('timing','9:00-22:00');
+  var isOpen=checkOpen(timing);
+  var st=$('topStatus');
+  if(isOpen){st.className='top-status ts-open';st.textContent='● Open';$('topTime').textContent='Closes at '+(timing.split('-')[1]||'22:00')}
+  else{st.className='top-status ts-closed';st.textContent='● Closed';$('topTime').textContent='Opens at '+(timing.split('-')[0]||'9:00')}
+  
+  // Daily Special — rendered later in renderDailySpecial() after dishes load
+  
+  // Free delivery banner
+  var freeDelAmount=fnum(cfg('freedelivery','0'));
+  if(freeDelAmount>0){
+    var fdb=$('freeDeliveryBanner');
+    if(fdb){
+      fdb.className='free-del-banner';
+      fdb.style.display='flex';
+      fdb.innerHTML='🛵 Free delivery on orders above <span>'+(cfg('currency','₹'))+freeDelAmount+'</span>';
+    }
+  }
+  
+  // Call to Order banner — show if phone is set
+  var phoneNum=cfg('phone','');
+  var phoneNum2=cfg('phone2','')||cfg('secondaryphone','');
+  if(phoneNum){
+    $('callBanner').style.display='flex';
+    var cleanPhone=String(phoneNum).replace(/\D/g,'');
+    $('callNowBtn').href='tel:+'+cleanPhone;
+    $('callNowBtn').textContent='📞 '+cleanPhone.slice(-10);
+    // Secondary phone
+    if(phoneNum2){
+      var cleanPhone2=String(phoneNum2).replace(/\D/g,'');
+      var btn2=$('callNowBtn2');
+      btn2.style.display='inline-flex';
+      btn2.href='tel:+'+cleanPhone2;
+      btn2.textContent='📞 '+cleanPhone2.slice(-10);
+    }
+  }
+  
+  // Store Info Section — Map + Address + Contact
+  var address=cfg('address','');
+  var rLat=cfg('restaurantlat','');
+  var rLng=cfg('restaurantlng','');
+  var mapEmbed=cfg('mapembed','');
+  var mapLink=cfg('maplink','');
+  var waNum=cfg('whatsapp','')||phoneNum;
+  var timing=cfg('timing','');
+  
+  if(address||rLat||waNum){
+    $('storeInfoSection').style.display='block';
+    
+    // Map
+    var mapEl=$('storeMap');
+    if(mapEmbed){
+      mapEl.innerHTML=mapEmbed;
+    }else if(rLat&&rLng){
+      var mLink=mapLink||('https://www.google.com/maps?q='+rLat+','+rLng);
+      mapEl.innerHTML='<a class="store-map-link" href="'+esc(mLink)+'" target="_blank" style="background:linear-gradient(135deg,#e8faed,#fff);flex-direction:column;gap:6px"><span style="font-size:28px">📍</span><span>View on Google Maps</span><span style="font-size:10px;color:var(--ink4)">'+esc(rLat)+', '+esc(rLng)+'</span></a>';
+    }else{
+      mapEl.style.display='none';
+    }
+    
+    // Details
+    var infoHtml='';
+    if(address){
+      var addrLink=mapLink||('https://www.google.com/maps/search/'+encodeURIComponent(address));
+      infoHtml+='<div class="store-info-row"><div class="store-info-icon">📍</div><div class="store-info-text"><strong>Address</strong><br><a href="'+esc(addrLink)+'" target="_blank">'+esc(address)+'</a></div></div>';
+    }
+    if(timing){
+      infoHtml+='<div class="store-info-row"><div class="store-info-icon">🕐</div><div class="store-info-text"><strong>Hours</strong><br>'+esc(timing)+'</div></div>';
+    }
+    if(phoneNum){
+      infoHtml+='<div class="store-info-row"><div class="store-info-icon">📞</div><div class="store-info-text"><strong>Call Us</strong><br><a href="tel:+'+phoneNum.replace(/\D/g,'')+'">'+esc(phoneNum)+'</a>'+(phoneNum2?' · <a href="tel:+'+phoneNum2.replace(/\D/g,'')+'">'+esc(phoneNum2)+'</a>':'')+'</div></div>';
+    }
+    if(waNum){
+      var cleanWa=String(waNum).replace(/\D/g,'');
+      var shopName=cfg('shopname','');
+      var waMsg='Hi! I want to place an order from '+shopName;
+      infoHtml+='<a class="store-wa-btn" href="https://wa.me/'+cleanWa+'?text='+encodeURIComponent(waMsg)+'" target="_blank"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.96 7.96 0 01-4.11-1.14L4.5 19.5l.64-3.39A7.963 7.963 0 014 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> Chat on WhatsApp</a>';
+    }
+    $('storeInfoDetails').innerHTML=infoHtml;
+  }
+  
+  // Floating WhatsApp button
+  if(waNum){
+    var cleanWa=String(waNum).replace(/\D/g,'');
+    var shopName=cfg('shopname','');
+    var waFloat=$('waFloat');
+    waFloat.href='https://wa.me/'+cleanWa+'?text='+encodeURIComponent('Hi! I want to order from '+shopName);
+    waFloat.style.display='flex';
+  }
+  
+  // Footer
+  $('footerBrand').textContent=cfg('shopname','');
+  $('footerAddr').textContent=cfg('address','');
+}
+
+function checkOpen(timing){
+  if(!timing)return true;
+  var parts=timing.split('-');if(parts.length!==2)return true;
+  var now=new Date(),h=now.getHours()*60+now.getMinutes();
+  var ts=parts[0].split(':'),te=parts[1].split(':');
+  var s=parseInt(ts[0])*60+parseInt(ts[1]||0),e=parseInt(te[0])*60+parseInt(te[1]||0);
+  return h>=s&&h<=e;
+}
+
+// ══ CART SYNC ══
+function syncCartPrices(){
+  if(!allDishes||!allDishes.length)return;
+  var changed=false,removed=[];
+  cart.forEach(function(item){
+    var match=allDishes.find(function(p){return p.name===item.name});
+    if(!match){removed.push(item.name);item._oos=true;return}
+    var newPrice=fnum(match.price);
+    if(item.basePrice!==undefined){
+      // Has customizations — only update if base changed proportionally
+      var oldBase=item.basePrice;
+      if(oldBase!==newPrice){
+        var customAdd=item.price-oldBase;
+        item.basePrice=newPrice;
+        item.price=newPrice+customAdd;
+        changed=true;
+      }
+    }else{
+      if(newPrice!==fnum(item.price)){item.price=match.price;changed=true}
+    }
+    var stock=(match.stock||'').toLowerCase();
+    if(stock.indexOf('out')>=0){removed.push(item.name);item._oos=true}
+  });
+  cart=cart.filter(function(c){return!c._oos});
+  if(removed.length)alert(removed.join(', ')+' is no longer available — removed from cart.');
+}
+
+// ══ MENU RENDER ══
+function buildCatNav(){
+  // Count dishes per category (respecting veg filter)
+  var cats={},total=0;
+  allDishes.forEach(function(d){
+    if(vegOnly){var dv=(d.veg||'').toLowerCase();if(dv!=='yes'&&dv!=='veg'&&dv!=='true')return}
+    var c=d.category||'Other';
+    cats[c]=(cats[c]||0)+1;
+    total++;
+  });
+  var nav=$('catNav');
+  nav.innerHTML='';
+  
+  // Create "All" button
+  var allBtn=document.createElement('button');
+  allBtn.className='cat-nav-btn'+(activeCat==='All'?' active':'');
+  allBtn.innerHTML='All <span style="opacity:.5;font-size:10px">'+total+'</span>';
+  allBtn.onclick=function(){setCat('All',allBtn)};
+  nav.appendChild(allBtn);
+  
+  // Create category buttons
+  Object.keys(cats).forEach(function(c){
+    var btn=document.createElement('button');
+    btn.className='cat-nav-btn'+(activeCat===c?' active':'');
+    btn.innerHTML=esc(c)+' <span style="opacity:.5;font-size:10px">'+cats[c]+'</span>';
+    btn.onclick=function(){setCat(c,btn)};
+    nav.appendChild(btn);
+  });
+  
+  // Auto-scroll active button into view
+  setTimeout(function(){
+    var activeBtn=nav.querySelector('.cat-nav-btn.active');
+    if(activeBtn){
+      activeBtn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    }
+  },50);
+}
+
+function setCat(c,el){
+  // Set active category state
+  activeCat=c;
+  // Clear search to avoid filter conflicts
+  if($('searchInput'))$('searchInput').value='';
+  // Update button highlights — by direct element reference first, then fallback to text match
+  document.querySelectorAll('.cat-nav-btn').forEach(function(b){b.classList.remove('active')});
+  if(el&&el.classList){
+    el.classList.add('active');
+  }else{
+    // Fallback: match by data attribute or text
+    document.querySelectorAll('.cat-nav-btn').forEach(function(b){
+      var btnText=(b.textContent||'').trim();
+      if(c==='All'&&btnText.indexOf('All')===0)b.classList.add('active');
+      else if(c!=='All'&&(btnText===c||btnText.indexOf(c+' ')===0))b.classList.add('active');
+    });
+  }
+  // Re-render menu with new filter
+  renderMenu();
+  // Scroll smoothly to top of section after render completes
+  requestAnimationFrame(function(){
+    setTimeout(function(){
+      var target;
+      if(c==='All'){
+        target=$('menu');
+      }else{
+        var sections=document.querySelectorAll('.menu-section');
+        for(var i=0;i<sections.length;i++){
+          if(sections[i].getAttribute('data-cat')===c){target=sections[i];break}
+        }
+      }
+      if(target){
+        var top=target.getBoundingClientRect().top+window.pageYOffset-150;
+        window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+      }
+    },80);
+  });
+}
+
+function toggleSearchClear(){
+  var sc=$('searchClear');
+  if(sc)sc.style.display=$('searchInput').value?'flex':'none';
+}
+
+function toggleVegOnly(){
+  // If veg-only restaurant, show message when trying to disable veg filter
+  if(isVegOnlyRestaurant){
+    showToast('🟢 This is a Pure Vegetarian restaurant — we serve only veg food');
+    return;
+  }
+  vegOnly=!vegOnly;
+  $('vegToggle').classList.toggle('active',vegOnly);
+  renderMenu();
+  buildCatNav();
+}
+
+function getCartQty(dishName){
+  var total=0;
+  cart.forEach(function(c){if(c.name===dishName)total+=c.qty});
+  return total;
+}
+
+function renderMenu(){
+  var q=($('searchInput')?$('searchInput').value:'').toLowerCase();
+  filtered=allDishes.filter(function(d){
+    // Veg filter
+    if(vegOnly){
+      var dv=(d.veg||'').toLowerCase();
+      if(dv!=='yes'&&dv!=='veg'&&dv!=='true')return false;
+    }
+    // Category filter
+    if(activeCat!=='All'&&(d.category||'Other')!==activeCat)return false;
+    // Search filter
+    if(q&&(d.name+' '+(d.description||'')+' '+(d.category||'')).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  
+  if(!filtered.length){
+    var emptyMsg='No dishes found';
+    var emptySub='Try a different search or category';
+    if(vegOnly&&!isVegOnlyRestaurant){
+      emptyMsg='No vegetarian dishes in this category';
+      emptySub='Turn off Veg Only filter to see all dishes';
+    }
+    $('menu').innerHTML='<div class="empty-state"><div style="font-size:48px">🔍</div><strong>'+emptyMsg+'</strong><p style="font-size:12px;margin-top:6px;color:var(--ink3)">'+emptySub+'</p></div>';
+    return;
+  }
+  
+  // Group by category
+  var grouped={};
+  filtered.forEach(function(d){var c=d.category||'Other';if(!grouped[c])grouped[c]=[];grouped[c].push(d)});
+  
+  var html='';
+  Object.keys(grouped).forEach(function(catName){
+    html+='<div class="menu-section" data-cat="'+esc(catName)+'">';
+    html+='<div class="menu-section-title">'+esc(catName)+' <span class="menu-section-count">'+grouped[catName].length+' items</span></div>';
+    grouped[catName].forEach(function(d){
+      html+=renderDish(d);
+    });
+    html+='</div>';
+  });
+  
+  $('menu').innerHTML=html;
+}
+
+function renderDish(d){
+  var i=allDishes.indexOf(d);
+  var oos=(d.stock||'').toLowerCase().indexOf('out')>=0;
+  var veg=(d.veg||'').toLowerCase();
+  var isVeg=veg==='yes'||veg==='veg';
+  var isBest=(d.bestseller||'').toLowerCase()==='yes';
+  var isCombo=(d.combo||'').toLowerCase()==='yes'||(d.familypack||'').toLowerCase()==='yes';
+  var isQuickBulk=(d.quickqty||'').toLowerCase()==='yes'||(d.bulkorder||'').toLowerCase()==='yes';
+  var hasCustom=d.options||d.addons||d.sizes;
+  var qty=getCartQty(d.name);
+  var price=fnum(d.price),mrp=fnum(d.mrp);
+  var off=mrp>price?Math.round(((mrp-price)/mrp)*100):0;
+  var hindiName=d.hindiname||d.hindi_name||d.namehi||'';
+  
+  var html='<div class="dish'+(oos?' oos':'')+(isCombo?' combo-dish':'')+'"'+(oos?'':' onclick="onDishTap('+i+',event)"')+'>';
+  html+='<div class="dish-info">';
+  html+='<div class="dish-tag '+(isVeg?'veg':'nv')+'"></div>';
+  html+='<div class="dish-name">'+esc(d.name);
+  if(isBest)html+='<span class="dish-bestseller">⭐ सबसे पसंदीदा</span>';
+  if(isCombo)html+='<span class="combo-badge">🍱 Combo</span>';
+  html+='</div>';
+  if(hindiName)html+='<div class="hi-name">'+esc(hindiName)+'</div>';
+  html+='<div class="dish-price-row">';
+  html+='<span class="dish-price">'+(cfg('currency','₹'))+price.toLocaleString('en-IN')+'</span>';
+  if(mrp>price)html+='<span class="dish-mrp">'+(cfg('currency','₹'))+mrp.toLocaleString('en-IN')+'</span>';
+  if(off>0)html+='<span class="dish-off">'+off+'% OFF</span>';
+  html+='</div>';
+  if(d.description)html+='<div class="dish-desc">'+esc(d.description)+'</div>';
+  
+  // Meta: rating, time, servings
+  var meta='';
+  if(d.rating)meta+='<span class="dish-rating">⭐ '+esc(d.rating)+'</span>';
+  if(d.prepTime||d.preptime)meta+='<span>⏱ '+esc(d.preptime||d.prepTime)+'</span>';
+  if(d.serves)meta+='<span>👥 '+esc(d.serves)+'</span>';
+  if(d.spicy||d.spicelevel){
+    var spice=d.spicy||d.spicelevel;
+    meta+='<span>🌶️ '+esc(spice)+'</span>';
+  }
+  if(meta)html+='<div class="dish-meta">'+meta+'</div>';
+  html+='</div>'; // end dish-info
+  
+  html+='<div class="dish-img-area">';
+  var imgUrl=getAutoImage(d);
+  var fallbackEmoji=isVeg?'🥗':'🍗';
+  var cat_l=(d.category||'').toLowerCase();
+  if(cat_l.indexOf('drink')>=0||cat_l.indexOf('beverage')>=0)fallbackEmoji='🥤';
+  else if(cat_l.indexOf('dessert')>=0||cat_l.indexOf('sweet')>=0)fallbackEmoji='🍰';
+  else if(cat_l.indexOf('bread')>=0||cat_l.indexOf('roti')>=0)fallbackEmoji='🫓';
+  else if(cat_l.indexOf('rice')>=0||cat_l.indexOf('biryani')>=0)fallbackEmoji='🍚';
+  else if(cat_l.indexOf('noodle')>=0||cat_l.indexOf('chowmein')>=0)fallbackEmoji='🍜';
+  else if(cat_l.indexOf('momos')>=0)fallbackEmoji='🥟';
+  else if(cat_l.indexOf('soup')>=0)fallbackEmoji='🍲';
+  else if(cat_l.indexOf('burger')>=0)fallbackEmoji='🍔';
+  else if(cat_l.indexOf('pasta')>=0||cat_l.indexOf('maggi')>=0)fallbackEmoji='🍝';
+  else if(cat_l.indexOf('starter')>=0||cat_l.indexOf('finger')>=0)fallbackEmoji='🍢';
+  else if(cat_l.indexOf('roll')>=0)fallbackEmoji='🌯';
+  else if(cat_l.indexOf('manchurian')>=0||cat_l.indexOf('chinese')>=0)fallbackEmoji='🥡';
+  else if(cat_l.indexOf('paneer')>=0||cat_l.indexOf('chaap')>=0)fallbackEmoji='🧀';
+  else if(isCombo)fallbackEmoji='🍱';
+  // Only show img tag if real image URL exists
+  if(imgUrl){
+    html+='<img class="dish-img" src="'+esc(imgUrl)+'" alt="'+esc(d.name)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;dish-img-ph&quot;>'+fallbackEmoji+'</div>\'">';
+  }else{
+    html+='<div class="dish-img-ph">'+fallbackEmoji+'</div>';
+  }
+  if(hasCustom&&!oos)html+='<div class="dish-customize">Customize</div>';
+  
+  if(oos){
+    html+='<div style="position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font:700 10px var(--f);padding:5px 12px;border-radius:var(--r);text-transform:uppercase;letter-spacing:.05em">Sold Out</div>';
+  }else if(qty>0&&!hasCustom){
+    html+='<div class="dish-stepper">';
+    html+='<button onclick="event.stopPropagation();changeQty('+i+',-1)">−</button>';
+    html+='<span>'+qty+'</span>';
+    html+='<button onclick="event.stopPropagation();changeQty('+i+',1)">+</button>';
+    html+='</div>';
+  }else{
+    html+='<button class="dish-add-btn" onclick="event.stopPropagation();onAddDish('+i+')">'+(hasCustom?'CUSTOMIZE':'ADD')+(qty>0?' ('+qty+')':'')+'</button>';
+  }
+  html+='</div>'; // end dish-img-area
+  
+  // Quick quantity buttons + manual input for bulk items (rotis, parathas, etc.)
+  if(isQuickBulk&&!oos&&!hasCustom){
+    html+='<div class="qty-quick" style="margin-top:18px;align-items:center;flex-wrap:wrap">';
+    html+='<span style="font-size:10px;color:var(--ink3);font-weight:600">Quick:</span>';
+    [5,10,20].forEach(function(qq){
+      html+='<button class="qty-quick-btn'+(qty===qq?' active':'')+'" onclick="setExactQty('+i+','+qq+')">'+qq+'</button>';
+    });
+    html+='<input type="number" class="qty-custom-input" min="1" max="999" placeholder="Custom" '+(qty>0&&[5,10,20].indexOf(qty)<0?'value="'+qty+'"':'')+' onkeydown="if(event.key===\'Enter\')setExactQty('+i+',this.value)" onblur="if(this.value)setExactQty('+i+',this.value)" onclick="event.stopPropagation()">';
+    html+='</div>';
+  }
+  
+  html+='</div>'; // end dish
+  return html;
+}
+
+// Set exact quantity (used by quick qty buttons and custom input)
+function setExactQty(i,qty){
+  var d=allDishes[i];if(!d)return;
+  qty=parseInt(qty)||0;
+  if(qty<0)qty=0;
+  if(qty>999)qty=999;
+  // Remove existing cart entries for this dish (without customization)
+  cart=cart.filter(function(c){return!(c.name===d.name&&!c.customization)});
+  // Add new entry with the exact quantity
+  if(qty>0){
+    cart.push({
+      name:d.name,
+      category:d.category,
+      basePrice:fnum(d.price),
+      price:fnum(d.price),
+      qty:qty,
+      customization:null,
+      veg:(d.veg||'').toLowerCase()
+    });
+    showToast(qty+'x '+d.name+' added');
+  }else{
+    showToast(d.name+' removed from cart');
+  }
+  saveCart();renderMenu();updateCartBar();
+}
+
+// ══ ADD DISH ══
+function onAddDish(i){
+  var d=allDishes[i];
+  if(!d)return;
+  var hasCustom=d.options||d.addons||d.sizes;
+  if(hasCustom){openCustomization(d)}
+  else{addToCart(d,1,null,d.price);showAddedFeedback(d.name)}
+}
+
+// Handle tapping anywhere on the dish card
+function onDishTap(i,e){
+  // Don't trigger if user tapped a button, stepper, or input inside the card
+  var tag=e.target.tagName.toLowerCase();
+  if(tag==='button'||tag==='input')return;
+  // Don't trigger if tapped on stepper area
+  if(e.target.closest&&(e.target.closest('.dish-stepper')||e.target.closest('.dish-add-btn')||e.target.closest('.qty-quick')))return;
+  onAddDish(i);
+}
+
+function showAddedFeedback(name){
+  showToast('✓ '+name+' added to cart');
+  var badge=$('cartBadge');
+  badge.classList.remove('pop');void badge.offsetWidth;badge.classList.add('pop');
+}
+
+function changeQty(i,delta){
+  var d=allDishes[i];if(!d)return;
+  // Find FIRST cart item matching name (without customization)
+  var idx=cart.findIndex(function(c){return c.name===d.name&&!c.customization});
+  if(idx>=0){
+    cart[idx].qty+=delta;
+    if(cart[idx].qty<=0)cart.splice(idx,1);
+  }else if(delta>0){
+    addToCart(d,1,null,d.price);
+  }
+  saveCart();renderMenu();updateCartBar();
+}
+
+function addToCart(dish,qty,customization,price){
+  // Check if exact same item exists (same name + same customization)
+  var custKey=customization?JSON.stringify(customization):null;
+  var existing=cart.find(function(c){
+    var ck=c.customization?JSON.stringify(c.customization):null;
+    return c.name===dish.name&&ck===custKey;
+  });
+  if(existing){existing.qty+=qty}
+  else{
+    cart.push({
+      name:dish.name,
+      category:dish.category,
+      basePrice:fnum(dish.price),
+      price:fnum(price),
+      qty:qty,
+      customization:customization,
+      veg:(dish.veg||'').toLowerCase()
+    });
+  }
+  saveCart();renderMenu();updateCartBar();
+}
+
+function saveCart(){try{localStorage.setItem('rest_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}}
+
+function updateCartBar(){
+  var bar=$('cartBar'),badge=$('cartBadge');
+  if(!cart.length){bar.classList.remove('show');badge.style.display='none';var wf=$('waFloat');if(wf)wf.classList.remove('with-cart');return}
+  bar.classList.add('show');
+  var wf=$('waFloat');if(wf)wf.classList.add('with-cart');
+  var totalItems=cart.reduce(function(s,c){return s+c.qty},0);
+  var totalPrice=cart.reduce(function(s,c){return s+c.price*c.qty},0);
+  $('cbCount').textContent=totalItems;
+  $('cbItems').textContent=totalItems+' item'+(totalItems!==1?'s':'');
+  
+  // Free delivery progress
+  var freeAbove=fnum(cfg('freedelivery','0'));
+  var freeMsg=$('cbFreeMsg');
+  if(freeAbove>0&&freeMsg){
+    var remaining=freeAbove-totalPrice;
+    if(remaining<=0){
+      freeMsg.innerHTML='🎉 Free delivery unlocked!';
+    }else{
+      var pct=Math.min(100,Math.round((totalPrice/freeAbove)*100));
+      freeMsg.innerHTML='Add '+cfg('currency','₹')+remaining+' for free delivery <span class="cb-free-bar"><span class="cb-free-fill" style="width:'+pct+'%"></span></span>';
+    }
+    freeMsg.style.display='flex';
+  }else if(freeMsg){
+    freeMsg.style.display='none';
+  }
+  
+  $('cbTotal').textContent=cfg('currency','₹')+totalPrice.toLocaleString('en-IN');
+  badge.style.display='flex';badge.textContent=totalItems;
+}
+
+// ══ CUSTOMIZATION MODAL ══
+function openCustomization(dish){
+  currentCustomDish=dish;
+  custQtySelected=1;
+  custSelections={size:null,addons:[],spice:'Medium',instructions:''};
+  $('custTitle').textContent=dish.name;
+  $('custQtyVal').textContent='1';
+  
+  var html='';
+  
+  // Sizes (e.g. "Half:120, Full:200")
+  if(dish.sizes){
+    html+='<div class="cust-section"><div class="cust-sec-h">Choose Size <span class="cust-sec-sub">Required</span></div><div class="cust-options">';
+    var sizes=dish.sizes.split(/[,]+/).map(function(s){return s.trim()});
+    // If only 1 result but contains multiple Name:Price pairs, split by space before uppercase word
+    if(sizes.length===1&&sizes[0].indexOf(' ')>0){
+      sizes=sizes[0].split(/\s+(?=[A-Z])/).map(function(s){return s.trim()}).filter(function(s){return s.indexOf(':')>0});
+    }
+    sizes.forEach(function(s,idx){
+      var parts=s.split(':');
+      var name=parts[0].trim(),price=fnum(parts[1]);
+      var sel=idx===0;
+      if(sel)custSelections.size={name:name,price:price};
+      html+='<div class="cust-opt'+(sel?' selected':'')+'" onclick="selectSize(\''+esc(name)+'\','+price+',this)">';
+      html+='<div class="cust-opt-left"><div class="cust-opt-radio"></div><div class="cust-opt-name">'+esc(name)+'</div></div>';
+      html+='<div class="cust-opt-price">'+(cfg('currency','₹'))+price+'</div></div>';
+    });
+    html+='</div></div>';
+  }
+  
+  // Add-ons (e.g. "Extra Cheese:30, Extra Paneer:40")
+  if(dish.addons){
+    html+='<div class="cust-section"><div class="cust-sec-h">Add-ons <span class="cust-sec-sub">Optional</span></div><div class="cust-options">';
+    var addons=dish.addons.split(/[,]+/).map(function(a){return a.trim()});
+    if(addons.length===1&&addons[0].indexOf(' ')>0){
+      addons=addons[0].split(/\s+(?=[A-Z])/).map(function(a){return a.trim()}).filter(function(a){return a.indexOf(':')>0});
+    }
+    addons.forEach(function(a){
+      var parts=a.split(':');
+      var name=parts[0].trim(),price=fnum(parts[1]);
+      html+='<div class="cust-opt" onclick="toggleAddon(\''+esc(name)+'\','+price+',this)">';
+      html+='<div class="cust-opt-left"><div class="cust-checkbox"></div><div class="cust-opt-name">'+esc(name)+'</div></div>';
+      html+='<div class="cust-opt-price'+(price===0?' free':'')+'">+'+(cfg('currency','₹'))+price+'</div></div>';
+    });
+    html+='</div></div>';
+  }
+  
+  // Spice level
+  html+='<div class="cust-section"><div class="cust-sec-h">Spice Level</div><div class="cust-options">';
+  ['Mild','Medium','Spicy'].forEach(function(level){
+    var sel=level==='Medium';
+    html+='<div class="cust-opt'+(sel?' selected':'')+'" onclick="selectSpice(\''+level+'\',this)">';
+    html+='<div class="cust-opt-left"><div class="cust-opt-radio"></div><div class="cust-opt-name">'+(level==='Mild'?'🌶':level==='Medium'?'🌶🌶':'🌶🌶🌶')+' '+level+'</div></div>';
+    html+='</div>';
+  });
+  html+='</div></div>';
+  
+  // Special instructions
+  html+='<div class="cust-section"><div class="cust-sec-h">Special Instructions</div>';
+  html+='<textarea class="cust-instructions" id="custInstr" placeholder="Any special requests? E.g. less spicy, no onion, etc." oninput="updateCustPrice()"></textarea>';
+  html+='</div>';
+  
+  $('custBody').innerHTML=html;
+  updateCustPrice();
+  $('custBg').classList.add('open');
+}
+
+function selectSize(name,price,el){
+  custSelections.size={name:name,price:price};
+  el.parentElement.querySelectorAll('.cust-opt').forEach(function(o){o.classList.remove('selected')});
+  el.classList.add('selected');
+  updateCustPrice();
+}
+
+function toggleAddon(name,price,el){
+  var idx=custSelections.addons.findIndex(function(a){return a.name===name});
+  if(idx>=0){custSelections.addons.splice(idx,1);el.classList.remove('selected')}
+  else{custSelections.addons.push({name:name,price:price});el.classList.add('selected')}
+  updateCustPrice();
+}
+
+function selectSpice(level,el){
+  custSelections.spice=level;
+  el.parentElement.querySelectorAll('.cust-opt').forEach(function(o){o.classList.remove('selected')});
+  el.classList.add('selected');
+}
+
+function custQty(delta){
+  custQtySelected=Math.max(1,custQtySelected+delta);
+  $('custQtyVal').textContent=custQtySelected;
+  updateCustPrice();
+}
+
+function updateCustPrice(){
+  var base=custSelections.size?custSelections.size.price:fnum(currentCustomDish.price);
+  var addons=custSelections.addons.reduce(function(s,a){return s+a.price},0);
+  var total=(base+addons)*custQtySelected;
+  $('custAddPrice').textContent=cfg('currency','₹')+total.toLocaleString('en-IN');
+}
+
+function addCustomized(){
+  if(!currentCustomDish)return;
+  custSelections.instructions=$('custInstr').value.trim();
+  var base=custSelections.size?custSelections.size.price:fnum(currentCustomDish.price);
+  var addons=custSelections.addons.reduce(function(s,a){return s+a.price},0);
+  var perItemPrice=base+addons;
+  
+  addToCart(currentCustomDish,custQtySelected,{
+    size:custSelections.size,
+    addons:custSelections.addons,
+    spice:custSelections.spice,
+    instructions:custSelections.instructions
+  },perItemPrice);
+  
+  showAddedFeedback(currentCustomDish.name);
+  closeCust();
+}
+
+function closeCust(){$('custBg').classList.remove('open');currentCustomDish=null}
+
+// ══ CART DRAWER ══
+function openCart(){
+  if(!cart.length){showToast('Your cart is empty');return}
+  syncCartPrices();saveCart();renderCart();
+  $('cartDrawer').classList.add('open');$('cartBg').classList.add('open');
+}
+
+function closeCart(){$('cartDrawer').classList.remove('open');$('cartBg').classList.remove('open')}
+
+function renderCart(){
+  if(!cart.length){
+    $('cdBody').innerHTML='<div class="cd-empty"><div style="font-size:48px">🛒</div>Your cart is empty</div>';
+    $('cdFooter').style.display='none';return;
+  }
+  var html='';
+  cart.forEach(function(c,i){
+    var custDesc='';
+    if(c.customization){
+      var cust=c.customization;
+      var parts=[];
+      if(cust.size)parts.push(cust.size.name);
+      if(cust.spice&&cust.spice!=='Medium')parts.push(cust.spice);
+      if(cust.addons&&cust.addons.length)parts.push('+'+cust.addons.map(function(a){return a.name}).join(', '));
+      if(parts.length)custDesc='<div class="ci-cust">'+esc(parts.join(' · '))+'</div>';
+      if(cust.instructions)custDesc+='<div class="ci-cust" style="font-style:italic">"'+esc(cust.instructions)+'"</div>';
+    }
+    html+='<div class="cart-item"><div class="ci-info">';
+    html+='<div class="ci-name"><span class="dish-tag '+(c.veg==='yes'||c.veg==='veg'?'veg':'nv')+'" style="margin-bottom:0;width:12px;height:12px"></span>'+esc(c.name)+'</div>';
+    html+=custDesc;
+    html+='<button class="ci-rm" onclick="removeCart('+i+')">Remove</button>';
+    html+='</div>';
+    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">';
+    html+='<div class="ci-q"><button onclick="cartQty('+i+',-1)">−</button><span>'+c.qty+'</span><button onclick="cartQty('+i+',1)">+</button></div>';
+    html+='<div class="ci-price">'+(cfg('currency','₹'))+(c.price*c.qty).toLocaleString('en-IN')+'</div>';
+    html+='</div></div>';
+  });
+  $('cdBody').innerHTML=html;
+  
+  // Footer with full transparent bill breakdown
+  var subtotal=cart.reduce(function(s,c){return s+c.price*c.qty},0);
+  var minOrder=fnum(cfg('minorder','0'));
+  var deliveryFee=fnum(cfg('deliveryfee','0'));
+  var freeAbove=fnum(cfg('freedelivery','0'));
+  var freeDeliveryApplied=(freeAbove>0&&subtotal>=freeAbove);
+  var actualDeliveryFee=freeDeliveryApplied?0:deliveryFee;
+  var packingFee=fnum(cfg('packingfee','0'));
+  var taxes=fnum(cfg('taxes','0'));
+  var grand=subtotal+actualDeliveryFee+packingFee+taxes;
+  var cur=cfg('currency','₹');
+  
+  var ftHtml='';
+  
+  // Min order warning
+  if(minOrder>0&&subtotal<minOrder){
+    ftHtml+='<div class="cd-min-warn">⚠️ Add '+cur+(minOrder-subtotal)+' more to meet min order of '+cur+minOrder+'</div>';
+  }
+  
+  // Free delivery progress
+  if(freeAbove>0&&!freeDeliveryApplied&&deliveryFee>0){
+    var remaining=freeAbove-subtotal;
+    var pct=Math.min(100,Math.round((subtotal/freeAbove)*100));
+    ftHtml+='<div style="background:var(--brand-bg);padding:8px 12px;border-radius:8px;margin-bottom:10px;font-size:11px;color:var(--brand);font-weight:700;display:flex;align-items:center;gap:8px">';
+    ftHtml+='<span style="flex:1">🛵 Add '+cur+remaining+' for FREE delivery</span>';
+    ftHtml+='<span style="width:50px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden"><span style="display:block;height:100%;width:'+pct+'%;background:var(--brand);border-radius:2px"></span></span>';
+    ftHtml+='</div>';
+  }else if(freeDeliveryApplied){
+    ftHtml+='<div style="background:var(--green-bg);padding:8px 12px;border-radius:8px;margin-bottom:10px;font-size:11px;color:var(--green);font-weight:700;text-align:center">🎉 Free delivery unlocked! You save '+cur+deliveryFee+'</div>';
+  }
+  
+  // Bill rows
+  ftHtml+='<div class="cd-row"><span>Subtotal</span><strong>'+cur+subtotal.toLocaleString('en-IN')+'</strong></div>';
+  
+  // Delivery fee — always show
+  if(freeDeliveryApplied){
+    ftHtml+='<div class="cd-row" style="text-decoration:line-through;opacity:.4"><span>🛵 Delivery</span><span>'+cur+deliveryFee+'</span></div>';
+    ftHtml+='<div class="cd-row" style="color:var(--green);font-weight:700"><span>🛵 Free Delivery</span><span>FREE ✓</span></div>';
+  }else if(deliveryFee>0){
+    ftHtml+='<div class="cd-row"><span>🛵 Delivery</span><span>'+cur+deliveryFee+'</span></div>';
+  }else{
+    ftHtml+='<div class="cd-row" style="text-decoration:line-through;opacity:.4"><span>🛵 Delivery Fee</span><span>'+cur+(cfg('originaldeliveryfee','')||'30')+'</span></div>';
+    ftHtml+='<div class="cd-row" style="color:var(--green);font-weight:700"><span>🛵 Delivery</span><span>FREE ✓</span></div>';
+  }
+  
+  // Packing fee — always show
+  if(packingFee>0){
+    ftHtml+='<div class="cd-row"><span>📦 Packing</span><span>'+cur+packingFee+'</span></div>';
+  }else{
+    ftHtml+='<div class="cd-row" style="text-decoration:line-through;opacity:.4"><span>📦 Packing Charges</span><span>'+cur+(cfg('originalpackingfee','')||'20')+'</span></div>';
+    ftHtml+='<div class="cd-row" style="color:var(--green);font-weight:700"><span>📦 Packing</span><span>FREE ✓</span></div>';
+  }
+  
+  if(taxes>0)ftHtml+='<div class="cd-row"><span>Taxes</span><span>'+cur+taxes+'</span></div>';
+  
+  ftHtml+='<div class="cd-row total"><span>To Pay</span><span>'+cur+grand.toLocaleString('en-IN')+'</span></div>';
+  ftHtml+='<button class="cd-go" '+((minOrder>0&&subtotal<minOrder)?'disabled':'')+' onclick="goToCheckout()">Checkout — '+cur+grand.toLocaleString('en-IN')+' →</button>';
+  $('cdFooter').innerHTML=ftHtml;
+  $('cdFooter').style.display='block';
+}
+
+function cartQty(i,delta){
+  cart[i].qty+=delta;
+  if(cart[i].qty<=0)cart.splice(i,1);
+  saveCart();renderCart();renderMenu();updateCartBar();
+}
+function removeCart(i){cart.splice(i,1);saveCart();renderCart();renderMenu();updateCartBar()}
+
+// ══ CHECKOUT ══
+function goToCheckout(){
+  closeCart();renderCheckout();$('coDrawer').classList.add('open');
+}
+
+function closeCheckout(){$('coDrawer').classList.remove('open')}
+
+function renderCheckout(){
+  var subtotal=cart.reduce(function(s,c){return s+c.price*c.qty},0);
+  var html='';
+  
+  // Mode: Delivery / Pickup
+  html+='<div class="co-section"><div class="co-sec-h">Order Type</div>';
+  html+='<div class="co-mode">';
+  html+='<div class="co-mode-btn'+(activeMode==='delivery'?' active':'')+'" onclick="setMode(\'delivery\')"><div class="co-mode-icon">🛵</div><div class="co-mode-title">Delivery</div><div class="co-mode-sub">'+(cfg('estimateddeliverytime','30-45 min'))+'</div></div>';
+  html+='<div class="co-mode-btn'+(activeMode==='pickup'?' active':'')+'" onclick="setMode(\'pickup\')"><div class="co-mode-icon">🏪</div><div class="co-mode-title">Pickup</div><div class="co-mode-sub">Ready in 20 min</div></div>';
+  html+='</div></div>';
+  
+  // Customer info
+  html+='<div class="co-section"><div class="co-sec-h">Your Details</div>';
+  html+='<div class="co-row">';
+  html+='<input class="co-input" id="coName" placeholder="Name" value="'+esc(savedCustomer.name||'')+'">';
+  html+='<input class="co-input" id="coPhone" placeholder="Phone" type="tel" maxlength="10" value="'+esc(savedCustomer.phone||'')+'">';
+  html+='</div></div>';
+  
+  // Address (only for delivery)
+  if(activeMode==='delivery'){
+    html+='<div class="co-section"><div class="co-sec-h">Delivery Address</div>';
+    html+='<button class="co-loc-btn" id="locBtn" onclick="getCurrentLocation()">📍 Use my current location</button>';
+    html+='<div class="co-loc-status" id="locStatus" style="display:none"></div>';
+    html+='<textarea class="co-textarea" id="coAddress" placeholder="House no, area, landmark, city">'+esc(savedCustomer.address||'')+'</textarea>';
+    html+='</div>';
+  }
+  
+  // Order comments / notes
+  html+='<div class="co-section"><div class="co-sec-h">Order Notes <span style="font-weight:500;color:var(--ink4);text-transform:none;letter-spacing:0">(optional)</span></div>';
+  html+='<textarea class="co-textarea" id="coNotes" placeholder="Any special instructions for the restaurant? E.g. ring the bell, leave at door, etc."></textarea>';
+  html+='</div>';
+  
+  // Payment
+  html+='<div class="co-section"><div class="co-sec-h">Payment Method</div>';
+  html+='<div class="co-pay">';
+  html+='<div class="co-pay-btn'+(activePayment==='cod'?' active':'')+'" onclick="setPayment(\'cod\')"><div class="co-pay-icon">💵</div><div class="co-pay-name">Cash on '+(activeMode==='delivery'?'Delivery':'Pickup')+'</div></div>';
+  html+='<div class="co-pay-btn'+(activePayment==='upi'?' active':'')+'" onclick="setPayment(\'upi\')"><div class="co-pay-icon">📲</div><div class="co-pay-name">UPI / Online</div></div>';
+  html+='</div>';
+  
+  // UPI QR section — shown only when UPI is selected and UPI ID is configured
+  var upiId=cfg('upi','');
+  if(activePayment==='upi'&&upiId){
+    var upiAmount=subtotal; // Will recalc with fees below
+    html+='<div class="upi-section" id="upiSection">';
+    html+='<div class="upi-note">Complete payment after placing order. QR code will update with final amount.</div>';
+    html+='<div class="upi-qr-box"><div class="upi-qr" id="upiQr"></div></div>';
+    html+='<div class="upi-id-display">UPI ID: <strong>'+esc(upiId)+'</strong></div>';
+    html+='<div class="upi-apps">';
+    html+='<a class="upi-app-btn gpay" id="upiGpay" href="#">GPay</a>';
+    html+='<a class="upi-app-btn ppay" id="upiPhonepe" href="#">PhonePe</a>';
+    html+='<a class="upi-app-btn paytm" id="upiPaytm" href="#">Paytm</a>';
+    html+='<button class="upi-app-btn copy" onclick="copyUpiId()">Copy UPI ID</button>';
+    html+='</div>';
+    html+='</div>';
+  }else if(activePayment==='upi'&&!upiId){
+    html+='<div class="upi-section"><div class="upi-note" style="color:var(--orange)">UPI payment not configured for this store. Please select Cash on Delivery or contact the store.</div></div>';
+  }
+  html+='</div>';
+  
+  // Bill summary
+  var deliveryFee=activeMode==='delivery'?fnum(cfg('deliveryfee','30')):0;
+  var deliveryFeeOriginal=deliveryFee;
+  var freeAbove=fnum(cfg('freedelivery','0'));
+  var freeDeliveryApplied=false;
+  if(activeMode==='delivery'&&freeAbove>0&&subtotal>=freeAbove){deliveryFee=0;freeDeliveryApplied=true}
+  var packingFee=fnum(cfg('packingfee','0'));
+  var taxes=fnum(cfg('taxes','0'));
+  var grand=subtotal+deliveryFee+packingFee+taxes;
+  
+  html+='<div class="co-section"><div class="co-sec-h">Bill Summary</div>';
+  html+='<div class="co-bill">';
+  html+='<div class="co-bill-row"><span>Subtotal</span><strong>'+(cfg('currency','₹'))+subtotal.toLocaleString('en-IN')+'</strong></div>';
+  
+  // Delivery — always show
+  if(activeMode==='delivery'){
+    if(freeDeliveryApplied){
+      html+='<div class="co-bill-row" style="text-decoration:line-through;opacity:.5"><span>🛵 Delivery Fee</span><span>'+(cfg('currency','₹'))+deliveryFeeOriginal+'</span></div>';
+      html+='<div class="co-bill-row free"><span>🛵 Free Delivery</span><span>FREE ✓</span></div>';
+    }else if(deliveryFee>0){
+      html+='<div class="co-bill-row"><span>🛵 Delivery Fee</span><span>'+(cfg('currency','₹'))+deliveryFee+'</span></div>';
+      if(freeAbove>0){
+        var remaining=freeAbove-subtotal;
+        html+='<div class="co-bill-row" style="font-size:11px;color:var(--brand)"><span>Add '+(cfg('currency','₹'))+remaining+' more for free delivery</span><span></span></div>';
+      }
+    }else{
+      html+='<div class="co-bill-row" style="text-decoration:line-through;opacity:.4"><span>🛵 Delivery Fee</span><span>'+(cfg('currency','₹'))+(cfg('originaldeliveryfee','')||'30')+'</span></div>';
+      html+='<div class="co-bill-row free"><span>🛵 Delivery</span><span>FREE ✓</span></div>';
+    }
+  }else{
+    html+='<div class="co-bill-row" style="color:var(--ink3)"><span>🏪 Pickup</span><span>No delivery charge</span></div>';
+  }
+  
+  // Packing — always show
+  if(packingFee>0){
+    html+='<div class="co-bill-row"><span>📦 Packing Charges</span><span>'+(cfg('currency','₹'))+packingFee+'</span></div>';
+  }else{
+    html+='<div class="co-bill-row" style="text-decoration:line-through;opacity:.4"><span>📦 Packing Charges</span><span>'+(cfg('currency','₹'))+(cfg('originalpackingfee','')||'20')+'</span></div>';
+    html+='<div class="co-bill-row free"><span>📦 Packing</span><span>FREE ✓</span></div>';
+  }
+  
+  if(taxes>0)html+='<div class="co-bill-row"><span>Taxes & Fees</span><span>'+(cfg('currency','₹'))+taxes+'</span></div>';
+  html+='<div class="co-bill-row total"><span>Total to Pay</span><span>'+(cfg('currency','₹'))+grand.toLocaleString('en-IN')+'</span></div>';
+  if(freeDeliveryApplied)html+='<div style="text-align:center;margin-top:8px;font-size:11px;color:var(--green);font-weight:700;background:var(--green-bg);padding:6px;border-radius:6px">🎉 You saved '+(cfg('currency','₹'))+deliveryFeeOriginal+' on delivery!</div>';
+  html+='</div></div>';
+  
+  $('coBody').innerHTML=html;
+  $('placeBtnTotal').textContent=cfg('currency','₹')+grand.toLocaleString('en-IN');
+}
+
+function setMode(m){activeMode=m;renderCheckout()}
+function setPayment(p){activePayment=p;renderCheckout();if(p==='upi')setTimeout(generateUpiQr,100)}
+
+// UPI QR code generation
+function generateUpiQr(){
+  var upiId=cfg('upi','');
+  if(!upiId)return;
+  var shopName=cfg('shopname','Store');
+  var subtotal=cart.reduce(function(s,c){return s+c.price*c.qty},0);
+  var deliveryFee=activeMode==='delivery'?fnum(cfg('deliveryfee','30')):0;
+  var freeAbove=fnum(cfg('freedelivery','999'));
+  if(activeMode==='delivery'&&subtotal>=freeAbove)deliveryFee=0;
+  var packingFee=fnum(cfg('packingfee','0'));
+  var taxes=fnum(cfg('taxes','0'));
+  var amount=subtotal+deliveryFee+packingFee+taxes;
+  
+  var upiUrl='upi://pay?pa='+encodeURIComponent(upiId)+'&pn='+encodeURIComponent(shopName)+'&am='+amount+'&cu=INR&tn='+encodeURIComponent('Order from '+shopName);
+  
+  // Generate QR using QRCode library (loaded dynamically)
+  var qrEl=$('upiQr');
+  if(qrEl){
+    qrEl.innerHTML='';
+    if(window.QRCode){
+      new QRCode(qrEl,{text:upiUrl,width:180,height:180,colorDark:'#1a1a1a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    }else{
+      // Load QRCode library dynamically
+      var s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      s.onload=function(){
+        if(window.QRCode&&$('upiQr')){
+          new QRCode($('upiQr'),{text:upiUrl,width:180,height:180,colorDark:'#1a1a1a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+        }
+      };
+      document.head.appendChild(s);
+    }
+  }
+  
+  // Update deep links
+  var gpay=$('upiGpay');if(gpay)gpay.href=upiUrl.replace('upi://pay','tez://upi/pay');
+  var ppe=$('upiPhonepe');if(ppe)ppe.href=upiUrl.replace('upi://pay','phonepe://pay');
+  var ptm=$('upiPaytm');if(ptm)ptm.href=upiUrl.replace('upi://pay','paytmmp://pay');
+}
+
+function copyUpiId(){
+  var upiId=cfg('upi','');
+  if(!upiId){showToast('No UPI ID configured');return}
+  navigator.clipboard.writeText(upiId).then(function(){showToast('UPI ID copied: '+upiId)}).catch(function(){
+    var t=document.createElement('textarea');t.value=upiId;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast('UPI ID copied: '+upiId);
+  });
+}
+
+// ══ GEOLOCATION ══
+function getCurrentLocation(){
+  if(!navigator.geolocation){
+    showLocStatus('Your browser does not support location','err');return;
+  }
+  var btn=$('locBtn'),status=$('locStatus');
+  btn.disabled=true;btn.textContent='📍 Getting your location...';
+  showLocStatus('Requesting location permission...','');
+  
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      var lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
+      // Reverse geocode using free Nominatim API
+      fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lng+'&zoom=18&addressdetails=1')
+        .then(function(r){return r.json()})
+        .then(function(data){
+          btn.disabled=false;btn.innerHTML='📍 Use my current location';
+          var addr=data.display_name||(lat+', '+lng);
+          $('coAddress').value=addr;
+          showLocStatus('✓ Location found: '+addr.split(',').slice(0,3).join(','),'ok');
+          // Check delivery radius
+          checkDeliveryRadius(parseFloat(lat),parseFloat(lng));
+        })
+        .catch(function(){
+          btn.disabled=false;btn.innerHTML='📍 Use my current location';
+          $('coAddress').value='Lat: '+lat+', Lng: '+lng;
+          showLocStatus('✓ GPS location captured (please add details)','ok');
+          checkDeliveryRadius(parseFloat(lat),parseFloat(lng));
+        });
+    },
+    function(err){
+      btn.disabled=false;btn.innerHTML='📍 Use my current location';
+      var msg='Location access denied';
+      if(err.code===1)msg='Permission denied — enable location in browser settings';
+      else if(err.code===2)msg='Location unavailable';
+      else if(err.code===3)msg='Request timed out';
+      showLocStatus(msg,'err');
+    },
+    {enableHighAccuracy:true,timeout:10000,maximumAge:0}
+  );
+}
+
+function showLocStatus(msg,type){
+  var s=$('locStatus');
+  s.style.display='block';s.className='co-loc-status '+(type||'');
+  s.textContent=msg;
+}
+
+function checkDeliveryRadius(lat,lng){
+  var rLat=fnum(cfg('restaurantlat','')),rLng=fnum(cfg('restaurantlng',''));
+  var maxKm=fnum(cfg('maxdeliveryradius','5'));
+  if(!rLat||!rLng||!maxKm)return;
+  var dist=haversine(lat,lng,rLat,rLng);
+  var btn=$('placeBtn');
+  if(dist>maxKm){
+    showLocStatus('⚠️ You are '+dist.toFixed(1)+' km away. We deliver only within '+maxKm+' km.','err');
+    btn.disabled=true;
+  }else{
+    showLocStatus('✓ You are '+dist.toFixed(1)+' km away — within delivery range','ok');
+    btn.disabled=false;
+  }
+}
+
+function haversine(lat1,lng1,lat2,lng2){
+  var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// ══ PLACE ORDER ══
+function placeOrder(){
+  syncCartPrices();
+  if(!cart.length){alert('Cart is empty');return}
+  
+  var name=$('coName').value.trim(),phone=$('coPhone').value.trim();
+  var address=$('coAddress')?$('coAddress').value.trim():'';
+  var notes=$('coNotes').value.trim();
+  
+  if(!name){alert('Please enter your name');return}
+  if(!phone||phone.length<10){alert('Please enter a valid 10-digit phone number');return}
+  if(activeMode==='delivery'&&!address){alert('Please enter your delivery address');return}
+  
+  // Show confirmation modal first
+  showOrderConfirmation(name,phone,address,notes);
+}
+
+function showOrderConfirmation(name,phone,address,notes){
+  var subtotal=cart.reduce(function(s,c){return s+c.price*c.qty},0);
+  // Calculate MRP total to show savings
+  var mrpTotal=cart.reduce(function(s,c){
+    var dish=allDishes.find(function(d){return d.name===c.name});
+    var mrp=dish?fnum(dish.mrp)||fnum(dish.price):c.price;
+    return s+(mrp*c.qty);
+  },0);
+  var itemsSavings=mrpTotal>subtotal?(mrpTotal-subtotal):0;
+  
+  var deliveryFee=activeMode==='delivery'?fnum(cfg('deliveryfee','30')):0;
+  var freeAbove=fnum(cfg('freedelivery','999'));
+  var deliveryFeeOriginal=deliveryFee;
+  var freeDeliveryApplied=false;
+  if(activeMode==='delivery'&&subtotal>=freeAbove){deliveryFee=0;freeDeliveryApplied=true}
+  var packingFee=fnum(cfg('packingfee','0'));
+  var taxes=fnum(cfg('taxes','0'));
+  var discount=fnum(cfg('discount','0'));
+  var grand=subtotal+deliveryFee+packingFee+taxes-discount;
+  var totalSavings=itemsSavings+(freeDeliveryApplied?deliveryFeeOriginal:0)+discount;
+  
+  var html='';
+  
+  // Section 1: Customer Info
+  html+='<div class="confirm-section">';
+  html+='<div class="confirm-sec-h"><span>Customer Details</span><span class="edit-link" onclick="closeConfirm()">Edit</span></div>';
+  html+='<div class="confirm-info-row"><div class="confirm-info-icon">👤</div><div class="confirm-info-content"><div class="confirm-info-label">Name</div><div class="confirm-info-value">'+esc(name)+'</div></div></div>';
+  html+='<div class="confirm-info-row"><div class="confirm-info-icon">📞</div><div class="confirm-info-content"><div class="confirm-info-label">Phone</div><div class="confirm-info-value">'+esc(phone)+'</div></div></div>';
+  if(activeMode==='delivery'&&address){
+    html+='<div class="confirm-info-row"><div class="confirm-info-icon">📍</div><div class="confirm-info-content"><div class="confirm-info-label">Delivery Address</div><div class="confirm-info-value">'+esc(address)+'</div></div></div>';
+  }else if(activeMode==='pickup'){
+    html+='<div class="confirm-info-row"><div class="confirm-info-icon">🏪</div><div class="confirm-info-content"><div class="confirm-info-label">Order Type</div><div class="confirm-info-value">Pickup from store</div></div></div>';
+  }
+  html+='</div>';
+  
+  // Section 2: Order Type & Time
+  html+='<div class="confirm-section">';
+  html+='<div class="confirm-sec-h"><span>Order Info</span></div>';
+  html+='<div class="confirm-info-row"><div class="confirm-info-icon">'+(activeMode==='delivery'?'🛵':'🏪')+'</div><div class="confirm-info-content"><div class="confirm-info-label">'+(activeMode==='delivery'?'Delivery':'Pickup')+'</div><div class="confirm-info-value">'+(activeMode==='delivery'?(cfg('estimateddeliverytime','30-45 min')):'Ready in 20 min')+'</div></div></div>';
+  html+='<div class="confirm-info-row"><div class="confirm-info-icon">'+(activePayment==='cod'?'💵':'📲')+'</div><div class="confirm-info-content"><div class="confirm-info-label">Payment Method</div><div class="confirm-info-value">'+(activePayment==='cod'?'Cash on '+(activeMode==='delivery'?'Delivery':'Pickup'):'UPI / Online')+'</div></div></div>';
+  if(notes){
+    html+='<div class="confirm-info-row"><div class="confirm-info-icon">📝</div><div class="confirm-info-content"><div class="confirm-info-label">Special Instructions</div><div class="confirm-info-value" style="font-style:italic">"'+esc(notes)+'"</div></div></div>';
+  }
+  html+='</div>';
+  
+  // Section 3: Items
+  html+='<div class="confirm-section">';
+  html+='<div class="confirm-sec-h"><span>Items ('+cart.reduce(function(s,c){return s+c.qty},0)+')</span><span class="edit-link" onclick="closeConfirm();openCart()">Edit</span></div>';
+  cart.forEach(function(c){
+    var isVeg=(c.veg==='yes'||c.veg==='veg');
+    html+='<div class="confirm-item">';
+    html+='<div class="confirm-item-info">';
+    html+='<div class="confirm-item-name"><span class="confirm-item-tag '+(isVeg?'veg':'nv')+'"></span>'+esc(c.name)+'</div>';
+    if(c.customization){
+      var cust=c.customization,bits=[];
+      if(cust.size)bits.push(cust.size.name);
+      if(cust.spice&&cust.spice!=='Medium')bits.push(cust.spice);
+      if(cust.addons&&cust.addons.length)bits.push('+'+cust.addons.map(function(a){return a.name}).join(', '));
+      if(bits.length)html+='<div class="confirm-item-cust">'+esc(bits.join(' · '))+'</div>';
+      if(cust.instructions)html+='<div class="confirm-item-cust" style="font-style:italic">"'+esc(cust.instructions)+'"</div>';
+    }
+    html+='<div class="confirm-item-qty">Qty: '+c.qty+' × '+(cfg('currency','₹'))+c.price+'</div>';
+    html+='</div>';
+    html+='<div class="confirm-item-price">'+(cfg('currency','₹'))+(c.price*c.qty).toLocaleString('en-IN')+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  
+  // Section 4: Bill Summary
+  html+='<div class="confirm-section">';
+  html+='<div class="confirm-sec-h"><span>Bill Summary</span></div>';
+  if(itemsSavings>0){
+    html+='<div class="confirm-bill-row"><span>MRP Total</span><span style="text-decoration:line-through;color:var(--ink4)">'+(cfg('currency','₹'))+mrpTotal.toLocaleString('en-IN')+'</span></div>';
+  }
+  html+='<div class="confirm-bill-row"><span>Subtotal</span><strong>'+(cfg('currency','₹'))+subtotal.toLocaleString('en-IN')+'</strong></div>';
+  if(itemsSavings>0){
+    html+='<div class="confirm-bill-row discount"><span>Item Discount</span><span>−'+(cfg('currency','₹'))+itemsSavings.toLocaleString('en-IN')+'</span></div>';
+  }
+  if(activeMode==='delivery'){
+    if(freeDeliveryApplied){
+      html+='<div class="confirm-bill-row"><span>🛵 Delivery Fee</span><span style="text-decoration:line-through;color:var(--ink4)">'+(cfg('currency','₹'))+deliveryFeeOriginal+'</span></div>';
+      html+='<div class="confirm-bill-row free"><span>🛵 Free Delivery</span><span>FREE ✓</span></div>';
+    }else if(deliveryFee>0){
+      html+='<div class="confirm-bill-row"><span>🛵 Delivery Fee</span><span>'+(cfg('currency','₹'))+deliveryFee+'</span></div>';
+    }else{
+      html+='<div class="confirm-bill-row" style="text-decoration:line-through;opacity:.4"><span>🛵 Delivery Fee</span><span>'+(cfg('currency','₹'))+(cfg('originaldeliveryfee','')||'30')+'</span></div>';
+    html+='<div class="confirm-bill-row free"><span>🛵 Delivery</span><span>FREE ✓</span></div>';
+    }
+  }else{
+    html+='<div class="confirm-bill-row" style="color:var(--ink3)"><span>🏪 Pickup</span><span>No delivery charge</span></div>';
+  }
+  if(packingFee>0){
+    html+='<div class="confirm-bill-row"><span>📦 Packing Charges</span><span>'+(cfg('currency','₹'))+packingFee+'</span></div>';
+  }else{
+    html+='<div class="confirm-bill-row" style="text-decoration:line-through;opacity:.4"><span>📦 Packing Charges</span><span>'+(cfg('currency','₹'))+(cfg('originalpackingfee','')||'20')+'</span></div>';
+    html+='<div class="confirm-bill-row free"><span>📦 Packing</span><span>FREE ✓</span></div>';
+  }
+  if(taxes>0){
+    html+='<div class="confirm-bill-row"><span>Taxes & Fees</span><span>'+(cfg('currency','₹'))+taxes+'</span></div>';
+  }
+  if(discount>0){
+    html+='<div class="confirm-bill-row discount"><span>Discount</span><span>−'+(cfg('currency','₹'))+discount+'</span></div>';
+  }
+  html+='<div class="confirm-bill-row total"><span>Total Amount</span><span>'+(cfg('currency','₹'))+grand.toLocaleString('en-IN')+'</span></div>';
+  if(totalSavings>0){
+    html+='<div class="confirm-bill-row savings"><span>🎉 You\'re saving '+(cfg('currency','₹'))+totalSavings.toLocaleString('en-IN')+' on this order!</span></div>';
+  }
+  html+='</div>';
+  
+  $('confirmBody').innerHTML=html;
+  
+  // Store data for finalizeOrder
+  window._pendingOrder={
+    name:name,phone:phone,address:address,notes:notes,
+    subtotal:subtotal,deliveryFee:deliveryFee,packingFee:packingFee,
+    taxes:taxes,discount:discount,grand:grand,totalSavings:totalSavings
+  };
+  
+  $('confirmBg').classList.add('open');
+}
+
+function closeConfirm(){
+  $('confirmBg').classList.remove('open');
+}
+
+function finalizeOrder(){
+  var po=window._pendingOrder;
+  if(!po){closeConfirm();return}
+  
+  var btn=$('confirmBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span style="display:inline-block;animation:spin .6s linear infinite">↻</span> Placing order...';
+  
+  var name=po.name,phone=po.phone,address=po.address,notes=po.notes;
+  var subtotal=po.subtotal,deliveryFee=po.deliveryFee,packingFee=po.packingFee;
+  var taxes=po.taxes,grand=po.grand;
+  
+  // Save customer
+  savedCustomer={name:name,phone:phone,address:address};
+  try{localStorage.setItem('rest_cust_'+SHEET_ID,JSON.stringify(savedCustomer))}catch(e){}
+  
+  var oid='ORD-'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,3).toUpperCase();
+  
+  // Build items string
+  var itemsStr=cart.map(function(c){
+    var s=c.qty+'x '+c.name;
+    if(c.customization){
+      var cust=c.customization;
+      var bits=[];
+      if(cust.size)bits.push(cust.size.name);
+      if(cust.spice&&cust.spice!=='Medium')bits.push(cust.spice);
+      if(cust.addons&&cust.addons.length)bits.push('+'+cust.addons.map(function(a){return a.name}).join(','));
+      if(cust.instructions)bits.push('Note: '+cust.instructions);
+      if(bits.length)s+=' ['+bits.join(' | ')+']';
+    }
+    s+=' = ₹'+(c.price*c.qty);
+    return s;
+  }).join('\n');
+  
+  // Send to Apps Script
+  if(SCRIPT_URL){
+    var params='action=newOrder';
+    params+='&id='+encodeURIComponent(oid);
+    params+='&name='+encodeURIComponent(name);
+    params+='&phone='+encodeURIComponent(phone);
+    params+='&address='+encodeURIComponent(address);
+    params+='&items='+encodeURIComponent(itemsStr);
+    params+='&total='+encodeURIComponent(grand);
+    params+='&mode='+encodeURIComponent(activeMode);
+    params+='&payment='+encodeURIComponent(activePayment);
+    params+='&notes='+encodeURIComponent(notes);
+    params+='&date='+encodeURIComponent(new Date().toLocaleString('en-IN'));
+    var img=new Image();img.src=SCRIPT_URL+'?'+params+'&_t='+Date.now();
+  }
+  
+  // WhatsApp confirmation
+  var phoneCfg=cfg('whatsapp',DEFAULT_WA);
+  var waMsg='Hi! New order:\n\n*Order #'+oid+'*\n\n👤 '+name+'\n📞 '+phone+'\n'+
+    (activeMode==='delivery'?'📍 '+address:'🏪 Pickup')+'\n\n*Items:*\n'+itemsStr+
+    '\n\n💰 Subtotal: ₹'+subtotal+
+    (deliveryFee>0?'\n🛵 Delivery: ₹'+deliveryFee:deliveryFee===0&&activeMode==='delivery'?'\n🛵 FREE delivery':'')+
+    (packingFee>0?'\n📦 Packing: ₹'+packingFee:'')+
+    '\n*Total: ₹'+grand+'*'+
+    '\n\n💳 Payment: '+(activePayment==='cod'?'Cash on '+(activeMode==='delivery'?'Delivery':'Pickup'):'UPI')+
+    (notes?'\n\n📝 Notes: '+notes:'');
+  
+  var waUrl='https://wa.me/'+phoneCfg+'?text='+encodeURIComponent(waMsg);
+  window.open(waUrl,'_blank');
+  
+  // Clear cart
+  cart=[];saveCart();updateCartBar();
+  
+  // Reset confirm button
+  var btn=$('confirmBtn');
+  btn.disabled=false;
+  btn.innerHTML='<span>✓ Confirm & Place Order</span>';
+  
+  // Close all modals and show success
+  closeConfirm();
+  closeCheckout();
+  $('successId').textContent=oid;
+  saveRecentOrderId(oid);
+  $('successTime').textContent=activeMode==='delivery'?'⏱️ Arriving in '+(cfg('estimateddeliverytime','30-45 min')):'⏱️ Ready for pickup in 20 min';
+  $('successBg').classList.add('open');
+  
+  // Clear pending order
+  window._pendingOrder=null;
+}
+
+function closeSuccess(){$('successBg').classList.remove('open');renderMenu()}
+
+function closeTrack(){$('trackBg').classList.remove('open')}
+
+function showTrackInput(){
+  $('trackBg').classList.add('open');
+  
+  // Build the beautiful input UI
+  var html='<div class="track-input-box">';
+  html+='<div class="track-input-icon">📦</div>';
+  html+='<div class="track-input-title">Track Your Order</div>';
+  html+='<div class="track-input-sub">Enter the Order ID you received<br>when you placed your order</div>';
+  html+='<div class="track-input-wrap">';
+  html+='<input type="text" class="track-input-field" id="trackInputField" placeholder="e.g. ORD-MOHKB3L" maxlength="20" autocomplete="off" onkeydown="if(event.key===\'Enter\')submitTrackInput()">';
+  html+='<button class="track-input-go" onclick="submitTrackInput()">→</button>';
+  html+='</div>';
+  html+='<div class="track-input-hint">You can find this in your WhatsApp order message</div>';
+  
+  // Show recent orders from localStorage
+  var recent=getRecentOrderIds();
+  if(recent.length){
+    html+='<div class="track-input-recent">';
+    html+='<div class="track-input-recent-h">Recent Orders</div>';
+    recent.forEach(function(r){
+      html+='<div class="track-recent-item" onclick="trackOrder(\''+esc(r.id)+'\')">';
+      html+='<div><div class="track-recent-id">'+esc(r.id)+'</div><div class="track-recent-date">'+esc(r.date)+'</div></div>';
+      html+='<div class="track-recent-arrow">→</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+  
+  html+='</div>';
+  $('trackBody').innerHTML=html;
+  
+  // Auto-focus the input
+  setTimeout(function(){
+    var inp=$('trackInputField');
+    if(inp)inp.focus();
+  },200);
+}
+
+function submitTrackInput(){
+  var inp=$('trackInputField');
+  if(!inp)return;
+  var oid=inp.value.trim();
+  if(!oid){inp.style.borderColor='var(--red)';inp.style.animation='shake .4s';setTimeout(function(){inp.style.borderColor='';inp.style.animation=''},500);return}
+  trackOrder(oid);
+}
+
+// Store recent order IDs in localStorage
+function saveRecentOrderId(oid){
+  try{
+    var key='sl_recent_orders_'+SHEET_ID;
+    var recent=JSON.parse(localStorage.getItem(key)||'[]');
+    // Remove duplicate
+    recent=recent.filter(function(r){return r.id!==oid});
+    // Add to front
+    recent.unshift({id:oid,date:new Date().toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})});
+    // Keep only last 5
+    if(recent.length>5)recent=recent.slice(0,5);
+    localStorage.setItem(key,JSON.stringify(recent));
+  }catch(e){}
+}
+
+function getRecentOrderIds(){
+  try{
+    var key='sl_recent_orders_'+SHEET_ID;
+    return JSON.parse(localStorage.getItem(key)||'[]');
+  }catch(e){return[]}
+}
+
+function trackOrder(orderId){
+  if(!orderId){showTrackInput();return}
+  closeSuccess();
+  $('trackBg').classList.add('open');
+  $('trackBody').innerHTML='<div style="text-align:center;padding:20px"><div class="shimmer" style="width:100px;height:14px;border-radius:4px;margin:8px auto"></div><div class="shimmer" style="width:200px;height:20px;border-radius:4px;margin:8px auto"></div><div style="color:var(--ink3);font-size:12px;margin-top:8px">Looking up order...</div></div>';
+  
+  // Load Orders tab to find this order
+  loadSheet('Orders',function(r){
+    if(!r||!r.table||!r.table.rows||!r.table.rows.length){
+      $('trackBody').innerHTML='<div style="text-align:center;padding:24px;color:var(--ink3)"><div style="font-size:36px;margin-bottom:8px">🔍</div><strong>Order not found</strong><p style="font-size:12px;margin-top:6px">Check your Order ID and try again</p></div>';
+      return;
+    }
+    
+    // Parse — detect if cols have proper labels or if headers are in row 0
+    var colLabels=(r.table.cols||[]).map(function(c){return(c.label||'').trim()});
+    var firstRaw=colLabels[0]||'';
+    var headers=[];
+    var dataRows=r.table.rows;
+    
+    if(firstRaw&&firstRaw.split(/\s+/).length<=3&&colLabels.filter(function(l){return l}).length>1){
+      // Normal: cols have proper labels
+      headers=colLabels;
+    }else{
+      // Merged: use row 0 as headers
+      var hRow=r.table.rows[0];
+      if(hRow&&hRow.c){for(var h=0;h<hRow.c.length;h++){var hc=hRow.c[h];var hv='';if(hc){if(hc.f!=null)hv=String(hc.f).trim();else if(hc.v!=null)hv=String(hc.v).trim()}headers.push(hv)}}
+      dataRows=r.table.rows.slice(1);
+    }
+    
+    var order=null;
+    for(var i=0;i<dataRows.length;i++){
+      var row=dataRows[i];
+      var o={};
+      headers.forEach(function(hd,j){
+        var c=row.c&&row.c[j];
+        var v='';
+        if(c){if(c.f!=null)v=String(c.f).trim();else if(c.v!=null)v=String(c.v).trim()}
+        var key=hd.toLowerCase().replace(/\s+/g,'');
+        if(key)o[key]=v;
+      });
+      var oid=o.orderid||o['orderid']||'';
+      if(oid.toLowerCase()===orderId.toLowerCase()){order=o;break}
+    }
+    
+    if(!order){
+      $('trackBody').innerHTML='<div style="text-align:center;padding:24px;color:var(--ink3)"><div style="font-size:36px;margin-bottom:8px">🔍</div><strong>Order not found</strong><p style="font-size:12px;margin-top:6px">"'+esc(orderId)+'" was not found. Check your Order ID.</p></div>';
+      return;
+    }
+    
+    renderTrackOrder(order,orderId);
+    saveRecentOrderId(orderId);
+  });
+}
+
+function renderTrackOrder(o,orderId){
+  var status=(o.status||'new').toLowerCase();
+  var name=o.customername||o.name||'';
+  var phone=o.phone||'';
+  var items=o.items||'';
+  var total=o.total||o['total(₹)']||'0';
+  var mode=(o.mode||'delivery').toLowerCase();
+  var date=o['date&time']||o.date||o['datetime']||'';
+  var comment=o.shopkeepercomment||o['shopkeepercomment']||o.comment||'';
+  var address=o.address||'';
+  var payment=o.payment||'';
+  
+  // Define timeline steps
+  var steps=[
+    {key:'new',label:'Order Placed',icon:'📋',sub:date?date:''},
+    {key:'confirmed',label:'Confirmed by Restaurant',icon:'✅',sub:'Your food is being prepared'},
+    {key:'packed',label:mode==='delivery'?'Packed & Ready':'Ready for Pickup',icon:'📦',sub:mode==='delivery'?'Waiting for delivery partner':'Please pick up from counter'},
+    {key:mode==='delivery'?'delivered':'pickedup',label:mode==='delivery'?'Delivered':'Picked Up',icon:mode==='delivery'?'🛵':'🏪',sub:'Enjoy your meal!'}
+  ];
+  
+  var cancelled=(status==='cancelled');
+  var currentIdx=0;
+  if(status==='confirmed')currentIdx=1;
+  else if(status==='packed')currentIdx=2;
+  else if(status==='delivered'||status==='picked up'||status==='pickedup'||status==='done'||status==='completed')currentIdx=3;
+  
+  var html='';
+  html+='<div class="track-oid">#'+esc(orderId)+'</div>';
+  
+  // Timeline
+  html+='<div class="track-timeline">';
+  steps.forEach(function(step,idx){
+    var state='';
+    if(cancelled&&idx===0)state='done';
+    else if(cancelled&&idx>0)state='';
+    else if(idx<currentIdx)state='done';
+    else if(idx===currentIdx)state='active';
+    
+    html+='<div class="track-step '+state+(cancelled&&idx===currentIdx+1?' cancelled':'')+'"><div class="track-dot"></div>';
+    html+='<div class="track-step-title">'+step.icon+' '+step.label+'</div>';
+    if(step.sub)html+='<div class="track-step-sub">'+esc(step.sub)+'</div>';
+    html+='</div>';
+  });
+  if(cancelled){
+    html+='<div class="track-step cancelled"><div class="track-dot"></div>';
+    html+='<div class="track-step-title">❌ Order Cancelled</div>';
+    html+='<div class="track-step-sub">This order was cancelled</div>';
+    html+='</div>';
+  }
+  html+='</div>';
+  
+  // Shopkeeper comment
+  if(comment){
+    html+='<div class="track-comment"><div class="track-comment-label">💬 Message from Restaurant</div>'+esc(comment)+'</div>';
+  }
+  
+  // Order details
+  html+='<div class="track-items"><div class="track-items-h">Order Details</div>';
+  var itemList=items.split(/[,\n]+/).filter(function(s){return s.trim()});
+  itemList.forEach(function(it){
+    var parts=it.trim().split('=');
+    html+='<div class="track-item"><span class="track-item-name">'+esc(parts[0].trim())+'</span>';
+    if(parts[1])html+='<span class="track-item-price">'+esc(parts[1].trim())+'</span>';
+    html+='</div>';
+  });
+  html+='<div class="track-total"><span>Total</span><span>₹'+esc(total)+'</span></div>';
+  html+='</div>';
+  
+  // Delivery info
+  if(address)html+='<div style="font-size:12px;color:var(--ink2);margin-bottom:8px">📍 '+esc(address)+'</div>';
+  if(mode)html+='<div style="font-size:12px;color:var(--ink3);margin-bottom:8px">'+(mode==='delivery'?'🛵 Delivery':'🏪 Pickup')+(payment?' · 💳 '+esc(payment):'')+'</div>';
+  
+  // Contact restaurant
+  var shopPhone=cfg('phone','');
+  var shopWa=cfg('whatsapp','')||shopPhone;
+  if(shopPhone||shopWa){
+    html+='<div class="track-contact">';
+    if(shopPhone)html+='<a href="tel:+'+shopPhone.replace(/\D/g,'')+'">📞 Call Restaurant</a>';
+    if(shopWa)html+='<a href="https://wa.me/'+shopWa.replace(/\D/g,'')+'" target="_blank">💬 WhatsApp</a>';
+    html+='</div>';
+  }
+  
+  $('trackBody').innerHTML=html;
+}
+
+function goBack(){
+  if(window.history.length>1)window.history.back();
+  else window.location.href='/';
+}
+
+// Close drawers on Escape
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if($('trackBg')&&$('trackBg').classList.contains('open'))closeTrack();
+    else if($('confirmBg')&&$('confirmBg').classList.contains('open'))closeConfirm();
+    else if($('custBg').classList.contains('open'))closeCust();
+    else if($('successBg').classList.contains('open'))closeSuccess();
+    else if($('coDrawer').classList.contains('open'))closeCheckout();
+    else if($('cartDrawer').classList.contains('open'))closeCart();
+  }
+});
+
+// Render Daily Special card — called after allDishes loaded so price can auto-fetch
+function renderDailySpecial(){
+  var dsName=cfg('dailyspecial','')||cfg('todayspecial','')||cfg('aajkaspecial','');
+  if(!dsName)return;
+  
+  var dsPrice=cfg('dailyspecialprice','')||cfg('dailyspecialprice','');
+  var dsHindi=cfg('dailyspecialhindi','');
+  var dsDesc=cfg('dailyspecialdesc','');
+  var dsImg=cfg('dailyspecialimage','');
+  
+  // Auto-fetch from Products tab if not set in Config
+  if(allDishes.length){
+    var lowerDs=dsName.toLowerCase();
+    var matchDish=null;
+    for(var di=0;di<allDishes.length;di++){
+      if(allDishes[di].name.toLowerCase()===lowerDs){matchDish=allDishes[di];break}
+    }
+    if(!matchDish){
+      for(var di=0;di<allDishes.length;di++){
+        if(allDishes[di].name.toLowerCase().indexOf(lowerDs)>=0||lowerDs.indexOf(allDishes[di].name.toLowerCase())>=0){matchDish=allDishes[di];break}
+      }
+    }
+    if(matchDish){
+      // Price: use base price from Products (not sizes)
+      if(!dsPrice)dsPrice=matchDish.price||'';
+      if(!dsHindi)dsHindi=matchDish.hindiname||matchDish.hindi_name||matchDish.namehi||'';
+      if(!dsDesc)dsDesc=matchDish.description||'';
+      if(!dsImg)dsImg=matchDish.image||'';
+    }
+  }
+  
+  var dsEl=$('dailySpecial');
+  dsEl.className='daily-special';
+  dsEl.style.display='block';
+  
+  // Auto-fetch image from Unsplash if still not available
+  if(!dsImg){
+    var imgQuery=dsName.toLowerCase();
+    if(imgQuery.indexOf('burger')>=0)imgQuery='burger,cheeseburger';
+    else if(imgQuery.indexOf('pizza')>=0)imgQuery='pizza,cheese';
+    else if(imgQuery.indexOf('combo')>=0)imgQuery='burger,fries,combo';
+    else if(imgQuery.indexOf('thali')>=0)imgQuery='indian,thali,food';
+    else if(imgQuery.indexOf('biryani')>=0)imgQuery='biryani,rice';
+    else if(imgQuery.indexOf('paneer')>=0)imgQuery='paneer,curry';
+    else if(imgQuery.indexOf('momos')>=0)imgQuery='momos,dumplings';
+    else imgQuery+=',food';
+    dsImg='https://source.unsplash.com/featured/1200x600/?'+encodeURIComponent(imgQuery);
+  }
+  
+  var html='<div class="daily-special-card" id="dsCard">';
+  html+='<img class="daily-special-img-el" src="'+esc(dsImg)+'" alt="" onerror="dsImgFail()">';
+  html+='<div class="daily-special-overlay"></div>';
+  html+='<div class="daily-special-badge">⭐ Today\'s Special</div>';
+  html+='<div class="daily-special-content">';
+  html+='<div class="daily-special-text">';
+  html+='<div class="daily-special-label">🔥 आज का स्पेशल</div>';
+  html+='<div class="daily-special-name">'+esc(dsName)+'</div>';
+  if(dsHindi)html+='<div class="daily-special-name-hi">'+esc(dsHindi)+'</div>';
+  if(dsDesc)html+='<div class="daily-special-desc">'+esc(dsDesc)+'</div>';
+  html+='<button type="button" class="daily-special-cta" id="dsCta">Order Now</button>';
+  html+='</div>';
+  if(dsPrice)html+='<div class="daily-special-price"><small>Only</small>'+(cfg('currency','₹'))+esc(dsPrice)+'</div>';
+  html+='</div></div>';
+  dsEl.innerHTML=html;
+  
+  var dsCtaBtn=document.getElementById('dsCta');
+  if(dsCtaBtn){
+    dsCtaBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      scrollToDish(dsName);
+    });
+  }
+}
+
+// Scroll to menu (used by hero CTA "Order Now" button)
+function scrollToMenu(){
+  var menu=$('menu');
+  if(!menu)return;
+  var top=menu.getBoundingClientRect().top+window.pageYOffset-140;
+  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+}
+
+// Scroll to a specific dish by name (used by Daily Special "Order now")
+function scrollToDish(name){
+  // Reset filter to All so the dish is definitely visible
+  activeCat='All';
+  if($('searchInput'))$('searchInput').value='';
+  // Update cat nav active state
+  document.querySelectorAll('.cat-nav-btn').forEach(function(b){
+    b.classList.remove('active');
+    if(b.textContent.trim().indexOf('All')===0)b.classList.add('active');
+  });
+  renderMenu();
+  // Wait for DOM update then scroll
+  requestAnimationFrame(function(){
+    setTimeout(function(){
+      var dishes=document.querySelectorAll('.dish');
+      var lowerName=String(name||'').toLowerCase().trim();
+      var found=null;
+      
+      // Strategy 1: Exact match (case-insensitive)
+      for(var i=0;i<dishes.length;i++){
+        var n=dishes[i].querySelector('.dish-name');
+        if(n&&n.textContent.toLowerCase().trim()===lowerName){found=dishes[i];break}
+      }
+      
+      // Strategy 2: Substring match
+      if(!found){
+        for(var i=0;i<dishes.length;i++){
+          var n=dishes[i].querySelector('.dish-name');
+          if(n&&n.textContent.toLowerCase().indexOf(lowerName)>=0){found=dishes[i];break}
+        }
+      }
+      
+      // Strategy 3: Word match — find dish that shares the most distinctive words
+      if(!found){
+        var words=lowerName.split(/[\s,\-]+/).filter(function(w){
+          return w.length>2&&['the','and','with','for','combo','special','only','buy','get'].indexOf(w)<0;
+        });
+        if(words.length){
+          var bestMatch=null,bestScore=0;
+          for(var i=0;i<dishes.length;i++){
+            var n=dishes[i].querySelector('.dish-name');
+            if(!n)continue;
+            var dn=n.textContent.toLowerCase();
+            var score=0;
+            words.forEach(function(w){if(dn.indexOf(w)>=0)score++});
+            if(score>bestScore){bestScore=score;bestMatch=dishes[i]}
+          }
+          if(bestScore>0)found=bestMatch;
+        }
+      }
+      
+      if(found){
+        var top=found.getBoundingClientRect().top+window.pageYOffset-150;
+        window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+        // Highlight
+        found.style.transition='box-shadow .3s,background .3s';
+        found.style.boxShadow='0 0 0 3px var(--brand)';
+        found.style.borderRadius='var(--r)';
+        found.style.background='var(--brand-bg)';
+        setTimeout(function(){
+          found.style.boxShadow='';
+          found.style.background='';
+          found.style.borderRadius='';
+        },3000);
+      }else{
+        // No match — scroll to menu and show first category
+        scrollToMenu();
+        showToast('Browse the full menu below');
+      }
+    },200);
+  });
+}
+
+// Auto-generate image URL based on dish name and category — uses Unsplash for free relevant images
+function getAutoImage(dish){
+  // Only use real images — no random Unsplash
+  if(dish.image)return dish.image;
+  return ''; // Will trigger emoji fallback in onerror
+}
+
+// Re-render on window resize (handles desktop/mobile transitions)
+var resizeTimer;
+window.addEventListener('resize',function(){
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(function(){
+    if(allDishes.length){renderMenu()}
+  },200);
+});
+
+// Make cat-nav scrollable with mouse wheel + drag on desktop
+(function(){
+  var nav=document.getElementById('catNav');
+  if(!nav)return;
+  // Mouse wheel → horizontal scroll
+  nav.addEventListener('wheel',function(e){
+    if(Math.abs(e.deltaY)>0){
+      e.preventDefault();
+      nav.scrollLeft+=e.deltaY;
+    }
+  },{passive:false});
+  // Drag to scroll on desktop
+  var isDown=false,startX,scrollL;
+  nav.addEventListener('mousedown',function(e){
+    isDown=true;nav.style.cursor='grabbing';startX=e.pageX-nav.offsetLeft;scrollL=nav.scrollLeft;
+  });
+  nav.addEventListener('mouseleave',function(){isDown=false;nav.style.cursor='grab'});
+  nav.addEventListener('mouseup',function(){isDown=false;nav.style.cursor='grab'});
+  nav.addEventListener('mousemove',function(e){
+    if(!isDown)return;e.preventDefault();
+    var x=e.pageX-nav.offsetLeft;
+    nav.scrollLeft=scrollL-(x-startX);
+  });
+  nav.style.cursor='grab';
+})();
+
+// Init
+init();
+</script>
+</body>
+</html>

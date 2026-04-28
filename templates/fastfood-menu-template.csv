@@ -1,0 +1,38 @@
+name,hindiname,category,price,mrp,unit,description,image,veg,bestseller,combo,quickqty,rating,prepTime,serves,sizes,addons,spicy,stock,sortorder
+Special Cheese Burger Combo,चीज़ बर्गर कॉम्बो,Combos,199,250,1 combo,Double cheese burger + fries + 250ml cola,,yes,yes,yes,,4.7,12 min,1,,,Medium,in stock,1
+Family Pizza Combo,फैमिली पिज़्ज़ा कॉम्बो,Combos,499,650,1 combo,Large pizza + 4 cold drinks + garlic bread,,yes,yes,yes,,4.6,18 min,4,,,Mild,in stock,2
+Veg Burger,वेज बर्गर,Burgers,79,99,1 piece,Crispy veg patty with lettuce and mayo,,yes,,,yes,4.4,8 min,1,Single:79 Double:139,Extra Cheese:25 Extra Patty:40,Mild,in stock,3
+Cheese Burger,चीज़ बर्गर,Burgers,99,129,1 piece,Veg patty with melted cheese and sauce,,yes,yes,,yes,4.6,8 min,1,Single:99 Double:169,Extra Cheese:25 Extra Patty:40,Mild,in stock,4
+Aloo Tikki Burger,आलू टिक्की बर्गर,Burgers,69,,1 piece,Spicy potato tikki burger Indian style,,yes,,,yes,4.5,8 min,1,,Extra Cheese:25,Spicy,in stock,5
+Paneer Burger,पनीर बर्गर,Burgers,149,,1 piece,Grilled paneer patty with mint chutney,,yes,,,,4.6,10 min,1,,Extra Cheese:25,Medium,in stock,6
+Chicken Burger,चिकन बर्गर,Burgers,159,199,1 piece,Crispy chicken patty with mayo,,no,yes,,,4.7,10 min,1,Single:159 Double:259,Extra Cheese:25,Medium,in stock,7
+Margherita Pizza,मार्गेरीटा पिज़्ज़ा,Pizza,199,249,Medium,Classic tomato cheese pizza,,yes,,,,4.5,15 min,2,Small:149 Medium:199 Large:299,Extra Cheese:50 Olives:30,Mild,in stock,8
+Veg Supreme Pizza,वेज सुप्रीम पिज़्ज़ा,Pizza,279,349,Medium,Loaded with capsicum mushroom corn olives,,yes,yes,,,4.7,15 min,2,Small:199 Medium:279 Large:399,Extra Cheese:50,Mild,in stock,9
+Paneer Tikka Pizza,पनीर टिक्का पिज़्ज़ा,Pizza,299,,Medium,Spicy paneer tikka with onion and capsicum,,yes,,,,4.6,15 min,2,Small:219 Medium:299 Large:419,Extra Paneer:60,Medium,in stock,10
+Chicken Tikka Pizza,चिकन टिक्का पिज़्ज़ा,Pizza,329,,Medium,Spicy chicken tikka with onion,,no,,,,4.7,15 min,2,Small:239 Medium:329 Large:449,Extra Chicken:80,Medium,in stock,11
+French Fries,फ्रेंच फ्राइज़,Sides,79,,1 plate,Crispy golden fries with seasoning,,yes,yes,,yes,4.5,5 min,1-2,Regular:79 Large:129,Cheese Dip:30 Mayo:15,,in stock,12
+Peri Peri Fries,पेरी पेरी फ्राइज़,Sides,99,,1 plate,Spicy peri peri seasoned fries,,yes,,,yes,4.6,5 min,1-2,,Cheese Dip:30,Spicy,in stock,13
+Onion Rings,प्याज़ के रिंग,Sides,89,,1 plate,Crispy battered onion rings,,yes,,,,4.3,7 min,1-2,,Mayo:15,Mild,in stock,14
+Veg Spring Rolls,स्प्रिंग रोल्स,Starters,99,,4 pcs,Crispy rolls with mixed vegetables,,yes,,,,4.4,8 min,1-2,,,Mild,in stock,15
+Veg Manchurian,वेज मंचूरियन,Chinese,149,,1 plate,Vegetable balls in spicy Indo-Chinese sauce,,yes,yes,,,4.6,12 min,2,Dry:149 Gravy:169,,Spicy,in stock,16
+Chilli Paneer,चिल्ली पनीर,Chinese,179,,1 plate,Spicy paneer Indo-Chinese style,,yes,,,,4.6,12 min,2,Dry:179 Gravy:199,,Spicy,in stock,17
+Hakka Noodles,हक्का नूडल्स,Chinese,129,,1 plate,Stir-fried noodles with veggies,,yes,yes,,,4.5,10 min,2,,Egg:30 Schezwan:0,Medium,in stock,18
+Schezwan Fried Rice,शेज़वान फ्राइड राइस,Chinese,149,,1 plate,Spicy fried rice Schezwan style,,yes,,,,4.5,10 min,2,,Egg:30 Paneer:50,Spicy,in stock,19
+Veg Chowmein,वेज चाउमीन,Chinese,99,,1 plate,Stir-fried noodles with sauces,,yes,,,,4.3,10 min,1-2,,,Medium,in stock,20
+Veg Momos,वेज मोमोज़,Momos,79,,8 pcs,Steamed dumplings with vegetables,,yes,yes,,,4.7,12 min,1-2,Steamed:79 Fried:99 Tandoori:129,,Medium,in stock,21
+Cheese Corn Momos,चीज़ कॉर्न मोमोज़,Momos,99,,8 pcs,Cheesy corn filled momos,,yes,,,,4.5,12 min,1-2,Steamed:99 Fried:119,,Mild,in stock,22
+Paneer Momos,पनीर मोमोज़,Momos,109,,8 pcs,Paneer filled momos with red chutney,,yes,,,,4.6,12 min,1-2,Steamed:109 Fried:129,,Medium,in stock,23
+Chicken Momos,चिकन मोमोज़,Momos,129,,8 pcs,Juicy chicken filled momos,,no,yes,,,4.8,12 min,1-2,Steamed:129 Fried:149,,Medium,in stock,24
+Pani Puri,पानी पूरी,Chaat,40,,6 pcs,Crispy puris with spicy mint water,,yes,yes,,yes,4.7,3 min,1,,,Spicy,in stock,25
+Bhel Puri,भेल पूरी,Chaat,50,,1 plate,Tangy puffed rice chaat,,yes,,,,4.5,3 min,1,,,Medium,in stock,26
+Sev Puri,सेव पूरी,Chaat,60,,6 pcs,Crispy puris topped with chutneys and sev,,yes,,,,4.4,3 min,1,,,Medium,in stock,27
+Aloo Tikki Chaat,आलू टिक्की चाट,Chaat,70,,1 plate,Spicy potato tikki with chutneys,,yes,,,,4.6,5 min,1,,,Spicy,in stock,28
+Vada Pav,वडा पाव,Chaat,40,,1 piece,Mumbai style spicy potato vada in pav,,yes,yes,,yes,4.7,5 min,1,,Extra Chutney:0,Spicy,in stock,29
+Pav Bhaji,पाव भाजी,Chaat,99,,1 plate,Mumbai style spicy bhaji with butter pav,,yes,,,,4.6,12 min,1-2,,Extra Pav:15 Cheese:30,Medium,in stock,30
+Veg Sandwich,वेज सैंडविच,Sandwiches,79,,1 piece,Grilled sandwich with veggies and cheese,,yes,,,,4.3,7 min,1,,Cheese:25 Mayo:10,Mild,in stock,31
+Cheese Grilled Sandwich,चीज़ ग्रिल्ड सैंडविच,Sandwiches,99,,1 piece,Cheese loaded grilled sandwich,,yes,yes,,,4.5,7 min,1,,Extra Cheese:25,Mild,in stock,32
+Cold Coffee,कोल्ड कॉफ़ी,Beverages,99,,1 glass,Iced coffee with cream,,yes,,,,4.5,5 min,1,,Whipped Cream:15,,in stock,33
+Cold Drink,कोल्ड ड्रिंक,Beverages,40,,1 bottle,300ml soft drink (Coke/Pepsi/Sprite),,yes,,,,4,1 min,1,,,,in stock,34
+Mineral Water,पानी की बोतल,Beverages,20,,1L bottle,Bisleri mineral water,,yes,,,,4,1 min,2,,,,in stock,35
+Choco Lava Cake,चॉको लावा केक,Desserts,89,,1 piece,Warm chocolate lava cake,,yes,yes,,,4.7,5 min,1,,Vanilla Ice Cream:30,,in stock,36
+Vanilla Ice Cream,वनीला आइसक्रीम,Desserts,49,,1 scoop,Cool vanilla ice cream,,yes,,,,4.3,1 min,1,,,,in stock,37

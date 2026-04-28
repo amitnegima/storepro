@@ -1,0 +1,27 @@
+name,category,price,mrp,unit,description,image,veg,bestseller,rating,prepTime,serves,sizes,addons,spicy,stock,sortorder
+Paneer Tikka,Starters,240,280,1 plate,Char-grilled cottage cheese cubes marinated in spices,,yes,yes,4.7,15 min,2,,Extra Mint Chutney:0,Medium,in stock,1
+Chicken Tikka,Starters,290,340,1 plate,Tender chicken marinated in yogurt and tandoor spices,,no,yes,4.8,15 min,2,,Extra Mint Chutney:0,Medium,in stock,2
+Veg Spring Rolls,Starters,160,,6 pcs,Crispy rolls stuffed with mixed vegetables,,yes,,4.4,10 min,1-2,,,Mild,in stock,3
+Hara Bhara Kebab,Starters,180,,6 pcs,Spinach and green peas kebabs,,yes,,4.5,12 min,1-2,,,Mild,in stock,4
+Paneer Butter Masala,Mains,260,320,1 bowl,Creamy tomato gravy with paneer cubes,,yes,yes,4.8,20 min,2,Half:180 Full:260,Extra Paneer:40 Extra Gravy:30,Medium,in stock,5
+Dal Makhani,Mains,220,,1 bowl,Slow-cooked black lentils with butter and cream,,yes,,4.6,15 min,2,Half:140 Full:220,Extra Butter:20,Mild,in stock,6
+Butter Chicken,Mains,310,,1 bowl,Tender chicken in rich tomato butter gravy,,no,yes,4.9,25 min,2,Half:220 Full:310,Extra Chicken:80,Medium,in stock,7
+Chicken Curry,Mains,280,,1 bowl,Home-style chicken curry with onion-tomato gravy,,no,,4.5,20 min,2,Half:200 Full:280,,Spicy,in stock,8
+Mutton Rogan Josh,Mains,420,,1 bowl,Kashmiri-style slow-cooked mutton curry,,no,,4.7,30 min,2,,,Spicy,in stock,9
+Tandoori Roti,Breads,30,,1 piece,Whole wheat bread baked in tandoor,,yes,,,5 min,1,,Butter:10,,in stock,10
+Butter Naan,Breads,50,,1 piece,Soft naan brushed with butter,,yes,yes,4.6,5 min,1,,,,in stock,11
+Garlic Naan,Breads,70,,1 piece,Naan topped with garlic and coriander,,yes,,4.7,5 min,1,,,,in stock,12
+Lachha Paratha,Breads,60,,1 piece,Layered crispy paratha,,yes,,4.4,7 min,1,,,,in stock,13
+Veg Biryani,Rice,220,,1 plate,Aromatic basmati rice with mixed vegetables,,yes,,4.3,20 min,1,,Raita:30,Medium,in stock,14
+Chicken Biryani,Rice,280,330,1 plate,Hyderabadi-style chicken biryani with raita,,no,yes,4.8,25 min,1,,Raita:30 Extra Chicken:80,Medium,in stock,15
+Mutton Biryani,Rice,380,,1 plate,Slow-cooked mutton biryani with saffron,,no,,4.7,30 min,1,,Raita:30,Medium,in stock,16
+Jeera Rice,Rice,140,,1 bowl,Basmati rice tempered with cumin,,yes,,4.2,12 min,1-2,,,Mild,in stock,17
+Plain Rice,Rice,100,,1 bowl,Steamed basmati rice,,yes,,4,8 min,1-2,,,,in stock,18
+Gulab Jamun,Desserts,80,,2 pcs,Soft milk dumplings in sugar syrup,,yes,,4.6,5 min,1,,,,in stock,19
+Rasgulla,Desserts,80,,2 pcs,Spongy cottage cheese balls in syrup,,yes,,4.5,5 min,1,,,,in stock,20
+Gajar Halwa,Desserts,120,,1 bowl,Carrot pudding with nuts,,yes,,4.7,5 min,1,,,,in stock,21
+Mango Lassi,Beverages,90,,1 glass,Sweet yogurt drink with mango pulp,,yes,,4.6,5 min,1,,,,in stock,22
+Sweet Lassi,Beverages,70,,1 glass,Traditional sweet yogurt drink,,yes,,4.4,5 min,1,,,,in stock,23
+Masala Chai,Beverages,40,,1 cup,Spiced Indian tea with milk,,yes,,4.3,5 min,1,,,,in stock,24
+Fresh Lime Soda,Beverages,60,,1 glass,Refreshing lime soda - sweet or salted,,yes,,4.2,3 min,1,Sweet:0 Salted:0 Mixed:0,,in stock,25
+Cold Coffee,Beverages,120,,1 glass,Iced coffee with cream,,yes,,4.5,5 min,1,,Extra Shot:20 Whipped Cream:15,,in stock,26

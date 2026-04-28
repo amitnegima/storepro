@@ -1,0 +1,46 @@
+Key,Value
+ShopName,Burger Junction
+HeroTagline,Quick bites, big flavors
+HeroTitle,Burger Junction
+LogoEmoji,🍔
+Tagline,Hot fast food in 20 mins
+DailySpecial,Special Cheese Burger Combo
+DailySpecialPrice,199
+DailySpecialDesc,Double cheese burger + fries + cola
+DailySpecialHindi,चीज़ बर्गर कॉम्बो
+Phone,919999999999
+WhatsApp,919999999999
+Email,
+Address,
+City,
+ShopType,Fast Food
+Timing,11:00-23:00
+Currency,₹
+Rating,4.5
+EstimatedDeliveryTime,15-25 min
+DeliveryTime,15-25 min
+DeliveryInfo,Hot fast food delivered fast
+MinOrder,99
+DeliveryFee,25
+FreeDelivery,299
+PackingFee,10
+HandlingFee,0
+PlatformFee,0
+Taxes,0
+Discount,0
+RestaurantLat,30.3165
+RestaurantLng,78.0322
+MaxDeliveryRadius,5
+UPI,
+VegOnly,
+DashboardPIN,1234
+PINHash,
+BrandColor,
+Theme,
+AnalyticsID,
+OGImage,
+Announcement,
+SearchHint,Search burgers, pizza, fries...
+MapEmbed,
+MapLink,
+OrderScript,

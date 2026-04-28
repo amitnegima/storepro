@@ -1,0 +1,31 @@
+name,hindiname,category,price,mrp,unit,description,image,veg,bestseller,combo,quickqty,rating,prepTime,serves,sizes,addons,spicy,stock,sortorder
+Veg Thali,वेज थाली,Family Packs,180,220,1 thali,Dal + 2 sabzi + 4 roti + rice + raita + salad + sweet,,yes,yes,yes,,4.8,15 min,1,,,Medium,in stock,1
+Special Punjabi Thali,स्पेशल पंजाबी थाली,Family Packs,250,300,1 thali,Dal makhani + paneer sabzi + 4 butter roti + rice + raita + sweet,,yes,yes,yes,,4.9,18 min,1,,,Medium,in stock,2
+Family Combo (4 People),फैमिली कॉम्बो,Family Packs,799,950,1 pack,Dal makhani + paneer butter masala + chana masala + 12 roti + rice + raita + 4 salad,,yes,,yes,,4.8,25 min,4,,,Medium,in stock,3
+Dal Makhani,दाल मखनी,Mains,160,,1 bowl,Slow-cooked black lentils with butter and cream,,yes,yes,,,4.8,15 min,2,Half:100 Full:160,,Medium,in stock,4
+Paneer Butter Masala,पनीर बटर मसाला,Mains,220,260,1 bowl,Cottage cheese in rich tomato butter gravy,,yes,yes,,,4.7,20 min,2,Half:140 Full:220,Extra Paneer:50 Extra Gravy:30,Medium,in stock,5
+Chana Masala,छोले मसाला,Mains,140,,1 bowl,Spicy chickpeas curry,,yes,,,,4.5,15 min,2,Half:90 Full:140,,Spicy,in stock,6
+Aloo Gobi,आलू गोबी,Mains,130,,1 bowl,Potato and cauliflower dry curry,,yes,,,,4.4,15 min,2,Half:80 Full:130,,Medium,in stock,7
+Mix Veg,मिक्स वेज,Mains,150,,1 bowl,Mixed seasonal vegetables,,yes,,,,4.5,15 min,2,Half:100 Full:150,,Medium,in stock,8
+Yellow Dal Tadka,दाल तड़का,Mains,120,,1 bowl,Yellow lentils with tempered ghee,,yes,,,,4.6,12 min,2,Half:80 Full:120,Extra Ghee:15,Mild,in stock,9
+Tandoori Roti,तंदूरी रोटी,Breads,15,,1 piece,Whole wheat bread baked in tandoor,,yes,,,yes,4.6,5 min,1,,Butter:5,,in stock,10
+Butter Naan,बटर नान,Breads,40,,1 piece,Soft naan brushed with butter,,yes,yes,,yes,4.8,5 min,1,,,,in stock,11
+Lachha Paratha,लच्छा पराठा,Breads,50,,1 piece,Layered crispy paratha,,yes,,,yes,4.5,7 min,1,,,,in stock,12
+Garlic Naan,लहसुन नान,Breads,60,,1 piece,Naan with garlic and coriander,,yes,,,yes,4.6,5 min,1,,,,in stock,13
+Aloo Paratha,आलू पराठा,Breads,60,80,1 piece,Stuffed potato paratha with butter,,yes,yes,,yes,4.8,8 min,1,,Extra Curd:20 Pickle:0,,in stock,14
+Plain Rice,चावल,Rice,80,,1 plate,Steamed basmati rice,,yes,,,,4,8 min,1-2,,,,in stock,15
+Jeera Rice,जीरा चावल,Rice,120,,1 plate,Basmati rice tempered with cumin,,yes,,,,4.4,12 min,1-2,,,Mild,in stock,16
+Veg Pulao,वेज पुलाव,Rice,150,,1 plate,Basmati rice with mixed vegetables,,yes,,,,4.5,15 min,1,,Raita:20,Mild,in stock,17
+Veg Biryani,वेज बिरयानी,Rice,200,240,1 plate,Aromatic biryani with vegetables and raita,,yes,yes,,,4.5,20 min,1,,Extra Raita:20,Medium,in stock,18
+Boondi Raita,बूंदी रायता,Sides,40,,1 bowl,Curd with crispy boondi,,yes,,,,4.4,3 min,2,,,Mild,in stock,19
+Onion Salad,सलाद,Sides,20,,1 plate,Fresh onion lemon salad,,yes,,,,4,2 min,2,,,,in stock,20
+Pickle (Achaar),अचार,Sides,10,,1 small bowl,Mango pickle,,yes,,,,4.2,1 min,2,,,,in stock,21
+Papad,पापड़,Sides,15,,2 pcs,Roasted or fried papad,,yes,,,yes,4.3,3 min,1-2,Roasted:0 Fried:0,,Mild,in stock,22
+Masala Chai,मसाला चाय,Beverages,20,,1 cup,Hot Indian spiced tea,,yes,yes,,yes,4.7,5 min,1,,,,in stock,23
+Sweet Lassi,मीठी लस्सी,Beverages,60,,1 glass,Traditional sweet yogurt drink,,yes,,,,4.6,5 min,1,,,,in stock,24
+Salted Lassi,नमकीन लस्सी,Beverages,60,,1 glass,Salted yogurt drink with cumin,,yes,,,,4.5,5 min,1,,,,in stock,25
+Cold Drink,कोल्ड ड्रिंक,Beverages,30,,1 bottle,300ml cold drink (Coke/Pepsi/Sprite),,yes,,,,4.3,1 min,1,,,,in stock,26
+Water Bottle,पानी की बोतल,Beverages,20,,1L bottle,Mineral water 1 litre,,yes,,,,4,1 min,2,,,,in stock,27
+Gulab Jamun,गुलाब जामुन,Desserts,40,,2 pcs,Soft milk dumplings in sugar syrup,,yes,yes,,,4.7,3 min,1,,,,in stock,28
+Kheer,खीर,Desserts,60,,1 bowl,Rice pudding with nuts and cardamom,,yes,,,,4.6,5 min,1-2,,,,in stock,29
+Halwa,हलवा,Desserts,50,,1 bowl,Sooji halwa with ghee and nuts,,yes,,,,4.5,5 min,1-2,,,,in stock,30

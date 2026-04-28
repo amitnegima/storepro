@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StorePro — Online Store</title>
+<meta name="description" content="Order online from your local store. Products delivered to your door. Powered by StorePro.">
+<meta name="theme-color" content="#0c831f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grocery Shop">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<!-- Open Graph (WhatsApp, Facebook, Instagram) -->
+<meta property="og:title" content="Online Store — StorePro">
+<meta property="og:description" content="Order online — fresh products delivered to your door. Powered by StorePro.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:locale" content="en_IN">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Online Store — StorePro">
+<meta name="twitter:description" content="Order groceries & sweets online. Pickup or delivery in Srinagar, Uttarakhand.">
+<meta name="twitter:image" content="icon-512.png">
+<!-- Local SEO -->
+<meta name="geo.region" content="IN-UK">
+<meta name="geo.placename" content="Srinagar, Uttarakhand">
+<meta name="keywords" content="grocery store srinagar, kirana shop uttarakhand, online grocery order, confectionery shop, sweets delivery, daang gaon grocery, किराना दुकान श्रीनगर">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--white:#fff;--bg:#f5f5f5;--card:#fff;--ink:#1e1e1e;--ink2:#484848;--ink3:#7e7e7e;--ink4:#b0b0b0;--brand:#0c831f;--brand-bg:#e8faed;--brand-dk:#096b18;--orange:#e46c0a;--orange-bg:#fff4eb;--red:#d32f2f;--red-bg:#fdecea;--blue:#1a73e8;--blue-bg:#e8f0fe;--wa:#25d366;--line:#ebebeb;--line2:#d9d9d9;--sh:0 1px 4px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.08);--sh3:0 8px 32px rgba(0,0,0,.12);--sh4:0 16px 48px rgba(0,0,0,.15);--r:8px;--r2:12px;--r3:16px;--pill:100px;--f:'DM Sans',system-ui,sans-serif;--fh:'Tiro Devanagari Hindi',serif;--ease:cubic-bezier(.4,0,.2,1);--mw:1200px;--px:max(16px,env(safe-area-inset-left,16px))}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.ann{background:var(--brand);color:#fff;font-size:12px;font-weight:600;text-align:center;padding:8px 40px 8px 16px;position:relative;display:none;line-height:1.4}
+.ann-x{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;opacity:.7;font-size:16px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,.12)}.ann-x:hover{opacity:1}
+.hdr{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--line);height:64px;padding:0 var(--px)}
+.hdr-in{max-width:var(--mw);margin:0 auto;height:100%;display:flex;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.logo-ic{width:38px;height:38px;border-radius:var(--r);background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-txt{line-height:1.2}.logo-name{font-size:15px;font-weight:700;color:var(--ink)}.logo-tag{font-size:11px;color:var(--ink3);font-weight:500;display:flex;align-items:center;gap:6px}
+.store-status{font-size:10px;font-weight:700;padding:1px 7px;border-radius:var(--pill);display:inline-flex;align-items:center;gap:3px;letter-spacing:.02em}
+.ss-open{background:var(--brand-bg);color:var(--brand)}.ss-open::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brand);animation:statusPulse 2s infinite}
+.ss-closed{background:var(--red-bg);color:var(--red)}.ss-closed::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red)}
+@keyframes statusPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hdr-spacer{flex:1}
+.hdr-search{width:100%;max-width:360px;position:relative}
+.hdr-search input{width:100%;height:40px;padding:0 16px 0 40px;border:1.5px solid var(--line);border-radius:var(--r);font:500 14px/1 var(--f);background:var(--bg);color:var(--ink);outline:none;transition:.2s}
+.hdr-search input::placeholder{color:var(--ink4)}
+.hdr-search input:focus{border-color:var(--brand);background:var(--white);box-shadow:0 0 0 3px rgba(12,131,31,.08)}
+.hdr-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--ink4)}
+.hdr-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.lang-btn{height:32px;padding:0 10px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--white);font:700 12px var(--f);color:var(--ink3);cursor:pointer;transition:.2s}.lang-btn:hover{border-color:var(--brand);color:var(--brand)}.lang-btn.on{background:var(--brand-bg);border-color:var(--brand);color:var(--brand)}
+.btn-call{display:flex;align-items:center;gap:6px;height:38px;padding:0 14px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--white);color:var(--ink2);font:600 13px var(--f);cursor:pointer;text-decoration:none;transition:.2s}.btn-call:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}.btn-call svg{width:16px;height:16px;flex-shrink:0}
+.btn-cart{display:flex;align-items:center;gap:6px;height:38px;padding:0 16px;border:none;border-radius:var(--r);background:var(--brand);color:#fff;font:700 13px var(--f);cursor:pointer;transition:.15s}.btn-cart:hover{background:var(--brand-dk)}.btn-cart:active{transform:scale(.97)}.btn-cart svg{width:18px;height:18px}
+.cbadge{background:#fff;color:var(--brand);font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center}
+.hero{max-width:var(--mw);margin:16px auto 0;padding:0 var(--px)}
+.hero-box{background:linear-gradient(135deg,var(--brand-dk),var(--brand),#22c55e);border-radius:var(--r3);padding:28px 32px;color:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px}
+.hero-box::before{content:'';position:absolute;right:-40px;top:-40px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero-box::after{content:'';position:absolute;left:-20px;bottom:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero-box *{position:relative}.hero-box h1{font-size:clamp(18px,3.5vw,26px);font-weight:800;line-height:1.25;max-width:500px}
+.hero-sub{font-size:14px;opacity:.85;font-weight:400;max-width:420px;line-height:1.5}
+.hero-hi{font-family:var(--fh);font-size:15px;opacity:.7;font-style:italic;display:none;margin-top:2px}
+.hero-chips{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.hchip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);backdrop-filter:blur(4px);padding:6px 14px;border-radius:var(--pill);font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,.1)}
+.offers{max-width:var(--mw);margin:20px auto 0;padding:0 var(--px);display:none}
+.sec-h{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-h .pill{font-size:10px;font-weight:700;background:var(--red);color:#fff;padding:3px 8px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.04em}
+.offers-row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 0}.offers-row::-webkit-scrollbar{display:none}
+.ocard{flex:0 0 260px;scroll-snap-align:start;border-radius:var(--r2);overflow:hidden;background:var(--card);box-shadow:var(--sh);cursor:pointer;transition:.25s var(--ease)}.ocard:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.ocard-img{width:100%;height:140px;object-fit:cover;display:block}.ocard-body{padding:12px 14px}.ocard-title{font-size:14px;font-weight:700;line-height:1.3}.ocard-desc{font-size:12px;color:var(--ink3);margin-top:2px}
+.ocard-text{flex:0 0 220px;scroll-snap-align:start;border-radius:var(--r2);padding:16px 18px;background:linear-gradient(135deg,var(--orange-bg),#fff4eb);cursor:pointer;transition:.25s var(--ease);border:1.5px solid transparent;position:relative}.ocard-text:hover{border-color:var(--orange);transform:translateY(-2px)}
+.ocard-text .ot-tag{font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.ocard-text .ot-t{font-size:14px;font-weight:700;color:var(--ink);line-height:1.3}.ocard-text .ot-d{font-size:12px;color:var(--ink3);margin-top:3px}
+.cats{max-width:var(--mw);margin:20px auto 0;padding:0 var(--px);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.cats::-webkit-scrollbar{display:none}
+.cat{height:36px;padding:0 18px;border:1.5px solid var(--line);border-radius:var(--pill);background:var(--white);font:600 13px var(--f);color:var(--ink3);cursor:pointer;white-space:nowrap;transition:.2s;display:flex;align-items:center;flex-shrink:0}.cat:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}.cat.on{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 8px rgba(12,131,31,.2)}
+.tbar{max-width:var(--mw);margin:12px auto 0;padding:0 var(--px);display:none;justify-content:space-between;align-items:center}
+.tbar-n{font-size:13px;font-weight:700;color:var(--ink2)}.tbar-meta{font-size:11px;color:var(--ink4);display:flex;align-items:center;gap:8px}
+.tbar-meta button{font:600 11px var(--f);color:var(--brand);background:0;border:0;cursor:pointer;text-decoration:underline}
+.grid-sec{max-width:var(--mw);margin:12px auto 0;padding:0 var(--px) 120px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.shimmer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;max-width:var(--mw);margin:12px auto 0;padding:0 var(--px)}
+.shimmer-card{background:var(--card);border-radius:var(--r2);border:1px solid var(--line);overflow:hidden}
+.shimmer-img{aspect-ratio:1/1;background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.shimmer-line{height:12px;border-radius:4px;background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin:8px 12px}.shimmer-line.w60{width:60%}.shimmer-line.w40{width:40%}.shimmer-line.w80{width:80%}.shimmer-line:last-child{margin-bottom:12px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.pc{background:var(--card);border-radius:var(--r2);overflow:hidden;border:1px solid var(--line);transition:.25s var(--ease);cursor:pointer;position:relative;display:flex;flex-direction:column;opacity:0;transform:translateY(12px);animation:cardIn .4s var(--ease) forwards}.pc:hover{border-color:var(--brand);box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-3px)}
+.pc.oos{opacity:.55;pointer-events:none}.pc.oos .pc-btn,.pc.oos .pc-stepper{display:none!important}
+.pc-oos-tag{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;font:700 11px var(--f);padding:6px 16px;border-radius:var(--pill);z-index:2;text-transform:uppercase;letter-spacing:.05em;backdrop-filter:blur(4px)}
+.pc-top{position:relative;background:#f8f8f8;padding:0;display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;overflow:hidden}
+.pc-top img{width:100%;height:100%;object-fit:cover;transition:.4s var(--ease)}.pc:hover .pc-top img{transform:scale(1.08)}
+.pc-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;background:linear-gradient(135deg,var(--bg),var(--card))}
+.pc-ph-icon{font-size:36px;line-height:1;opacity:.4}.pc-ph-text{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);opacity:.6}
+.pc-tags{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:3px}
+.t{padding:3px 8px;border-radius:var(--pill);font-size:9px;font-weight:700;line-height:1.3;backdrop-filter:blur(8px)}
+.t-veg{background:rgba(232,250,237,.92);color:var(--brand)}.t-nv{background:rgba(253,232,234,.92);color:var(--red)}.t-new{background:rgba(232,240,254,.92);color:var(--blue)}.t-offer{background:rgba(255,244,235,.92);color:var(--orange)}
+.pc-off{position:absolute;top:8px;right:8px;background:var(--brand);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:var(--pill);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.pc-share{position:absolute;bottom:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(4px);border:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:.2s;opacity:0;box-shadow:0 2px 8px rgba(0,0,0,.08)}.pc:hover .pc-share{opacity:1}.pc-share:hover{background:var(--wa);border-color:var(--wa)}.pc-share svg{width:14px;height:14px;color:var(--ink3)}.pc-share:hover svg{color:#fff}
+.pc-bot{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
+.pc-cat{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);font-weight:700;opacity:.8}
+.pc-name{font-size:13px;font-weight:700;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--ink)}
+.pc-unit{font-size:11px;color:var(--ink4);font-weight:500;margin-top:auto;padding-top:4px}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:6px}
+.pc-prices{display:flex;align-items:baseline;gap:4px;min-width:0}.pc-price{font-size:16px;font-weight:800;color:var(--brand)}.pc-mrp{font-size:11px;color:var(--ink4);text-decoration:line-through}
+.pc-btn{height:32px;padding:0 16px;border:2px solid var(--brand);border-radius:var(--r);background:var(--brand-bg);color:var(--brand);font:800 12px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em}.pc-btn:hover{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(12,131,31,.2);transform:scale(1.05)}.pc-btn:active{transform:scale(.93)}
+.pc-stepper{display:flex;align-items:center;border:2px solid var(--brand);border-radius:var(--r);overflow:hidden;flex-shrink:0;height:32px;background:var(--brand)}
+.pc-stepper button{width:30px;height:100%;border:none;background:transparent;color:#fff;font:700 16px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.1s}.pc-stepper button:hover{background:rgba(255,255,255,.15)}.pc-stepper button:active{transform:scale(.9)}
+.pc-stepper span{min-width:22px;text-align:center;font:700 13px var(--f);color:#fff;user-select:none;transition:.15s}
+.stickybar{position:fixed;bottom:0;left:0;right:0;z-index:95;transform:translateY(100%);transition:transform .3s var(--ease);pointer-events:none}.stickybar.show{transform:translateY(0);pointer-events:auto}
+.stickybar-in{max-width:var(--mw);margin:0 auto;padding:0 var(--px)}
+.stickybar-card{background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;border-radius:var(--r3) var(--r3) 0 0;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 -4px 24px rgba(0,0,0,.12);transition:.15s}.stickybar-card:hover{filter:brightness(1.08)}
+.stickybar-card:active{transform:scale(.99)}
+.sb-left{display:flex;flex-direction:column;gap:1px}.sb-count{font-size:14px;font-weight:700}.sb-total{font-size:12px;opacity:.85;font-weight:500}
+.sb-btn{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700}.sb-btn svg{width:18px;height:18px}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:16px}.mbg.open{display:flex;animation:fadeIn .2s}
+.mbox{background:var(--white);border-radius:var(--r3);max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--sh4);animation:slideUp .25s var(--ease)}
+.mimg{width:100%;aspect-ratio:4/3;object-fit:cover;background:#fafafa;display:block}.mbody{padding:20px}
+.mcat{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);font-weight:700}
+.mbody h2{font-size:20px;font-weight:700;margin:4px 0 6px;line-height:1.25}.munit{font-size:13px;color:var(--ink3);font-weight:500}
+.mdesc{color:var(--ink3);font-size:14px;line-height:1.65;margin:12px 0 16px}
+.mpr{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.mprice{font-size:24px;font-weight:700}.mmrp{font-size:14px;color:var(--ink4);text-decoration:line-through}
+.msave{font-size:11px;color:var(--brand);font-weight:700;background:var(--brand-bg);padding:3px 8px;border-radius:var(--pill)}
+.mtags{display:flex;gap:4px;margin:10px 0 16px;flex-wrap:wrap}
+.mbtns{display:flex;gap:8px}.mb{flex:1;height:44px;border:none;border-radius:var(--r);font:700 14px var(--f);cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}.mb:active{transform:scale(.97)}
+.mb1{background:var(--brand);color:#fff}.mb1:hover{background:var(--brand-dk)}.mb2{background:var(--wa);color:#fff}.mb2:hover{filter:brightness(.9)}
+.mb3{background:var(--bg);color:var(--ink2);flex:0;padding:0 16px;border:1px solid var(--line)}.mb3:hover{background:var(--line)}
+.co{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300}.co.open{display:block;animation:fadeIn .15s}
+.cd{position:fixed;top:0;right:0;width:400px;max-width:100vw;height:100dvh;background:var(--white);z-index:301;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:.3s var(--ease)}.co.open .cd{transform:translateX(0)}
+.cd-h{height:60px;padding:0 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}.cd-h h2{font-size:16px;font-weight:700}
+.cd-x{width:32px;height:32px;border-radius:var(--r);border:none;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink3);transition:.15s}.cd-x:hover{background:var(--line);color:var(--ink)}
+.cd-body{flex:1;overflow-y:auto;padding:8px 20px}.cd-empty{text-align:center;padding:48px 16px;color:var(--ink4);font-size:14px;font-weight:500}
+.cd-info-banner{background:var(--blue-bg);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-size:12px;color:var(--blue);line-height:1.5;display:flex;flex-direction:column;gap:4px}
+.cd-info-banner .cib-row{display:flex;justify-content:space-between;align-items:center}.cib-row strong{font-weight:700}
+.cd-info-banner .cib-free{color:var(--brand);font-weight:700}
+.ci{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);transition:.15s}
+.ci-img{width:48px;height:48px;border-radius:var(--r2);object-fit:cover;background:var(--bg);flex-shrink:0}.ci-info{flex:1;min-width:0}
+.ci-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ci-sub{font-size:11px;color:var(--ink3);font-weight:500}
+.ci-rm{font:600 11px var(--f);color:var(--red);background:0;border:0;cursor:pointer;margin-top:2px;padding:2px 0;opacity:.7;transition:.15s}.ci-rm:hover{opacity:1}
+.ci-q{display:flex;align-items:center;border:2px solid var(--brand);border-radius:var(--r);overflow:hidden;flex-shrink:0}
+.ci-q button{width:30px;height:30px;border:none;background:var(--brand-bg);color:var(--brand);font:700 16px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.1s}.ci-q button:hover{background:var(--brand);color:#fff}.ci-q button:active{transform:scale(.9)}
+.ci-q span{width:28px;text-align:center;font:700 13px var(--f);color:var(--brand)}
+.cd-ft{padding:16px 20px;border-top:1px solid var(--line);flex-shrink:0;max-height:60vh;overflow-y:auto}.cd-total{display:flex;justify-content:space-between;font-size:16px;font-weight:800;margin-bottom:4px}
+.cd-del{font-size:12px;font-weight:600;margin-bottom:12px}.cd-del.ok{color:var(--brand)}.cd-del.warn{color:var(--orange)}.cd-del.err{color:var(--red)}
+.cd-fee{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);padding:4px 0}.cd-fee.strike{color:var(--ink4);text-decoration:line-through}.cd-fee strong{font-weight:700}
+.cd-grand{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding:10px 0;margin-top:4px;border-top:2px solid var(--ink)}
+.cd-go{width:100%;height:50px;border:none;border-radius:var(--r2);background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;font:700 15px var(--f);cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(12,131,31,.2)}.cd-go:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 6px 20px rgba(12,131,31,.3)}.cd-go:active{transform:scale(.98)}
+.cd-go.disabled{background:var(--line);color:var(--ink4);pointer-events:none;cursor:not-allowed}
+.info{max-width:var(--mw);margin:24px auto 0;padding:0 var(--px) 24px;display:none}
+.info-grid{background:var(--white);border:1px solid var(--line);border-radius:var(--r3);padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.si{display:flex;gap:12px;align-items:flex-start}.si-ic{width:36px;height:36px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.si-g{background:var(--brand-bg)}.si-b{background:var(--blue-bg)}.si-o{background:var(--orange-bg)}.si-y{background:#fff8e1}
+.si-body{font-size:13px;line-height:1.5}.si-l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);font-weight:700;margin-bottom:1px}
+.si-body a{color:var(--brand);text-decoration:none;font-weight:600}.si-body a:hover{text-decoration:underline}
+.map-sec{max-width:var(--mw);margin:0 auto;padding:0 var(--px) 24px;display:none}.map-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r3);overflow:hidden}
+.map-card iframe{width:100%;height:250px;border:0;display:block}
+.map-footer{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.map-addr{font-size:13px;color:var(--ink2);line-height:1.4;flex:1;min-width:150px}.map-addr strong{display:block;font-size:14px;color:var(--ink);font-weight:700;margin-bottom:2px}
+.map-dir{height:36px;padding:0 16px;border:1.5px solid var(--brand);border-radius:var(--r);background:var(--brand-bg);color:var(--brand);font:700 12px var(--f);cursor:pointer;display:flex;align-items:center;gap:6px;text-decoration:none;transition:.15s;flex-shrink:0}.map-dir:hover{background:var(--brand);color:#fff}.map-dir svg{width:14px;height:14px}
+.qr-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:400;align-items:center;justify-content:center;padding:16px}.qr-bg.open{display:flex;animation:fadeIn .2s}
+.qr-box{background:var(--white);border-radius:var(--r3);max-width:360px;width:100%;padding:28px 24px;text-align:center;box-shadow:var(--sh4);animation:slideUp .25s var(--ease)}
+.qr-box h3{font-size:18px;font-weight:700;margin-bottom:4px}.qr-box .qr-amt{font-size:28px;font-weight:800;color:var(--brand);margin:4px 0 16px}
+.qr-canvas{margin:0 auto;border:1px solid var(--line);border-radius:var(--r2);padding:12px;background:#fff;display:inline-block}
+.qr-upi-id{margin-top:12px;font-size:12px;color:var(--ink3)}.qr-upi-id strong{color:var(--ink);font-weight:700}
+.qr-note{margin-top:12px;font-size:11px;color:var(--ink4);line-height:1.5}
+.qr-apps{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.qr-app{height:36px;padding:0 14px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--white);font:600 12px var(--f);color:var(--ink2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:.15s;text-decoration:none}.qr-app:hover{border-color:var(--brand);color:var(--brand)}
+.qr-close{margin-top:16px;height:40px;padding:0 24px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--bg);font:600 13px var(--f);color:var(--ink2);cursor:pointer}.qr-close:hover{background:var(--line)}
+/* Order mode */
+.order-mode{display:flex;gap:0;border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:10px}
+.order-mode button{flex:1;height:38px;border:none;background:var(--white);font:600 13px var(--f);color:var(--ink3);cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}.order-mode button.active{background:var(--brand);color:#fff}.order-mode button:not(.active):hover{background:var(--bg)}
+.del-form{display:none;flex-direction:column;gap:8px;margin-bottom:10px;padding:12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--line)}.del-form.show{display:flex}
+.del-form label{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em}
+.del-form input,.del-form textarea{width:100%;height:38px;padding:0 12px;border:1.5px solid var(--line);border-radius:6px;font:500 13px var(--f);color:var(--ink);background:var(--white);outline:none;transition:.2s}.del-form input:focus,.del-form textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(12,131,31,.08)}
+.del-form textarea{height:60px;padding:10px 12px;resize:none}
+.del-form .del-note{font-size:11px;color:var(--ink4);line-height:1.4}
+.success-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:16px}.success-bg.open{display:flex;animation:fadeIn .2s}
+.success-box{background:var(--white);border-radius:var(--r3);max-width:380px;width:100%;padding:32px 24px;text-align:center;box-shadow:var(--sh4);animation:slideUp .3s var(--ease)}
+.success-box h3{font-size:20px;font-weight:700;margin:8px 0 4px}.success-box p{font-size:13px;color:var(--ink3);line-height:1.6;margin-bottom:16px}
+.success-oid{font:700 14px var(--f);color:var(--brand);background:var(--brand-bg);padding:6px 16px;border-radius:var(--r);display:inline-block;margin-bottom:12px}
+.success-btns{display:flex;gap:8px}.success-btns button{flex:1;height:44px;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.s-wa{background:var(--wa);color:#fff}.s-wa:hover{filter:brightness(.9)}.s-done{background:var(--bg);color:var(--ink2);border:1px solid var(--line)}.s-done:hover{background:var(--line)}
+.order-sending{pointer-events:none;opacity:.7}
+.order-spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px}
+/* Track Order */
+.track-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:16px}.track-bg.open{display:flex;animation:fadeIn .2s}
+.track-box{background:var(--card);border-radius:var(--r3);max-width:400px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--sh4);animation:slideUp .25s var(--ease);padding:24px}
+.track-box h3{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.track-input-row{display:flex;gap:8px;margin-bottom:16px}
+.track-input-row input{flex:1;height:42px;padding:0 14px;border:1.5px solid var(--line);border-radius:var(--r);font:600 14px var(--f);color:var(--ink);outline:none;text-transform:uppercase}.track-input-row input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(12,131,31,.08)}
+.track-input-row input::placeholder{text-transform:none;font-weight:400;color:var(--ink4)}
+.track-input-row button{height:42px;padding:0 20px;border:none;border-radius:var(--r);background:var(--brand);color:#fff;font:700 14px var(--f);cursor:pointer;flex-shrink:0;transition:.15s}.track-input-row button:hover{background:var(--brand-dk)}
+.track-result{display:none}
+.track-status-bar{display:flex;gap:0;margin-bottom:20px;position:relative}
+.track-step{flex:1;text-align:center;position:relative;z-index:1}
+.track-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid var(--line);background:var(--card);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.3s}
+.track-step.done .track-dot{background:var(--brand);border-color:var(--brand);color:#fff}
+.track-step.active .track-dot{background:var(--blue);border-color:var(--blue);color:#fff;transform:scale(1.15)}
+.track-step.cancel .track-dot{background:var(--red);border-color:var(--red);color:#fff}
+.track-step-label{font-size:10px;font-weight:600;color:var(--ink4);text-transform:uppercase;letter-spacing:.03em}
+.track-step.done .track-step-label,.track-step.active .track-step-label{color:var(--ink2)}
+.track-line{position:absolute;top:14px;left:25%;right:25%;height:2.5px;background:var(--line);z-index:0}
+.track-line-fill{height:100%;background:var(--brand);transition:width .5s var(--ease);width:0}
+.track-details{background:var(--bg);border-radius:var(--r);padding:14px 16px;font-size:13px;line-height:1.7;color:var(--ink2)}
+.track-details .td-row{display:flex;justify-content:space-between;padding:3px 0}.td-row .td-label{color:var(--ink4);font-weight:600;font-size:11px;text-transform:uppercase}.td-row .td-val{font-weight:600;text-align:right}
+.track-items{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);white-space:pre-wrap;font-size:12px;color:var(--ink3);line-height:1.8}
+.track-close{width:100%;height:42px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--bg);font:600 13px var(--f);color:var(--ink2);cursor:pointer;margin-top:16px;transition:.15s}.track-close:hover{background:var(--line)}
+.track-err{color:var(--red);font-size:13px;font-weight:600;text-align:center;padding:20px 0;display:none}
+.track-loading{text-align:center;padding:24px 0;display:none}.track-loading .spin{margin:0 auto 8px}
+/* Track button in header */
+.btn-track{display:flex;align-items:center;gap:4px;height:32px;padding:0 10px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--white);font:600 11px var(--f);color:var(--ink3);cursor:pointer;text-decoration:none;transition:.2s;white-space:nowrap}.btn-track:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}.btn-track svg{width:14px;height:14px}
+.wafab{position:fixed;bottom:80px;right:20px;width:56px;height:56px;border-radius:16px;background:var(--wa);color:#fff;border:none;font-size:24px;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.3);transition:.2s}.wafab:hover{transform:scale(1.06)}
+.scroll-top{position:fixed;bottom:144px;right:24px;width:40px;height:40px;border-radius:50%;background:var(--white);color:var(--ink3);border:1.5px solid var(--line);cursor:pointer;z-index:90;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh2);transition:.3s var(--ease);opacity:0;pointer-events:none;transform:translateY(10px)}.scroll-top.show{opacity:1;pointer-events:auto;transform:translateY(0)}.scroll-top:hover{background:var(--brand);color:#fff;border-color:var(--brand)}.scroll-top:active{transform:scale(.9)}.scroll-top svg{width:18px;height:18px}
+/* Order Confirmation Modal */
+.confirm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:16px}.confirm-bg.open{display:flex;animation:fadeIn .2s}
+.confirm-box{background:var(--white);border-radius:var(--r3);max-width:420px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--sh4);animation:slideUp .25s var(--ease);padding:0}
+.confirm-hdr{background:linear-gradient(135deg,#065a14,var(--brand));color:#fff;padding:20px;border-radius:var(--r3) var(--r3) 0 0;text-align:center}
+.confirm-hdr h3{font-size:18px;font-weight:700;margin-top:4px}
+.confirm-body{padding:16px 20px}
+.confirm-sec{margin-bottom:14px}
+.confirm-sec-h{font-size:10px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.confirm-sec-h::after{content:'';flex:1;height:1px;background:var(--line)}
+.confirm-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--ink2)}.confirm-row strong{color:var(--ink);font-weight:700}
+.confirm-items-list{background:var(--bg);border-radius:var(--r2);padding:0;max-height:200px;overflow-y:auto}
+.ci-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.ci-row:last-child{border-bottom:none}
+.ci-num{width:20px;height:20px;border-radius:50%;background:var(--brand-bg);color:var(--brand);font:700 10px var(--f);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ci-detail{flex:1;min-width:0}
+.ci-item-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-item-meta{font-size:11px;color:var(--ink3)}
+.ci-item-price{font-size:14px;font-weight:700;color:var(--brand);flex-shrink:0;text-align:right}
+.ci-item-price .ci-unit-price{font-size:10px;color:var(--ink4);font-weight:500;display:block}
+.confirm-bill{background:var(--bg);border-radius:var(--r2);padding:12px 14px}
+.confirm-bill-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:var(--ink2)}
+.confirm-bill-row.fee{font-size:12px;color:var(--ink3)}
+.confirm-bill-row.fee.free{color:var(--brand)}
+.confirm-bill-row.discount{color:var(--brand)}
+.confirm-total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding:10px 0 0;margin-top:8px;border-top:2px solid var(--ink);color:var(--ink)}
+.confirm-btns{display:flex;gap:8px;padding:16px 20px;border-top:1px solid var(--line)}
+.confirm-btns button{flex:1;height:48px;border:none;border-radius:var(--r2);font:700 14px var(--f);cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.confirm-yes{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(12,131,31,.2)}.confirm-yes:hover{background:var(--brand-dk)}.confirm-yes:active{transform:scale(.97)}
+.confirm-no{background:var(--bg);color:var(--ink2);border:1.5px solid var(--line)}.confirm-no:hover{background:var(--line)}
+.ftr{text-align:center;padding:24px var(--px);color:var(--ink4);font-size:12px;border-top:1px solid var(--line);background:var(--white)}.ftr strong{color:var(--ink3)}
+.state{text-align:center;padding:64px 16px}.spin{width:32px;height:32px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 16px}
+.rbtn{margin-top:12px;height:38px;padding:0 24px;border:1.5px solid var(--brand);background:0;color:var(--brand);border-radius:var(--r);font:700 13px var(--f);cursor:pointer}.rbtn:hover{background:var(--brand);color:#fff}
+.no-res{grid-column:1/-1;text-align:center;padding:48px 16px;color:var(--ink3);font-size:14px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes cardIn{to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}.pop{animation:pop .25s var(--ease)}
+@media(max-width:640px){.hdr-in{gap:6px;flex-wrap:wrap;height:auto;padding:10px 0}.hdr{height:auto}.hdr-search{order:10;max-width:100%}.hero-box{padding:20px}.grid,.shimmer-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.pc-bot{padding:8px 10px 10px}.pc-name{font-size:12px}.pc-unit{display:none}.btn-call span{display:none}.btn-cart .cl{display:none}.ocard{flex:0 0 200px}.ocard-text{flex:0 0 180px}.info-grid{grid-template-columns:1fr;padding:16px}.stickybar-card{padding:12px 16px}.cd{width:100%}.map-card iframe{height:200px}.success-box{padding:24px 20px}.pc-share{opacity:.7}}
+</style>
+</head>
+<body>
+<div class="ann" id="annBar"><span id="annText"></span><span class="ann-x" onclick="this.parentElement.style.display='none'">✕</span></div>
+<header class="hdr"><div class="hdr-in">
+  <div class="logo"><div class="logo-ic" id="logoMark">🏬</div><div class="logo-txt"><div class="logo-name" id="logoName">StorePro Store</div><div class="logo-tag"><span id="logoSub"></span><span class="store-status" id="storeStatus" style="display:none"></span></div></div></div>
+  <div class="hdr-spacer"></div>
+  <div class="hdr-search"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg><input type="text" id="sBox" placeholder="Search products..." oninput="handleSearch(this.value)"></div>
+  <div class="hdr-actions">
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">हिं</button>
+    <button class="btn-track" onclick="openTracker()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg><span class="cl">Track</span></button>
+    <a class="btn-call" id="callBtn" href="#" id="callBtn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/></svg><span>Call</span></a>
+    <button class="btn-cart" onclick="toggleCart()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg><span class="cl">Cart</span><span class="cbadge" id="cBadge">0</span></button>
+  </div>
+</div></header>
+<section class="hero" id="heroSec"><div class="hero-box"><h1 id="heroH">Welcome to our store</h1><p class="hero-sub" id="heroP"></p><p class="hero-hi" id="heroHi"></p><div class="hero-chips" id="heroTags"></div></div></section>
+<section class="offers" id="offersSec"><div class="sec-h" id="offersTitle">Today's Deals <span class="pill">Live</span></div><div class="offers-row" id="offersRow"></div></section>
+<div class="cats" id="catRow"></div>
+<div class="tbar" id="toolbar"><span class="tbar-n" id="tbCount"></span><div class="tbar-meta"><span id="tbTime"></span><button onclick="loadAll()">Refresh</button></div></div>
+<section class="grid-sec"><div class="shimmer-grid" id="shimmerGrid"></div><div class="grid" id="grid"></div><div class="state" id="stateMsg" style="display:none"></div></section>
+<section class="info" id="infoSec"><div class="info-grid" id="infoCard"></div></section>
+<section class="map-sec" id="mapSec"><div class="map-card"><iframe id="mapFrame" src="" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-footer"><div class="map-addr"><strong id="mapName"></strong><span id="mapAddr"></span></div><a class="map-dir" id="mapDirBtn" href="#" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>Get Directions</a></div></div></section>
+<div class="stickybar" id="stickyBar"><div class="stickybar-in"><div class="stickybar-card" onclick="toggleCart()"><div class="sb-left"><span class="sb-count" id="sbCount">0 items</span><span class="sb-total" id="sbTotal">₹0</span></div><div class="sb-btn"><span id="sbLabel">View Cart</span> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg></div></div></div></div>
+<div class="mbg" id="modal" onclick="if(event.target===this)this.classList.remove('open')"><div class="mbox"><img class="mimg" id="mImg" src="" alt=""><div class="mbody"><div class="mcat" id="mCat"></div><h2 id="mName"></h2><div class="munit" id="mUnit"></div><p class="mdesc" id="mDesc"></p><div class="mpr"><span class="mprice" id="mPrice"></span><span class="mmrp" id="mMrp"></span><span class="msave" id="mSave"></span></div><div class="mtags" id="mTags"></div><div class="mbtns"><button class="mb mb1" id="mAddBtn">Add to Cart</button><button class="mb mb2" id="mWaBtn">📤 Share</button><button class="mb mb3" onclick="document.getElementById('modal').classList.remove('open')">Close</button></div></div></div></div>
+<div class="co" id="co" onclick="toggleCart()"><div class="cd" onclick="event.stopPropagation()">
+  <div class="cd-h"><h2 id="cdTitle">Cart (0)</h2><button class="cd-x" onclick="toggleCart()">✕</button></div>
+  <div class="cd-body" id="cdList"><div class="cd-empty">Your cart is empty</div></div>
+  <div class="cd-ft" id="cdFoot" style="display:none">
+    <div class="cd-total"><span>Total</span><span id="cdTotal">₹0</span></div>
+    <div class="cd-del" id="cdDel"></div>
+    <div class="order-mode"><button id="modePickup" class="active" onclick="setMode('pickup')">🏪 Pickup</button><button id="modeDel" onclick="setMode('delivery')">🚚 Delivery</button></div>
+    <div class="del-form show" id="pickForm"><label>Your Name</label><input type="text" id="pickName" placeholder="Enter your name"><label>Phone Number</label><input type="tel" id="pickPhone" placeholder="10-digit mobile number" maxlength="10"><label>Email <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink4)">(optional — for order confirmation)</span></label><input type="email" id="pickEmail" placeholder="your.email@gmail.com"><div class="del-note" id="pickNote">🏪 We'll pack your order. Pick up from the shop.</div></div>
+    <div class="del-form" id="delForm"><label>Your Name</label><input type="text" id="delName" placeholder="Enter your name"><label>Phone Number</label><input type="tel" id="delPhone" placeholder="10-digit mobile number" maxlength="10"><label>Email <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink4)">(optional)</span></label><input type="email" id="delEmail" placeholder="your.email@gmail.com"><label>Delivery Address</label><textarea id="delAddr" placeholder="House no., street, landmark..."></textarea><div class="del-note" id="delNote">🚚 We deliver within 5km. Cash on delivery available.</div></div>
+    <button class="cd-go" id="placeBtn" onclick="placeOrder()">📱 Place Order</button>
+    <button class="cd-go" id="upiPayBtn" onclick="showUpiQR()" style="display:none;margin-top:8px;background:var(--blue)">📲 Pay via UPI</button>
+  </div>
+</div></div>
+<!-- Order Confirmation Modal -->
+<div class="confirm-bg" id="confirmBg" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="confirm-box">
+    <div class="confirm-hdr"><div style="font-size:28px">📋</div><h3>Confirm Your Order</h3></div>
+    <div class="confirm-body">
+      <div class="confirm-sec"><div class="confirm-sec-h">Customer</div><div id="confirmCustomer"></div></div>
+      <div class="confirm-sec"><div class="confirm-sec-h">Items (<span id="confirmCount">0</span>)</div><div class="confirm-items-list" id="confirmItems"></div></div>
+      <div class="confirm-sec"><div class="confirm-sec-h">Bill Summary</div><div class="confirm-bill" id="confirmFees"></div></div>
+    </div>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="document.getElementById('confirmBg').classList.remove('open')">← Edit</button>
+      <button class="confirm-yes" id="confirmYes">✓ Confirm & Order</button>
+    </div>
+  </div>
+</div>
+
+<div class="success-bg" id="successBg"><div class="success-box"><div style="font-size:48px">✅</div><h3 id="successH">Order Placed!</h3><div class="success-oid" id="successOid"></div><p id="successP">Your order has been received. The shopkeeper will confirm shortly via WhatsApp.</p><p style="font-size:12px;color:var(--ink3);margin-bottom:12px">📱 Please send the order details to the shopkeeper on WhatsApp for quick confirmation.</p><div class="success-btns" style="flex-direction:column;gap:8px"><button class="s-wa" id="successWa" style="width:100%">📱 Send Order on WhatsApp</button><div style="display:flex;gap:8px"><button class="s-done" style="flex:1" onclick="document.getElementById('successBg').classList.remove('open');openTracker(lastOrderId)">📦 Track Order</button><button class="s-done" style="flex:1" onclick="document.getElementById('successBg').classList.remove('open')">✕ Close</button></div></div></div></div>
+
+<!-- Track Order Modal -->
+<div class="track-bg" id="trackBg" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="track-box">
+    <h3>📦 Track Your Order</h3>
+    <div class="track-input-row">
+      <input type="text" id="trackInput" placeholder="Enter Order ID (e.g. ORD-M5K2X)" maxlength="20">
+      <button onclick="trackOrder()">Track</button>
+    </div>
+    <div class="track-loading" id="trackLoading"><div class="spin"></div><div style="font-size:13px;color:var(--ink4)">Looking up your order...</div></div>
+    <div class="track-err" id="trackErr">Order not found. Please check your Order ID.</div>
+    <div class="track-result" id="trackResult">
+      <div class="track-status-bar">
+        <div class="track-line"><div class="track-line-fill" id="trackLineFill"></div></div>
+        <div class="track-step" id="ts0"><div class="track-dot">1</div><div class="track-step-label">Placed</div></div>
+        <div class="track-step" id="ts1"><div class="track-dot">2</div><div class="track-step-label">Confirmed</div></div>
+        <div class="track-step" id="ts2"><div class="track-dot">3</div><div class="track-step-label">Packed</div></div>
+        <div class="track-step" id="ts3"><div class="track-dot">4</div><div class="track-step-label">Done</div></div>
+      </div>
+      <div class="track-details" id="trackDetails"></div>
+    </div>
+    <button class="track-close" onclick="document.getElementById('trackBg').classList.remove('open')">Close</button>
+  </div>
+</div>
+<div class="qr-bg" id="qrBg" onclick="if(event.target===this)this.classList.remove('open')"><div class="qr-box"><h3>Pay via UPI</h3><div class="qr-amt" id="qrAmt">₹0</div><div class="qr-canvas" id="qrCanvas"></div><div class="qr-upi-id">UPI ID: <strong id="qrUpiId"></strong></div><div class="qr-note">Scan QR code with any UPI app to pay.<br>After payment, share screenshot on WhatsApp.</div><div class="qr-apps" id="qrApps"></div><button class="qr-close" onclick="document.getElementById('qrBg').classList.remove('open')">Close</button></div></div>
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg></button>
+<button class="wafab" id="waFab" title="Chat on WhatsApp">💬</button>
+<footer class="ftr"><strong id="ftrName"></strong><br><span id="ftrAddr"></span><br><span style="margin-top:8px;display:inline-block;font-size:11px;opacity:.5">Made with ❤️ for local businesses</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ══════ MULTI-STORE REGISTRY ══════
+// MASTER_SHEET_ID = Your PRIVATE registry sheet (separate from any store)
+// Create a new Google Sheet with a "Stores" tab containing: Slug | SheetID | ScriptURL
+// Publish it and paste the Sheet ID below. Shopkeepers NEVER see this sheet.
+var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+
+// DEFAULT_STORE_SHEET = Fallback when no ?store= or ?shop= parameter
+var DEFAULT_STORE_SHEET="";
+var SHEET_ID="";
+var DEFAULT_PHONE="",DEFAULT_WA="";
+var config={},allProducts=[],products=[],offers=[],filtered=[],activeCat="All",searchTerm="",cart=[];
+// Restore cart from localStorage
+try{var _sc=localStorage.getItem('sl_cart_'+SHEET_ID);if(_sc)cart=JSON.parse(_sc)}catch(e){}
+// Auto-fill customer info from last order
+function prefillCustomer(){
+  try{
+    var c=JSON.parse(localStorage.getItem('sl_cust_'+SHEET_ID)||'{}');
+    if(c.name){document.getElementById('pickName').value=c.name;document.getElementById('delName').value=c.name}
+    if(c.phone){document.getElementById('pickPhone').value=c.phone;document.getElementById('delPhone').value=c.phone}
+    if(c.email){document.getElementById('pickEmail').value=c.email;document.getElementById('delEmail').value=c.email}
+    if(c.address)document.getElementById('delAddr').value=c.address;
+  }catch(e){}
+}
+// Run after DOM is ready (forms exist in HTML above)
+prefillCustomer();
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function cfg(k,d){return config[k.toLowerCase().replace(/\s+/g,'')]||d||''}
+function getCartQty(name,unit){var it=cart.find(function(c){return c.name===name&&c.unit===unit});return it?it.qty:0}
+function loadSheet(n,cb){if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};window.google.visualization.Query.setResponse=function(r){cb(r)};var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(n)+'&_t='+Date.now();s.onerror=function(){cb(null)};document.body.appendChild(s)}
+function parseRows(r){if(!r||!r.table)return[];var h=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim()});return(r.table.rows||[]).map(function(row){var o={};h.forEach(function(k,i){var c=row.c&&row.c[i];o[k]=c?(c.v!=null?String(c.v).trim():''):''});return o})}
+function parseKV(r){
+  if(!r||!r.table)return{};var o={};
+  (r.table.rows||[]).forEach(function(row){
+    if(!row.c||!row.c[0])return;
+    var kc=row.c[0],vc=row.c[1];
+    var k=kc.v!=null?String(kc.v).trim().toLowerCase().replace(/\s+/g,''):'';
+    if(!k)return;
+    var v='';
+    if(vc&&vc.v!=null)v=String(vc.v).trim();
+    o[k]=v;
+  });
+  return o;
+}
+
+// Resolve which sheet to load
+function resolveStore(callback){
+  var params=new URLSearchParams(window.location.search);
+  // Direct Sheet ID — bypass registry
+  if(params.get('shop')){SHEET_ID=params.get('shop');callback();return}
+  // Slug lookup from master registry
+  var slug=params.get('store');
+  // No params — redirect to landing page (index.html)
+  if(!slug){
+    // On deployed site: redirect to homepage
+    var base=window.location.href.split('store.html')[0];
+    if(window.location.protocol!=='file:'){window.location.replace(base);return}
+    // On file:// — show inline welcome
+    showWelcomePage();return;
+  }
+  // Load the "Stores" tab from master sheet
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table){showStoreNotFound(slug);return}
+    var cols=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim()});
+    var found=false;
+    (r.table.rows||[]).forEach(function(row){
+      if(found)return;
+      var o={};cols.forEach(function(k,i){var c=row.c&&row.c[i];o[k]=c?(c.v!=null?String(c.v).trim():''):''});
+      var rowSlug=(o.slug||o.store||o.name||'').toLowerCase().trim();
+      if(rowSlug===slug.toLowerCase()){
+        SHEET_ID=o.sheetid||o.sheet||o.id||'';
+        found=true;
+      }
+    });
+    if(!SHEET_ID){showStoreNotFound(slug);return}
+    callback();
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();
+  s.onerror=function(){showStoreNotFound(slug)};
+  document.body.appendChild(s);
+}
+
+function showWelcomePage(){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:linear-gradient(135deg,#f0fdf4,#f5f5f5)">'
+    +'<div style="text-align:center;max-width:440px">'
+    +'<div style="font-size:72px;margin-bottom:8px">🏬</div>'
+    +'<h1 style="font-size:28px;font-weight:800;margin-bottom:4px;color:#0c831f">StorePro</h1>'
+    +'<p style="font-size:16px;color:#666;margin-bottom:8px">Your Store, Online in 5 Minutes</p>'
+    +'<p style="font-family:Noto Sans Devanagari,sans-serif;font-size:14px;color:#0c831f;opacity:.6;margin-bottom:32px">Your store. Your sheet. Your customers.</p>'
+    +'<div style="display:flex;flex-direction:column;gap:10px;max-width:300px;margin:0 auto">'
+    +'<a href="https://wa.me/919760684971?text=Hi!%20I%20want%20to%20create%20my%20online%20store" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;background:#25d366;color:#fff;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none">📱 Create Your Free Store</a>'
+    +'<a href="?store=grocery-grocery" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;background:#fff;color:#333;border:2px solid #e5e7eb;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none">👀 See Demo Store</a>'
+    +'</div>'
+    +'<div style="margin-top:40px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap">'
+    +'<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:#0c831f">₹0</div><div style="font-size:10px;color:#999">To start</div></div>'
+    +'<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:#0c831f">5 min</div><div style="font-size:10px;color:#999">Setup</div></div>'
+    +'<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:#0c831f">0</div><div style="font-size:10px;color:#999">Code needed</div></div>'
+    +'</div>'
+    +'<p style="margin-top:32px;font-size:11px;color:#aaa">No coding. No app. Just a Google Sheet + WhatsApp.</p>'
+    +'</div></div>';
+}
+
+function showStoreNotFound(slug){
+  var safe=slug.replace(/[<>"'&]/g,'');
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:#f5f5f5">'
+    +'<div style="text-align:center;max-width:400px">'
+    +'<div style="font-size:64px;margin-bottom:12px">🏬</div>'
+    +'<h1 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#111">Store not found</h1>'
+    +'<p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">The store <strong>"'+safe+'"</strong> doesn\'t exist or is no longer active.</p>'
+    +'<div style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">'
+    +'<a href="?" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 28px;background:#0c831f;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">🏠 Go to StorePro</a>'
+    +'<a href="https://wa.me/919760684971?text=Hi!%20I%20want%20to%20create%20my%20own%20store" target="_blank" style="font-size:13px;color:#0c831f;font-weight:600;text-decoration:none;padding:8px">Want your own store? Create one free →</a>'
+    +'</div></div></div>';
+}
+
+function showShimmer(){var g=document.getElementById('shimmerGrid');var h='';for(var i=0;i<8;i++)h+='<div class="shimmer-card"><div class="shimmer-img"></div><div class="shimmer-line w80"></div><div class="shimmer-line w60"></div><div class="shimmer-line w40"></div></div>';g.innerHTML=h}
+function hideShimmer(){document.getElementById('shimmerGrid').innerHTML=''}
+
+function loadAll(){
+  showShimmer();
+  document.getElementById('stateMsg').style.display='none';
+  document.getElementById('grid').innerHTML='';
+  loadSheet('Config',function(r){config=r?parseKV(r):{};applyConfig();
+    loadSheet('Offers',function(r2){offers=r2?parseRows(r2).filter(function(o){return o.title}):[];renderOffers();
+      loadSheet('Products',function(r3){allProducts=r3?parseRows(r3).filter(function(p){return p.name}):[];
+        if(!allProducts.length){loadSheet('Sheet1',function(r4){allProducts=r4?parseRows(r4).filter(function(p){return p.name}):[];finish()})}
+        else finish()})})})
+}
+// ══════ END IDENTICAL DATA LOADING ══════
+
+// ══════ LANGUAGE SYSTEM ══════
+var lang='en';
+var L={en:{search:'Search products...',deals:"Today's Deals",all:'All',viewCart:'View Cart',cartEmpty:'Your cart is empty',remove:'Remove',placeOrder:'Place Order',sending:'Placing order...',pickup:'Pickup',delivery:'Delivery',orderPlaced:'Order Placed!',orderMsg:'Your order has been received. The shopkeeper will confirm shortly via WhatsApp.',fillReq:'Please fill name and phone number.',badPhone:'Please enter a valid 10-digit phone number.',veg:'Veg',nonveg:'Non-Veg',newB:'New',oos:'Out of Stock',off:'OFF',save:'Save'},
+hi:{search:'सामान खोजें...',deals:'आज के ऑफ़र',all:'सभी',viewCart:'कार्ट देखें',cartEmpty:'आपका कार्ट खाली है',remove:'हटाएं',placeOrder:'ऑर्डर करें',sending:'ऑर्डर भेज रहे हैं...',pickup:'पिकअप',delivery:'डिलीवरी',orderPlaced:'ऑर्डर हो गया!',orderMsg:'आपका ऑर्डर मिल गया है। दुकानदार जल्दी WhatsApp पर कन्फर्म करेंगे।',fillReq:'कृपया नाम और फ़ोन नंबर भरें।',badPhone:'कृपया सही 10 अंकों का फ़ोन नंबर डालें।',veg:'शाकाहारी',nonveg:'मांसाहारी',newB:'नया',oos:'स्टॉक में नहीं',off:'छूट',save:'बचत'}};
+function t(k){if(lang==='hi'){var ov=cfg('hi_'+k,'');if(ov)return ov}return L[lang]&&L[lang][k]||L.en[k]||k}
+function toggleLang(){
+  lang=lang==='en'?'hi':'en';
+  document.getElementById('langBtn').textContent=lang==='en'?'हिं':'EN';
+  document.getElementById('langBtn').classList.toggle('on',lang==='hi');
+  document.getElementById('sBox').placeholder=t('search');
+  document.getElementById('offersTitle').innerHTML=t('deals')+' <span class="pill">Live</span>';
+  document.getElementById('sbLabel').textContent=t('viewCart');
+  document.getElementById('placeBtn').textContent='📱 '+t('placeOrder');
+  document.getElementById('modePickup').innerHTML='🏪 '+t('pickup');
+  document.getElementById('modeDel').innerHTML='🚚 '+t('delivery');
+  if(allProducts.length){buildCats();applyFilter()}
+  renderCart();updateStickyBar();
+}
+
+// ══════ IMAGE HELPERS ══════
+function isValidImg(u){return u&&u.length>15&&(u.indexOf('http://')===0||u.indexOf('https://')===0)&&u.replace('https://','').replace('http://','').indexOf('.')>0}
+var catIcons={grocery:'🛒',atta:'🌾',wheat:'🌾',flour:'🌾',rice:'🍚',dal:'🥣',oil:'🍶',ghee:'🍶',snacks:'🍿',namkeen:'🍿',biscuit:'🍪',sweets:'🍰',confectionery:'🍬',chocolate:'🍫',dairy:'🥛',milk:'🥛',beverages:'🥤',tea:'☕',coffee:'☕',spices:'🌶',masala:'🌶',fruits:'🍎',vegetables:'🥕',cleaning:'🧹',soap:'🧼',sugar:'🍚',salt:'🧂','dry fruits':'🥜',nuts:'🥜',bread:'🍞'};
+function phIcon(cat){if(!cat)return '📦';var c=cat.toLowerCase();for(var k in catIcons){if(c.indexOf(k)>=0)return catIcons[k]}return '📦'}
+function imgErr(el,cat){el.outerHTML='<div class="pc-ph"><span class="pc-ph-icon">'+phIcon(cat)+'</span><span class="pc-ph-text">'+(cat||'Product')+'</span></div>'}
+
+// ══════ ORDER MODE ══════
+var orderMode='pickup';
+function setMode(m){orderMode=m;document.getElementById('modePickup').classList.toggle('active',m==='pickup');document.getElementById('modeDel').classList.toggle('active',m==='delivery');document.getElementById('pickForm').classList.toggle('show',m==='pickup');document.getElementById('delForm').classList.toggle('show',m==='delivery')}
+
+function finish(){
+  hideShimmer();var st=document.getElementById('stateMsg');
+  if(!allProducts.length){st.style.display='block';st.innerHTML='<p style="color:var(--orange);font-weight:700">No products found.</p><p style="font-size:13px;color:var(--ink3);margin-top:4px">Add products to your "Products" sheet.</p><button class="rbtn" onclick="loadAll()">Try Again</button>';return}
+  allProducts.sort(function(a,b){return(parseInt(a.sortorder||a.sort||'9999'))-(parseInt(b.sortorder||b.sort||'9999'))});
+  products=allProducts; // Store reference for cart price sync
+  document.getElementById('toolbar').style.display='flex';document.getElementById('tbTime').textContent='Updated '+new Date().toLocaleTimeString();
+  buildCats();applyFilter();buildInfo();
+  // Sync cart prices with latest data and restore cart UI
+  if(cart.length){syncCartPrices();try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}renderCart();updateStickyBar()}
+  // Start periodic price refresh — reload products every 60s in background
+  if(!window._priceRefreshStarted){
+    window._priceRefreshStarted=true;
+    setInterval(function(){
+      loadSheet('Products',function(r){
+        var fresh=r?parseRows(r).filter(function(p){return p.name}):[];
+        if(fresh.length){
+          allProducts=fresh;
+          allProducts.sort(function(a,b){return(parseInt(a.sortorder||a.sort||'9999'))-(parseInt(b.sortorder||b.sort||'9999'))});
+          products=allProducts;
+          applyFilter();
+          if(cart.length){syncCartPrices();try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}renderCart();updateStickyBar()}
+          document.getElementById('tbTime').textContent='Updated '+new Date().toLocaleTimeString();
+        }
+      });
+    },60000);
+  }
+}
+
+// ══════ STORE OPEN/CLOSED STATUS ══════
+function parseTime12(str){
+  // Parses "8:00 AM", "8AM", "8:30 am", "20:00", "8 PM" etc into minutes since midnight
+  str=(str||'').trim().toUpperCase().replace(/\./g,'');
+  var m=str.match(/^(\d{1,2}):?(\d{2})?\s*(AM|PM)?$/);
+  if(!m)return null;
+  var h=parseInt(m[1]),min=parseInt(m[2]||'0'),ampm=m[3]||'';
+  if(ampm==='PM'&&h!==12)h+=12;
+  if(ampm==='AM'&&h===12)h=0;
+  // If no AM/PM and hour > 12, treat as 24h
+  return h*60+min;
+}
+function updateStoreStatus(timing){
+  // Accepts formats: "8:00 AM - 10:00 PM", "8AM-10PM", "08:00-22:00", "8 AM to 10 PM"
+  var badge=document.getElementById('storeStatus');
+  if(!badge)return;
+  var parts=timing.split(/\s*[-–—to]+\s*/i);
+  if(parts.length<2)return;
+  var openMin=parseTime12(parts[0]),closeMin=parseTime12(parts[1]);
+  if(openMin===null||closeMin===null)return;
+  var now=new Date(),nowMin=now.getHours()*60+now.getMinutes();
+  var isOpen;
+  if(closeMin>openMin){
+    // Normal: e.g. 8AM-10PM
+    isOpen=nowMin>=openMin&&nowMin<closeMin;
+  }else{
+    // Overnight: e.g. 10PM-6AM
+    isOpen=nowMin>=openMin||nowMin<closeMin;
+  }
+  badge.style.display='inline-flex';
+  if(isOpen){
+    badge.className='store-status ss-open';
+    badge.textContent='Open';
+  }else{
+    badge.className='store-status ss-closed';
+    // Show when it opens next
+    var openH=Math.floor(openMin/60),openM=openMin%60;
+    var ampm=openH>=12?'PM':'AM';
+    var h12=openH>12?openH-12:(openH===0?12:openH);
+    badge.textContent='Closed · Opens '+h12+(openM?':'+String(openM).padStart(2,'0'):'')+' '+ampm;
+  }
+}
+
+function applyConfig(){var name=cfg('shopname','StorePro Store');document.title=name+' 🏬';document.getElementById('logoName').textContent=name;document.getElementById('logoSub').textContent=cfg('tagline','');document.getElementById('logoMark').textContent=cfg('logoemoji','🏬');document.getElementById('heroH').textContent=cfg('herotitle','Welcome to '+name);document.getElementById('heroP').textContent=cfg('herosubtitle','');var hi=cfg('hinditagline','');if(hi){var el=document.getElementById('heroHi');el.textContent=hi;el.style.display='block'}var tags='';if(cfg('deliveryinfo'))tags+='<div class="hchip">🚚 '+esc(cfg('deliveryinfo'))+'</div>';if(cfg('deliverytime'))tags+='<div class="hchip">⏰ '+esc(cfg('deliverytime'))+'</div>';if(cfg('timing'))tags+='<div class="hchip">🕐 '+esc(cfg('timing'))+'</div>';document.getElementById('heroTags').innerHTML=tags;var ann=cfg('announcement','');if(ann){document.getElementById('annText').textContent=ann;document.getElementById('annBar').style.display='block'}if(cfg('searchhint'))document.getElementById('sBox').placeholder=cfg('searchhint');var phone=cfg('phone','+91 '+DEFAULT_PHONE);document.getElementById('callBtn').href='tel:'+phone.replace(/[^0-9+]/g,'');var wa=cfg('whatsapp',DEFAULT_WA);var fab=document.getElementById('waFab');fab.style.display='flex';fab.onclick=function(){window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hi! I want to place an order from '+name),'_blank')};document.getElementById('ftrName').textContent=name;document.getElementById('ftrAddr').textContent=cfg('address','');if(cfg('upi'))document.getElementById('upiPayBtn').style.display='flex';
+  var addr=cfg('address','');if(addr)document.getElementById('pickNote').textContent='🏪 We\'ll pack your order. Pickup from: '+addr;
+  if(cfg('deliveryinfo'))document.getElementById('delNote').textContent='🚚 '+cfg('deliveryinfo')+'. Cash on delivery available.';
+  // Open/Closed status from Timing
+  var timing=cfg('timing','');
+  if(timing)updateStoreStatus(timing);
+  // Dynamic SEO meta tags from Config
+  var city=cfg('city',cfg('address','').split(',').pop().trim());
+  var desc=name+' — '+cfg('tagline',cfg('herosubtitle','Order groceries & daily essentials online'))+'. '+(cfg('address','')?cfg('address')+'. ':'')+(cfg('deliveryinfo','')?cfg('deliveryinfo')+'. ':'')+(cfg('hinditagline','')?cfg('hinditagline'):'');
+  function setMeta(attr,val,content){var el=document.querySelector('meta['+attr+'="'+val+'"]');if(el)el.setAttribute('content',content)}
+  setMeta('name','description',desc);
+  setMeta('property','og:title',name+' '+cfg('logoemoji','🏬'));
+  setMeta('property','og:description',desc.substring(0,200));
+  setMeta('name','twitter:title',name+' '+cfg('logoemoji','🏬'));
+  setMeta('name','twitter:description',desc.substring(0,200));
+  if(cfg('ogimage'))setMeta('property','og:image',cfg('ogimage'));
+  if(cfg('ogimage'))setMeta('name','twitter:image',cfg('ogimage'));
+  if(city){setMeta('name','geo.placename',city);document.querySelector('meta[name="keywords"]').setAttribute('content',name+', '+cfg('shoptype','grocery')+' '+city+', online order '+city+', '+cfg('tagline',''))}
+  // Google Analytics GA4
+  var gaId=cfg('analyticsid','');
+  if(gaId&&!window._gaLoaded){
+    window._gaLoaded=true;
+    var gs=document.createElement('script');gs.async=true;gs.src='https://www.googletagmanager.com/gtag/js?id='+gaId;document.head.appendChild(gs);
+    window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
+    gtag('js',new Date());gtag('config',gaId,{page_title:name,custom_map:{dimension1:'store_slug'}});
+  }
+  // ═══ BRAND COLOR + THEME from Config ═══
+  var brandColor=cfg('brandcolor','');
+  if(brandColor){
+    // Calculate darker shade and light background from brand color
+    var r=document.documentElement.style;
+    r.setProperty('--brand',brandColor);
+    // Generate brand-bg (very light version)
+    var hex=brandColor.replace('#','');
+    var rr=parseInt(hex.substring(0,2),16),gg=parseInt(hex.substring(2,4),16),bb=parseInt(hex.substring(4,6),16);
+    r.setProperty('--brand-bg','rgba('+rr+','+gg+','+bb+',.08)');
+    // Generate brand-dk (20% darker)
+    r.setProperty('--brand-dk','rgb('+Math.max(0,rr-40)+','+Math.max(0,gg-40)+','+Math.max(0,bb-40)+')');
+    // Update meta theme-color
+    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brandColor);
+  }
+  // Dark theme
+  var theme=cfg('theme','').toLowerCase();
+  if(theme==='dark'){
+    var r=document.documentElement.style;
+    r.setProperty('--bg','#121212');r.setProperty('--card','#1e1e1e');r.setProperty('--white','#1e1e1e');
+    r.setProperty('--ink','#f0f0f0');r.setProperty('--ink2','#ccc');r.setProperty('--ink3','#999');r.setProperty('--ink4','#666');
+    r.setProperty('--line','#333');r.setProperty('--line2','#444');
+    r.setProperty('--sh','0 1px 4px rgba(0,0,0,.3)');r.setProperty('--sh2','0 4px 16px rgba(0,0,0,.4)');
+  }
+}
+function renderOffers(){if(!offers.length)return;window._hasOffers=true;document.getElementById('offersSec').style.display='block';document.getElementById('offersRow').innerHTML=offers.map(function(o){if(isValidImg(o.image))return '<div class="ocard"><img class="ocard-img" src="'+esc(o.image)+'" alt="" loading="lazy"><div class="ocard-body"><div class="ocard-title">'+esc(o.title)+'</div>'+(o.description?'<div class="ocard-desc">'+esc(o.description)+'</div>':'')+'</div></div>';return '<div class="ocard-text"><div class="ot-tag">Offer</div><div class="ot-t">'+esc(o.title)+'</div>'+(o.description?'<div class="ot-d">'+esc(o.description)+'</div>':'')+'</div>'}).join('')}
+function buildCats(){var cats=["All",...new Set(allProducts.map(function(p){return p.category}).filter(Boolean))];document.getElementById('catRow').innerHTML=cats.map(function(c){return '<button class="cat'+(c===activeCat?' on':'')+'" onclick="selCat(\''+c.replace(/'/g,"\\'")+'\')">'+esc(c==='All'?t('all'):c)+'</button>'}).join('')}
+function selCat(c){activeCat=c;buildCats();applyFilter()}
+function handleSearch(v){
+  searchTerm=v.toLowerCase();
+  var hero=document.getElementById('heroSec'),offers=document.getElementById('offersSec');
+  if(searchTerm){if(hero)hero.style.display='none';if(offers)offers.style.display='none'}
+  else{if(hero)hero.style.display='';if(offers&&window._hasOffers)offers.style.display='block'}
+  applyFilter();
+}
+function applyFilter(){filtered=allProducts.filter(function(p){return(activeCat==='All'||p.category===activeCat)&&(!searchTerm||(p.name||'').toLowerCase().includes(searchTerm)||(p.description||'').toLowerCase().includes(searchTerm)||(p.category||'').toLowerCase().includes(searchTerm))});document.getElementById('tbCount').textContent=filtered.length+' item'+(filtered.length!==1?'s':'');renderGrid()}
+
+function renderGrid(){
+  var g=document.getElementById('grid'),cur=cfg('currency','₹');
+  if(!filtered.length){g.innerHTML='<div class="no-res">No products found.</div>';return}
+  g.innerHTML=filtered.map(function(p,i){
+    var tags='',typ=(p.type||'').toLowerCase();
+    if(typ==='veg')tags+='<span class="t t-veg">● '+t('veg')+'</span>';else if(typ.indexOf('non')>=0)tags+='<span class="t t-nv">● '+t('nonveg')+'</span>';
+    var b=(p.badge||'').toUpperCase();if(b==='NEW')tags+='<span class="t t-new">'+t('newB')+'</span>';else if(b)tags+='<span class="t t-offer">'+esc(p.badge)+'</span>';
+    var price=Number(p.price||0),mrp=p.mrp?Number(p.mrp):0,hasMrp=mrp>price&&price>0,pct=hasMrp?Math.round(((mrp-price)/mrp)*100):0;
+    var stk=(p.stock||'').toLowerCase(),isOOS=stk==='out of stock'||stk==='out'||stk==='no';
+    var qty=getCartQty(p.name,p.unit||'');
+    var actionBtn;if(isOOS)actionBtn='';else if(qty>0)actionBtn='<div class="pc-stepper" onclick="event.stopPropagation()"><button onclick="cartDelta('+i+',-1)">−</button><span>'+qty+'</span><button onclick="cartDelta('+i+',1)">+</button></div>';else actionBtn='<button class="pc-btn" onclick="event.stopPropagation();addToCart('+i+')">ADD</button>';
+    var hasImg=isValidImg(p.image);
+    var imgHtml=hasImg?'<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'" loading="lazy" onerror="imgErr(this,\''+esc(p.category||'').replace(/'/g,'')+'\')">'
+      :'<div class="pc-ph"><span class="pc-ph-icon">'+phIcon(p.category)+'</span><span class="pc-ph-text">'+esc(p.category||'Product')+'</span></div>';
+    return '<div class="pc'+(isOOS?' oos':'')+'" style="animation-delay:'+(i*.03)+'s" onclick="openModal('+i+')">'
+      +(isOOS?'<div class="pc-oos-tag">'+t('oos')+'</div>':'')
+      +'<div class="pc-top">'+imgHtml+(tags?'<div class="pc-tags">'+tags+'</div>':'')+(pct?'<div class="pc-off">'+pct+'% '+t('off')+'</div>':'')
+      +'<div class="pc-share" onclick="event.stopPropagation();shareProduct('+i+')" title="Share on WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg></div>'
+      +'</div><div class="pc-bot">'+(p.category?'<div class="pc-cat">'+esc(p.category)+'</div>':'')
+      +'<div class="pc-name">'+esc(p.name)+'</div>'+(p.unit?'<div class="pc-unit">'+esc(p.unit)+'</div>':'')
+      +'<div class="pc-foot"><div class="pc-prices"><span class="pc-price">'+cur+price.toLocaleString('en-IN')+'</span>'+(hasMrp?'<span class="pc-mrp">'+cur+mrp.toLocaleString('en-IN')+'</span>':'')+'</div>'+actionBtn+'</div></div></div>'
+  }).join('');
+}
+
+function openModal(i){var p=filtered[i],m=document.getElementById('modal'),img=document.getElementById('mImg'),cur=cfg('currency','₹');if(isValidImg(p.image)){img.src=p.image;img.style.display='block';img.onerror=function(){img.style.display='none'}}else img.style.display='none';document.getElementById('mCat').textContent=p.category||'';document.getElementById('mName').textContent=p.name||'';document.getElementById('mUnit').textContent=p.unit||'';document.getElementById('mDesc').textContent=p.description||'';var price=Number(p.price||0),mrp=p.mrp?Number(p.mrp):0,hasMrp=mrp>price&&price>0;document.getElementById('mPrice').textContent=cur+price.toLocaleString('en-IN');var me=document.getElementById('mMrp'),se=document.getElementById('mSave');if(hasMrp){var pct=Math.round(((mrp-price)/mrp)*100);me.textContent=cur+mrp.toLocaleString('en-IN');me.style.display='inline';se.textContent=t('save')+' '+pct+'%';se.style.display='inline'}else{me.style.display='none';se.style.display='none'}var tags='',typ=(p.type||'').toLowerCase();if(typ==='veg')tags+='<span class="t t-veg">● '+t('veg')+'</span>';else if(typ.indexOf('non')>=0)tags+='<span class="t t-nv">● '+t('nonveg')+'</span>';if(p.badge)tags+='<span class="t t-offer">'+esc(p.badge)+'</span>';document.getElementById('mTags').innerHTML=tags;document.getElementById('mAddBtn').onclick=function(){addToCart(i);m.classList.remove('open')};document.getElementById('mWaBtn').onclick=function(){shareProduct(i)};m.classList.add('open')}
+
+// ══════ SHARE PRODUCT ON WHATSAPP ══════
+function shareProduct(i){
+  var p=filtered[i],cur=cfg('currency','₹'),shop=cfg('shopname','our store');
+  var price=Number(p.price||0),mrp=p.mrp?Number(p.mrp):0;
+  var hasMrp=mrp>price&&price>0,pct=hasMrp?Math.round(((mrp-price)/mrp)*100):0;
+  var msg='🛒 *'+p.name+'*'+(p.unit?' ('+p.unit+')':'')+'\n';
+  msg+=cur+price.toLocaleString('en-IN');
+  if(hasMrp)msg+='  ~~'+cur+mrp.toLocaleString('en-IN')+'~~  *'+pct+'% OFF!*';
+  msg+='\n\n';
+  if(p.description)msg+=p.description+'\n\n';
+  msg+='Order from *'+shop+'*\n';
+  msg+=window.location.href.split('?')[0]+(window.location.search||'')+'\n';
+  msg+='\n📱 Open the link to order online!';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  if(window.gtag)gtag('event','share',{method:'whatsapp',content_type:'product',item_id:p.name});
+}
+
+function addToCart(i){var p=filtered[i],ex=cart.find(function(c){return c.name===p.name&&c.unit===p.unit});if(ex)ex.qty++;else cart.push(Object.assign({},p,{qty:1}));afterCartChange();var badge=document.getElementById('cBadge');badge.classList.remove('pop');void badge.offsetWidth;badge.classList.add('pop');if(window.gtag)gtag('event','add_to_cart',{currency:'INR',value:parseFloat(p.price||0),items:[{item_name:p.name,item_category:p.category||'',price:parseFloat(p.price||0)}]})}
+function cartDelta(i,d){var p=filtered[i],ex=cart.find(function(c){return c.name===p.name&&c.unit===p.unit});if(!ex)return;ex.qty+=d;if(ex.qty<=0)cart=cart.filter(function(c){return c!==ex});afterCartChange()}
+function rmCart(id){cart.splice(id,1);afterCartChange()}
+function updQty(id,d){cart[id].qty+=d;if(cart[id].qty<=0)cart.splice(id,1);afterCartChange()}
+function afterCartChange(){syncCartPrices();try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}renderCart();renderGrid();updateStickyBar()}
+
+// Sync cart prices with latest product data — if shopkeeper changed a price, cart updates immediately
+function syncCartPrices(){
+  if(!products||!products.length)return;
+  var changed=false;
+  cart.forEach(function(item){
+    var match=products.find(function(p){return p.name===item.name&&p.unit===item.unit});
+    if(!match)return;
+    var newPrice=parseFloat(match.price||0);
+    var newMrp=parseFloat(match.mrp||0);
+    var oldPrice=parseFloat(item.price||0);
+    if(newPrice!==oldPrice){item.price=match.price;changed=true}
+    if(match.mrp)item.mrp=match.mrp;
+    // Also update stock status — remove if now out of stock
+    var stock=(match.stock||'').toLowerCase();
+    if(stock.indexOf('out')>=0){item._outOfStock=true}else{delete item._outOfStock}
+  });
+  // Remove out of stock items and notify
+  var removed=cart.filter(function(c){return c._outOfStock});
+  if(removed.length){
+    cart=cart.filter(function(c){return!c._outOfStock});
+    alert(removed.map(function(r){return r.name}).join(', ')+' removed from cart — now out of stock.');
+  }
+}
+
+function updateStickyBar(){var count=cart.reduce(function(s,c){return s+c.qty},0),subtotal=cart.reduce(function(s,c){return s+parseFloat(c.price||0)*c.qty},0);var bar=document.getElementById('stickyBar'),cur=cfg('currency','₹');
+  var fees=calcFees(subtotal);
+  if(count>0){bar.classList.add('show');document.getElementById('sbCount').textContent=count+' item'+(count!==1?'s':'');document.getElementById('sbTotal').textContent=cur+fees.grand.toLocaleString('en-IN');document.getElementById('sbLabel').textContent=t('viewCart')}else bar.classList.remove('show')}
+
+// ══════ CENTRALIZED FEE CALCULATOR ══════
+function calcFees(subtotal){
+  var cur=cfg('currency','₹');
+  var deliveryFee=parseFloat(cfg('deliveryfee','0'))||0;
+  var freeDeliveryAbove=parseFloat(cfg('freedelivery','0'))||0;
+  var packingFee=parseFloat(cfg('packingfee','0'))||0;
+  var handlingFee=parseFloat(cfg('handlingfee','0'))||0;
+  var platformFee=parseFloat(cfg('platformfee','0'))||0;
+  var nightFee=parseFloat(cfg('nightfee','0'))||0;
+  var discount=parseFloat(cfg('discount','0'))||0;
+  var isDelivery=orderMode==='delivery';
+  var isFreeDelivery=freeDeliveryAbove>0&&subtotal>=freeDeliveryAbove;
+  var actualDelivery=(isDelivery&&!isFreeDelivery)?deliveryFee:0;
+  // Night fee: apply if current hour is between NightFeeStart and NightFeeEnd
+  var actualNight=0;
+  if(nightFee&&isDelivery){var h=new Date().getHours();var ns=parseInt(cfg('nightfeestart','22'))||22;var ne=parseInt(cfg('nightfeeend','6'))||6;if(ns>ne?h>=ns||h<ne:h>=ns&&h<ne)actualNight=nightFee}
+  var totalFees=actualDelivery+packingFee+handlingFee+platformFee+actualNight;
+  var totalDiscount=discount;
+  var grand=subtotal+totalFees-totalDiscount;
+  return{
+    subtotal:subtotal,
+    deliveryFee:deliveryFee,actualDelivery:actualDelivery,isFreeDelivery:isFreeDelivery,freeDeliveryAbove:freeDeliveryAbove,
+    packingFee:packingFee,handlingFee:handlingFee,platformFee:platformFee,
+    nightFee:actualNight,discount:totalDiscount,
+    totalFees:totalFees,grand:Math.max(0,grand),
+    isDelivery:isDelivery
+  };
+}
+
+function renderCart(){
+  var cur=cfg('currency','₹'),count=cart.reduce(function(s,c){return s+c.qty},0),subtotal=cart.reduce(function(s,c){return s+parseFloat(c.price||0)*c.qty},0);
+  var badge=document.getElementById('cBadge');badge.textContent=count;badge.style.display=count>0?'flex':'none';
+  document.getElementById('cdTitle').textContent='Cart ('+count+')';
+  var ct=document.getElementById('cdList'),ft=document.getElementById('cdFoot');
+  if(!cart.length){ct.innerHTML='<div class="cd-empty">'+t('cartEmpty')+'</div>';ft.style.display='none';return}
+  ft.style.display='block';
+  
+  var f=calcFees(subtotal);
+  var minOrder=parseInt(cfg('minorder','0'))||0;
+  var belowMin=minOrder&&subtotal<minOrder;
+  
+  // Subtotal
+  document.getElementById('cdTotal').textContent=cur+subtotal.toLocaleString('en-IN');
+  
+  // Fee breakdown
+  var del=document.getElementById('cdDel');
+  var h='';
+  
+  // Delivery fee
+  if(f.isDelivery){
+    if(f.isFreeDelivery){
+      h+='<div class="cd-fee"><span>🚚 Delivery Fee</span><span style="color:var(--brand);font-weight:700">FREE ✓</span></div>';
+    }else{
+      h+='<div class="cd-fee"><span>🚚 Delivery Fee</span><span>'+cur+(f.deliveryFee||0).toLocaleString('en-IN')+'</span></div>';
+      if(f.freeDeliveryAbove>0&&subtotal<f.freeDeliveryAbove){
+        h+='<div style="font-size:11px;color:var(--brand);margin-bottom:2px">🎁 Free delivery above '+cur+f.freeDeliveryAbove.toLocaleString('en-IN')+' — add '+cur+(f.freeDeliveryAbove-subtotal).toLocaleString('en-IN')+' more!</div>';
+      }
+    }
+  }else{
+    h+='<div style="font-size:11px;color:var(--ink3);margin-bottom:2px">🏪 No delivery fee for pickup</div>';
+  }
+  
+  // Packing fee (applies to both modes)
+  if(f.packingFee>0)h+='<div class="cd-fee"><span>📦 Packing Fee</span><span>'+cur+f.packingFee.toLocaleString('en-IN')+'</span></div>';
+  
+  // Handling fee
+  if(f.handlingFee>0)h+='<div class="cd-fee"><span>🔧 Handling Fee</span><span>'+cur+f.handlingFee.toLocaleString('en-IN')+'</span></div>';
+  
+  // Platform fee
+  if(f.platformFee>0)h+='<div class="cd-fee"><span>💳 Platform Fee</span><span>'+cur+f.platformFee.toLocaleString('en-IN')+'</span></div>';
+  
+  // Night fee
+  if(f.nightFee>0)h+='<div class="cd-fee"><span>🌙 Night Delivery Fee</span><span>'+cur+f.nightFee.toLocaleString('en-IN')+'</span></div>';
+  
+  // Discount
+  if(f.discount>0)h+='<div class="cd-fee"><span style="color:var(--brand)">🏷️ Discount</span><span style="color:var(--brand);font-weight:700">-'+cur+f.discount.toLocaleString('en-IN')+'</span></div>';
+  
+  // Grand total
+  if(f.isDelivery||f.totalFees>0||f.discount>0){
+    h+='<div class="cd-grand"><span>Grand Total</span><span>'+cur+f.grand.toLocaleString('en-IN')+'</span></div>';
+  }
+  
+  // Min order warning (show at top, before fees)
+  if(belowMin){
+    h='<div class="cd-del err">⚠️ Minimum order is '+cur+minOrder.toLocaleString('en-IN')+'. Add '+cur+(minOrder-subtotal).toLocaleString('en-IN')+' more to place order.</div>'+h;
+  }
+  del.innerHTML=h;
+  
+  // Enable/disable Place Order button
+  var btn=document.getElementById('placeBtn');
+  if(belowMin){
+    btn.classList.add('disabled');
+    btn.textContent='Add '+cur+(minOrder-subtotal).toLocaleString('en-IN')+' more to order';
+  }else{
+    btn.classList.remove('disabled');
+    btn.textContent='📱 '+t('placeOrder');
+  }
+  
+  // Build cart items with delivery info banner after items
+  var bannerHtml='';
+  var deliveryFee=parseFloat(cfg('deliveryfee','0'))||0;
+  var freeAbove=parseFloat(cfg('freedelivery','0'))||0;
+  var minOrd=parseInt(cfg('minorder','0'))||0;
+  if(deliveryFee>0||freeAbove>0||minOrd>0){
+    bannerHtml+='<div class="cd-info-banner">';
+    if(minOrd>0)bannerHtml+='<div class="cib-row"><span>🛒 Min order</span><strong>'+cur+minOrd.toLocaleString('en-IN')+'</strong></div>';
+    if(deliveryFee>0)bannerHtml+='<div class="cib-row"><span>🚚 Delivery charge</span><strong>'+cur+deliveryFee.toLocaleString('en-IN')+'</strong></div>';
+    if(freeAbove>0)bannerHtml+='<div class="cib-row cib-free"><span>🎁 Free delivery above</span><strong>'+cur+freeAbove.toLocaleString('en-IN')+'</strong></div>';
+    bannerHtml+='</div>';
+  }
+  ct.innerHTML=cart.map(function(it,idx){return '<div class="ci"><div class="ci-img" style="display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink4)">'+phIcon(it.category)+'</div><div class="ci-info"><div class="ci-name">'+esc(it.name)+'</div><div class="ci-sub">'+cur+Number(it.price||0).toLocaleString('en-IN')+(it.unit?' / '+esc(it.unit):'')+'</div><button class="ci-rm" onclick="rmCart('+idx+')">'+t('remove')+'</button></div><div class="ci-q"><button onclick="updQty('+idx+',-1)">−</button><span>'+it.qty+'</span><button onclick="updQty('+idx+',1)">+</button></div></div>'}).join('')+bannerHtml;
+}
+
+function toggleCart(){var co=document.getElementById('co');co.classList.toggle('open');if(co.classList.contains('open')){syncCartPrices();renderCart();updateStickyBar()}}
+
+// ══════ PLACE ORDER (Pickup/Delivery + Sheet logging) ══════
+function placeOrder(){
+  var nm,ph,addr='',email='';
+  if(orderMode==='pickup'){nm=(document.getElementById('pickName').value||'').trim();ph=(document.getElementById('pickPhone').value||'').trim();email=(document.getElementById('pickEmail').value||'').trim()}
+  else{nm=(document.getElementById('delName').value||'').trim();ph=(document.getElementById('delPhone').value||'').trim();email=(document.getElementById('delEmail').value||'').trim();addr=(document.getElementById('delAddr').value||'').trim()}
+  if(!nm||!ph){alert(t('fillReq'));return}
+  if(!/^\d{10}$/.test(ph)){alert(t('badPhone'));return}
+  if(!cart.length)return;
+  // Sync prices from sheet before showing confirmation
+  syncCartPrices();
+  if(!cart.length){alert('All items removed — they are now out of stock.');renderCart();updateStickyBar();return}
+  var cur=cfg('currency','₹'),subtotal=cart.reduce(function(s,c){return s+parseFloat(c.price||0)*c.qty},0);
+  var minOrder=parseInt(cfg('minorder','0'))||0;
+  if(minOrder&&subtotal<minOrder){alert('Minimum order is '+cur+minOrder+'. Please add more items.');return}
+  if(orderMode==='delivery'&&!addr){alert('Please enter your delivery address.');return}
+  var f=calcFees(subtotal);
+
+  // Build confirmation summary
+  var custHtml='<div class="confirm-row"><span>Name</span><strong>'+esc(nm)+'</strong></div>';
+  custHtml+='<div class="confirm-row"><span>Phone</span><strong>'+esc(ph)+'</strong></div>';
+  custHtml+='<div class="confirm-row"><span>Mode</span><strong>'+(orderMode==='delivery'?'🚚 Delivery':'🏪 Pickup')+'</strong></div>';
+  if(addr)custHtml+='<div class="confirm-row"><span>Address</span><strong style="text-align:right;max-width:200px">'+esc(addr)+'</strong></div>';
+  document.getElementById('confirmCustomer').innerHTML=custHtml;
+
+  // Items — show each item with unit price × qty = total
+  document.getElementById('confirmCount').textContent=cart.length;
+  document.getElementById('confirmItems').innerHTML=cart.map(function(it,i){
+    var itemTotal=parseFloat(it.price||0)*it.qty;
+    return '<div class="ci-row"><div class="ci-num">'+(i+1)+'</div><div class="ci-detail"><div class="ci-item-name">'+esc(it.name)+'</div><div class="ci-item-meta">'+(it.unit?esc(it.unit)+' · ':'')+'Qty: '+it.qty+'</div></div><div class="ci-item-price">'+cur+itemTotal.toLocaleString('en-IN')+'<span class="ci-unit-price">'+cur+Number(it.price||0).toLocaleString('en-IN')+' × '+it.qty+'</span></div></div>';
+  }).join('');
+
+  // Bill summary — subtotal + fees + grand total
+  var billHtml='<div class="confirm-bill-row"><span>Subtotal ('+cart.reduce(function(s,c){return s+c.qty},0)+' items)</span><strong>'+cur+subtotal.toLocaleString('en-IN')+'</strong></div>';
+  if(f.isDelivery){
+    if(f.isFreeDelivery)billHtml+='<div class="confirm-bill-row fee free"><span>🚚 Delivery Fee</span><span>FREE ✓</span></div>';
+    else if(f.actualDelivery>0)billHtml+='<div class="confirm-bill-row fee"><span>🚚 Delivery Fee</span><span>'+cur+f.actualDelivery.toLocaleString('en-IN')+'</span></div>';
+  }
+  if(f.packingFee>0)billHtml+='<div class="confirm-bill-row fee"><span>📦 Packing Fee</span><span>'+cur+f.packingFee.toLocaleString('en-IN')+'</span></div>';
+  if(f.handlingFee>0)billHtml+='<div class="confirm-bill-row fee"><span>🔧 Handling Fee</span><span>'+cur+f.handlingFee.toLocaleString('en-IN')+'</span></div>';
+  if(f.platformFee>0)billHtml+='<div class="confirm-bill-row fee"><span>💳 Platform Fee</span><span>'+cur+f.platformFee.toLocaleString('en-IN')+'</span></div>';
+  if(f.nightFee>0)billHtml+='<div class="confirm-bill-row fee"><span>🌙 Night Fee</span><span>'+cur+f.nightFee.toLocaleString('en-IN')+'</span></div>';
+  if(f.discount>0)billHtml+='<div class="confirm-bill-row discount"><span>🏷️ Discount</span><span>-'+cur+f.discount.toLocaleString('en-IN')+'</span></div>';
+  billHtml+='<div class="confirm-total"><span>Total to Pay</span><span>'+cur+f.grand.toLocaleString('en-IN')+'</span></div>';
+  document.getElementById('confirmFees').innerHTML=billHtml;
+
+  // Show confirmation modal
+  document.getElementById('confirmBg').classList.add('open');
+
+  // Set confirm button action
+  document.getElementById('confirmYes').onclick=function(){
+    // Final sync — ensure prices are latest from sheet at the moment of order
+    syncCartPrices();
+    if(!cart.length){alert('Cart is empty — items may have gone out of stock.');document.getElementById('confirmBg').classList.remove('open');renderCart();updateStickyBar();return}
+    var finalSubtotal=cart.reduce(function(s,c){return s+parseFloat(c.price||0)*c.qty},0);
+    var finalFees=calcFees(finalSubtotal);
+    document.getElementById('confirmBg').classList.remove('open');
+    submitOrder(nm,ph,email,addr,finalSubtotal,finalFees);
+  };
+}
+
+function submitOrder(nm,ph,email,addr,subtotal,f){
+  var cur=cfg('currency','₹');
+  var oid='ORD-'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,3).toUpperCase();
+  lastOrderId=oid;
+  var btn=document.getElementById('placeBtn');btn.classList.add('order-sending');btn.innerHTML='<span class="order-spin"></span> '+t('sending');
+  var itemsStr=cart.map(function(it){return it.name+(it.unit?' ('+it.unit+')':'')+' x'+it.qty}).join(', ');
+  var wa=cfg('whatsapp',DEFAULT_WA),shop=cfg('shopname','Store');
+  var msg='*New Order — '+shop+'* 🛒\n'+oid+'\n'+(orderMode==='pickup'?'🏪 Pickup':'🚚 Delivery')+'\nName: '+nm+'\nPhone: '+ph+'\n';
+  if(addr)msg+='Address: '+addr+'\n';msg+='\n';
+  cart.forEach(function(it,i){msg+=(i+1)+'. '+it.name+(it.unit?' ('+it.unit+')':'')+' × '+it.qty+' = '+cur+(parseFloat(it.price||0)*it.qty).toLocaleString('en-IN')+'\n'});
+  msg+='\n*Subtotal: '+cur+subtotal.toLocaleString('en-IN')+'*\n';
+  if(f.actualDelivery>0)msg+='🚚 Delivery: '+cur+f.actualDelivery.toLocaleString('en-IN')+'\n';
+  else if(f.isDelivery&&f.isFreeDelivery)msg+='🚚 Delivery: FREE ✓\n';
+  if(f.packingFee>0)msg+='📦 Packing: '+cur+f.packingFee.toLocaleString('en-IN')+'\n';
+  if(f.handlingFee>0)msg+='🔧 Handling: '+cur+f.handlingFee.toLocaleString('en-IN')+'\n';
+  if(f.platformFee>0)msg+='💳 Platform: '+cur+f.platformFee.toLocaleString('en-IN')+'\n';
+  if(f.nightFee>0)msg+='🌙 Night: '+cur+f.nightFee.toLocaleString('en-IN')+'\n';
+  if(f.discount>0)msg+='🏷️ Discount: -'+cur+f.discount.toLocaleString('en-IN')+'\n';
+  msg+='\n*Total: '+cur+f.grand.toLocaleString('en-IN')+'*\n';
+  if(cfg('deliveryinfo'))msg+=cfg('deliveryinfo')+'\n';msg+='\nPlease confirm order & delivery. 🙏';
+  var waUrl='https://wa.me/'+wa+'?text='+encodeURIComponent(msg);
+  function done(){
+    btn.classList.remove('order-sending');btn.textContent='📱 '+t('placeOrder');
+    document.getElementById('successOid').textContent=oid;document.getElementById('successH').textContent=t('orderPlaced');document.getElementById('successP').textContent=t('orderMsg');
+    document.getElementById('successWa').onclick=function(){window.open(waUrl,'_blank')};
+    document.getElementById('successBg').classList.add('open');toggleCart();
+    if(window.gtag)gtag('event','purchase',{transaction_id:oid,value:f.grand,currency:'INR',shipping:f.actualDelivery,items:cart.map(function(it){return{item_name:it.name,item_category:it.category||'',price:parseFloat(it.price||0),quantity:it.qty}})});
+    cart=[];afterCartChange();
+    try{localStorage.setItem('sl_cust_'+SHEET_ID,JSON.stringify({name:nm,phone:ph,email:email,address:addr}))}catch(e){}
+    document.getElementById('pickName').value='';document.getElementById('pickPhone').value='';document.getElementById('pickEmail').value='';
+    document.getElementById('delName').value='';document.getElementById('delPhone').value='';document.getElementById('delEmail').value='';document.getElementById('delAddr').value='';setMode('pickup');
+  }
+  var scriptUrl=cfg('orderscript','');
+  if(scriptUrl){
+    var fn=[];
+    if(f.actualDelivery>0)fn.push('Delivery:'+f.actualDelivery);
+    if(f.packingFee>0)fn.push('Packing:'+f.packingFee);
+    if(f.handlingFee>0)fn.push('Handling:'+f.handlingFee);
+    if(f.platformFee>0)fn.push('Platform:'+f.platformFee);
+    if(f.nightFee>0)fn.push('Night:'+f.nightFee);
+    if(f.discount>0)fn.push('Discount:-'+f.discount);
+    var itemsFull=itemsStr+(fn.length?' [Fees: '+fn.join(', ')+']':'');
+    var params='orderId='+encodeURIComponent(oid)+'&date='+encodeURIComponent(new Date().toLocaleString('en-IN'))+'&mode='+orderMode+'&name='+encodeURIComponent(nm)+'&phone='+ph+'&email='+encodeURIComponent(email)+'&address='+encodeURIComponent(addr)+'&items='+encodeURIComponent(itemsFull)+'&total='+f.grand+'&status=New&shopname='+encodeURIComponent(cfg('shopname','Store'));
+    var img=new Image();var sent=false;
+    img.onload=img.onerror=function(){if(!sent){sent=true;done()}};
+    img.src=scriptUrl+'?'+params;
+    setTimeout(function(){if(!sent){sent=true;done()}},4000);
+  }else{done()}
+}
+
+function buildInfo(){var items=[];if(cfg('address'))items.push({ic:'📍',cl:'si-o',l:'Address',t:esc(cfg('address'))});var phone=cfg('phone','+91 '+DEFAULT_PHONE);items.push({ic:'📞',cl:'si-g',l:'Phone',t:'<a href="tel:'+phone.replace(/[^0-9+]/g,'')+'">'+esc(phone)+'</a>'});var wa=cfg('whatsapp',DEFAULT_WA);items.push({ic:'💬',cl:'si-g',l:'WhatsApp',t:'<a href="https://wa.me/'+esc(wa)+'" target="_blank">Chat with us</a>'});if(cfg('email'))items.push({ic:'✉️',cl:'si-b',l:'Email',t:esc(cfg('email'))});if(cfg('timing'))items.push({ic:'🕐',cl:'si-y',l:'Store Timing',t:esc(cfg('timing'))});if(cfg('upi'))items.push({ic:'📲',cl:'si-b',l:'UPI Payment',t:'<a href="#" onclick="event.preventDefault();showUpiQR()">Scan QR to Pay</a> · '+esc(cfg('upi'))});if(cfg('deliveryinfo'))items.push({ic:'🚚',cl:'si-g',l:'Delivery',t:esc(cfg('deliveryinfo'))});if(cfg('deliverytime'))items.push({ic:'⏰',cl:'si-y',l:'Delivery Time',t:esc(cfg('deliverytime'))});if(!items.length)return;document.getElementById('infoSec').style.display='block';document.getElementById('infoCard').innerHTML=items.map(function(it){return '<div class="si"><div class="si-ic '+it.cl+'">'+it.ic+'</div><div class="si-body"><div class="si-l">'+it.l+'</div>'+it.t+'</div></div>'}).join('');
+  var mapEmbed=cfg('mapembed',''),mapLink=cfg('maplink','');
+  if(mapEmbed){document.getElementById('mapSec').style.display='block';document.getElementById('mapFrame').src=mapEmbed;document.getElementById('mapName').textContent=cfg('shopname','Our Store');document.getElementById('mapAddr').textContent=cfg('address','');if(mapLink)document.getElementById('mapDirBtn').href=mapLink;else document.getElementById('mapDirBtn').style.display='none'}
+}
+
+var qrInstance=null;
+function showUpiQR(){var upi=cfg('upi','');if(!upi)return alert('UPI ID not configured.');var subtotal=cart.reduce(function(s,c){return s+parseFloat(c.price||0)*c.qty},0);var f=calcFees(subtotal);var cur=cfg('currency','₹');var shopName=cfg('shopname','Store');var amt=f.grand>0?f.grand.toFixed(2):'0.00';var upiUrl='upi://pay?pa='+encodeURIComponent(upi)+'&pn='+encodeURIComponent(shopName)+'&am='+amt+'&cu=INR&tn='+encodeURIComponent('Order from '+shopName);document.getElementById('qrAmt').textContent=cur+f.grand.toLocaleString('en-IN');document.getElementById('qrUpiId').textContent=upi;var canvas=document.getElementById('qrCanvas');canvas.innerHTML='';if(qrInstance)qrInstance.clear();qrInstance=new QRCode(canvas,{text:upiUrl,width:200,height:200,colorDark:'#1e1e1e',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});var apps='';apps+='<a class="qr-app" href="'+upiUrl+'" target="_blank">📱 Open UPI</a>';apps+='<a class="qr-app" href="'+upiUrl.replace('upi://','gpay://upi/')+'" target="_blank">GPay</a>';apps+='<a class="qr-app" href="'+upiUrl.replace('upi://','phonepe://')+'" target="_blank">PhonePe</a>';document.getElementById('qrApps').innerHTML=apps;document.getElementById('qrBg').classList.add('open')}
+
+// ══════ ORDER TRACKING ══════
+var lastOrderId='';
+
+function openTracker(prefillId){
+  document.getElementById('trackBg').classList.add('open');
+  document.getElementById('trackResult').style.display='none';
+  document.getElementById('trackErr').style.display='none';
+  document.getElementById('trackLoading').style.display='none';
+  var inp=document.getElementById('trackInput');
+  if(prefillId){inp.value=prefillId;trackOrder()}
+  else{inp.value=lastOrderId||'';inp.focus()}
+}
+
+function trackOrder(){
+  var oid=(document.getElementById('trackInput').value||'').trim().toUpperCase();
+  if(!oid){alert('Please enter an Order ID');return}
+  document.getElementById('trackResult').style.display='none';
+  document.getElementById('trackErr').style.display='none';
+  document.getElementById('trackLoading').style.display='block';
+  
+  // Fetch Orders sheet via JSONP
+  if(!window._trackNs)window._trackNs={};
+  window._trackNs.cb=function(r){
+    document.getElementById('trackLoading').style.display='none';
+    if(!r||!r.table){document.getElementById('trackErr').style.display='block';document.getElementById('trackErr').textContent='Could not load orders. Try again later.';return}
+    var cols=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim()});
+    var found=null;
+    (r.table.rows||[]).forEach(function(row){
+      var o={};cols.forEach(function(k,i){var c=row.c&&row.c[i];o[k]=c?(c.v!=null?String(c.v).trim():''):''});
+      var rid=o['order id']||o.orderid||'';
+      if(rid.toUpperCase()===oid)found=o;
+    });
+    if(!found){document.getElementById('trackErr').style.display='block';document.getElementById('trackErr').textContent='Order "'+oid+'" not found. Please check the ID.';return}
+    showTrackResult(found);
+  };
+  // Use a separate JSONP namespace to avoid collision with main data loading
+  var oldCb=window.google&&window.google.visualization&&window.google.visualization.Query?window.google.visualization.Query.setResponse:null;
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    window._trackNs.cb(r);
+    // Restore original callback
+    if(oldCb)window.google.visualization.Query.setResponse=oldCb;
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Orders&_t='+Date.now();
+  s.onerror=function(){document.getElementById('trackLoading').style.display='none';document.getElementById('trackErr').style.display='block';document.getElementById('trackErr').textContent='Network error. Please try again.'};
+  document.body.appendChild(s);
+}
+
+function showTrackResult(o){
+  var status=(o.status||o['status']||'new').toLowerCase().trim();
+  var steps=['new','confirmed','packed','delivered'];
+  var isCancelled=status==='cancelled';
+  var currentIdx=isCancelled?-1:steps.indexOf(status);
+  if(currentIdx===-1&&!isCancelled){
+    // Handle "picked up", "done", "completed" as step 3 (delivered)
+    if(status==='picked up'||status==='done'||status==='completed')currentIdx=3;
+    else currentIdx=0;
+  }
+  
+  // Update timeline dots
+  for(var i=0;i<4;i++){
+    var el=document.getElementById('ts'+i);
+    el.className='track-step';
+    if(isCancelled){if(i===0)el.classList.add('cancel')}
+    else if(i<currentIdx)el.classList.add('done');
+    else if(i===currentIdx)el.classList.add('active');
+  }
+  // Update progress line
+  var pct=isCancelled?0:Math.min(100,Math.round((currentIdx/3)*100));
+  document.getElementById('trackLineFill').style.width=pct+'%';
+  
+  // Status label for step 4
+  var mode=(o.mode||'').toLowerCase();
+  document.getElementById('ts3').querySelector('.track-step-label').textContent=mode==='delivery'?'Delivered':'Picked Up';
+  
+  // Build details
+  var id=o['order id']||o.orderid||'';
+  var date=o['date & time']||o.date||'';
+  var name=o['customer name']||o.name||'';
+  var phone=o.phone||'';
+  var address=o.address||'';
+  var items=o.items||'';
+  var total=o['total (₹)']||o.total||o['total']||'0';
+  var statusLabel=isCancelled?'❌ Cancelled':status.charAt(0).toUpperCase()+status.slice(1);
+  
+  var html='';
+  html+='<div class="td-row"><div class="td-label">Order ID</div><div class="td-val" style="color:var(--brand)">'+esc(id)+'</div></div>';
+  html+='<div class="td-row"><div class="td-label">Status</div><div class="td-val">'+esc(statusLabel)+'</div></div>';
+  html+='<div class="td-row"><div class="td-label">Mode</div><div class="td-val">'+(mode==='delivery'?'🚚 Delivery':'🏪 Pickup')+'</div></div>';
+  html+='<div class="td-row"><div class="td-label">Date</div><div class="td-val">'+esc(date)+'</div></div>';
+  if(name)html+='<div class="td-row"><div class="td-label">Name</div><div class="td-val">'+esc(name)+'</div></div>';
+  if(phone)html+='<div class="td-row"><div class="td-label">Phone</div><div class="td-val">'+esc(phone)+'</div></div>';
+  if(address)html+='<div class="td-row"><div class="td-label">Address</div><div class="td-val" style="max-width:200px">'+esc(address)+'</div></div>';
+  html+='<div class="td-row"><div class="td-label">Total</div><div class="td-val" style="font-size:15px">₹'+esc(total)+'</div></div>';
+  if(items)html+='<div class="track-items">'+esc(items).replace(/,\s*/g,'\n')+'</div>';
+  
+  document.getElementById('trackDetails').innerHTML=html;
+  document.getElementById('trackResult').style.display='block';
+}
+
+// Save last order ID for easy re-tracking
+var _origDone=null;
+
+// Start: resolve store from registry, then load data
+resolveStore(function(){loadAll()});
+
+// ══════ PWA SERVICE WORKER ══════
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){})}
+// Install prompt — show custom "Add to Home Screen" banner
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();deferredPrompt=e;
+  // Show install banner after 30 seconds if not already installed
+  setTimeout(function(){
+    if(!deferredPrompt)return;
+    var bar=document.createElement('div');
+    bar.id='installBar';
+    bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--brand);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:999;font:600 13px var(--f);box-shadow:0 -4px 20px rgba(0,0,0,.15)';
+    bar.innerHTML='<span>📲 Install this app on your phone</span><div style="display:flex;gap:8px"><button onclick="installPWA()" style="background:#fff;color:var(--brand);border:none;padding:8px 16px;border-radius:6px;font:700 12px var(--f);cursor:pointer">Install</button><button onclick="this.parentElement.parentElement.remove()" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 12px;border-radius:6px;font:600 12px var(--f);cursor:pointer">✕</button></div>';
+    document.body.appendChild(bar);
+  },30000);
+});
+function installPWA(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(){deferredPrompt=null;var b=document.getElementById('installBar');if(b)b.remove()});
+}
+// Scroll-to-top button visibility
+window.addEventListener('scroll',function(){var btn=document.getElementById('scrollTop');if(window.scrollY>400)btn.classList.add('show');else btn.classList.remove('show')},{passive:true});
+</script>
+</body>
+</html>
