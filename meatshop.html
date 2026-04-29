@@ -95,20 +95,20 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);min-height:100vh
 .mc-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
 .mc-price{font:800 15px var(--f);color:var(--brand)}
 .mc-unit{font:500 9px var(--f);color:var(--ink4)}
-.mc-call{font:700 11px var(--f);color:var(--brand);background:var(--brand-bg);padding:4px 10px;border-radius:6px;text-align:center;line-height:1.3}
+.mc-call{font:700 11px var(--f);color:var(--brand);background:var(--brand-bg);padding:6px 12px;border-radius:8px;text-align:center;line-height:1.2;border:1px solid var(--brand-lt)}
 
 /* Per-item qty + add */
-.mc-bottom{display:flex;align-items:center;justify-content:space-between;padding:0 14px 12px;gap:6px;border-top:1px dashed var(--line);margin:0 14px;padding-top:10px}
-.mc-qty{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
-.mc-qty-input{width:50px;height:30px;border:1.5px solid var(--line);border-radius:6px;font:700 12px var(--f);text-align:center;outline:none;color:var(--ink);background:var(--bg)}
+.mc-bottom{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 12px;gap:8px;border-top:1px dashed var(--line);margin:0 14px}
+.mc-qty{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.mc-qty-input{width:54px;height:36px;border:1.5px solid var(--line);border-radius:8px;font:700 14px var(--f);text-align:center;outline:none;color:var(--ink);background:var(--bg)}
 .mc-qty-input:focus{border-color:var(--brand)}
-.mc-qty-unit{height:30px;border:1.5px solid var(--line);border-radius:6px;font:600 10px var(--f);padding:0 6px;outline:none;color:var(--ink2);background:var(--bg);cursor:pointer}
+.mc-qty-unit{height:36px;border:1.5px solid var(--line);border-radius:8px;font:600 12px var(--f);padding:0 8px;outline:none;color:var(--ink2);background:var(--bg);cursor:pointer}
 .mc-qty-unit:focus{border-color:var(--brand)}
-.mc-qty-presets{display:flex;gap:2px}
-.mc-qp{padding:4px 7px;border-radius:6px;font:700 9px var(--f);color:var(--ink4);background:var(--bg);border:1.5px solid transparent;cursor:pointer;transition:.15s}
-.mc-qp:hover,.mc-qp.active{background:var(--brand-bg);color:var(--brand);border-color:var(--brand)}
+.mc-qty-presets{display:flex;gap:3px}
+.mc-qp{padding:6px 10px;border-radius:8px;font:700 11px var(--f);color:var(--ink3);background:var(--bg);border:1.5px solid var(--line);cursor:pointer;transition:.15s;min-width:36px;text-align:center}
+.mc-qp:hover,.mc-qp.active{background:var(--brand);color:#fff;border-color:var(--brand)}
 
-.mc-add-btn{height:32px;padding:0 14px;border:2px solid var(--brand);background:var(--white);color:var(--brand);border-radius:var(--pill);font:800 11px var(--f);cursor:pointer;display:flex;align-items:center;gap:4px;transition:.2s;white-space:nowrap;flex-shrink:0}
+.mc-add-btn{height:38px;padding:0 18px;border:2px solid var(--brand);background:var(--white);color:var(--brand);border-radius:var(--pill);font:800 12px var(--f);cursor:pointer;display:flex;align-items:center;gap:5px;transition:.2s;white-space:nowrap;flex-shrink:0}
 .mc-add-btn:hover{background:var(--brand);color:#fff}
 .mc-add-btn:active{transform:scale(.93)}
 .mc-add-btn.added{background:var(--green);color:#fff;border-color:var(--green)}
@@ -147,17 +147,18 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);min-height:100vh
 .ci-remove:hover{background:var(--brand);color:#fff}
 
 /* Cart footer */
-.cd-footer{padding:14px 20px;border-top:1px solid var(--line);background:var(--white)}
-.cd-total{display:flex;justify-content:space-between;font:800 15px var(--f);color:var(--ink);margin-bottom:10px}
+.cd-footer{padding:16px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--white)}
+.cd-total{display:flex;justify-content:space-between;font:800 16px var(--f);color:var(--ink);margin-bottom:6px}
 .cd-total-price{color:var(--brand)}
-.cd-note{font:500 10px var(--f);color:var(--ink4);text-align:center;margin-bottom:10px;line-height:1.4;font-style:italic}
-.cd-actions{display:flex;gap:8px}
-.cd-btn{flex:1;height:42px;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
-.cd-btn:active{transform:scale(.96)}
-.cd-btn-wa{background:#25d366;color:#fff}
-.cd-btn-wa:hover{background:#1da851}
-.cd-btn-call{background:var(--brand);color:#fff}
-.cd-btn-call:hover{background:var(--brand-dk)}
+.cd-note{font:500 11px var(--f);color:var(--ink4);text-align:center;margin-bottom:14px;line-height:1.4;font-style:italic}
+.cd-actions{display:flex;flex-direction:column;gap:10px}
+.cd-btn{height:56px;border:none;border-radius:16px;font:800 16px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.2s;letter-spacing:.02em}
+.cd-btn:active{transform:scale(.97)}
+.cd-btn-wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 6px 20px rgba(37,211,102,.35);font-size:17px}
+.cd-btn-wa:hover{box-shadow:0 8px 28px rgba(37,211,102,.45)}
+.cd-btn-call{background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;box-shadow:0 6px 20px rgba(185,28,28,.25);font-size:17px}
+.cd-btn-call:hover{box-shadow:0 8px 28px rgba(185,28,28,.35)}
+.cd-btn-icon{font-size:22px}
 
 /* WhatsApp float */
 .wa-float{position:fixed;bottom:80px;right:16px;width:50px;height:50px;background:#25d366;border-radius:50%;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);z-index:80;cursor:pointer;text-decoration:none;font-size:24px;transition:.3s}
@@ -187,66 +188,57 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);min-height:100vh
 @media(max-width:480px){
   :root{--px:14px}
   
-  /* Topbar — slightly smaller */
   .topbar-in{height:48px}
   .topbar-info h1{font-size:13px}
   
-  /* Hero — compact */
   .hero-name{font-size:20px}
   .hero-tagline{font-size:11px}
   .hero-badges{gap:6px;margin-top:8px}
   .hero-badge{font-size:10px;padding:3px 8px}
   
-  /* Call banner */
   .call-banner{flex-wrap:wrap;gap:6px;padding:8px var(--px)}
   .call-banner-text{font-size:10px}
   .call-banner-btn{font-size:10px;padding:4px 10px}
   
-  /* Cards — stack qty row below info */
   .mc-top{padding:12px}
   .mc-icon{width:44px;height:44px;font-size:22px;border-radius:11px}
   .mc-name{font-size:13px}
   .mc-hindi{font-size:10px}
   .mc-desc{font-size:9.5px}
   
-  /* Qty row — most critical mobile fix */
-  .mc-bottom{flex-wrap:wrap;margin:0 12px;padding:8px 0 10px;gap:8px}
-  .mc-qty{flex:1;min-width:0;gap:3px}
-  .mc-qty-presets{gap:1px}
-  .mc-qp{padding:4px 6px;font-size:9px}
-  .mc-qty-input{width:44px;height:28px;font-size:11px;border-radius:6px}
-  .mc-qty-unit{height:28px;font-size:9px;padding:0 4px;border-radius:6px}
-  .mc-add-btn{height:34px;padding:0 16px;font-size:11px;width:auto;flex-shrink:0}
+  /* KEY FIX: Stack qty row — presets + input on one line, Add button full width below */
+  .mc-bottom{flex-direction:column;align-items:stretch;gap:8px;margin:0 12px;padding:10px 0 12px}
+  .mc-qty{justify-content:flex-start;gap:4px}
+  .mc-qp{padding:7px 11px;font-size:11px;min-width:40px}
+  .mc-qty-input{width:52px;height:36px;font-size:13px}
+  .mc-qty-unit{height:36px;font-size:11px;padding:0 8px}
+  .mc-add-btn{width:100%;justify-content:center;height:42px;font-size:13px;border-radius:var(--r)}
   
-  /* Cart bar */
   .cart-bar-card{padding:12px 14px}
   .cart-bar-count{width:26px;height:26px;font-size:12px}
   .cart-bar-text{font-size:12px}
   .cart-bar-right{font-size:12px;padding:5px 12px}
   
-  /* Cart drawer */
   .cd-header{padding:14px 16px}
   .cd-body{padding:10px 16px}
   .cd-footer{padding:12px 16px}
-  .cd-actions{flex-direction:column;gap:6px}
-  .cd-btn{height:44px;font-size:13px;border-radius:var(--r2)}
+  .cd-actions{flex-direction:column;gap:10px}
+  .cd-btn{height:60px;font-size:17px;border-radius:16px;font-weight:800;letter-spacing:.02em}
+  .cd-btn-icon{font-size:24px}
   
-  /* Search */
-  .search-input{height:34px;font-size:12px}
+  .search-input{height:38px;font-size:13px}
   
-  /* WhatsApp float — not too close to cart bar */
-  .wa-float{width:46px;height:46px;font-size:22px;bottom:70px;right:12px}
+  .wa-float{width:48px;height:48px;font-size:22px;bottom:70px;right:12px}
   .wa-float.up{bottom:130px}
   
-  /* Footer */
   .footer{padding:16px var(--px) 90px}
 }
 
 /* Extra small phones (320-360px) */
 @media(max-width:360px){
-  .mc-bottom{flex-direction:column;align-items:stretch}
-  .mc-qty{justify-content:space-between}
-  .mc-add-btn{width:100%;justify-content:center;height:36px}
+  .mc-qp{padding:6px 8px;font-size:10px;min-width:34px}
+  .mc-qty-input{width:48px;height:34px;font-size:12px}
+  .mc-qty-unit{height:34px;font-size:10px}
   .hero-name{font-size:18px}
   .cart-bar-right{padding:4px 10px;font-size:11px}
   .call-banner-btns{flex-direction:column;gap:4px}
@@ -378,7 +370,7 @@ function cfg(key,def){
 // ═══ INIT ═══
 function init(){
   var params=new URLSearchParams(location.search);
-  var storeSlug=params.get('store')||'';
+  var storeSlug=params.get('store')||params.get('shop')||'';
   var directSheet=params.get('sheet')||'';
 
   if(directSheet){
@@ -788,8 +780,8 @@ function renderCartDrawer(){
   fHtml+='</div>';
   fHtml+='<div class="cd-note">💡 Final price confirmed by shopkeeper on WhatsApp/call</div>';
   fHtml+='<div class="cd-actions">';
-  fHtml+='<button class="cd-btn cd-btn-wa" onclick="sendWhatsApp()">💬 Order on WhatsApp</button>';
-  fHtml+='<button class="cd-btn cd-btn-call" onclick="callShop()">📞 Call to Order</button>';
+  fHtml+='<button class="cd-btn cd-btn-wa" onclick="sendWhatsApp()"><span class="cd-btn-icon">💬</span> Order on WhatsApp</button>';
+  fHtml+='<button class="cd-btn cd-btn-call" onclick="callShop()"><span class="cd-btn-icon">📞</span> Call to Order</button>';
   fHtml+='</div>';
   $('cdFooter').innerHTML=fHtml;
 }
