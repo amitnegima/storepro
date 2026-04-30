@@ -149,30 +149,47 @@ function maybeShowIOSInstall(){
   $('installBtn').textContent='How?';
 }
 function clickInstall(){
+  if(isStandalone()){showToast('✓ Already installed','success');return}
   if(_installEvt){
     _installEvt.prompt();
     _installEvt.userChoice.then(function(c){
       if(c.outcome==='accepted')showToast('📱 Installing...','success');
       _installEvt=null;
       $('installBanner').classList.remove('show');
+      updateInstallMenuState();
     });
   }else if(isIOS()){
     alert('To install on iPhone:\n\n1. Tap the Share button (square with arrow) at the bottom of Safari\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" in the top right\n\nThe dashboard will appear like an app on your home screen!');
   }else{
-    showToast('Install option not available in this browser','error');
+    // Desktop Chrome / Edge: show URL-bar install hint
+    if(/Chrome|Edg/.test(navigator.userAgent)){
+      alert('To install:\n\n• Look for the install icon (⊕) in the address bar at the top right\n• Or open the browser menu (⋮) → "Install Dashboard"\n\nIf neither is visible, your browser may have already installed it, or it may need a few more seconds to detect this as an installable app.');
+    }else{
+      showToast('Open in Chrome/Safari/Edge to install','error');
+    }
   }
 }
+function updateInstallMenuState(){
+  var row=$('installMenuRow'),sub=$('installSub');if(!row||!sub)return;
+  if(isStandalone()){sub.textContent='✓ Running as installed app';row.style.opacity='.6'}
+  else if(_installEvt){sub.textContent='Tap to install on this device'}
+  else if(isIOS()){sub.textContent='Tap for iOS install instructions'}
+  else{sub.textContent='Add to home screen for instant access'}
+}
+window.addEventListener('appinstalled',function(){showToast('✅ Installed','success');var b=$('installBanner');if(b)b.classList.remove('show');updateInstallMenuState()});
 function dismissInstall(){
   $('installBanner').classList.remove('show');
   try{localStorage.setItem('sl_install_dismissed_v2','1')}catch(e){}
 }
 function openNotifSettings(){renderNotifSettings();$('notifSheet').classList.add('open')}
 
-// ─── Per-tenant dynamic manifest so installed PWA preserves ?store=slug ───
+// ─── Per-tenant manifest refinement (initial manifest set inline in HTML head;
+// once we know the real ShopName from Config, we replace it for nicer install UX) ───
 function injectTenantManifest(){
   try{
     var slug=STORE_META.slug||(new URLSearchParams(location.search)).get('store')||'';
-    var shop=getCfg('ShopName','')||STORE_META.shopname||'StorePro Dashboard';
+    var shop=getCfg('ShopName','')||STORE_META.shopname||'';
+    if(!shop)return; // nothing better than what HTML head already set
     var manifest={
       name:shop+' — Dashboard',
       short_name:(shop.split(' ')[0]||'StorePro').slice(0,12),
@@ -192,8 +209,11 @@ function injectTenantManifest(){
     var url=URL.createObjectURL(blob);
     var link=document.querySelector('link[rel=manifest]');
     if(!link){link=document.createElement('link');link.rel='manifest';document.head.appendChild(link)}
+    // Revoke old blob URL to avoid memory leak
+    var oldHref=link.href;
     link.href=url;
-  }catch(e){console.warn('manifest inject failed',e)}
+    if(oldHref&&oldHref.indexOf('blob:')===0){try{URL.revokeObjectURL(oldHref)}catch(e){}}
+  }catch(e){console.warn('manifest refine failed',e)}
 }
 
 function $(i){return document.getElementById(i)}
@@ -245,6 +265,7 @@ function unlock(){
     requestNotifPermission();
     requestWakeLock();
     maybeShowIOSInstall();
+    updateInstallMenuState();
   },300);
 }
 function lockNow(){
