@@ -7,8 +7,29 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="StorePro">
-<link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="manifest" id="manifestLink" href="/manifest.json">
+<script>
+// Dynamic manifest — sets start_url to THIS page so PWA opens here directly
+try{
+  var m={
+    name:document.title||'StorePro',
+    short_name:'Meat Shop',
+    description:'Order fresh meat online — home delivery',
+    start_url:location.pathname+location.search,
+    display:'standalone',
+    background_color:'#ffffff',
+    theme_color:'#8b1a1a',
+    orientation:'portrait',
+    icons:[
+      {src:'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
+      {src:'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
+    ]
+  };
+  var blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+  document.getElementById('manifestLink').href=URL.createObjectURL(blob);
+}catch(e){}
+</script>
 <title>Fresh Meat — StorePro</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
 <style>
