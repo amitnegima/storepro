@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="StorePro">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/meat-icon-192.png">
 <link rel="manifest" href="/manifest.json">
 <title>Fresh Meat — StorePro</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
@@ -201,6 +201,12 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 .ft-line{width:30px;height:2px;background:var(--LINE);margin:14px auto}
 .ft-pw{font:500 10px var(--F);color:var(--T4)}.ft-pw b{color:var(--R)}
 
+/* === PULL TO REFRESH === */
+.ptr{position:fixed;top:0;left:0;right:0;max-width:var(--MW);margin:0 auto;height:0;background:var(--R);display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:999;transition:height .2s var(--EASE);color:#fff;font:600 13px var(--F);gap:8px}
+.ptr-spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;display:none}
+.ptr.pulling .ptr-spinner{display:block;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* === INSTALL BANNER === */
 .install-bar{position:fixed;bottom:0;left:0;right:0;max-width:var(--MW);margin:0 auto;background:var(--W);border-top:1px solid var(--LINE);padding:12px var(--PX) calc(12px + env(safe-area-inset-bottom));display:none;align-items:center;justify-content:space-between;gap:10px;z-index:88;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
 .install-bar.show{display:flex}
@@ -236,6 +242,9 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 </head>
 <body>
 
+<!-- Pull to refresh indicator -->
+<div class="ptr" id="ptr"><div class="ptr-spinner"></div><span id="ptrText">↓ Pull to refresh</span></div>
+
 <div class="hdr"><div class="hdr-top">
   <button class="hdr-back" onclick="history.back()">←</button>
   <div class="hdr-info"><div class="hdr-name" id="shopName">Loading...</div><div class="hdr-sub" id="shopStatus">Fresh meat daily</div></div>
@@ -263,7 +272,7 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
   <div id="shim"><div class="shim" style="height:180px;margin-bottom:10px"></div><div class="shim" style="height:180px;margin-bottom:10px"></div><div class="shim" style="height:180px"></div></div>
 </div>
 
-<div class="ft"><div class="ft-name" id="ftName"></div><div class="ft-addr" id="ftAddr"></div><div class="ft-line"></div><div class="ft-pw">Powered by <b>StorePro</b></div><div style="font:400 9px var(--F);color:var(--T4);margin-top:6px">v1.0.0.1</div></div>
+<div class="ft"><div class="ft-name" id="ftName"></div><div class="ft-addr" id="ftAddr"></div><div class="ft-line"></div><div class="ft-pw">Powered by <b>StorePro</b></div><div style="font:400 9px var(--F);color:var(--T4);margin-top:6px">v1.0.0.4</div></div>
 
 <!-- Install App Banner -->
 <div class="install-bar" id="installBar">
@@ -306,7 +315,7 @@ function init(){
   else if(slug){lookup(slug,function(){loadCfg(function(){loadProd()})})}
   else err('No store specified','Add ?store=name to the URL');
 }
-function err(t,m){$('shim').style.display='none';$('list').innerHTML='<div class="empty"><b>🏬</b><span>'+E(t)+'</span><div style="font-size:12px;color:var(--T4);margin-top:6px">'+E(m)+'</div></div>'}
+function err(t,m){var s=$('shim');if(s)s.style.display='none';$('list').innerHTML='<div class="empty"><b>🏬</b><span>'+E(t)+'</span><div style="font-size:12px;color:var(--T4);margin-top:6px">'+E(m)+'</div></div>'}
 
 function lookup(slug,cb){
   if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
@@ -338,8 +347,8 @@ function loadProd(){LS('Products',function(r){
   if(hd.every(function(h){return !h})&&r.table.rows.length>0){hd=[];var fr=r.table.rows[0];if(fr.c)fr.c.forEach(function(cl){var v='';if(cl){v=cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''}hd.push(v.toLowerCase().replace(/\s+/g,''))});ds=1}
   for(var i=ds;i<r.table.rows.length;i++){var row=r.table.rows[i];if(!row.c)continue;var o={};row.c.forEach(function(cl,ci){if(ci>=hd.length)return;var k=hd[ci];if(!k)return;var v='';if(cl){v=cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''}o[k]=v});
   if(o.name)items.push({name:o.name,hi:o.hindiname||o.hindi||'',cat:o.category||'Meat',price:parseFloat(o.price)||0,unit:o.unit||'per kg',em:o.emoji||'🥩',desc:o.description||o.desc||'',tags:o.tags||'',stock:o.stock||'in stock'})}
-  if(!items.length){$('shim').style.display='none';err('No products found','Add items to Products tab');return}
-  $('shim').style.display='none';render();
+  if(!items.length){var s=$('shim');if(s)s.style.display='none';err('No products found','Add items to Products tab');return}
+  var s=$('shim');if(s)s.style.display='none';render();
 })}
 
 function render(){
@@ -608,42 +617,125 @@ function call(){var ph=G('phone','')||G('whatsapp','');if(ph)location.href='tel:
 init();
 
 // ═══ PWA ═══
-var APP_VERSION='1.0.0.1';
+var APP_VERSION='1.0.0.4';
 var _installPrompt=null;
+var isStandalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
+
+// Dynamic manifest — meat icon + start_url to THIS page
+(function(){
+  try{
+    // Skip dynamic manifest on file:// (CORS blocks it)
+    if(location.protocol==='file:')return;
+    
+    var base=location.origin;
+    var m={
+      name:(document.querySelector('#shopName')||{}).textContent||'Fresh Meat — StorePro',
+      short_name:'Meat Shop',
+      description:'Order fresh meat online — home delivery',
+      start_url:base+location.pathname+location.search,
+      id:location.pathname+location.search,
+      display:'standalone',
+      background_color:'#ffffff',
+      theme_color:'#8b1a1a',
+      orientation:'portrait',
+      icons:[
+        {src:base+'/meat-icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
+        {src:base+'/meat-icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
+      ]
+    };
+    var blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+    var link=document.querySelector('link[rel=manifest]');
+    if(link)link.href=URL.createObjectURL(blob);
+  }catch(e){console.log('Manifest setup skipped:',e)}
+})();
 
 // Capture install prompt
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   _installPrompt=e;
-  // Show install banner (only if not already installed)
-  if(!window.matchMedia('(display-mode:standalone)').matches){
-    $('installBar').classList.add('show');
-  }
+  if(!isStandalone)$('installBar').classList.add('show');
 });
 
 function installApp(){
   if(!_installPrompt){
-    // Fallback for browsers that don't fire beforeinstallprompt
     alert('To install: tap browser menu (⋮) → "Add to Home Screen" or "Install App"');
     return;
   }
   _installPrompt.prompt();
   _installPrompt.userChoice.then(function(r){
-    if(r.outcome==='accepted'){$('installBar').style.display='none'}
+    if(r.outcome==='accepted')$('installBar').style.display='none';
     _installPrompt=null;
   });
 }
 
-// Hide install banner if already installed as PWA
-window.addEventListener('appinstalled',function(){
-  $('installBar').style.display='none';
-  _installPrompt=null;
-});
+window.addEventListener('appinstalled',function(){$('installBar').style.display='none';_installPrompt=null});
 
-// Service worker
-if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(function(){});
+// ═══ PULL TO REFRESH (works in standalone PWA mode) ═══
+(function(){
+  var ptr=$('ptr'),ptrText=$('ptrText');
+  var startY=0,pulling=false,threshold=80;
+  
+  // Only enable when scrolled to top
+  document.addEventListener('touchstart',function(e){
+    if(window.scrollY>5)return;
+    startY=e.touches[0].clientY;
+    pulling=true;
+  },{passive:true});
+  
+  document.addEventListener('touchmove',function(e){
+    if(!pulling)return;
+    var dy=e.touches[0].clientY-startY;
+    if(dy<0||window.scrollY>5){pulling=false;ptr.style.height='0';return}
+    
+    // Prevent default scroll when pulling
+    if(dy>10&&window.scrollY<=0){
+      var h=Math.min(dy*0.5,100);
+      ptr.style.height=h+'px';
+      
+      if(h>=threshold*0.5){
+        ptrText.textContent='↑ Release to refresh';
+        ptr.classList.add('pulling');
+      }else{
+        ptrText.textContent='↓ Pull to refresh';
+        ptr.classList.remove('pulling');
+      }
+    }
+  },{passive:true});
+  
+  document.addEventListener('touchend',function(){
+    if(!pulling)return;
+    var h=parseInt(ptr.style.height)||0;
+    if(h>=threshold*0.5){
+      ptr.style.height='50px';
+      ptrText.textContent='Refreshing...';
+      ptr.classList.add('pulling');
+      // Reload data (not full page reload)
+      setTimeout(function(){
+        if(SID){
+          loadCfg(function(){loadProd()});
+          ptrText.textContent='✓ Updated';
+          setTimeout(function(){ptr.style.height='0';ptr.classList.remove('pulling')},600);
+        }else{
+          location.reload();
+        }
+      },500);
+    }else{
+      ptr.style.height='0';
+      ptr.classList.remove('pulling');
+    }
+    pulling=false;
+  },{passive:true});
+})();
 
-console.log('StorePro Meat Shop v'+APP_VERSION);
+// Disable browser's default pull-to-refresh in standalone mode (we handle it)
+if(isStandalone){
+  document.body.style.overscrollBehavior='none';
+}
+
+// Service worker (only on http/https, not file://)
+if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('/sw.js').catch(function(){});
+
+console.log('StorePro Meat Shop v'+APP_VERSION+(isStandalone?' [PWA]':' [Browser]'));
 </script>
 </body>
 </html>
