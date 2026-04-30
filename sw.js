@@ -1,11 +1,16 @@
-var CACHE_NAME = 'kirana-v1';
+var CACHE_NAME = 'storepro-v2';
 var SHELL_FILES = [
   '/',
   '/index.html',
+  '/fastfood.html',
+  '/meatshop.html',
+  '/restaurant.html',
+  '/dhaba.html',
+  '/store.html',
+  '/dashboard.html',
   '/manifest.json',
   '/icon-192.png',
-  '/icon-512.png',
-  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
+  '/icon-512.png'
 ];
 
 // Install — cache app shell
@@ -31,15 +36,16 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 
-// Fetch — smart strategy
+// Fetch — smart caching strategy
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
   
-  // Never cache Google Sheets API, Apps Script, or WhatsApp links
+  // NEVER cache: Google Sheets API, Apps Script, WhatsApp, Nominatim
   if (url.indexOf('docs.google.com') >= 0 ||
       url.indexOf('script.google.com') >= 0 ||
       url.indexOf('wa.me') >= 0 ||
-      url.indexOf('gviz/tq') >= 0) {
+      url.indexOf('gviz/tq') >= 0 ||
+      url.indexOf('nominatim.openstreetmap.org') >= 0) {
     return; // let browser handle normally
   }
   
@@ -57,11 +63,42 @@ self.addEventListener('fetch', function(e) {
     return;
   }
   
-  // App shell files — cache first, fallback to network
+  // CDN scripts (QRCode.js etc) — cache first
+  if (url.indexOf('cdnjs.cloudflare.com') >= 0) {
+    e.respondWith(
+      caches.match(e.request).then(function(r) {
+        return r || fetch(e.request).then(function(res) {
+          var clone = res.clone();
+          caches.open(CACHE_NAME).then(function(c) { c.put(e.request, clone); });
+          return res;
+        });
+      })
+    );
+    return;
+  }
+  
+  // HTML pages — network first, fallback to cache (always get latest)
+  if (e.request.mode === 'navigate' || url.indexOf('.html') >= 0) {
+    e.respondWith(
+      fetch(e.request).then(function(res) {
+        if (res.status === 200) {
+          var clone = res.clone();
+          caches.open(CACHE_NAME).then(function(c) { c.put(e.request, clone); });
+        }
+        return res;
+      }).catch(function() {
+        return caches.match(e.request).then(function(r) {
+          return r || caches.match('/index.html');
+        });
+      })
+    );
+    return;
+  }
+  
+  // Everything else — cache first, fallback to network
   e.respondWith(
     caches.match(e.request).then(function(r) {
       return r || fetch(e.request).then(function(res) {
-        // Cache successful responses for future
         if (res.status === 200) {
           var clone = res.clone();
           caches.open(CACHE_NAME).then(function(c) { c.put(e.request, clone); });
@@ -69,7 +106,6 @@ self.addEventListener('fetch', function(e) {
         return res;
       });
     }).catch(function() {
-      // Offline fallback — return cached index.html for navigation
       if (e.request.mode === 'navigate') {
         return caches.match('/index.html');
       }
