@@ -35,6 +35,16 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 .hdr-cart:active{transform:scale(.9)}
 .badge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;background:#ffab00;color:#000;font:700 9px var(--F);border-radius:8px;display:none;place-items:center;padding:0 4px}
 
+/* === HERO === */
+.hdr-hero{max-width:var(--MW);margin:0 auto;background:linear-gradient(150deg,#5c0e0f,var(--R) 50%,#c62828);color:#fff;position:relative;overflow:hidden}
+.hdr-hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:18px 18px}
+.hdr-hero::after{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 60%);border-radius:50%}
+.hdr-hero-in{position:relative;z-index:1;padding:16px var(--PX) 14px}
+.hdr-hero-name{font:800 22px var(--F);letter-spacing:-.5px}
+.hdr-hero-tag{font:500 12px var(--F);opacity:.7;margin-top:2px}
+.hdr-hero-badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.hero-badge{padding:4px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);border-radius:20px;font:600 11px var(--F);backdrop-filter:blur(6px)}
+
 /* === BANNER === */
 .banner{max-width:var(--MW);margin:0 auto;padding:10px var(--PX);background:linear-gradient(135deg,var(--R),#a02020);display:none;gap:8px;align-items:center;color:#fff}
 .banner.show{display:flex}
@@ -168,6 +178,25 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 .co-note-input:focus{border-color:var(--R);background:var(--W)}
 .co-note-input::placeholder{color:var(--T4)}
 
+.co-note-input::placeholder{color:var(--T4)}
+
+/* Date & Time Picker */
+.co-dt-row{display:flex;flex-direction:column;gap:12px}
+.co-dt-pick{display:flex;flex-direction:column;gap:6px}
+.co-dt-label{font:600 11px var(--F);color:var(--T3)}
+.co-dt-chips{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px}
+.co-dt-chips::-webkit-scrollbar{display:none}
+.co-dt-chip{min-width:62px;padding:8px 6px;border:1.5px solid var(--LINE);border-radius:10px;text-align:center;cursor:pointer;transition:.15s;flex-shrink:0;background:var(--W)}
+.co-dt-chip:active{transform:scale(.94)}
+.co-dt-chip.on{background:var(--R);color:#fff;border-color:var(--R)}
+.co-dt-day{font:700 11px var(--F)}
+.co-dt-date{font:500 10px var(--F);opacity:.7;margin-top:1px}
+.co-dt-time{min-width:auto;padding:8px 10px;font:600 12px var(--F);color:var(--T2)}
+.co-dt-time.on{color:#fff}
+.co-dt-times{flex-wrap:wrap}
+.co-dt-custom{display:flex;gap:8px;margin-top:8px}
+.co-dt-custom-item{flex:1;display:flex;flex-direction:column;gap:4px}
+
 /* Items summary in checkout */
 .co-items{background:var(--BG);border-radius:12px;padding:12px;margin-bottom:16px}
 .co-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font:500 13px var(--F);color:var(--T2)}
@@ -194,12 +223,26 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 .waf:active{transform:scale(.88)}
 .waf.up{bottom:96px}
 
+/* Price note strip */
+.pnote{max-width:var(--MW);margin:0 auto;padding:8px var(--PX);background:#fffbeb;border-bottom:1px solid #fef3c7;display:none;align-items:center;gap:8px;font:500 12px var(--F);color:#92400e}
+.pnote.show{display:flex}
+.pnote-icon{font-size:15px;flex-shrink:0}
+
 /* Footer */
-.ft{max-width:var(--MW);margin:0 auto;padding:24px var(--PX) 100px;text-align:center}
-.ft-name{font:700 14px var(--F);color:var(--T1)}
-.ft-addr{font:400 11px var(--F);color:var(--T3);margin-top:4px;line-height:1.5}
+.ft{max-width:var(--MW);margin:0 auto;padding:16px var(--PX) 100px}
+.ft-card{background:var(--W);border-radius:var(--RAD);padding:20px;margin-bottom:10px;text-align:center}
+.ft-name{font:800 17px var(--F);color:var(--T1)}
+.ft-type{font:600 10px var(--F);color:var(--R);background:var(--Rbg);padding:3px 10px;border-radius:6px;display:inline-block;margin-top:6px}
+.ft-addr{font:400 12px var(--F);color:var(--T3);margin-top:8px;line-height:1.5}
+.ft-contacts{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.ft-c{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--BG);border-radius:10px;text-decoration:none;color:var(--T2);font:600 13px var(--F);transition:.15s}
+.ft-c:active{transform:scale(.97)}
+.ft-c.c-wa{background:#dcfce7;color:#166534}
+.ft-c.c-call{background:var(--Rbg);color:var(--R)}
+.ft-c.c-email{background:#eff6ff;color:#1d4ed8}
+.ft-c.c-web{background:#f3e8ff;color:#7c3aed}
 .ft-line{width:30px;height:2px;background:var(--LINE);margin:14px auto}
-.ft-pw{font:500 10px var(--F);color:var(--T4)}.ft-pw b{color:var(--R)}
+.ft-pw{font:500 10px var(--F);color:var(--T4);text-align:center}.ft-pw b{color:var(--R)}
 
 /* === SPLASH SCREEN === */
 .splash{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#3b0d0e,#8b1a1a 50%,#c62828);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s,transform .5s var(--EASE)}
@@ -266,7 +309,7 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
   <div class="splash-bottom">
     <div class="splash-powered">powered by</div>
     <div class="splash-brand"><b>Store</b>Pro</div>
-    <div class="splash-ver" id="splashVer">v1.0.0.6</div>
+    <div class="splash-ver" id="splashVer">v1.0.1.0</div>
   </div>
 </div>
 
@@ -278,6 +321,14 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
   <div class="hdr-info"><div class="hdr-name" id="shopName">Loading...</div><div class="hdr-sub" id="shopStatus">Fresh meat daily</div></div>
   <button class="hdr-cart" onclick="openDr()">🛒<span class="badge" id="badge">0</span></button>
 </div></div>
+
+<div class="hdr-hero">
+  <div class="hdr-hero-in">
+    <div class="hdr-hero-name" id="heroName">Fresh Meat Shop</div>
+    <div class="hdr-hero-tag" id="heroTag">Farm fresh meat delivered to your doorstep</div>
+    <div class="hdr-hero-badges" id="heroBadges"><span class="hero-badge">🥩 Fresh Daily</span></div>
+  </div>
+</div>
 
 <div class="banner" id="banner">
   <div class="banner-text" id="bannerText">📞 Call for today's price & availability</div>
@@ -296,11 +347,27 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
   </div>
 </div>
 
+<!-- Price Note Strip -->
+<div class="pnote" id="pnote">
+  <span class="pnote-icon">💡</span>
+  <span id="pnoteText">Prices vary for bulk & retail — call or WhatsApp</span>
+</div>
+
 <div class="list" id="list">
   <div id="shim"><div class="shim" style="height:180px;margin-bottom:10px"></div><div class="shim" style="height:180px;margin-bottom:10px"></div><div class="shim" style="height:180px"></div></div>
 </div>
 
-<div class="ft"><div class="ft-name" id="ftName"></div><div class="ft-addr" id="ftAddr"></div><div class="ft-line"></div><div class="ft-pw">Powered by <b>StorePro</b></div><div style="font:400 9px var(--F);color:var(--T4);margin-top:6px">v1.0.0.6</div></div>
+<div class="ft">
+  <div class="ft-card">
+    <div class="ft-name" id="ftName"></div>
+    <div class="ft-type" id="ftType">Retail & B2B</div>
+    <div class="ft-addr" id="ftAddr"></div>
+    <div class="ft-contacts" id="ftContacts"></div>
+  </div>
+  <div class="ft-line"></div>
+  <div class="ft-pw">Powered by <b>StorePro</b></div>
+  <div style="font:400 9px var(--F);color:var(--T4);margin-top:4px;text-align:center">v1.0.1.0</div>
+</div>
 
 <!-- Install App Banner -->
 <div class="install-bar" id="installBar">
@@ -359,8 +426,33 @@ function applyCfg(){
   // Update splash with real name
   var sn=$('splashName');if(sn)sn.textContent=n;
   var st=$('splashTag');if(st)st.textContent=G('herotagline','Loading menu...');
+  // Hero tagline
+  $('shopStatus').textContent=G('tagline','Fresh meat daily');
+  var hn=$('heroName');if(hn)hn.textContent=n;
+  var ht=$('heroTag');if(ht)ht.textContent=G('herotagline','Farm fresh meat delivered to your doorstep');
+  
+  // Price visibility
   var sp=G('showprices','no');SP=(sp.toLowerCase()==='yes'||sp==='1');
   if(SP){$('swPrice').checked=true;$('tbar').classList.add('show');var h=G('pricenote','');if(h)$('tbarHint').textContent=h}
+  
+  // Price note strip
+  var pn=G('pricenote','');
+  if(pn){$('pnoteText').textContent=pn;$('pnote').classList.add('show')}
+  
+  // Shop type badge (Retail, B2B, etc.)
+  var shopType=G('shoptype','')||G('businesstype','');
+  if(shopType)$('ftType').textContent=shopType;
+  
+  // Hero badges
+  var bHtml='<span class="hero-badge">🥩 Fresh Daily</span>';
+  var del=G('deliveryinfo','')||G('delivery','');if(del)bHtml+='<span class="hero-badge">🛵 '+E(del)+'</span>';else if(G('deliveryfee','')!=='')bHtml+='<span class="hero-badge">🛵 Home Delivery</span>';
+  var et=G('estimateddeliverytime','')||G('deliverytime','');if(et)bHtml+='<span class="hero-badge">⏱️ '+E(et)+'</span>';
+  var mo=G('minorder','');if(mo)bHtml+='<span class="hero-badge">💰 Min ₹'+E(mo)+'</span>';
+  // B2B badge from config
+  var b2b=G('b2b','')||G('businesstype','');
+  if(b2b&&b2b.toLowerCase().indexOf('b2b')>=0)bHtml+='<span class="hero-badge">🏢 Retail & B2B</span>';
+  $('heroBadges').innerHTML=bHtml;
+  
   // Banner
   var wa=G('whatsapp','')||G('phone',''),ph=G('phone','');
   if(ph||wa){
@@ -370,6 +462,19 @@ function applyCfg(){
     $('bannerBtns').innerHTML=b;$('banner').classList.add('show');
   }
   if(wa){$('waf').href='https://wa.me/'+String(wa).replace(/\D/g,'')+'?text='+encodeURIComponent('Hi! I want to order from '+n);$('waf').style.display='grid'}
+  
+  // Rich footer contacts
+  var fc='';
+  if(ph){var cp=String(ph).replace(/\D/g,'');fc+='<a class="ft-c c-call" href="tel:+'+cp+'">📞 Call — '+cp.slice(-10)+'</a>'}
+  var ph2=G('phone2','');
+  if(ph2){var cp2=String(ph2).replace(/\D/g,'');fc+='<a class="ft-c c-call" href="tel:+'+cp2+'">📞 Call — '+cp2.slice(-10)+'</a>'}
+  if(wa){var cw=String(wa).replace(/\D/g,'');fc+='<a class="ft-c c-wa" href="https://wa.me/'+cw+'" target="_blank">💬 WhatsApp — '+cw.slice(-10)+'</a>'}
+  var email=G('email','');
+  if(email)fc+='<a class="ft-c c-email" href="mailto:'+E(email)+'">✉️ '+E(email)+'</a>';
+  var website=G('website','');
+  if(website){var wUrl=website.indexOf('http')===0?website:'https://'+website;fc+='<a class="ft-c c-web" href="'+E(wUrl)+'" target="_blank">🌐 '+E(website)+'</a>'}
+  $('ftContacts').innerHTML=fc;
+  
   // Setup PWA manifest with real shop name from Config
   setupManifest(n);
 }
@@ -540,6 +645,42 @@ function renCheckout(){
   h+='<textarea class="co-textarea" id="coAddr" placeholder="House no, street, area, landmark">'+E(savedCust.address||'')+'</textarea>';
   h+='</div>';
   
+  // Delivery Date & Time
+  h+='<div class="co-section"><div class="co-label">📅 Preferred Delivery Date & Time</div>';
+  h+='<div class="co-dt-row">';
+  // Date — today + next 6 days
+  h+='<div class="co-dt-pick">';
+  h+='<div class="co-dt-label">Date</div>';
+  h+='<div class="co-dt-chips" id="coDateChips">';
+  var today=new Date();
+  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  for(var di=0;di<7;di++){
+    var d=new Date(today);d.setDate(d.getDate()+di);
+    var label=di===0?'Today':di===1?'Tomorrow':days[d.getDay()];
+    var dateVal=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    var dateShow=d.getDate()+' '+months[d.getMonth()];
+    h+='<div class="co-dt-chip'+(di===0?' on':'')+'" onclick="pickDate(this,\''+dateVal+'\')" data-val="'+dateVal+'"><div class="co-dt-day">'+label+'</div><div class="co-dt-date">'+dateShow+'</div></div>';
+  }
+  h+='</div></div>';
+  
+  // Time slots
+  h+='<div class="co-dt-pick">';
+  h+='<div class="co-dt-label">Time Slot</div>';
+  h+='<div class="co-dt-chips co-dt-times" id="coTimeChips">';
+  var slots=['7-9 AM','9-11 AM','11-1 PM','1-3 PM','3-5 PM','5-7 PM','7-9 PM','9-11 PM'];
+  slots.forEach(function(sl,i){
+    h+='<div class="co-dt-chip co-dt-time'+(i===0?' on':'')+'" onclick="pickTime(this,\''+sl+'\')" data-val="'+sl+'">'+sl+'</div>';
+  });
+  h+='</div></div>';
+  h+='</div>';
+  // Custom date + time inputs
+  h+='<div class="co-dt-custom">';
+  h+='<div class="co-dt-custom-item"><label class="co-dt-label">Or pick a date</label><input type="date" class="co-note-input" id="coCustomDate" onchange="pickCustomDate(this.value)" style="font-size:13px"></div>';
+  h+='<div class="co-dt-custom-item"><label class="co-dt-label">Or type a time</label><input class="co-note-input" id="coCustomTime" placeholder="e.g. 10:30 AM sharp" style="font-size:13px"></div>';
+  h+='</div>';
+  h+='</div>';
+  
   // Notes
   h+='<div class="co-section"><div class="co-label">Order Notes (optional)</div>';
   h+='<input class="co-note-input" id="coNotes" placeholder="e.g. Cut into small pieces, extra clean..."></div>';
@@ -587,11 +728,50 @@ function getGPS(){
   },{enableHighAccuracy:true,timeout:10000});
 }
 
+var selectedDate='',selectedTime='';
+
+function pickDate(el,val){
+  el.parentElement.querySelectorAll('.co-dt-chip').forEach(function(c){c.classList.remove('on')});
+  el.classList.add('on');
+  selectedDate=val;
+  // Clear custom date
+  var cd=$('coCustomDate');if(cd)cd.value='';
+}
+function pickTime(el,val){
+  el.parentElement.querySelectorAll('.co-dt-chip').forEach(function(c){c.classList.remove('on')});
+  el.classList.add('on');
+  selectedTime=val;
+  // Clear custom time
+  var ct=$('coCustomTime');if(ct)ct.value='';
+}
+function pickCustomDate(val){
+  // Deselect preset date chips
+  var chips=document.querySelectorAll('#coDateChips .co-dt-chip');
+  chips.forEach(function(c){c.classList.remove('on')});
+  selectedDate=val;
+}
+
 function submitOrder(method){
   var name=($('coName')||{}).value||'';name=name.trim();
   var phone=($('coPhone')||{}).value||'';phone=phone.trim();
   var addr=($('coAddr')||{}).value||'';addr=addr.trim();
   var notes=($('coNotes')||{}).value||'';notes=notes.trim();
+  var customTime=($('coCustomTime')||{}).value||'';customTime=customTime.trim();
+  var customDate=($('coCustomDate')||{}).value||'';
+  
+  // Get selected date — custom date overrides chip selection
+  var dateLabel='';
+  if(customDate){
+    var cd=new Date(customDate);
+    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    dateLabel=cd.getDate()+' '+months[cd.getMonth()]+' '+cd.getFullYear();
+  }else{
+    var dateChip=document.querySelector('#coDateChips .co-dt-chip.on');
+    dateLabel=dateChip?dateChip.textContent.replace(/\s+/g,' ').trim():'';
+  }
+  
+  // Get selected time — custom time overrides chip selection
+  var timeVal=customTime||selectedTime||'';
   
   // Validate
   if(!name){showCoErr('Please enter your name');$('coName').focus();return}
@@ -623,6 +803,9 @@ function submitOrder(method){
     msg+='\n💰 Estimated: ~₹'+Math.round(est);
   }
   if(notes)msg+='\n📝 '+notes;
+  if(dateLabel||timeVal){
+    msg+='\n\n📅 *Delivery:* '+(dateLabel||'')+(timeVal?' | '+timeVal:'');
+  }
   msg+='\n\n🙏 Please confirm availability & price';
   
   if(method==='whatsapp'){
@@ -653,7 +836,7 @@ init();
 setTimeout(dismissSplash,6000);
 
 // ═══ PWA ═══
-var APP_VERSION='1.0.0.6';
+var APP_VERSION='1.0.1.0';
 var _installPrompt=null;
 var isStandalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
 var _splashDismissed=false;
