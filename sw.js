@@ -1,4 +1,4 @@
-var CACHE_NAME = 'storepro-v2';
+var CACHE_NAME = 'storepro-v3';
 var SHELL_FILES = [
   '/',
   '/index.html',
