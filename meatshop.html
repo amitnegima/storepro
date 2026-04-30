@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -275,6 +276,22 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 .install-btn:active{transform:scale(.95)}
 .install-x{width:30px;height:30px;border:none;background:var(--BG);border-radius:8px;font-size:14px;cursor:pointer;color:var(--T3);display:grid;place-items:center}
 
+/* iOS Install Guide Modal */
+.ios-guide-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;backdrop-filter:blur(3px)}
+.ios-guide-bg.show{display:flex;align-items:flex-end;justify-content:center}
+.ios-guide{max-width:var(--MW);width:100%;background:var(--W);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));animation:slideUp .3s var(--EASE)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.ios-guide-title{font:800 17px var(--F);color:var(--T1);text-align:center;margin-bottom:4px}
+.ios-guide-sub{font:400 12px var(--F);color:var(--T3);text-align:center;margin-bottom:16px}
+.ios-step{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--LINE)}
+.ios-step:last-child{border-bottom:none}
+.ios-step-n{width:32px;height:32px;background:var(--R);color:#fff;border-radius:10px;display:grid;place-items:center;font:800 14px var(--F);flex-shrink:0}
+.ios-step-text{font:500 13px var(--F);color:var(--T1);line-height:1.4}
+.ios-step-text b{font-weight:700}
+.ios-step-icon{font-size:22px;flex-shrink:0}
+.ios-guide-close{width:100%;height:48px;border:none;border-radius:12px;background:var(--R);color:#fff;font:700 15px var(--F);cursor:pointer;margin-top:16px}
+.ios-guide-close:active{transform:scale(.97)}
+
 /* Shimmer */
 .shim{background:linear-gradient(90deg,var(--LINE) 25%,#f5f5f5 50%,var(--LINE) 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:var(--RAD)}
 @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -309,7 +326,7 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
   <div class="splash-bottom">
     <div class="splash-powered">powered by</div>
     <div class="splash-brand"><b>Store</b>Pro</div>
-    <div class="splash-ver" id="splashVer">v1.0.1.0</div>
+    <div class="splash-ver" id="splashVer">v1.0.1.1</div>
   </div>
 </div>
 
@@ -366,15 +383,39 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
   </div>
   <div class="ft-line"></div>
   <div class="ft-pw">Powered by <b>StorePro</b></div>
-  <div style="font:400 9px var(--F);color:var(--T4);margin-top:4px;text-align:center">v1.0.1.0</div>
+  <div style="font:400 9px var(--F);color:var(--T4);margin-top:4px;text-align:center">v1.0.1.1</div>
 </div>
 
 <!-- Install App Banner -->
 <div class="install-bar" id="installBar">
-  <div class="install-text">📲 <strong>Install App</strong> — add to home screen for quick access</div>
+  <div class="install-text">📲 <strong>Install App</strong> — faster access from home screen</div>
   <div class="install-btns">
     <button class="install-btn" id="installBtn" onclick="installApp()">Install</button>
-    <button class="install-x" onclick="$('installBar').style.display='none'">✕</button>
+    <button class="install-x" onclick="dismissInstall()">✕</button>
+  </div>
+</div>
+
+<!-- iOS Install Guide -->
+<div class="ios-guide-bg" id="iosGuide" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="ios-guide">
+    <div class="ios-guide-title">Install this App</div>
+    <div class="ios-guide-sub">Add to your home screen for quick access</div>
+    <div class="ios-step">
+      <div class="ios-step-n">1</div>
+      <div class="ios-step-text">Tap the <b>Share</b> button in Safari</div>
+      <div class="ios-step-icon">⬆️</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-n">2</div>
+      <div class="ios-step-text">Scroll down and tap <b>"Add to Home Screen"</b></div>
+      <div class="ios-step-icon">➕</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-step-n">3</div>
+      <div class="ios-step-text">Tap <b>"Add"</b> — the app icon appears on your home screen!</div>
+      <div class="ios-step-icon">🎉</div>
+    </div>
+    <button class="ios-guide-close" onclick="$('iosGuide').classList.remove('show')">Got it!</button>
   </div>
 </div>
 
@@ -836,7 +877,7 @@ init();
 setTimeout(dismissSplash,6000);
 
 // ═══ PWA ═══
-var APP_VERSION='1.0.1.0';
+var APP_VERSION='1.0.1.1';
 var _installPrompt=null;
 var isStandalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
 var _splashDismissed=false;
@@ -882,7 +923,7 @@ function setupManifest(shopName){
   }catch(e){console.log('Manifest setup skipped:',e)}
 }
 
-// Capture install prompt
+// Capture install prompt (Android/Chrome)
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   _installPrompt=e;
@@ -890,18 +931,48 @@ window.addEventListener('beforeinstallprompt',function(e){
 });
 
 function installApp(){
-  if(!_installPrompt){
+  if(_installPrompt){
+    // Android — use native prompt
+    _installPrompt.prompt();
+    _installPrompt.userChoice.then(function(r){
+      if(r.outcome==='accepted')dismissInstall();
+      _installPrompt=null;
+    });
+  }else if(isIOS){
+    // iOS — show step-by-step guide
+    $('iosGuide').classList.add('show');
+  }else{
     alert('To install: tap browser menu (⋮) → "Add to Home Screen" or "Install App"');
-    return;
   }
-  _installPrompt.prompt();
-  _installPrompt.userChoice.then(function(r){
-    if(r.outcome==='accepted')$('installBar').style.display='none';
-    _installPrompt=null;
-  });
 }
 
-window.addEventListener('appinstalled',function(){$('installBar').style.display='none';_installPrompt=null});
+function dismissInstall(){
+  $('installBar').classList.remove('show');
+  $('installBar').style.display='none';
+  try{sessionStorage.setItem('sp_install_dismissed','1')}catch(e){}
+}
+
+// Detect iOS
+var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||
+  (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+var isSafari=isIOS&&/Safari/.test(navigator.userAgent)&&!/CriOS|FxiOS/.test(navigator.userAgent);
+
+// Show install banner after 3 seconds
+setTimeout(function(){
+  if(isStandalone)return; // Already installed
+  if(sessionStorage.getItem('sp_install_dismissed'))return; // Dismissed this session
+  
+  if(isIOS){
+    // iOS: always show banner (no beforeinstallprompt event)
+    if(!window.navigator.standalone){
+      $('installBtn').textContent=isSafari?'How to Install':'Open in Safari';
+      $('installBar').classList.add('show');
+    }
+  }
+  // Android banner is handled by beforeinstallprompt above
+},3000);
+
+window.addEventListener('appinstalled',function(){dismissInstall();_installPrompt=null});
 
 // ═══ PULL TO REFRESH (works in standalone PWA mode) ═══
 (function(){
