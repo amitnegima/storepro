@@ -1,21 +1,21 @@
 {
-  "name": "Grocery Grocery & Confectionery Shop",
-  "short_name": "Grocery Shop",
-  "description": "Order groceries, confectionery & daily essentials. Pickup or delivery.",
+  "name": "StorePro — Your Store, Online in 5 Minutes",
+  "short_name": "StorePro",
+  "description": "Order food, groceries & meat online. Fast delivery, UPI payments, WhatsApp updates.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f5f5",
+  "background_color": "#ffffff",
   "theme_color": "#0c831f",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
