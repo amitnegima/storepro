@@ -22,27 +22,57 @@ var _seenOrderIds={};var _pendingNewIds=[];var _wakeLockObj=null;
 var _installEvt=null; // captured beforeinstallprompt
 
 function getAudio(){if(!_audioCtx){try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}return _audioCtx}
+// One bell strike: fundamental + inharmonic partials = warm, food-service "ting"
+function strikeBell(ctx,startAt,fundamental,velocity,decay,bus){
+  var partials=[
+    {ratio:1.000,amp:1.00},
+    {ratio:2.000,amp:0.55},
+    {ratio:2.760,amp:0.45},
+    {ratio:5.400,amp:0.20},
+    {ratio:8.930,amp:0.10}
+  ];
+  partials.forEach(function(p){
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.type='sine';o.frequency.value=fundamental*p.ratio;
+    var peak=velocity*p.amp;
+    var dec=decay*(1-Math.min(0.6,(p.ratio-1)*0.08));
+    g.gain.setValueAtTime(0,startAt);
+    g.gain.linearRampToValueAtTime(peak,startAt+0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001,startAt+dec);
+    o.connect(g);g.connect(bus);
+    o.start(startAt);o.stop(startAt+dec+0.05);
+  });
+}
 function playAlert(urgent){
   if(!NPREF.sound)return;
   var ctx=getAudio();if(!ctx)return;
   if(ctx.state==='suspended')ctx.resume().catch(function(){});
-  // 3-tone rising chirp (urgent) or single beep
-  var notes=urgent?[660,880,1320]:[880];
   var t=ctx.currentTime;
-  notes.forEach(function(f,i){
-    var o=ctx.createOscillator(),g=ctx.createGain();
-    o.type='sine';o.frequency.value=f;
-    g.gain.setValueAtTime(0,t+i*0.16);
-    g.gain.linearRampToValueAtTime(0.22,t+i*0.16+0.02);
-    g.gain.exponentialRampToValueAtTime(0.001,t+i*0.16+0.14);
-    o.connect(g);g.connect(ctx.destination);
-    o.start(t+i*0.16);o.stop(t+i*0.16+0.16);
-  });
+  // Compressor to keep things loud but smooth
+  var comp=ctx.createDynamicsCompressor();
+  comp.threshold.value=-14;comp.knee.value=22;comp.ratio.value=4;
+  comp.attack.value=0.005;comp.release.value=0.25;
+  // Gentle low-pass to remove harsh top-end shimmer
+  var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;lp.Q.value=0.6;
+  var master=ctx.createGain();master.gain.value=urgent?0.85:0.5;
+  comp.connect(lp);lp.connect(master);master.connect(ctx.destination);
+  // Restaurant chime: G5 → C6 → G5 (perfect-fourth doorbell, ~1.7s) — warm and welcoming
+  var notes=urgent
+    ? [{f:783.99,d:1.0,v:0.9,t:0.00},   // G5
+       {f:1046.50,d:1.4,v:1.0,t:0.30},  // C6 (high, hopeful)
+       {f:783.99,d:1.6,v:0.85,t:0.85}]  // G5 (resolution)
+    : [{f:880.00,d:0.9,v:0.7,t:0}];     // gentle A5 single bell for repeat-nudge
+  notes.forEach(function(n){strikeBell(ctx,t+n.t,n.f,n.v,n.d,comp)});
 }
 function vibrate(urgent){
   if(!NPREF.vibrate)return;
   if(!navigator.vibrate)return;
-  navigator.vibrate(urgent?[200,80,200,80,400]:[150]);
+  // Try to enable vibration (some browsers require an explicit user gesture cached)
+  try{
+    navigator.vibrate(urgent
+      ? [500,120,500,120,500,120,800,200,500,120,500]   // ~3.7s aggressive alarm
+      : [300,100,300]);                                  // gentle nudge
+  }catch(e){}
 }
 function fireBrowserNotif(title,body,tag){
   if(!NPREF.browserNotif)return;
@@ -260,13 +290,27 @@ function unlock(){
   $('bnav').style.display='flex';
   $('pinErr').textContent='';
   bootstrap();
+  // Prime audio + vibration synchronously while we still have the user-gesture token
+  primeAudioVibrate();
   // Notification + wake-lock require user gesture (PIN tap counts)
   setTimeout(function(){
     requestNotifPermission();
     requestWakeLock();
-    maybeShowIOSInstall();
+    showInstallBanner();
     updateInstallMenuState();
-  },300);
+  },1500);
+}
+function primeAudioVibrate(){
+  try{
+    var ctx=getAudio();
+    if(ctx&&ctx.state==='suspended')ctx.resume().catch(function(){});
+    if(ctx){
+      var o=ctx.createOscillator(),g=ctx.createGain();
+      g.gain.value=0.0001;o.connect(g);g.connect(ctx.destination);
+      o.start();o.stop(ctx.currentTime+0.02);
+    }
+  }catch(e){}
+  try{if(navigator.vibrate)navigator.vibrate(1)}catch(e){}
 }
 function lockNow(){
   try{localStorage.removeItem('sl_pin_'+SHEET_ID)}catch(e){}
