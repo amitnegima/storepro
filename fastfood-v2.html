@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#d4321f">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,14 +13,92 @@
 <script>
 (function(){
   try{
-    var qs=location.search||'';
-    var params=new URLSearchParams(qs);
+    var params=new URLSearchParams(location.search||'');
     var slug=(params.get('store')||'').toLowerCase();
-    var startUrl=location.pathname+(slug?'?store='+encodeURIComponent(slug):'');
-    var name=slug?slug.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase()}):'Order Food';
-    var manifest={name:name,short_name:(slug?slug.split('-')[0]:'Order').replace(/^./,function(c){return c.toUpperCase()}).slice(0,12),description:'Order food online',start_url:startUrl,scope:'/',display:'standalone',background_color:'#ffffff',theme_color:'#d4321f',orientation:'portrait',icons:[{src:'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+    if(!slug)return;
+
+    var cName=localStorage.getItem('ff_shopname_'+slug)||'';
+    var cType=localStorage.getItem('ff_shoptype_'+slug)||'';
+    var cBrand=localStorage.getItem('ff_brand_'+slug)||'#0c831f';
+    var cLogo=localStorage.getItem('ff_logo_'+slug)||'';
+    if(!/^#[0-9a-f]{6}$/i.test(cBrand))cBrand='#0c831f';
+
+    var displayName=cName||slug.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase()});
+    var shortName=(displayName.split(/\s+/)[0]||'Order').slice(0,12);
+    var typeLabel=cType?(' — '+cType):'';
+    var startUrl=location.pathname+'?store='+encodeURIComponent(slug);
+
+    function shadeHex(hex,pct){
+      var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=pct/100;
+      r=Math.max(0,Math.min(255,Math.round(r+(pct>0?(255-r)*f:r*f))));
+      g=Math.max(0,Math.min(255,Math.round(g+(pct>0?(255-g)*f:g*f))));
+      b=Math.max(0,Math.min(255,Math.round(b+(pct>0?(255-b)*f:b*f))));
+      return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+    }
+    function roundRect(ctx,x,y,w,h,r){
+      ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+      ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+      ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+    }
+    function makeIcon(size){
+      try{
+        var c=document.createElement('canvas');c.width=size;c.height=size;
+        var ctx=c.getContext('2d');if(!ctx)return null;
+        var grad=ctx.createLinearGradient(0,0,size,size);
+        grad.addColorStop(0,shadeHex(cBrand,-30));grad.addColorStop(0.55,cBrand);grad.addColorStop(1,shadeHex(cBrand,15));
+        roundRect(ctx,0,0,size,size,size*0.22);ctx.fillStyle=grad;ctx.fill();
+        var hg=ctx.createRadialGradient(size*0.3,size*0.25,size*0.05,size*0.3,size*0.25,size*0.6);
+        hg.addColorStop(0,'rgba(255,255,255,.22)');hg.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=hg;ctx.fill();
+        var initials=displayName.split(/\s+/).slice(0,2).map(function(w){return w.charAt(0)||''}).join('').toUpperCase().slice(0,2);
+        if(!initials)initials='S';
+        ctx.fillStyle='#fff';
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        var fontSize=initials.length>1?size*0.42:size*0.55;
+        ctx.font='900 '+fontSize+'px "DM Sans",-apple-system,system-ui,sans-serif';
+        ctx.fillText(initials,size/2,size*0.52);
+        ctx.fillStyle='rgba(255,255,255,.35)';
+        ctx.font='800 '+(size*0.11)+'px "DM Sans",sans-serif';
+        ctx.textAlign='right';ctx.textBaseline='bottom';
+        ctx.fillText('SP',size-size*0.08,size-size*0.06);
+        return c.toDataURL('image/png');
+      }catch(e){return null}
+    }
+
+    var icons;
+    if(cLogo){
+      icons=[{src:cLogo,sizes:'512x512',type:'image/png',purpose:'any'}];
+    }else{
+      var i192=makeIcon(192),i512=makeIcon(512);
+      if(i192&&i512)icons=[{src:i192,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:i512,sizes:'512x512',type:'image/png',purpose:'any maskable'}];
+      else icons=[{src:'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}];
+    }
+
+    var manifest={
+      name:displayName,
+      short_name:shortName,
+      description:'Order online from '+displayName+typeLabel+' — Powered by StorePro',
+      start_url:startUrl,
+      scope:'/',
+      id:'storepro-shop-'+slug,
+      display:'standalone',
+      background_color:'#ffffff',
+      theme_color:cBrand,
+      orientation:'portrait',
+      categories:['food','shopping'],
+      icons:icons
+    };
     var blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
     var link=document.createElement('link');link.rel='manifest';link.href=URL.createObjectURL(blob);document.head.appendChild(link);
+
+    if(icons[0]&&icons[0].src&&icons[0].src.indexOf('data:')===0){
+      var apple=document.querySelector('link[rel=apple-touch-icon]');
+      if(!apple){apple=document.createElement('link');apple.rel='apple-touch-icon';document.head.appendChild(apple)}
+      apple.href=icons[0].src;
+    }
+    var tc=document.querySelector('meta[name=theme-color]');
+    if(tc)tc.setAttribute('content',cBrand);
   }catch(e){}
   if('serviceWorker' in navigator&&location.protocol!=='file:'){navigator.serviceWorker.register('/sw.js').catch(function(){})}
 })();
@@ -359,6 +438,13 @@ textarea.field-i{height:auto;min-height:60px;padding:10px 14px;resize:vertical;l
 .empty-msg p{font-size:12px;color:var(--ink4)}
 
 .app-content{padding-bottom:calc(120px + var(--safeB))}
+.brand-footer{padding:18px 14px calc(120px + var(--safeB));text-align:center;border-top:1px solid var(--line2);margin-top:30px}
+.brand-footer a{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink3);transition:.2s}
+.brand-footer a:hover{color:var(--ink)}
+.brand-footer img{border-radius:8px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.bf-line1{font:700 12px var(--f);text-align:left}
+.bf-line1 b{color:var(--brand)}
+.bf-line2{font:600 10px var(--f);color:var(--ink4);letter-spacing:.4px;text-align:left;margin-top:1px}
 @media(max-width:380px){
   .product-img{width:88px;height:88px}
   .hero-shop{font-size:20px}
@@ -427,6 +513,17 @@ textarea.field-i{height:auto;min-height:60px;padding:10px 14px;resize:vertical;l
 
 <!-- ─── MENU ─── -->
 <div class="app-content" id="menu"><div class="spinner"></div></div>
+
+<!-- ─── POWERED BY STOREPRO FOOTER ─── -->
+<div class="brand-footer">
+  <a href="https://storepro.in" target="_blank" rel="noopener">
+    <img src="/logo-mark.svg" alt="StorePro" width="28" height="28">
+    <div>
+      <div class="bf-line1">Powered by <b>StorePro</b></div>
+      <div class="bf-line2">Your store · Online in 5 min</div>
+    </div>
+  </a>
+</div>
 
 <!-- ─── STICKY CART BAR ─── -->
 <div class="cart-bar" id="cartBar" onclick="openCart()">
@@ -517,6 +614,6 @@ textarea.field-i{height:auto;min-height:60px;padding:10px 14px;resize:vertical;l
 
 <div class="toast" id="toast"></div>
 
-<script src="fastfood-v2.js?v=2"></script>
+<script src="fastfood-v2.js?v=4"></script>
 </body>
 </html>

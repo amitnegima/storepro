@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 140" font-family="DM Sans,system-ui,sans-serif">
+  <defs>
+    <linearGradient id="ga" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10a02b"/>
+      <stop offset="100%" stop-color="#065a14"/>
+    </linearGradient>
+  </defs>
+  <rect x="20" y="22" width="96" height="96" rx="22" fill="url(#ga)"/>
+  <path d="M97 56 Q97 44 80 44 Q64 44 64 56 Q64 66 80 70 Q97 75 97 87 Q97 100 80 100 Q63 100 63 88"
+        stroke="#fff" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <text x="138" y="78" font-size="46" font-weight="900" fill="#0b1220" letter-spacing="-1.5">Store<tspan fill="#10a02b">Pro</tspan></text>
+  <g transform="translate(138,98)">
+    <rect x="0" y="0" width="86" height="20" rx="10" fill="#10a02b"/>
+    <text x="43" y="14" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" letter-spacing="1.2">ZERO INFRA</text>
+    <text x="98" y="15" font-size="11" font-weight="600" fill="#6b7280" letter-spacing=".4">· No server · No code · No cost</text>
+  </g>
+</svg>

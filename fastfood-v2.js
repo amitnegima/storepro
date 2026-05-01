@@ -144,6 +144,19 @@ function paintHeader(){
   document.title=name+' · Order';
   $('hShop').textContent=name;
   $('tbName').textContent=name;
+  // Cache name/type/brand/logo for next-visit PWA manifest personalization
+  try{
+    var slug=(STORE_META.slug||(new URLSearchParams(location.search)).get('store')||'').toLowerCase();
+    if(slug){
+      localStorage.setItem('ff_shopname_'+slug,name);
+      var stype=STORE_META.shoptype||getCfg('ShopType','');
+      if(stype)localStorage.setItem('ff_shoptype_'+slug,stype);
+      var bc=getCfg('BrandColor','');
+      if(/^#[0-9a-f]{6}$/i.test(bc))localStorage.setItem('ff_brand_'+slug,bc);
+      var logoUrl=getCfg('LogoURL','')||getCfg('Logo','')||getCfg('AppIcon','');
+      if(logoUrl)localStorage.setItem('ff_logo_'+slug,logoUrl);
+    }
+  }catch(e){}
   // Hero tag — supports HeroTitle2 (Hindi blessing) + tagline
   var t1=getCfg('HeroTagline','')||getCfg('Tagline','');
   var t2=getCfg('HeroTitle2','')||getCfg('Blessing','')||getCfg('Subtitle','');

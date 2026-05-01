@@ -130,11 +130,22 @@ function saveOrder(p) {
 // ═══════════════════════════════════
 function sendPushToShopkeeper(orderId, customerName, total, shopName) {
   var relay = getCfgValue('PushRelayURL') || getCfgValue('PushURL');
-  if (!relay) return; // not configured — fine, in-page alerts still work
-  var slug   = getCfgValue('Slug') || getCfgValue('StoreSlug') || '';
+  if (!relay) {
+    Logger.log('[Push] Skipped — no PushRelayURL in Config tab');
+    return;
+  }
+  var slug   = getCfgValue('Slug') || getCfgValue('StoreSlug') || getStoreSlugFallback();
   var secret = getCfgValue('PushSecret') || '';
+  if (!slug) {
+    Logger.log('[Push] Skipped — no Slug found. Add a row "Slug" with the store slug to the Config tab.');
+    return;
+  }
+  if (!secret) {
+    Logger.log('[Push] Skipped — no PushSecret in Config tab');
+    return;
+  }
   var lang   = (getCfgValue('NotificationLanguage') || 'en').toLowerCase();
-  var safeName = String(customerName || '').replace(/[^A-Za-z0-9 ऀ-ॿ]/g, ' ').trim() || (lang === 'hi' ? 'ग्राहक' : 'Customer');
+  var safeName = String(customerName || '').replace(/[^A-Za-z0-9 ऀ-ॿ]/g, ' ').replace(/\s+/g, ' ').trim() || (lang === 'hi' ? 'ग्राहक' : 'Customer');
   var amount = Math.round(parseFloat(total) || 0);
   var title, body;
   if (lang === 'hi') {
@@ -178,6 +189,40 @@ function getCfgValue(key) {
     if (String(data[i][0]).toLowerCase().replace(/\s+/g, '') === k) return String(data[i][1] || '');
   }
   return '';
+}
+
+// Last-resort slug derivation: from the spreadsheet's own filename (e.g. "Shri Balaji ... — StorePro Store" → "shri-balaji-...")
+function getStoreSlugFallback() {
+  try {
+    var name = SpreadsheetApp.getActiveSpreadsheet().getName() || '';
+    // Strip the StorePro suffix our onboarding adds
+    name = name.replace(/[—-]\s*StorePro\s*Store\s*$/i, '').trim();
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 40);
+  } catch (e) { return ''; }
+}
+
+// ═══════════════════════════════════
+// PUSH DEBUG — run manually from Apps Script editor to diagnose
+// ═══════════════════════════════════
+function testPushNow() {
+  var relay  = getCfgValue('PushRelayURL') || getCfgValue('PushURL');
+  var slug   = getCfgValue('Slug') || getCfgValue('StoreSlug') || getStoreSlugFallback();
+  var secret = getCfgValue('PushSecret');
+  Logger.log('Relay URL:  ' + (relay || '❌ MISSING — add "PushRelayURL" to Config tab'));
+  Logger.log('Slug:       ' + (slug  || '❌ MISSING — add "Slug" to Config tab'));
+  Logger.log('Secret set: ' + (secret ? '✓ yes' : '❌ MISSING — add "PushSecret" to Config tab'));
+  if (!relay || !slug || !secret) return;
+
+  Logger.log('Sending test push for slug: ' + slug);
+  sendPushToShopkeeper('TEST-' + Date.now().toString(36).toUpperCase(), 'Test Customer', 99, getShopName());
+
+  // Also call /count to verify subscriptions
+  try {
+    var res = UrlFetchApp.fetch(relay.replace(/\/$/, '') + '/count?store=' + encodeURIComponent(slug), { muteHttpExceptions: true });
+    Logger.log('Subscription count: ' + res.getContentText());
+  } catch (e) {
+    Logger.log('Count check failed: ' + e);
+  }
 }
 
 function updateOrderStatus(orderId, newStatus, comment) {

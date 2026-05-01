@@ -737,6 +737,20 @@ function paintHeader(){
   var owner=STORE_META.ownername||'';
   var plan=(STORE_META.plan||'Free').toUpperCase();
   var open=isStoreOpen();
+  // Cache shop name + type + brand color + logo for instant personalization next visit
+  // (splash screen and PWA manifest both read from these)
+  try{
+    var slug=(STORE_META.slug||(new URLSearchParams(location.search)).get('store')||'').toLowerCase();
+    if(slug){
+      localStorage.setItem('sl_shopname_'+slug,name);
+      var stype=STORE_META.shoptype||getCfg('ShopType','');
+      if(stype)localStorage.setItem('sl_shoptype_'+slug,stype);
+      var bc=getCfg('BrandColor','');
+      if(/^#[0-9a-f]{6}$/i.test(bc))localStorage.setItem('sl_brand_'+slug,bc);
+      var logoUrl=getCfg('LogoURL','')||getCfg('Logo','')||getCfg('AppIcon','');
+      if(logoUrl)localStorage.setItem('sl_logo_'+slug,logoUrl);
+    }
+  }catch(e){}
   $('hShopName').textContent=name;
   $('hAvatar').textContent=name.charAt(0).toUpperCase()||'🏬';
   $('hPlanPill').textContent=plan;
@@ -976,7 +990,7 @@ function orderHTML(o){
   var itemTxt=n+' '+(n===1?'item':'items');
   var modeLbl=o.mode==='delivery'?'Delivery':'Pickup';
   var h='<div class="order'+pulse+'" id="ord_'+safeId+'">';
-  h+='<div class="o-h" onclick="document.getElementById(\'ord_'+safeId+'\').classList.toggle(\'open\')">';
+  h+='<div class="o-h" onclick="this.parentElement.classList.toggle(\'open\')">';
   h+='<div class="o-left">'+modeIcon(o.mode)+statusPill(o.status)+'</div>';
   h+='<div class="o-info">';
   h+='<div class="o-row1"><span class="o-name">'+esc(o.name||'Customer')+'</span><span class="o-amt-n">'+fmt(o.total)+'</span></div>';
@@ -1189,20 +1203,27 @@ function paintInsights(){
   Object.values(custMap).forEach(function(c){if(c.orders>1)multi++});
   $('insRepeat').textContent=uniq?Math.round(multi/uniq*100)+'%':'0%';
 
-  // Bar chart 7 days
+  // Bar chart 7 days — chart area is 124px tall (160px container - 18px top - 22px bottom for label/baseline)
+  var CHART_H=124;
   var maxR=Math.max.apply(null,days.map(function(d){return d.rev}))||1;
   $('barChart').innerHTML=days.map(function(d){
-    var pct=d.rev?Math.max(8,Math.round(d.rev/maxR*100)):3;
-    return '<div class="bar-col"><div class="bar'+(d.rev?'':' empty')+'" style="height:'+pct+'%">'+(d.rev?'<div class="bar-val">₹'+(d.rev>=1000?Math.round(d.rev/1000)+'k':d.rev)+'</div>':'')+'</div><div class="bar-lbl">'+d.lbl+'</div></div>';
+    var px=d.rev?Math.max(20,Math.round(d.rev/maxR*CHART_H)):0;
+    var bar=d.rev
+      ? '<div class="bar" style="height:'+px+'px"><div class="bar-val">₹'+(d.rev>=1000?(d.rev/1000).toFixed(d.rev>=10000?0:1).replace(/\.0$/,'')+'k':d.rev)+'</div></div>'
+      : '<div class="bar empty"></div>';
+    return '<div class="bar-col">'+bar+'<div class="bar-lbl">'+d.lbl+'</div></div>';
   }).join('');
 
-  // Hour chart
+  // Hour chart — same height system, purple gradient
   var maxH=Math.max.apply(null,Object.values(hourMap))||1;
   var hourHTML='';
   for(var hr=8;hr<=22;hr++){
     var c=hourMap[hr]||0;
-    var pct=c?Math.max(8,Math.round(c/maxH*100)):3;
-    hourHTML+='<div class="bar-col"><div class="bar'+(c?'':' empty')+'" style="height:'+pct+'%;background:linear-gradient(180deg,var(--purple),#8b5cf6)">'+(c?'<div class="bar-val">'+c+'</div>':'')+'</div><div class="bar-lbl">'+(hr%12||12)+(hr<12?'a':'p')+'</div></div>';
+    var px=c?Math.max(20,Math.round(c/maxH*CHART_H)):0;
+    var bar=c
+      ? '<div class="bar" style="height:'+px+'px;background:linear-gradient(180deg,var(--purple),#8b5cf6)"><div class="bar-val">'+c+'</div></div>'
+      : '<div class="bar empty"></div>';
+    hourHTML+='<div class="bar-col">'+bar+'<div class="bar-lbl">'+(hr%12||12)+(hr<12?'a':'p')+'</div></div>';
   }
   $('hourChart').innerHTML=hourHTML;
 
@@ -1483,6 +1504,8 @@ function renderNotifSettings(){
 // ════════════════════════════════════════════
 // Clean up bad PIN cache from earlier flow where SHEET_ID was empty at save time
 try{localStorage.removeItem('sl_pin_')}catch(e){}
+// Dismiss splash once page is interactive (after the CSS animation has had ~1.6s to play)
+setTimeout(function(){var s=$('splash');if(s)s.classList.add('gone')},1700);
 $('p1').focus();
 // Pre-resolve store + load config so PIN check is instant and SHEET_ID is ready
 initStore(function(){if(!SHEET_ID)console.warn('[Dashboard2] Store not resolved — check ?store= param against master registry')});
