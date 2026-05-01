@@ -1,0 +1,35 @@
+Key,Value
+ShopName,Sharma Meat Shop
+ShopType,Meat Shop
+Phone,919876543210
+Phone2,
+WhatsApp,919876543210
+Address,"Shop No. 12, Main Market, Sector 14, Gurugram, Haryana 122001"
+City,Gurugram
+UPI,sharma@paytm
+Currency,₹
+DashboardPIN,1234
+BrandColor,#a82414
+HeroTagline,Fresh meat · Cleaned & cut to order
+HeroTitle2,!! Jai Mata Di !!
+EstimatedDeliveryTime,30-60 min
+DeliveryFee,40
+FreeDelivery,1500
+PackingFee,20
+MinOrder,300
+Rating,4.6
+Timing,7:00-21:00
+StoreOpen,yes
+NotificationLanguage,hi
+PushRelayURL,https://storepro-push.storepro.workers.dev
+PushSecret,storepro-push-2026-aB9xKm
+Slug,sharma-meat-gurugram
+Taxes,0
+HeroImage,https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=1200
+DailySpecial,Premium Mutton Curry Cut
+DailySpecialPrice,750
+DailySpecialHindi,प्रीमियम मटन करी कट
+DailySpecialDesc,Fresh mutton curry cut · 1kg · cleaned & ready to cook
+DailySpecialImage,https://images.unsplash.com/photo-1602476416757-7a3a8e0e8e1f?w=600
+LogoURL,
+OrderScript,

@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#8b1a1a">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="StorePro">
 <link rel="apple-touch-icon" href="/meat-icon-192.png">
@@ -460,7 +461,7 @@ function lookup(slug,cb){
   var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+MID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();s.onerror=function(){err('Connection error','Cannot reach registry')};document.body.appendChild(s);
 }
 
-function loadCfg(cb){LS('Config',function(r){if(r&&r.table&&r.table.rows)r.table.rows.forEach(function(row){var a=row.c&&row.c[0],b=row.c&&row.c[1],k='',v='';if(a){k=a.f!=null?String(a.f).trim():a.v!=null?String(a.v).trim():''}if(b){v=b.f!=null?String(b.f).trim():b.v!=null?String(b.v).trim():''}if(k&&k.toLowerCase()!=='key')C[k]=v});applyCfg();cb()})}
+function loadCfg(cb){LS('Config',function(r){if(r&&r.table&&r.table.rows)r.table.rows.forEach(function(row){var a=row.c&&row.c[0],b=row.c&&row.c[1],k='',v='';if(a){k=a.f!=null?String(a.f).trim():a.v!=null?String(a.v).trim():''}if(b){v=b.f!=null?String(b.f).trim():b.v!=null?String(b.v).trim():''}if(k&&k.toLowerCase()!=='key')C[k]=v});if(!SU){SU=G('OrderScript','')||G('ScriptURL','')||G('Script','')||''}applyCfg();cb()})}
 
 function applyCfg(){
   var n=G('shopname','Fresh Meat Shop');
@@ -800,7 +801,7 @@ function submitOrder(method){
   var notes=($('coNotes')||{}).value||'';notes=notes.trim();
   var customTime=($('coCustomTime')||{}).value||'';customTime=customTime.trim();
   var customDate=($('coCustomDate')||{}).value||'';
-  
+
   // Get selected date — custom date overrides chip selection
   var dateLabel='';
   if(customDate){
@@ -811,25 +812,48 @@ function submitOrder(method){
     var dateChip=document.querySelector('#coDateChips .co-dt-chip.on');
     dateLabel=dateChip?dateChip.textContent.replace(/\s+/g,' ').trim():'';
   }
-  
+
   // Get selected time — custom time overrides chip selection
   var timeVal=customTime||selectedTime||'';
-  
+
   // Validate
   if(!name){showCoErr('Please enter your name');$('coName').focus();return}
   if(!phone||phone.length<10){showCoErr('Please enter a valid 10-digit phone number');$('coPhone').focus();return}
   if(orderMode==='delivery'&&!addr){showCoErr('Please enter your delivery address');$('coAddr').focus();return}
-  
+
   // Save customer info + mode
   savedCust={name:name,phone:phone,address:addr,mode:orderMode};
   try{localStorage.setItem('sp_meat_cust',JSON.stringify(savedCust))}catch(e){}
-  
+
   var shopName=G('shopname','Meat Shop');
   var shopPhone=G('whatsapp','')||G('phone','');
   if(!shopPhone){alert('Shop phone not configured');return}
-  
-  // Build message
+
+  // ─── Build structured items string (one per line, in dashboard's expected format) ───
+  var itemsLines=[];
+  var totalEst=0;
+  cart.forEach(function(c){
+    var qtyLabel=c.ql+(c.n>1?' ×'+c.n:'');
+    var line=qtyLabel+' '+c.name;
+    if(SP&&c.price>0){
+      var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;
+      var lineCost=Math.round(c.price*kg*c.n);
+      totalEst+=lineCost;
+      line+=' = ₹'+lineCost;
+    }
+    itemsLines.push(line);
+  });
+  var itemsStr=itemsLines.join('\n');
+  if(dateLabel||timeVal){
+    itemsStr+='\n\n📅 Delivery: '+(dateLabel||'')+(timeVal?' | '+timeVal:'');
+  }
+
+  // ─── Generate order ID ───
+  var orderId='ORD-'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,3).toUpperCase();
+
+  // ─── Build WhatsApp message ───
   var msg='🥩 *New Order — '+shopName+'*\n\n';
+  msg+='*#'+orderId+'*\n\n';
   msg+='👤 *'+name+'*\n';
   msg+='📞 '+phone+'\n';
   if(orderMode==='delivery'&&addr)msg+='📍 '+addr+'\n';
@@ -840,26 +864,62 @@ function submitOrder(method){
     if(SP&&c.price>0)msg+=' (₹'+c.price+'/kg)';
     msg+='\n';
   });
-  if(SP){
-    var est=0;cart.forEach(function(c){var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;est+=c.price*kg*c.n});
-    msg+='\n💰 Estimated: ~₹'+Math.round(est);
-  }
+  if(SP&&totalEst>0)msg+='\n💰 Estimated: ~₹'+totalEst;
   if(notes)msg+='\n📝 '+notes;
-  if(dateLabel||timeVal){
-    msg+='\n\n📅 *Delivery:* '+(dateLabel||'')+(timeVal?' | '+timeVal:'');
+  if(dateLabel||timeVal)msg+='\n\n📅 *Delivery:* '+(dateLabel||'')+(timeVal?' | '+timeVal:'');
+  if(!SP)msg+='\n\n🙏 Please confirm availability & price';
+
+  // ─── SAVE ORDER TO GOOGLE SHEET (Apps Script) ───
+  // This is the missing piece — without it orders never reach the dashboard.
+  if(SU){
+    var params='action=newOrder'
+      +'&id='+encodeURIComponent(orderId)
+      +'&orderId='+encodeURIComponent(orderId)
+      +'&name='+encodeURIComponent(name)
+      +'&phone='+encodeURIComponent(phone)
+      +'&address='+encodeURIComponent(addr)
+      +'&items='+encodeURIComponent(itemsStr)
+      +'&total='+encodeURIComponent(totalEst||0)
+      +'&mode='+encodeURIComponent(orderMode||'delivery')
+      +'&payment=cod'
+      +'&status=New'
+      +'&notes='+encodeURIComponent(notes)
+      +'&date='+encodeURIComponent(new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}));
+    var img=new Image();
+    img.onload=img.onerror=function(){};
+    img.src=SU+'?'+params;
+    // Cache recent order IDs for tracking
+    try{
+      var rec=JSON.parse(localStorage.getItem('sp_meat_recent')||'[]');
+      rec.unshift({id:orderId,ts:Date.now(),total:totalEst,name:name});
+      localStorage.setItem('sp_meat_recent',JSON.stringify(rec.slice(0,8)));
+    }catch(e){}
+  }else{
+    console.warn('[Meatshop] No script URL — order will only go via WhatsApp, not saved to sheet.');
   }
-  msg+='\n\n🙏 Please confirm availability & price';
-  
+
+  // ─── Open WhatsApp / call ───
   if(method==='whatsapp'){
     window.open('https://wa.me/'+String(shopPhone).replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
   }else{
-    // Copy message to clipboard, then call
     try{navigator.clipboard.writeText(msg)}catch(e){}
     location.href='tel:+'+String(shopPhone).replace(/\D/g,'');
   }
-  
+
+  // ─── Show success confirmation ───
+  showOrderSuccess(orderId,totalEst,orderMode);
+
   // Clear cart
   cart=[];updBar();closeDr();
+}
+
+function showOrderSuccess(orderId,total,mode){
+  var existing=$('mShopSuccess');if(existing)existing.remove();
+  var box=document.createElement('div');box.id='mShopSuccess';
+  box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .25s';
+  var totLine=total>0?'<div style="font-size:13px;color:#666;margin-top:8px">Estimated: ₹'+total+'</div>':'<div style="font-size:13px;color:#666;margin-top:8px">Shop will confirm price & availability</div>';
+  box.innerHTML='<div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:30px 24px 18px;text-align:center;font-family:\'DM Sans\',system-ui,sans-serif"><div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 20px rgba(34,197,94,.35)">✓</div><div style="font-size:20px;font-weight:800;color:#0b1220">Order Placed!</div><div style="font-size:13px;color:#666;margin-top:6px;line-height:1.5">The shop will confirm shortly via '+(mode==='delivery'?'delivery':'pickup')+'</div><div style="display:inline-block;margin-top:14px;padding:8px 16px;background:#f5f5f5;border-radius:10px;font-family:\'SF Mono\',Menlo,monospace;font-size:13px;font-weight:700;color:#a82414">#'+orderId+'</div>'+totLine+'<button style="margin-top:18px;width:100%;height:46px;background:#a82414;color:#fff;border:none;border-radius:12px;font:800 14px \'DM Sans\',sans-serif;cursor:pointer" onclick="document.getElementById(\'mShopSuccess\').remove()">Continue Shopping</button></div>';
+  document.body.appendChild(box);
 }
 
 function showCoErr(msg){

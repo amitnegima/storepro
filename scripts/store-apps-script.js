@@ -74,6 +74,22 @@ function ok(msg) { return ContentService.createTextOutput(msg); }
 // ORDERS
 // ═══════════════════════════════════
 function saveOrder(p) {
+  // When run manually from the editor, p is undefined — populate with a sample so the test works
+  if (!p || typeof p !== 'object') {
+    p = {
+      orderId: 'TEST-' + Date.now().toString(36).toUpperCase(),
+      name: 'Editor Test',
+      phone: '9999999999',
+      address: 'Test address from editor',
+      items: '1x Test product = ₹100',
+      total: 100,
+      mode: 'pickup',
+      payment: 'cod',
+      notes: 'Created from Apps Script editor for testing',
+      status: 'New'
+    };
+    Logger.log('saveOrder() called from editor — using test payload: ' + p.orderId);
+  }
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Orders');
   if (!sheet) {
@@ -147,13 +163,18 @@ function sendPushToShopkeeper(orderId, customerName, total, shopName) {
   var lang   = (getCfgValue('NotificationLanguage') || 'en').toLowerCase();
   var safeName = String(customerName || '').replace(/[^A-Za-z0-9 ऀ-ॿ]/g, ' ').replace(/\s+/g, ' ').trim() || (lang === 'hi' ? 'ग्राहक' : 'Customer');
   var amount = Math.round(parseFloat(total) || 0);
+  var hasAmount = amount > 0;
   var title, body;
   if (lang === 'hi') {
     title = '🔔 ' + safeName + ' से नया ऑर्डर मिला है';
-    body  = safeName + ' से ₹' + amount + ' का नया ऑर्डर मिला है';
+    body  = hasAmount
+      ? (safeName + ' से ₹' + amount + ' का नया ऑर्डर मिला है')
+      : (safeName + ' से नया ऑर्डर मिला है');
   } else {
     title = '🔔 New order received from ' + safeName;
-    body  = 'New order from ' + safeName + ' of ₹' + amount;
+    body  = hasAmount
+      ? ('New order from ' + safeName + ' of ₹' + amount)
+      : ('New order received from ' + safeName);
   }
   // Allow custom override via Config
   var titleTpl = getCfgValue('NotificationTitle1');
@@ -199,6 +220,30 @@ function getStoreSlugFallback() {
     name = name.replace(/[—-]\s*StorePro\s*Store\s*$/i, '').trim();
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 40);
   } catch (e) { return ''; }
+}
+
+// ═══════════════════════════════════
+// EDITOR TEST — run this from the editor (top dropdown → testFromEditor → ▶ Run)
+// to verify: 1) script can write to Orders tab, 2) push fires, 3) all permissions OK
+// ═══════════════════════════════════
+function testFromEditor() {
+  Logger.log('═══ Running end-to-end test ═══');
+  // Create a test order
+  saveOrder({
+    orderId: 'TEST-' + Date.now().toString(36).toUpperCase(),
+    name: 'Test Customer',
+    phone: '9876543210',
+    address: 'Test address from script editor',
+    items: '2x Chicken Curry Cut = ₹500\n1x Mutton Boneless = ₹950',
+    total: 1450,
+    mode: 'delivery',
+    payment: 'cod',
+    notes: 'This is a test order created from Apps Script editor',
+    status: 'New'
+  });
+  Logger.log('✓ Test order written to Orders tab');
+  Logger.log('  → Open the sheet and check the Orders tab — newest row should be visible');
+  Logger.log('  → If push is configured (PushRelayURL + PushSecret + Slug in Config), your subscribed devices should also have received a notification');
 }
 
 // ═══════════════════════════════════

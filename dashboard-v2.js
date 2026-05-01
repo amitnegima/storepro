@@ -9,7 +9,8 @@ var VAPID_PUBLIC_KEY="BKvrqqbCp4z0dei-Uh57yv-Pzh7zH2I0mOgqPFLZR3SQ5IH4jJXeTEHQoF
 var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
 var SHEET_ID="",SCRIPT_URL="";
 var STORE_META={}; // from master registry: ShopName, OwnerName, Plan, etc.
-var configData=[],productData=[],allOrders=[];
+var configData=[],productData=[],productHeaders=[],allOrders=[];
+var _editProdIdx=-1; // -1 = adding new product
 var activeStatusFilter='all',activeDateFilter='today',activeCat='all';
 var currentPage='home',pollInterval=null,prevNewCount=-1;
 var _etaOrderId='';
@@ -39,6 +40,12 @@ var I18N={
     bannerTitleN:'🔔 {count} new orders received',
     bannerInfo1:'From {customerName} of ₹{rupee} · tap to view',
     bannerInfoN:'Tap to review and confirm all orders',
+    // No-amount variants — when total is 0, ONE clean line everywhere
+    title1NoTotal:'🔔 New order received from {customerName}',
+    body1NoTotal:'New order received from {customerName}',
+    speak1NoTotal:'New order received from {customerName}.',
+    bannerTitle1NoTotal:'🔔 New order received from {customerName}',
+    bannerInfo1NoTotal:'',
     voiceLang:'en-IN'
   },
   hi:{
@@ -52,6 +59,12 @@ var I18N={
     bannerTitleN:'🔔 {count} नए ऑर्डर मिले हैं',
     bannerInfo1:'{customerName} से ₹{rupee} · देखने के लिए टैप करें',
     bannerInfoN:'सभी ऑर्डर देखें और कन्फर्म करें',
+    // बिना राशि के variants — when total is 0, ONE clean line everywhere
+    title1NoTotal:'🔔 {customerName} से नया ऑर्डर मिला है',
+    body1NoTotal:'{customerName} से नया ऑर्डर मिला है',
+    speak1NoTotal:'नया ऑर्डर मिला है {customerName} से।',
+    bannerTitle1NoTotal:'🔔 {customerName} से नया ऑर्डर मिला है',
+    bannerInfo1NoTotal:'',
     voiceLang:'hi-IN'
   }
 };
@@ -269,13 +282,16 @@ function flashTitle(count){
 function alertNewOrders(newOrders){
   var n=newOrders.length;if(!n)return;
   var first=newOrders[0];
-  var vars={name:safeName(first.name||(nLang()==='hi'?'ग्राहक':'Customer')),total:Math.round(first.total||0),count:n,phone:first.phone||'',shop:getCfg('ShopName','')||(STORE_META.shopname||'')};
+  var rawTotal=Math.round(first.total||0);
+  var vars={name:safeName(first.name||(nLang()==='hi'?'ग्राहक':'Customer')),total:rawTotal,count:n,phone:first.phone||'',shop:getCfg('ShopName','')||(STORE_META.shopname||'')};
   var lang=nLang();
-  var titleTpl=n===1?nTpl('title1'):nTpl('titleN');
-  var bodyTpl =n===1?nTpl('body1') :nTpl('bodyN');
-  var speakTpl=n===1?nTpl('speak1'):nTpl('speakN');
-  var bTitleTpl=n===1?nTpl('bannerTitle1'):nTpl('bannerTitleN');
-  var bInfoTpl =n===1?nTpl('bannerInfo1') :nTpl('bannerInfoN');
+  // When amount is 0 (call-for-price shops), pick the *NoTotal templates so we don't say "of 0 rupees"
+  var noTotal=!rawTotal;
+  var titleTpl =n===1?nTpl(noTotal?'title1NoTotal':'title1') :nTpl('titleN');
+  var bodyTpl  =n===1?nTpl(noTotal?'body1NoTotal':'body1')   :nTpl('bodyN');
+  var speakTpl =n===1?nTpl(noTotal?'speak1NoTotal':'speak1') :nTpl('speakN');
+  var bTitleTpl=n===1?nTpl(noTotal?'bannerTitle1NoTotal':'bannerTitle1'):nTpl('bannerTitleN');
+  var bInfoTpl =n===1?nTpl(noTotal?'bannerInfo1NoTotal':'bannerInfo1')  :nTpl('bannerInfoN');
   // Layers 1-4: chime, vibrate, flash, title
   playAlert(true);vibrate(true);flashScreen();flashTitle(n);
   // Layer 5: voice
@@ -314,7 +330,10 @@ function showInPageBanner(n,first){
 function showInPageBannerLocalized(title,info){
   var b=$('newOrderBanner');if(!b)return;
   $('nobCount').textContent=title;
-  $('nobInfo').textContent=info;
+  // Hide the subtitle line entirely when empty (cleaner single-line banner)
+  var infoEl=$('nobInfo');
+  infoEl.textContent=info||'';
+  infoEl.style.display=(info&&String(info).trim())?'block':'none';
   b.classList.add('show');
 }
 function ackBanner(){
@@ -403,6 +422,7 @@ window.addEventListener('appinstalled',function(){showToast('✅ Installed','suc
 function dismissInstall(){
   $('installBanner').classList.remove('show');
   try{localStorage.setItem('sl_install_dismissed_v2','1')}catch(e){}
+  showToast('Got it — install anytime from More menu','success');
 }
 
 // ════════════════════════════════════════════
@@ -1076,6 +1096,7 @@ function openETA(orderId,messageMode){
   if(!o){showToast('Order not found','error');return}
   $('etaSub').textContent=(messageMode?'Quick reply to ':'Send ETA to ')+(o.name||'Customer')+' · #'+orderId.slice(-6);
   $('etaText').value='';$('etaCustom').value='';
+  updateCustomSendBtn(); // resets the disabled state
   $('etaSheet').classList.add('open');
 }
 function closeSheet(id){$(id).classList.remove('open')}
@@ -1097,6 +1118,10 @@ function customETA(){
   quickETA(v);
 }
 function setReply(t){$('etaText').value=t;$('etaText').focus()}
+// Tap-to-send: chip immediately sends the reply via WhatsApp + saves to sheet (no Send-button step)
+function sendQuickReply(t){$('etaText').value=t;sendETA(true)}
+// Enable/disable the custom-message Send button based on whether textarea has content
+function updateCustomSendBtn(){var btn=$('customSendBtn');if(!btn)return;btn.disabled=!($('etaText').value||'').trim()}
 function sendETA(sendWA){
   var msg=$('etaText').value.trim();
   if(!msg){showToast('Type a message','error');return}
@@ -1330,9 +1355,14 @@ function loadProductsSheet(cb){
   });
 }
 function _parseProducts(r){
-  if(!r){productData=[];return}
+  if(!r){productData=[];productHeaders=[];return}
   var parsed=parseSheetRows(r);
-  productData=parsed.rows.filter(function(p){return p.name||p['name']});
+  // Track ORIGINAL header strings (case + spacing) so we can write back to the right columns
+  productHeaders=parsed.headers||[];
+  productData=parsed.rows.map(function(p,i){
+    p._row=i+2; // sheet rows are 1-indexed and row 1 is header
+    return p;
+  }).filter(function(p){return p.name||p.Name});
 }
 function buildCatFilters(){
   var cats={};
@@ -1342,17 +1372,203 @@ function buildCatFilters(){
   $('catFilters').innerHTML=h;
 }
 function setCat(c){activeCat=c;buildCatFilters();renderProducts()}
+
+// Convert header label → normalized key (matches what parseSheetRows stored on rows)
+function pKey(h){return String(h||'').toLowerCase().replace(/\s+/g,'')}
+function pGet(p,h){return p[pKey(h)]||''}
+
+// Field-type detection from header name + sample values — drives the editor UI
+function detectFieldType(header,sample){
+  var k=pKey(header);
+  if(/^(name|title|hindiname|hindi_name|namehi)$/.test(k))return 'text';
+  if(/^(price|mrp|cost|amount|rate|sellingprice|costprice|tax|gst|discount|stock|qty|quantity|weight)$/.test(k)||/(price|cost|amount|rate|fee|tax)$/.test(k))return 'number';
+  if(/^(image|photo|img|picture|thumbnail|logo|video|url|link|website)$/.test(k)||/(url|image|link|photo)$/.test(k))return 'url';
+  if(/^(description|desc|details|notes|instructions|ingredients|usage|disclaimer)$/.test(k))return 'textarea';
+  if(/^(veg|isveg|vegetarian|nonveg|isnonveg)$/.test(k))return 'vegnonveg';
+  if(/(stock|available|inventory|status)$/.test(k))return 'stock';
+  // Yes/no detection from sample value or column hint
+  if(/^(yes|no|true|false|y|n)$/i.test(sample||''))return 'yesno';
+  if(/^(bestseller|combo|featured|new|popular|hot|recommended|quickqty|active)$/.test(k))return 'yesno';
+  return 'text';
+}
 function renderProducts(){
   var list=productData.slice();
   if(activeCat!=='all')list=list.filter(function(p){return(p.category||'Other')===activeCat});
   var q=($('prodSearch').value||'').toLowerCase();
-  if(q)list=list.filter(function(p){return((p.name||'')+(p.category||'')+(p.hindiname||'')).toLowerCase().indexOf(q)>=0});
-  if(!list.length){$('productsList').innerHTML='<div class="empty"><div class="empty-emoji">📦</div>No products yet.</div>';return}
+  if(q)list=list.filter(function(p){return((p.name||'')+(p.category||'')+(p.hindiname||'')+(p.description||'')).toLowerCase().indexOf(q)>=0});
+  if(!list.length){$('productsList').innerHTML='<div class="empty"><div class="empty-emoji">📦</div><h3 style="margin-top:8px;font-size:14px;font-weight:700;color:var(--ink)">No products yet</h3><p style="font-size:12px;color:var(--ink3);margin-top:4px">Tap <b>+ Add</b> to create your first product</p></div>';return}
   $('productsList').innerHTML=list.map(function(p){
-    var oos=(p.stock||'').toLowerCase().indexOf('out')>=0;
+    var idx=productData.indexOf(p);
+    var oos=/out\s*of\s*stock|sold\s*out/i.test(p.stock||'');
     var veg=(p.veg||'').toLowerCase()==='yes'?'<span class="veg-d veg"></span>':(p.veg||'').toLowerCase()==='no'?'<span class="veg-d nonveg"></span>':'';
-    return '<div class="prod-card'+(oos?' oos':'')+'"><div class="prod-h"><div class="prod-img">'+(p.image?'<img src="'+esc(p.image)+'" onerror="this.style.display=\'none\'">':'🍽️')+'</div><div class="prod-info"><div class="prod-n">'+esc(p.name)+'</div><div class="prod-m">'+veg+(p.category?'<span>'+esc(p.category)+'</span>':'')+'<span class="stk '+(oos?'stk-no':'stk-ok')+'">'+(oos?'Out of stock':'In stock')+'</span></div></div><div class="prod-p">'+fmt(p.price)+'</div></div></div>';
+    var price=parseFloat(p.price||0)||0;
+    return '<div class="prod-card'+(oos?' oos':'')+'" onclick="openProductEdit('+idx+')"><div class="prod-h"><div class="prod-img">'+(p.image?'<img src="'+esc(p.image)+'" onerror="this.style.display=\'none\';this.parentNode.textContent=\'🍽️\'">':'🍽️')+'</div><div class="prod-info"><div class="prod-n">'+esc(p.name||'Untitled')+'</div><div class="prod-m">'+veg+(p.category?'<span>'+esc(p.category)+'</span>':'')+(p.stock?'<span class="stk '+(oos?'stk-no':'stk-ok')+'">'+(oos?'Out of stock':'In stock')+'</span>':'')+'</div></div>'+(price?'<div class="prod-p">'+fmt(price)+'</div>':'')+'<div class="prod-edit-icon">✎</div></div></div>';
   }).join('');
+}
+
+// ════════════════════════════════════════════
+// PRODUCT EDITOR — dynamic fields per industry
+// ════════════════════════════════════════════
+function openProductAdd(){
+  _editProdIdx=-1;
+  $('prodSheetTitle').textContent='Add Product';
+  $('prodDelBtn').style.display='none';
+  // Use existing headers, or fall back to sensible defaults if sheet is empty
+  var hdrs=productHeaders.length?productHeaders:['name','category','price','mrp','image','description','veg','stock'];
+  var emptyProd={};
+  hdrs.forEach(function(h){emptyProd[pKey(h)]=''});
+  buildProductForm(emptyProd,hdrs);
+  $('prodSheet').classList.add('open');
+}
+function openProductEdit(idx){
+  if(idx<0||idx>=productData.length)return;
+  _editProdIdx=idx;
+  var p=productData[idx];
+  $('prodSheetTitle').textContent=p.name||'Edit Product';
+  $('prodDelBtn').style.display='flex';
+  buildProductForm(p,productHeaders);
+  $('prodSheet').classList.add('open');
+}
+function buildProductForm(prod,headers){
+  // Skip internal/meta columns
+  var displayHeaders=headers.filter(function(h){return h&&!/^_|row$/i.test(h)});
+  var html='';
+  displayHeaders.forEach(function(h,i){
+    var k=pKey(h);
+    var val=prod[k]||'';
+    var type=detectFieldType(h,val);
+    var label=h.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase()});
+    var required=/^(name|title)$/.test(k);
+    html+='<div class="pf-field" data-pf-key="'+esc(k)+'" data-pf-original="'+esc(h)+'" data-pf-type="'+type+'">';
+    html+='<div class="pf-label">'+esc(label)+(required?' <span class="pf-label-required">REQUIRED</span>':'')+'<span class="pf-hint">'+pfHint(type,k)+'</span></div>';
+    if(type==='textarea'){
+      html+='<textarea class="pf-input pf-textarea" data-pf-input>'+esc(val)+'</textarea>';
+    }else if(type==='number'){
+      html+='<div class="pf-input-prefix" data-prefix="'+(/(price|cost|mrp|fee|amount|rate|tax|gst|discount)/.test(k)?'₹':'#')+'"><input class="pf-input" data-pf-input type="number" step="any" value="'+esc(val)+'" inputmode="decimal"></div>';
+    }else if(type==='url'){
+      html+='<div class="pf-field-row"><input class="pf-input" data-pf-input type="url" value="'+esc(val)+'" placeholder="https://...">'+(val?'<div class="pf-img-preview" style="background-image:url('+esc(val)+')"></div>':'<div class="pf-img-preview">📷</div>')+'</div>';
+    }else if(type==='vegnonveg'){
+      var v=(val||'').toLowerCase();
+      html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div class="pf-toggle '+(v==='yes'?'active':'')+'" data-pf-input data-pf-val="yes" onclick="pfPickVeg(this,\'yes\')"><span class="veg-d veg"></span><div class="pf-tog-info">Veg</div></div><div class="pf-toggle '+(v==='no'?'active':'')+'" data-pf-input2 data-pf-val="no" onclick="pfPickVeg(this,\'no\')"><span class="veg-d nonveg"></span><div class="pf-tog-info">Non-Veg</div></div></div>';
+    }else if(type==='stock'){
+      var inStock=!/out\s*of\s*stock|sold\s*out|0/i.test(val||'')||/in\s*stock/i.test(val||'')||val==='';
+      html+='<div class="pf-toggle '+(inStock?'active':'')+'" data-pf-input data-pf-val="'+(inStock?'in stock':'out of stock')+'" onclick="pfToggleStock(this)"><div class="pf-tog-info">'+(inStock?'In Stock':'Out of Stock')+'</div><div class="pf-tog-state">'+(inStock?'AVAILABLE':'SOLD OUT')+'</div></div>';
+    }else if(type==='yesno'){
+      var yes=/^(yes|true|y|1)$/i.test(val||'');
+      html+='<div class="pf-toggle '+(yes?'active':'')+'" data-pf-input data-pf-val="'+(yes?'yes':'no')+'" onclick="pfToggleYesNo(this)"><div class="pf-tog-info">'+esc(label)+'</div><div class="pf-tog-state">'+(yes?'YES':'NO')+'</div></div>';
+    }else{
+      // Plain text — autocomplete category from existing data
+      var datalist='';
+      if(k==='category'){
+        var cats={};productData.forEach(function(p){if(p.category)cats[p.category]=1});
+        datalist=' list="pfCatList"><datalist id="pfCatList">'+Object.keys(cats).map(function(c){return '<option value="'+esc(c)+'">'}).join('')+'</datalist>';
+        html+='<input class="pf-input" data-pf-input type="text" value="'+esc(val)+'" placeholder="e.g. Burgers, Drinks"'+datalist+'';
+      }else{
+        html+='<input class="pf-input" data-pf-input type="text" value="'+esc(val)+'">';
+      }
+    }
+    html+='</div>';
+  });
+  // Add custom field button
+  html+='<div class="pf-add-field" onclick="pfAddCustom()">+ Add custom field (e.g. weight, expiry, dosage)</div>';
+  html+='<div id="pfCustomRows"></div>';
+  $('prodEditBody').innerHTML=html;
+}
+function pfHint(type,k){
+  if(type==='number')return 'number';
+  if(type==='url')return 'image URL';
+  if(type==='textarea')return 'long text';
+  if(type==='vegnonveg')return 'pick one';
+  if(type==='stock')return 'tap to toggle';
+  if(type==='yesno')return 'tap to toggle';
+  return '';
+}
+function pfPickVeg(el,val){
+  var parent=el.parentNode;
+  parent.querySelectorAll('.pf-toggle').forEach(function(x){x.classList.remove('active');x.dataset.pfVal=''});
+  el.classList.add('active');el.dataset.pfVal=val;
+}
+function pfToggleStock(el){
+  var inStock=el.classList.toggle('active');
+  el.dataset.pfVal=inStock?'in stock':'out of stock';
+  el.querySelector('.pf-tog-info').textContent=inStock?'In Stock':'Out of Stock';
+  el.querySelector('.pf-tog-state').textContent=inStock?'AVAILABLE':'SOLD OUT';
+}
+function pfToggleYesNo(el){
+  var yes=el.classList.toggle('active');
+  el.dataset.pfVal=yes?'yes':'no';
+  el.querySelector('.pf-tog-state').textContent=yes?'YES':'NO';
+}
+function pfAddCustom(){
+  var row=document.createElement('div');row.className='pf-add-row';
+  row.innerHTML='<input class="pf-input" placeholder="Field name (e.g. weight)" data-pf-custom-key><input class="pf-input" placeholder="Value" data-pf-custom-val><button class="pf-mini-btn" onclick="this.parentNode.remove()">✕</button>';
+  $('pfCustomRows').appendChild(row);
+  row.querySelector('[data-pf-custom-key]').focus();
+}
+
+// Collect all field values from the editor → object keyed by header name (original casing)
+function collectProductForm(){
+  var out={};
+  $('prodEditBody').querySelectorAll('[data-pf-key]').forEach(function(field){
+    var origHeader=field.dataset.pfOriginal;
+    var type=field.dataset.pfType;
+    var key=field.dataset.pfKey;
+    var inputEl=field.querySelector('[data-pf-input]');
+    if(!inputEl)return;
+    var val='';
+    if(type==='vegnonveg'||type==='stock'||type==='yesno'){
+      val=inputEl.dataset.pfVal||'';
+    }else{
+      val=inputEl.value||'';
+    }
+    out[origHeader]=val;
+    out[key]=val; // also include normalized for Apps Script flexibility
+  });
+  // Custom new fields
+  $('prodEditBody').querySelectorAll('[data-pf-custom-key]').forEach(function(keyEl,i){
+    var k=(keyEl.value||'').trim();if(!k)return;
+    var valEl=keyEl.parentNode.querySelector('[data-pf-custom-val]');
+    out[k]=(valEl?valEl.value:'')||'';
+  });
+  return out;
+}
+function saveProductFromEditor(){
+  var data=collectProductForm();
+  var name=data.name||data.Name;
+  if(!name||!String(name).trim()){showToast('Name is required','error');return}
+  if(_editProdIdx>=0){
+    var p=productData[_editProdIdx];
+    var rowNum=p._row;
+    // Local update for instant UI feedback
+    Object.keys(data).forEach(function(k){p[pKey(k)]=data[k]});
+    renderProducts();
+    var params='action=updateProduct&row='+rowNum;
+    Object.keys(data).forEach(function(k){params+='&'+encodeURIComponent(k)+'='+encodeURIComponent(data[k])});
+    sendCmd(params,function(){showToast('✓ Product saved','success');setTimeout(function(){loadProductsSheet(function(){renderProducts();buildCatFilters()})},1500)});
+  }else{
+    var params='action=addProduct';
+    Object.keys(data).forEach(function(k){params+='&'+encodeURIComponent(k)+'='+encodeURIComponent(data[k])});
+    sendCmd(params,function(){showToast('✓ Product added','success');setTimeout(function(){loadProductsSheet(function(){renderProducts();buildCatFilters()})},1500)});
+    // Optimistic local insert
+    var newP={_row:productData.length+2};
+    Object.keys(data).forEach(function(k){newP[pKey(k)]=data[k]});
+    productData.push(newP);
+    renderProducts();buildCatFilters();
+  }
+  closeSheet('prodSheet');
+}
+function deleteProductFromEditor(){
+  if(_editProdIdx<0)return;
+  var p=productData[_editProdIdx];
+  if(!confirm('Delete "'+(p.name||'this product')+'"? This cannot be undone.'))return;
+  var rowNum=p._row;
+  productData.splice(_editProdIdx,1);
+  renderProducts();buildCatFilters();
+  closeSheet('prodSheet');
+  sendCmd('action=deleteProduct&row='+rowNum,function(){
+    showToast('✓ Product deleted','success');
+    setTimeout(function(){loadProductsSheet(function(){renderProducts();buildCatFilters()})},1500);
+  });
 }
 
 // ════════════════════════════════════════════
