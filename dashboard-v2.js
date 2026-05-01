@@ -2,6 +2,10 @@
 // ════════════════════════════════════════════
 // CONFIG / STATE
 // ════════════════════════════════════════════
+// Web Push relay (Cloudflare Worker). See push/README.md to deploy your own.
+// Set both before deploying. Leave blank to disable Web Push (falls back to in-page only).
+var PUSH_RELAY_URL="https://storepro-push.storepro.workers.dev";
+var VAPID_PUBLIC_KEY="BKvrqqbCp4z0dei-Uh57yv-Pzh7zH2I0mOgqPFLZR3SQ5IH4jJXeTEHQoFiOxDtBTOChW7jsFB3AtvSOsl7FfD8";
 var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
 var SHEET_ID="",SCRIPT_URL="";
 var STORE_META={}; // from master registry: ShopName, OwnerName, Plan, etc.
@@ -14,22 +18,95 @@ var _broadcastQueue=[];
 // ════════════════════════════════════════════
 // NOTIFICATIONS — zero-infra: in-page only
 // ════════════════════════════════════════════
-var NPREF={sound:true,vibrate:true,browserNotif:true,wakeLock:true,repeat:true};
+var NPREF={sound:true,vibrate:true,browserNotif:true,wakeLock:true,repeat:true,
+  speak:true,    // speech announcement
+  flash:true,    // full-screen flash
+  loud:true,     // extra-loud mode (saturation + noise burst)
+  loop:false,    // keep alerting continuously until ack
+  lang:''        // user override for language ('', 'en', 'hi'); '' = use Config.NotificationLanguage
+};
+
+// Default templates per language. Placeholders: {name} {total} {count}
+var I18N={
+  en:{
+    title1:'🔔 New order received from {customerName}',
+    titleN:'🔔 {count} new orders received',
+    body1:'New order from {customerName} of ₹{rupee}',
+    bodyN:'{count} new orders are waiting for your confirmation',
+    speak1:'New order received from {customerName} of {rupee} rupees.',
+    speakN:'{count} new orders have been received. Please check the dashboard.',
+    bannerTitle1:'🔔 New order received!',
+    bannerTitleN:'🔔 {count} new orders received',
+    bannerInfo1:'From {customerName} of ₹{rupee} · tap to view',
+    bannerInfoN:'Tap to review and confirm all orders',
+    voiceLang:'en-IN'
+  },
+  hi:{
+    title1:'🔔 {customerName} से नया ऑर्डर मिला है',
+    titleN:'🔔 {count} नए ऑर्डर मिले हैं',
+    body1:'{customerName} से ₹{rupee} का नया ऑर्डर मिला है',
+    bodyN:'{count} नए ऑर्डर आपकी कन्फर्मेशन का इंतजार कर रहे हैं',
+    speak1:'नया ऑर्डर मिला है {customerName} से, {rupee} रुपये का।',
+    speakN:'{count} नए ऑर्डर मिले हैं। कृपया डैशबोर्ड देखें।',
+    bannerTitle1:'🔔 नया ऑर्डर मिला है!',
+    bannerTitleN:'🔔 {count} नए ऑर्डर मिले हैं',
+    bannerInfo1:'{customerName} से ₹{rupee} · देखने के लिए टैप करें',
+    bannerInfoN:'सभी ऑर्डर देखें और कन्फर्म करें',
+    voiceLang:'hi-IN'
+  }
+};
+function nLang(){
+  if(NPREF.lang)return NPREF.lang;
+  var c=(getCfg('NotificationLanguage','')||getCfg('NotificationLang','')||'').toLowerCase();
+  if(c==='hi'||c==='hindi'||c==='हिन्दी'||c==='हिंदी')return 'hi';
+  return 'en';
+}
+function nTpl(key){
+  // Per-key Config override wins, e.g. Config.NotificationSpeak1, Config.NotificationBannerTitleN
+  var ov=getCfg('Notification'+key.charAt(0).toUpperCase()+key.slice(1),'');
+  if(ov)return ov;
+  return I18N[nLang()][key]||I18N.en[key]||'';
+}
+// Placeholder aliases — both {name} and {customerName}, both {} and <> styles work
+var PH_ALIAS={
+  name:'name',customername:'name',customer:'name','customer_name':'name',cust:'name',
+  total:'total',rupee:'total',rupees:'total',amount:'total',price:'total',rs:'total','order_total':'total',
+  count:'count',n:'count',orders:'count','order_count':'count',num:'count',
+  phone:'phone',mobile:'phone','phone_no':'phone',number:'phone',
+  shop:'shop',shopname:'shop',store:'shop','shop_name':'shop','store_name':'shop'
+};
+function fillTpl(tpl,vars){
+  return String(tpl||'').replace(/[{<](\w+)[}>]/g,function(m,k){
+    var canonical=PH_ALIAS[k.toLowerCase()]||k;
+    return vars[canonical]==null?'':String(vars[canonical]);
+  });
+}
 try{var s=localStorage.getItem('sl_npref');if(s)NPREF=Object.assign(NPREF,JSON.parse(s))}catch(e){}
 function saveNPref(){try{localStorage.setItem('sl_npref',JSON.stringify(NPREF))}catch(e){}}
-var _audioCtx=null,_repeatTimer=null,_titleFlashTimer=null,_origTitle=document.title;
+var _audioCtx=null,_repeatTimer=null,_loopTimer=null,_titleFlashTimer=null,_origTitle=document.title;
 var _seenOrderIds={};var _pendingNewIds=[];var _wakeLockObj=null;
 var _installEvt=null; // captured beforeinstallprompt
+var _vibraTimer=null; // recurring vibration during alert
+var _shaperCurve=null; // cached saturation curve
 
 function getAudio(){if(!_audioCtx){try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}return _audioCtx}
-// One bell strike: fundamental + inharmonic partials = warm, food-service "ting"
+
+// Saturation curve — adds rich harmonics → much louder perceived volume without clipping
+function getShaperCurve(){
+  if(_shaperCurve)return _shaperCurve;
+  var n=2048,curve=new Float32Array(n),k=12;
+  for(var i=0;i<n;i++){var x=i*2/n-1;curve[i]=(1+k)*x/(1+k*Math.abs(x))*0.95}
+  _shaperCurve=curve;return curve;
+}
+
+// One bell strike: fundamental + inharmonic partials → warm food-service "ting"
 function strikeBell(ctx,startAt,fundamental,velocity,decay,bus){
   var partials=[
     {ratio:1.000,amp:1.00},
-    {ratio:2.000,amp:0.55},
-    {ratio:2.760,amp:0.45},
-    {ratio:5.400,amp:0.20},
-    {ratio:8.930,amp:0.10}
+    {ratio:2.000,amp:0.60},
+    {ratio:2.760,amp:0.50},
+    {ratio:5.400,amp:0.25},
+    {ratio:8.930,amp:0.12}
   ];
   partials.forEach(function(p){
     var o=ctx.createOscillator(),g=ctx.createGain();
@@ -43,37 +120,128 @@ function strikeBell(ctx,startAt,fundamental,velocity,decay,bus){
     o.start(startAt);o.stop(startAt+dec+0.05);
   });
 }
+
+// Quick noise burst at attack → percussive "transient" makes bell feel much louder
+function noiseBurst(ctx,startAt,bus,duration,gain){
+  var sr=ctx.sampleRate,frames=Math.floor(sr*duration);
+  var buf=ctx.createBuffer(1,frames,sr);
+  var data=buf.getChannelData(0);
+  for(var i=0;i<frames;i++)data[i]=(Math.random()*2-1)*Math.exp(-i/frames*8);
+  var src=ctx.createBufferSource();src.buffer=buf;
+  var hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=3000;
+  var g=ctx.createGain();g.gain.value=gain;
+  src.connect(hp);hp.connect(g);g.connect(bus);
+  src.start(startAt);
+}
+
 function playAlert(urgent){
   if(!NPREF.sound)return;
   var ctx=getAudio();if(!ctx)return;
   if(ctx.state==='suspended')ctx.resume().catch(function(){});
   var t=ctx.currentTime;
-  // Compressor to keep things loud but smooth
+
+  // Master chain: Compressor → optional WaveShaper saturation → LowPass → MasterGain → out
   var comp=ctx.createDynamicsCompressor();
-  comp.threshold.value=-14;comp.knee.value=22;comp.ratio.value=4;
-  comp.attack.value=0.005;comp.release.value=0.25;
-  // Gentle low-pass to remove harsh top-end shimmer
-  var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;lp.Q.value=0.6;
-  var master=ctx.createGain();master.gain.value=urgent?0.85:0.5;
-  comp.connect(lp);lp.connect(master);master.connect(ctx.destination);
-  // Restaurant chime: G5 → C6 → G5 (perfect-fourth doorbell, ~1.7s) — warm and welcoming
+  comp.threshold.value=-12;comp.knee.value=20;comp.ratio.value=6;
+  comp.attack.value=0.003;comp.release.value=0.2;
+
+  var preMaster;
+  if(NPREF.loud){
+    var shaper=ctx.createWaveShaper();shaper.curve=getShaperCurve();shaper.oversample='4x';
+    comp.connect(shaper);preMaster=shaper;
+  }else preMaster=comp;
+
+  var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=NPREF.loud?6000:5200;lp.Q.value=0.7;
+  preMaster.connect(lp);
+
+  var master=ctx.createGain();
+  master.gain.value=urgent?(NPREF.loud?1.4:0.95):0.55;
+  lp.connect(master);master.connect(ctx.destination);
+
+  // Restaurant chime: G5 → C6 → G5 doorbell pattern
   var notes=urgent
-    ? [{f:783.99,d:1.0,v:0.9,t:0.00},   // G5
-       {f:1046.50,d:1.4,v:1.0,t:0.30},  // C6 (high, hopeful)
-       {f:783.99,d:1.6,v:0.85,t:0.85}]  // G5 (resolution)
-    : [{f:880.00,d:0.9,v:0.7,t:0}];     // gentle A5 single bell for repeat-nudge
-  notes.forEach(function(n){strikeBell(ctx,t+n.t,n.f,n.v,n.d,comp)});
+    ? [{f:783.99,d:1.0,v:0.95,t:0.00},
+       {f:1046.50,d:1.4,v:1.0,t:0.28},
+       {f:783.99,d:1.6,v:0.90,t:0.80}]
+    : [{f:880.00,d:0.9,v:0.7,t:0}];
+  notes.forEach(function(n){
+    strikeBell(ctx,t+n.t,n.f,n.v,n.d,comp);
+    if(NPREF.loud&&urgent)noiseBurst(ctx,t+n.t,comp,0.05,0.35);
+  });
 }
+
+// ─── SPEECH ───
+function speak(text,lang){
+  if(!NPREF.speak)return;
+  if(!('speechSynthesis' in window))return;
+  if(!text)return;
+  try{
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.rate=lang==='hi'?0.95:1.05;u.pitch=1.05;u.volume=1.0;
+    var targetLang=lang==='hi'?'hi-IN':'en-IN';
+    var prefix=targetLang.split('-')[0];
+    u.lang=targetLang;
+    var voices=speechSynthesis.getVoices();
+    var v=voices.find(function(x){return x.lang===targetLang})
+        ||voices.find(function(x){return x.lang.indexOf(prefix)===0});
+    if(v)u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+// ─── VIBRATION ───
 function vibrate(urgent){
   if(!NPREF.vibrate)return;
   if(!navigator.vibrate)return;
-  // Try to enable vibration (some browsers require an explicit user gesture cached)
   try{
     navigator.vibrate(urgent
-      ? [500,120,500,120,500,120,800,200,500,120,500]   // ~3.7s aggressive alarm
-      : [300,100,300]);                                  // gentle nudge
+      ? [500,100,500,100,500,100,800,150,500,100,500,100,500]
+      : [300,100,300]);
   }catch(e){}
 }
+function startRecurringVibrate(){
+  if(!NPREF.vibrate||!navigator.vibrate)return;
+  if(_vibraTimer)return;
+  _vibraTimer=setInterval(function(){
+    var pending=allOrders.filter(function(o){return o.status==='new'&&isToday(o.dateKey)});
+    if(!pending.length){stopRecurringVibrate();return}
+    if(document.visibilityState==='visible'&&document.hasFocus())return;
+    try{navigator.vibrate([300,80,300])}catch(e){}
+  },4000);
+}
+function stopRecurringVibrate(){if(_vibraTimer){clearInterval(_vibraTimer);_vibraTimer=null}}
+
+// ─── SCREEN FLASH ───
+function flashScreen(){
+  if(!NPREF.flash)return;
+  var f=document.getElementById('alertFlash');
+  if(!f){
+    f=document.createElement('div');f.id='alertFlash';
+    f.style.cssText='position:fixed;inset:0;background:rgba(220,38,38,.55);z-index:150;pointer-events:none;opacity:0;transition:opacity .15s';
+    document.body.appendChild(f);
+  }
+  var n=0;
+  var doFlash=function(){
+    if(n>=4){f.style.opacity='0';return}
+    f.style.opacity=(n%2===0)?'1':'0';
+    n++;
+    setTimeout(doFlash,180);
+  };
+  doFlash();
+}
+
+// ─── CONTINUOUS LOOP MODE ───
+function startContinuousLoop(){
+  if(!NPREF.loop)return;
+  if(_loopTimer)return;
+  _loopTimer=setInterval(function(){
+    var pending=allOrders.filter(function(o){return o.status==='new'&&isToday(o.dateKey)});
+    if(!pending.length){stopContinuousLoop();return}
+    playAlert(true);vibrate(true);flashScreen();
+  },5000);
+}
+function stopContinuousLoop(){if(_loopTimer){clearInterval(_loopTimer);_loopTimer=null}}
 function fireBrowserNotif(title,body,tag){
   if(!NPREF.browserNotif)return;
   if(!('Notification' in window))return;
@@ -99,17 +267,27 @@ function flashTitle(count){
   },1500);
 }
 function alertNewOrders(newOrders){
-  // newOrders is array of order objects that just arrived
   var n=newOrders.length;if(!n)return;
-  playAlert(true);
-  vibrate(true);
-  flashTitle(n);
   var first=newOrders[0];
-  var body=(n===1?(first.name||'New customer')+' · '+fmt(first.total):n+' new orders need confirmation');
-  fireBrowserNotif(n===1?'🔔 New order from '+(first.name||'customer'):'🔔 '+n+' new orders',body,'new-order');
-  showInPageBanner(n,first);
-  startRepeatNudge();
+  var vars={name:safeName(first.name||(nLang()==='hi'?'ग्राहक':'Customer')),total:Math.round(first.total||0),count:n,phone:first.phone||'',shop:getCfg('ShopName','')||(STORE_META.shopname||'')};
+  var lang=nLang();
+  var titleTpl=n===1?nTpl('title1'):nTpl('titleN');
+  var bodyTpl =n===1?nTpl('body1') :nTpl('bodyN');
+  var speakTpl=n===1?nTpl('speak1'):nTpl('speakN');
+  var bTitleTpl=n===1?nTpl('bannerTitle1'):nTpl('bannerTitleN');
+  var bInfoTpl =n===1?nTpl('bannerInfo1') :nTpl('bannerInfoN');
+  // Layers 1-4: chime, vibrate, flash, title
+  playAlert(true);vibrate(true);flashScreen();flashTitle(n);
+  // Layer 5: voice
+  setTimeout(function(){speak(fillTpl(speakTpl,vars),lang)},900);
+  // Layer 6: system notification
+  fireBrowserNotif(fillTpl(titleTpl,vars),fillTpl(bodyTpl,vars),'new-order');
+  // Layer 7: in-page banner
+  showInPageBannerLocalized(fillTpl(bTitleTpl,vars),fillTpl(bInfoTpl,vars));
+  // Layers 8-10: re-alerting
+  startRepeatNudge();startRecurringVibrate();startContinuousLoop();
 }
+function safeName(s){var r='';s=String(s||'');for(var i=0;i<s.length&&r.length<40;i++){var c=s.charCodeAt(i);if((c>=48&&c<=57)||(c>=65&&c<=90)||(c>=97&&c<=122)||c===32||(c>=0x0900&&c<=0x097F))r+=s.charAt(i);else if(r.length&&r.charAt(r.length-1)!==' ')r+=' '}return r.trim()}
 function startRepeatNudge(){
   if(!NPREF.repeat)return;
   if(_repeatTimer)return;
@@ -122,13 +300,21 @@ function startRepeatNudge(){
 }
 function stopRepeatNudge(){
   if(_repeatTimer){clearInterval(_repeatTimer);_repeatTimer=null}
+  stopRecurringVibrate();
+  stopContinuousLoop();
+  try{if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}
   flashTitle(0);
   var b=$('newOrderBanner');if(b)b.classList.remove('show');
 }
 function showInPageBanner(n,first){
+  // Legacy English-only entry kept for backward compat
+  var vars={name:first.name||'Customer',total:Math.round(first.total||0),count:n};
+  showInPageBannerLocalized(fillTpl(n===1?nTpl('bannerTitle1'):nTpl('bannerTitleN'),vars),fillTpl(n===1?nTpl('bannerInfo1'):nTpl('bannerInfoN'),vars));
+}
+function showInPageBannerLocalized(title,info){
   var b=$('newOrderBanner');if(!b)return;
-  $('nobCount').textContent=n>1?'🔔 '+n+' new orders':'🔔 New order!';
-  $('nobInfo').textContent=n===1?(first.name||'Customer')+' · '+fmt(first.total)+' · tap to view':'Tap to review and confirm';
+  $('nobCount').textContent=title;
+  $('nobInfo').textContent=info;
   b.classList.add('show');
 }
 function ackBanner(){
@@ -178,6 +364,13 @@ function maybeShowIOSInstall(){
   $('installBanner').classList.add('show','ios');
   $('installBtn').textContent='How?';
 }
+function showInstallBanner(){
+  if(isStandalone())return;
+  if(localStorage.getItem('sl_install_dismissed_v2'))return;
+  var b=$('installBanner');if(!b)return;
+  b.classList.add('show');
+  var btn=$('installBtn');if(btn)btn.textContent=_installEvt?'Install':isIOS()?'How?':'How?';
+}
 function clickInstall(){
   if(isStandalone()){showToast('✓ Already installed','success');return}
   if(_installEvt){
@@ -211,6 +404,90 @@ function dismissInstall(){
   $('installBanner').classList.remove('show');
   try{localStorage.setItem('sl_install_dismissed_v2','1')}catch(e){}
 }
+
+// ════════════════════════════════════════════
+// WEB PUSH — locked-phone alerts via Cloudflare Worker
+// ════════════════════════════════════════════
+function pushRelayUrl(){return PUSH_RELAY_URL||getCfg('PushRelayURL','')||getCfg('PushURL','')}
+function vapidPubKey(){return VAPID_PUBLIC_KEY||getCfg('VapidPublicKey','')}
+function pushStoreId(){return STORE_META.slug||(new URLSearchParams(location.search)).get('store')||''}
+function pushAvailable(){
+  return !!(pushRelayUrl()&&vapidPubKey()&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window);
+}
+function urlBase64ToUint8Array(b64){
+  var pad='='.repeat((4-b64.length%4)%4);
+  var s=(b64+pad).replace(/-/g,'+').replace(/_/g,'/');
+  var raw=atob(s);var arr=new Uint8Array(raw.length);
+  for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);
+  return arr;
+}
+function getPushSubscription(){return navigator.serviceWorker.ready.then(function(reg){return reg.pushManager.getSubscription()})}
+function enablePush(){
+  if(!pushAvailable()){showToast('Web push not configured (admin needs to set up relay)','error');return Promise.resolve(false)}
+  if(Notification.permission==='denied'){showToast('Browser blocked notifications','error');return Promise.resolve(false)}
+  var step1=Notification.permission==='granted'?Promise.resolve('granted'):Notification.requestPermission();
+  return step1.then(function(p){
+    if(p!=='granted'){showToast('Permission needed','error');return false}
+    return navigator.serviceWorker.ready.then(function(reg){
+      return reg.pushManager.getSubscription().then(function(existing){
+        if(existing)return existing;
+        return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(vapidPubKey())});
+      });
+    }).then(function(sub){
+      return fetch(pushRelayUrl().replace(/\/$/,'')+'/subscribe',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({store:pushStoreId(),sub:sub.toJSON()})
+      });
+    }).then(function(res){
+      if(!res.ok)throw new Error('relay '+res.status);
+      try{localStorage.setItem('sl_push_enabled_'+pushStoreId(),'1')}catch(e){}
+      showToast('🔔 Push enabled — works even when phone is locked','success');
+      return true;
+    }).catch(function(e){console.error('[Push]',e);showToast('Could not enable push: '+e.message,'error');return false});
+  });
+}
+function disablePush(){
+  return getPushSubscription().then(function(sub){
+    if(!sub)return true;
+    var ep=sub.endpoint;
+    return sub.unsubscribe().then(function(){
+      return fetch(pushRelayUrl().replace(/\/$/,'')+'/unsubscribe',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({store:pushStoreId(),endpoint:ep})
+      }).catch(function(){});
+    });
+  }).then(function(){
+    try{localStorage.removeItem('sl_push_enabled_'+pushStoreId())}catch(e){}
+    showToast('Push disabled','success');return true;
+  }).catch(function(){return false});
+}
+function pushStatus(){
+  if(!pushAvailable())return Promise.resolve({available:false});
+  return getPushSubscription().then(function(sub){return{available:true,subscribed:!!sub}}).catch(function(){return{available:true,subscribed:false}});
+}
+function testPush(){
+  if(!pushAvailable()){showToast('Push not configured','error');return}
+  fetch(pushRelayUrl().replace(/\/$/,'')+'/send',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({store:pushStoreId(),secret:getCfg('PushSecret',''),title:'🔔 Test push',body:'If you see this on a locked phone, it works!',data:{store:pushStoreId(),tag:'test'}})
+  }).then(function(r){return r.json()}).then(function(j){
+    if(j.sent>0)showToast('✓ Push sent to '+j.sent+' device'+(j.sent>1?'s':''),'success');
+    else showToast('No subscriptions yet — enable push first','error');
+  }).catch(function(e){showToast('Test failed: '+e.message,'error')});
+}
+function togglePush(){
+  pushStatus().then(function(s){
+    if(!s.available){showToast('Configure VAPID + Relay URL first','error');return}
+    if(s.subscribed)disablePush().then(renderNotifSettings);
+    else enablePush().then(renderNotifSettings);
+  });
+}
+if(navigator.serviceWorker){
+  navigator.serviceWorker.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='pushsubscriptionchange')enablePush();
+  });
+}
+
 function openNotifSettings(){renderNotifSettings();$('notifSheet').classList.add('open')}
 
 // ─── Per-tenant manifest refinement (initial manifest set inline in HTML head;
@@ -1146,23 +1423,59 @@ function toggleTheme(){
 }
 // playBeep() kept as alias for any legacy callers
 function playBeep(){playAlert(true);vibrate(true)}
-function testNotif(){playAlert(true);vibrate(true);fireBrowserNotif('🔔 Test alert','This is how new orders will sound and look','test');showToast('Test alert sent','success')}
-function toggleNPref(key){NPREF[key]=!NPREF[key];saveNPref();renderNotifSettings();showToast(NPREF[key]?'✓ Enabled':'✕ Disabled');if(key==='wakeLock'){if(NPREF[key])requestWakeLock();else releaseWakeLock()}}
+function testNotif(){
+  // Simulate a new order alert with all layers
+  alertNewOrders([{name:'Test Customer',total:299,phone:'9999999999'}]);
+  showToast('Test alert sent — confirm to stop','success');
+}
+function toggleNPref(key){NPREF[key]=!NPREF[key];saveNPref();renderNotifSettings();showToast(NPREF[key]?'✓ Enabled':'✕ Disabled');if(key==='wakeLock'){if(NPREF[key])requestWakeLock();else releaseWakeLock()}if(key==='loop'&&!NPREF.loop)stopContinuousLoop()}
+function setNotifLang(lang){NPREF.lang=lang;saveNPref();renderNotifSettings();showToast(lang===''?'Using Config / Auto':lang==='hi'?'हिन्दी सेट किया':'English set','success')}
 function renderNotifSettings(){
   var el=$('notifSettings');if(!el)return;
   var rows=[
-    {k:'sound',ic:'🔊',t:'Sound alerts',s:'Play a chime when new orders arrive'},
-    {k:'vibrate',ic:'📳',t:'Vibration',s:'Vibrate on phone (where supported)'},
-    {k:'browserNotif',ic:'🔔',t:'Browser notifications',s:'Show system notification when tab is in background'},
-    {k:'repeat',ic:'🔁',t:'Repeat alert every 30s',s:'Until you confirm or cancel the order'},
-    {k:'wakeLock',ic:'💡',t:'Keep screen on',s:'Stop the screen from auto-locking while dashboard is open'}
+    {k:'sound',ic:'🔊',t:'Sound alerts',s:'Bell chime when new orders arrive'},
+    {k:'loud',ic:'📢',t:'Extra loud mode',s:'Saturated chime + transient burst — best for noisy kitchens'},
+    {k:'speak',ic:'🗣',t:'Voice announcement',s:'"New order! [Customer], [Total] rupees" — cuts through noise'},
+    {k:'vibrate',ic:'📳',t:'Vibration',s:'Aggressive 5s buzz + recurring pulses while pending'},
+    {k:'flash',ic:'⚡',t:'Screen flash',s:'Red full-screen flash on new orders'},
+    {k:'browserNotif',ic:'🔔',t:'Browser notifications',s:'System notification when tab is in background'},
+    {k:'repeat',ic:'🔁',t:'Repeat reminder (30s)',s:'Gentle re-alert until you confirm or cancel'},
+    {k:'loop',ic:'🚨',t:'CONTINUOUS ALARM (5s)',s:'⚠️ Plays full alarm every 5s until you tap. Use only in noisy shops.'},
+    {k:'wakeLock',ic:'💡',t:'Keep screen on',s:'Stop screen auto-lock while dashboard is open'}
   ];
   var notifPerm=('Notification' in window)?Notification.permission:'unsupported';
-  var permLine=notifPerm==='granted'?'<span style="color:var(--brand);font-weight:700">✓ Browser permission granted</span>':notifPerm==='denied'?'<span style="color:var(--red);font-weight:700">✕ Browser blocked notifications — change in site settings</span>':'<button class="btn btn-primary" style="height:36px;font-size:11px" onclick="requestNotifPermission()">Enable Browser Notifications</button>';
-  el.innerHTML='<div style="margin-bottom:12px">'+permLine+'</div>'+rows.map(function(r){
+  var permLine=notifPerm==='granted'?'<div style="background:var(--brand-bg);color:var(--brand);padding:10px 12px;border-radius:10px;font-size:12px;font-weight:700;margin-bottom:12px">✓ Browser permission granted</div>':notifPerm==='denied'?'<div style="background:var(--red-bg);color:var(--red);padding:10px 12px;border-radius:10px;font-size:12px;font-weight:700;margin-bottom:12px">✕ Browser blocked notifications — change in browser site settings</div>':'<button class="btn btn-primary" style="height:38px;font-size:12px;margin-bottom:12px;width:100%" onclick="requestNotifPermission()">Enable Browser Notifications</button>';
+  var hasVibrate=!!navigator.vibrate;
+  var hasSpeech=('speechSynthesis' in window);
+  var supportLine='<div style="background:var(--bg);padding:10px 12px;border-radius:10px;font-size:11px;color:var(--ink3);margin-bottom:12px;line-height:1.5">📱 This device supports: '+(hasVibrate?'✓ Vibration · ':'✕ No vibration · ')+(hasSpeech?'✓ Voice · ':'✕ No voice · ')+'✓ Sound</div>';
+  // Language picker
+  var curLang=nLang();
+  var configuredLang=(getCfg('NotificationLanguage','')||getCfg('NotificationLang','')||'').toLowerCase();
+  var langLine='<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">🌐 Notification Language</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
+    +'<button class="btn '+(NPREF.lang===''?'btn-primary':'btn-ghost')+'" style="height:42px;font-size:12px" onclick="setNotifLang(\'\')">Auto</button>'
+    +'<button class="btn '+(NPREF.lang==='en'?'btn-primary':'btn-ghost')+'" style="height:42px;font-size:12px" onclick="setNotifLang(\'en\')">English</button>'
+    +'<button class="btn '+(NPREF.lang==='hi'?'btn-primary':'btn-ghost')+'" style="height:42px;font-size:12px" onclick="setNotifLang(\'hi\')">हिन्दी</button>'
+    +'</div>'
+    +'<div style="font-size:10px;color:var(--ink3);margin-top:6px;line-height:1.5">'
+    +(NPREF.lang===''?('Auto: using <b>'+(curLang==='hi'?'हिन्दी':'English')+'</b>'+(configuredLang?' (set in Config sheet → <code>NotificationLanguage</code>)':' (no Config setting found — defaulting to English)')):'Override active. Set <b>NotificationLanguage</b> in your Config sheet to change the default.')
+    +'</div></div>';
+  // Push (locked-phone) section
+  var pushLine='<div style="margin-bottom:12px;padding:12px;background:var(--bg);border-radius:12px;border:1px dashed var(--line)"><div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">🌐 Locked-phone alerts (Web Push)</div><div id="pushBlock" style="font-size:12px;color:var(--ink3)">Loading...</div></div>';
+  el.innerHTML=permLine+supportLine+langLine+pushLine+rows.map(function(r){
     var on=NPREF[r.k];
     return '<div class="detail-row" style="cursor:pointer" onclick="toggleNPref(\''+r.k+'\')"><div class="detail-ic">'+r.ic+'</div><div class="detail-text"><div class="detail-label">'+esc(r.t)+'</div><div class="detail-value" style="font-size:11px;color:var(--ink3);font-weight:500">'+esc(r.s)+'</div></div><div class="toggle '+(on?'on':'')+'"><div class="toggle-knob"></div></div></div>';
-  }).join('')+'<div style="margin-top:12px"><button class="btn btn-ghost" onclick="testNotif()" style="height:42px">🔔 Test alert</button></div>';
+  }).join('')+'<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-primary" onclick="testNotif()" style="height:46px;flex:1">🔔 Test Full Alert</button><button class="btn btn-ghost" onclick="stopRepeatNudge();showToast(\'Stopped\',\'success\')" style="height:46px;flex:1">✕ Stop</button></div><div style="font-size:10px;color:var(--ink4);text-align:center;margin-top:10px;line-height:1.5">⚠️ Volume is also limited by your phone\'s system volume. Keep media volume up for best results.</div>';
+  // Populate push block asynchronously
+  pushStatus().then(function(s){
+    var b=$('pushBlock');if(!b)return;
+    if(!s.available){
+      b.innerHTML='<div style="line-height:1.6">Web Push not configured.<br>Admin must set <code>VAPID_PUBLIC_KEY</code> + <code>PUSH_RELAY_URL</code> in dashboard-v2.js (or via <code>VapidPublicKey</code> + <code>PushRelayURL</code> Config keys). See <code>push/README.md</code>.</div>';
+      return;
+    }
+    var on=s.subscribed;
+    b.innerHTML='<div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><b style="color:var(--ink);font-size:13px">'+(on?'✓ Push enabled':'Off')+'</b><div style="font-size:11px;margin-top:2px">'+(on?'You will get alerts even when phone is locked or app is closed':'Tap to enable — works in pocket, locked phones, and when dashboard is closed')+'</div></div><div class="toggle '+(on?'on':'')+'" onclick="togglePush()"><div class="toggle-knob"></div></div></div>'+(on?'<button class="btn btn-ghost" style="height:36px;font-size:11px;width:100%;margin-top:8px" onclick="testPush()">Send Test Push</button>':'');
+  });
 }
 
 // ════════════════════════════════════════════

@@ -1,0 +1,17 @@
+name = "storepro-push"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# KV namespace for storing push subscriptions.
+# Create with:  npx wrangler kv namespace create SUBS
+# then paste the returned id below.
+[[kv_namespaces]]
+binding = "SUBS"
+id = "7035adafa2fe45cc8866ea6c201b6e7b"
+
+# Secrets — set with `npx wrangler secret put VAPID_PRIVATE_JWK`
+# (paste the entire JWK JSON when prompted)
+# and `npx wrangler secret put PUSH_SECRET` (any random string Apps Script will send).
+# VAPID_EMAIL is set as a regular var.
+[vars]
+VAPID_EMAIL = "amitnegimca@gmail.com"

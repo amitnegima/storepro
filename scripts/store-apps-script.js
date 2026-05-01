@@ -103,14 +103,14 @@ function saveOrder(p) {
   var notes = p.notes || '';
   
   sheet.appendRow([
-    orderId, date, mode, name, phone, email, address, 
+    orderId, date, mode, name, phone, email, address,
     items, total, status, payment, notes, ''
   ]);
-  
+
   // Color the status cell
   var lastRow = sheet.getLastRow();
   sheet.getRange(lastRow, 10).setBackground('#e8faed').setFontWeight('bold');
-  
+
   // Send email notification if email is provided
   var shopName = getShopName();
   if (email) {
@@ -118,6 +118,66 @@ function saveOrder(p) {
       sendOrderEmail(email, orderId, name, items, total, mode, shopName);
     } catch(err) { console.log('Email error: ' + err); }
   }
+
+  // Trigger Web Push to shopkeeper devices (locked-phone alerts)
+  try {
+    sendPushToShopkeeper(orderId, name, total, shopName);
+  } catch(err) { console.log('Push error: ' + err); }
+}
+
+// ═══════════════════════════════════
+// WEB PUSH (locked-phone alerts via Cloudflare relay)
+// ═══════════════════════════════════
+function sendPushToShopkeeper(orderId, customerName, total, shopName) {
+  var relay = getCfgValue('PushRelayURL') || getCfgValue('PushURL');
+  if (!relay) return; // not configured — fine, in-page alerts still work
+  var slug   = getCfgValue('Slug') || getCfgValue('StoreSlug') || '';
+  var secret = getCfgValue('PushSecret') || '';
+  var lang   = (getCfgValue('NotificationLanguage') || 'en').toLowerCase();
+  var safeName = String(customerName || '').replace(/[^A-Za-z0-9 ऀ-ॿ]/g, ' ').trim() || (lang === 'hi' ? 'ग्राहक' : 'Customer');
+  var amount = Math.round(parseFloat(total) || 0);
+  var title, body;
+  if (lang === 'hi') {
+    title = '🔔 ' + safeName + ' से नया ऑर्डर मिला है';
+    body  = safeName + ' से ₹' + amount + ' का नया ऑर्डर मिला है';
+  } else {
+    title = '🔔 New order received from ' + safeName;
+    body  = 'New order from ' + safeName + ' of ₹' + amount;
+  }
+  // Allow custom override via Config
+  var titleTpl = getCfgValue('NotificationTitle1');
+  var bodyTpl  = getCfgValue('NotificationBody1');
+  if (titleTpl) title = fillPushTpl(titleTpl, safeName, amount);
+  if (bodyTpl)  body  = fillPushTpl(bodyTpl,  safeName, amount);
+
+  var payload = {
+    store: slug,
+    secret: secret,
+    title: title,
+    body: body,
+    data: { store: slug, orderId: orderId, total: amount, name: safeName, tag: 'order-' + orderId }
+  };
+  UrlFetchApp.fetch(relay.replace(/\/$/, '') + '/send', {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+}
+function fillPushTpl(tpl, name, amount) {
+  return String(tpl)
+    .replace(/[{<]customerName[}>]/gi, name).replace(/[{<]name[}>]/gi, name).replace(/[{<]customer[}>]/gi, name)
+    .replace(/[{<]rupee[}>]/gi, amount).replace(/[{<]rupees[}>]/gi, amount).replace(/[{<]total[}>]/gi, amount).replace(/[{<]amount[}>]/gi, amount);
+}
+function getCfgValue(key) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Config'); if (!sheet) return '';
+  var data = sheet.getDataRange().getValues();
+  var k = String(key).toLowerCase().replace(/\s+/g, '');
+  for (var i = 0; i < data.length; i++) {
+    if (String(data[i][0]).toLowerCase().replace(/\s+/g, '') === k) return String(data[i][1] || '');
+  }
+  return '';
 }
 
 function updateOrderStatus(orderId, newStatus, comment) {
