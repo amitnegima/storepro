@@ -1,0 +1,34 @@
+Key,Value
+ShopName,Vikey Cafe
+ShopType,Cafe
+Phone,919871781600
+Phone2,01244982395
+WhatsApp,919871781600
+Address,"Magnum Tower-B, Ground Floor, Sector 58, Gurugram, Haryana"
+City,Gurugram
+UPI,
+Currency,₹
+DashboardPIN,1234
+BrandColor,#8b1a1a
+HeroTagline,Chinese · South Indian · Snacks — fresh & hot
+HeroTitle2,
+EstimatedDeliveryTime,20-30 min
+DeliveryFee,0
+FreeDelivery,200
+PackingFee,0
+MinOrder,200
+Rating,4.5
+Timing,9:00-22:00
+StoreOpen,yes
+NotificationLanguage,en
+OrderScript,
+PushRelayURL,https://storepro-push.storepro.workers.dev
+PushSecret,REPLACE_WITH_PUSH_SECRET_FROM_SCRIPT_PROPERTIES
+Slug,vikey-cafe-sector58
+DailySpecial,Thali — Dosa + Sambar + Idli + Vada
+DailySpecialPrice,150
+DailySpecialDesc,Complete meal · Dosa + Sambar + Idli + Vada · best value combo
+DailySpecialImage,
+SearchHint,Search dosa noodles maggi samosa...
+Website,
+Email,

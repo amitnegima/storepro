@@ -30,6 +30,30 @@ async function sha256Hex(s) {
   return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// Per-store push secret = HMAC-SHA256(MASTER_PUSH_SECRET, slug), hex-encoded.
+// Each tenant's Apps Script holds only its own derived secret. Compromising
+// one tenant's PushSecret cannot be used to push to a different tenant —
+// the worker recomputes the HMAC for the requested `store` and compares.
+async function deriveStoreSecret(masterSecret, slug) {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(masterSecret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(String(slug)));
+  return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Constant-time string compare to avoid timing leaks on the secret check.
+function ctEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 function json(obj, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(obj), {
     status,
@@ -225,7 +249,7 @@ async function sendOne(sub, payloadObj, env) {
 
 // ── Routes ──
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const origin = request.headers.get('Origin') || '';
     const headers = cors(origin);
@@ -273,7 +297,15 @@ export default {
       const body = await request.json();
       const { store, secret, title, body: msg, data } = body;
       if (!store || !title) return json({ error: 'store + title required' }, 400, headers);
-      if (env.PUSH_SECRET && secret !== env.PUSH_SECRET) {
+      // Fail-closed: refuse if the worker hasn't been configured with a master secret.
+      if (!env.PUSH_SECRET) {
+        return json({ error: 'worker not configured: PUSH_SECRET missing' }, 500, headers);
+      }
+      // Per-store derived secret. Each tenant's PushSecret = HMAC(master, slug.toLowerCase().trim()).
+      // Lowercased + trimmed to defend against case drift and stray whitespace.
+      // Compromising one tenant's Config cannot be used to push to a different store.
+      const expected = await deriveStoreSecret(env.PUSH_SECRET, String(store).toLowerCase().trim());
+      if (!ctEqual(secret || '', expected)) {
         return json({ error: 'forbidden' }, 403, headers);
       }
       const list = await env.SUBS.list({ prefix: `sub:${store}:` });
@@ -302,6 +334,111 @@ export default {
       if (!store) return json({ error: 'store required' }, 400, headers);
       const list = await env.SUBS.list({ prefix: `sub:${store}:` });
       return json({ store, count: list.keys.length }, 200, headers);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // TELEGRAM WEBHOOK PROXY
+    //
+    // Why this exists: Apps Script Web Apps return a 302 redirect to
+    // script.googleusercontent.com on POST. Telegram's webhook does NOT
+    // follow redirects → callbacks fail. This worker accepts the webhook,
+    // follows the redirect (fetch() does it transparently), and returns
+    // 200 to Telegram. Result: button taps process within 1-2 seconds
+    // instead of waiting for the next 1-minute Apps Script poll cycle.
+    //
+    // Setup per tenant:
+    //   1. KV: put `tg:<botToken>` → <Apps Script /exec URL>
+    //      (or pass `target` URL param when registering the webhook)
+    //   2. Register Telegram webhook to:
+    //      https://<this-worker>/telegram/<botToken>
+    //   3. Done. Polling can stay on for /help etc, but callbacks now route
+    //      through this fast path.
+    //
+    // Selective forwarding: by default forwards ALL update types. Tenant
+    // can configure `tg-cfg:<botToken>` KV value as JSON like
+    // {"forward":["callback_query"]} to ONLY forward button taps and let
+    // polling handle everything else (saves Apps Script execution quota).
+    // ──────────────────────────────────────────────────────────────
+    if (url.pathname.startsWith('/telegram/') && request.method === 'POST') {
+      const token = url.pathname.slice('/telegram/'.length);
+      if (!token || token.indexOf(':') < 0) {
+        return json({ error: 'token missing in path: /telegram/<botToken>' }, 400);
+      }
+
+      // Look up the Apps Script /exec URL for this bot from KV ONLY.
+      // The previous `?target=<URL>` query param was an open-redirect: any caller
+      // could have us POST arbitrary payloads to any URL. Now the target must
+      // be pre-registered in KV by an authenticated admin.
+      let target = null;
+      if (env.SUBS) {
+        try { target = await env.SUBS.get('tg:' + token); } catch (e) {}
+      }
+      if (!target) {
+        return json({ error: 'no target Apps Script URL configured for this bot' }, 400);
+      }
+
+      // Verify Telegram's secret_token header. When registering the webhook,
+      // Telegram lets you set a secret_token; it's then sent on every update as
+      // X-Telegram-Bot-Api-Secret-Token. Without this check, anyone who knows
+      // your bot token + worker URL can POST forged updates and have them
+      // forwarded to your Apps Script as if they came from Telegram.
+      // KV key tg-secret:<token> stores the expected value (optional but strongly recommended).
+      if (env.SUBS) {
+        try {
+          const expectedSecret = await env.SUBS.get('tg-secret:' + token);
+          if (expectedSecret) {
+            const got = request.headers.get('X-Telegram-Bot-Api-Secret-Token') || '';
+            if (!ctEqual(got, expectedSecret)) {
+              return json({ error: 'forbidden: telegram secret_token mismatch' }, 403);
+            }
+          }
+        } catch (e) {}
+      }
+
+      // Read selective-forward config (optional)
+      let forwardTypes = null; // null = forward all
+      if (env.SUBS) {
+        try {
+          const cfgRaw = await env.SUBS.get('tg-cfg:' + token);
+          if (cfgRaw) {
+            const cfg = JSON.parse(cfgRaw);
+            if (Array.isArray(cfg.forward)) forwardTypes = cfg.forward;
+          }
+        } catch (e) {}
+      }
+
+      // Read incoming Telegram update
+      const updateText = await request.text();
+      let update;
+      try { update = JSON.parse(updateText); }
+      catch (e) { return json({ error: 'bad json' }, 400); }
+
+      // Decide whether to forward
+      const updateType = update.callback_query ? 'callback_query'
+                       : update.message ? 'message'
+                       : 'other';
+      const shouldForward = !forwardTypes || forwardTypes.indexOf(updateType) >= 0;
+
+      // ALWAYS return 200 to Telegram quickly so it doesn't retry
+      // The actual forwarding happens via waitUntil so we don't block the response
+      const tgAck = json({ ok: true, forwarded: shouldForward, type: updateType });
+
+      if (shouldForward) {
+        // fetch() in Workers follows redirects by default — that's the whole point.
+        // We POST the original payload to Apps Script's /exec URL.
+        const forwardPromise = fetch(target, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: updateText,
+          redirect: 'follow'
+        }).catch(e => console.log('[telegram-proxy] forward error: ' + e));
+
+        // ctx.waitUntil keeps the worker alive long enough to complete the POST
+        // even after we've already returned to Telegram
+        if (typeof ctx !== 'undefined' && ctx.waitUntil) ctx.waitUntil(forwardPromise);
+      }
+
+      return tgAck;
     }
 
     return json({ ok: true, service: 'StorePro Push Relay' }, 200, headers);

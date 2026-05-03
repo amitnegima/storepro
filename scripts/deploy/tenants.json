@@ -1,0 +1,7 @@
+{
+  "_comment": "Map of tenant slug → Apps Script project ID. Get the ID from the Apps Script editor URL: https://script.google.com/home/projects/<THIS_PART>/edit. Run push-all.js to copy store-apps-script.js to every project listed here.",
+  "tenants": [
+    { "slug": "sanik-hotel-srinagar",       "scriptId": "1jXZXxAakdU5SHmep-ki1p5HDjB-0cTd7yWJCWRNAZ9Y" },
+    { "slug": "shri-balaji-fast-food-corner","scriptId": "1lynjw7CbrA2ACXRCe9_1qCINsT8k7PTY1tG5xGDFvWY" }
+  ]
+}

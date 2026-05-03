@@ -22,7 +22,7 @@ Timing,7:00-21:00
 StoreOpen,yes
 NotificationLanguage,hi
 PushRelayURL,https://storepro-push.storepro.workers.dev
-PushSecret,storepro-push-2026-aB9xKm
+PushSecret,REPLACE_WITH_PUSH_SECRET_FROM_SCRIPT_PROPERTIES
 Slug,sharma-meat-gurugram
 Taxes,0
 HeroImage,https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=1200

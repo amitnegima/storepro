@@ -40,7 +40,7 @@ In **Config**, paste this. Column A = Key, Column B = Value. Update `ShopName`, 
 | StoreOpen | yes |
 | NotificationLanguage | hi |
 | PushRelayURL | https://storepro-push.storepro.workers.dev |
-| PushSecret | storepro-push-2026-aB9xKm |
+| PushSecret | _(set in Apps Script Project Settings → Script Properties → PUSH_SECRET; createStore copies it in automatically)_ |
 | Slug | sharma-meat-gurugram |
 | DailySpecial | Premium Mutton Curry Cut |
 | DailySpecialPrice | 750 |
@@ -95,7 +95,7 @@ You now have 20 starter products with prices, Hindi names, cuts, halal flags, an
 
 ## Step 6 — Register the store in the Master Registry
 
-Open the **Master Registry** sheet (`1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg` — only the StorePro admin has write access).
+Open the **Master Registry** sheet (`1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo` — only the StorePro admin has write access).
 
 In the **Stores** tab, add a new row:
 

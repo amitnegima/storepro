@@ -43,7 +43,14 @@ wrangler secret put VAPID_PRIVATE_JWK
 # When prompted, paste the JWK JSON from Step 1 (the entire {"kty":"EC",...} blob)
 
 wrangler secret put PUSH_SECRET
-# Enter any random string. Keep this — you'll add it to each store's Config tab.
+# Enter any random string (treat it like a password). You also need to mirror
+# this value in TWO Apps Script projects so they can call /send:
+#   1. Master registry script → Project Settings → Script Properties → +Add
+#      key = PUSH_SECRET, value = <same string you just pasted>
+#   2. Each tenant's Config tab gets `PushSecret` filled in by createStore()
+#      automatically — no per-tenant action needed for new stores.
+# To rotate later: change all three (worker secret + registry property +
+# every existing tenant's Config row) in the same maintenance window.
 
 wrangler deploy
 ```
