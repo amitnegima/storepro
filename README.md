@@ -81,6 +81,6 @@ Each store has a Google Sheet with a Config tab. Key settings:
 | DashboardPIN | 1234 | Dashboard access PIN |
 | OrderScript | https://script.google.com/... | Apps Script URL |
 
-## Built by Amit Negi
+## Support
 
-📱 WhatsApp: [9760684971](https://wa.me/919760684971)
+✉️ Email: [amitnegimca@gmail.com](mailto:amitnegimca@gmail.com)

@@ -297,6 +297,20 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 /* Shimmer */
 .shim{background:linear-gradient(90deg,var(--LINE) 25%,#f5f5f5 50%,var(--LINE) 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:var(--RAD)}
 @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Micro-animations */
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.bump{animation:bump .22s var(--EASE)}
+@keyframes addTick{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+.add-btn.tick{animation:addTick .26s var(--EASE)}
+
+/* Order-sending shimmer + spinner (Place Order button) */
+@keyframes shimmerSweep{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.order-sending{pointer-events:none;cursor:wait;position:relative;overflow:hidden}
+.order-sending::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);background-size:200% 100%;animation:shimmerSweep 1.4s var(--EASE) infinite;pointer-events:none}
+.order-spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-right-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-3px;flex-shrink:0}
+
+@media (prefers-reduced-motion:reduce){.bump,.add-btn.tick,.order-sending::after{animation:none!important}*{transition-duration:.01ms!important}}
 .empty{text-align:center;padding:48px 20px;color:var(--T3)}
 .empty b{display:block;font-size:44px;margin-bottom:10px}
 .empty span{font:600 15px var(--F)}
@@ -315,6 +329,94 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
   .co-mode-btn{height:50px;font-size:14px}
   .co-gps{height:46px;font-size:14px}
 }
+
+/* ───── ORDER TRACKING (slides from top) ───── */
+.trk-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding:0}
+.trk-bg.open{display:flex;animation:fade .25s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.trk-sheet{background:#fff;width:100%;max-width:560px;border-radius:0 0 24px 24px;max-height:92dvh;display:flex;flex-direction:column;animation:trkSlide .3s ease;padding-top:env(safe-area-inset-top,0px);box-shadow:0 12px 40px rgba(0,0,0,.18)}
+@keyframes trkSlide{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+.trk-handle{display:none}
+.trk-hdr{padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--LINE);background:#fff;position:sticky;top:0;z-index:1}
+.trk-hdr h2{font:800 18px var(--F);color:var(--T1)}
+.trk-close{width:36px;height:36px;border-radius:50%;background:var(--BG);border:1px solid var(--LINE);color:var(--T2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.trk-close:active{background:var(--LINE);transform:scale(.92)}
+.trk-body{flex:1;overflow-y:auto;padding:14px 18px 24px;-webkit-overflow-scrolling:touch}
+.trk-input-row{display:flex;gap:8px;margin-bottom:14px}
+.trk-input{flex:1;height:46px;padding:0 14px;border:1.5px solid var(--LINE);border-radius:12px;font:600 14px var(--F);color:var(--T1);background:var(--BG);outline:none;text-transform:uppercase;letter-spacing:.04em}
+.trk-input:focus{border-color:var(--R);box-shadow:0 0 0 3px rgba(168,36,20,.08);background:#fff}
+.trk-input::placeholder{color:var(--T4);text-transform:none;letter-spacing:0}
+.trk-btn{height:46px;padding:0 18px;background:var(--R);color:#fff;border:none;border-radius:12px;font:800 13px var(--F);cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:5px}
+.trk-btn:active{transform:scale(.96)}
+.trk-section-h{font:700 11px var(--F);color:var(--T3);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px}
+.trk-recent{display:flex;flex-direction:column;gap:6px}
+.trk-recent-item{padding:12px 14px;background:var(--BG);border-radius:12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s;border:1px solid transparent}
+.trk-recent-item:active{background:#fff;border-color:var(--R)}
+.trk-recent-id{font-family:'SF Mono',Menlo,monospace;font-size:11px;font-weight:700;color:var(--R)}
+.trk-recent-info{flex:1;min-width:0}
+.trk-recent-name{font:700 13px var(--F);color:var(--T1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trk-recent-meta{font:500 10px var(--F);color:var(--T3);margin-top:1px}
+.trk-recent-arr{color:var(--T4);font-size:14px}
+.trk-result{margin-top:14px;background:var(--BG);border-radius:14px;padding:18px;border:1.5px solid var(--LINE)}
+.trk-result.ok{background:linear-gradient(160deg,rgba(34,197,94,.06),rgba(34,197,94,.02));border-color:rgba(34,197,94,.3)}
+.trk-result.cancel{background:linear-gradient(160deg,rgba(220,38,38,.06),rgba(220,38,38,.02));border-color:rgba(220,38,38,.3)}
+.trk-status-l{font:700 10px var(--F);color:var(--T3);text-transform:uppercase;letter-spacing:.06em}
+.trk-status-v{font:800 22px var(--F);color:var(--T1);margin-top:4px;line-height:1.2}
+.trk-stepper{display:flex;align-items:flex-start;margin:18px 0 8px}
+.trk-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;text-align:center}
+.trk-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:3px;background:var(--LINE);z-index:0}
+.trk-step.done:not(:last-child)::after{background:#22c55e}
+.trk-dot{width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid var(--LINE);position:relative;z-index:1;display:grid;place-items:center;font:800 13px var(--F);color:var(--T4)}
+.trk-step.done .trk-dot{background:#22c55e;border-color:#22c55e;color:#fff}
+.trk-step.current .trk-dot{background:var(--R);border-color:var(--R);color:#fff;box-shadow:0 0 0 4px rgba(168,36,20,.15);animation:trkPulse 1.5s infinite}
+@keyframes trkPulse{0%,100%{box-shadow:0 0 0 4px rgba(168,36,20,.15)}50%{box-shadow:0 0 0 8px rgba(168,36,20,0)}}
+.trk-step-l{font:700 10px var(--F);color:var(--T4);margin-top:6px;line-height:1.2}
+.trk-step.done .trk-step-l,.trk-step.current .trk-step-l{color:var(--T1)}
+.trk-shop-msg{margin-top:14px;background:linear-gradient(135deg,rgba(37,211,102,.08),rgba(37,211,102,.04));border-left:4px solid #25d366;border-radius:0 12px 12px 0;padding:12px 14px}
+.trk-shop-msg-l{font:800 9px var(--F);color:#1da851;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.trk-shop-msg-body{font:600 13px var(--F);color:var(--T1);line-height:1.5}
+.trk-shop-msg-body p+p{margin-top:6px;padding-top:6px;border-top:1px dashed rgba(0,0,0,.08)}
+.trk-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.trk-meta{padding:10px 12px;background:#fff;border:1px solid var(--LINE);border-radius:10px}
+.trk-meta-l{font:700 9px var(--F);color:var(--T3);text-transform:uppercase;letter-spacing:.06em}
+.trk-meta-v{font:700 12px var(--F);color:var(--T1);margin-top:2px;word-break:break-word}
+.trk-items{margin-top:12px}
+.trk-items-l{font:700 10px var(--F);color:var(--T3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.trk-items-list{background:#fff;border:1px solid var(--LINE);border-radius:10px;padding:10px 12px;font:500 12px var(--F);color:var(--T2);line-height:1.6;white-space:pre-wrap}
+.trk-actions{display:flex;gap:8px;margin-top:14px}
+.trk-action-btn{flex:1;height:42px;padding:0 14px;border-radius:10px;font:800 12px var(--F);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;border:none}
+.trk-action-btn.refresh{background:var(--BG);color:var(--T2);border:1px solid var(--LINE)}
+.trk-action-btn.wa{background:#25d366;color:#fff}
+.trk-empty{text-align:center;padding:48px 16px;color:var(--T3)}
+.trk-empty-em{font-size:48px;margin-bottom:8px;opacity:.5}
+.trk-empty h3{font:700 15px var(--F);color:var(--T1);margin-bottom:4px}
+.trk-empty p{font:500 12px var(--F);color:var(--T3)}
+.trk-loading{text-align:center;padding:32px}
+.trk-spinner{width:32px;height:32px;border:3px solid var(--LINE);border-top-color:var(--R);border-radius:50%;animation:trkSpin .7s linear infinite;margin:0 auto}
+@keyframes trkSpin{to{transform:rotate(360deg)}}
+
+/* ─── REVIEW UI ─── */
+.trk-review-card{margin-top:14px;padding:18px 16px;background:linear-gradient(160deg,#fffbeb,#fef3c7);border-radius:14px;border:1.5px solid #fbbf24}
+.trk-review-card-l{font:800 10px var(--F);color:#b45309;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.trk-review-card h3{font:800 16px var(--F);color:#0b1220;margin-bottom:4px}
+.trk-review-card p{font:500 12px var(--F);color:var(--T2);line-height:1.5}
+.trk-stars{display:flex;justify-content:center;gap:6px;margin:14px 0 12px}
+.trk-star{width:42px;height:42px;font-size:32px;background:none;border:none;cursor:pointer;color:#d1d5db;transition:.15s;line-height:1;padding:0}
+.trk-star:active{transform:scale(.85)}
+.trk-star.on{color:#facc15;text-shadow:0 2px 6px rgba(250,204,21,.4)}
+.trk-star:hover{color:#fde047}
+.trk-review-text{width:100%;min-height:60px;padding:10px 12px;border:1.5px solid var(--LINE);border-radius:10px;font:500 13px var(--F);color:var(--T1);background:#fff;outline:none;resize:vertical;line-height:1.5}
+.trk-review-text:focus{border-color:#fbbf24;box-shadow:0 0 0 3px rgba(251,191,36,.15)}
+.trk-review-submit{width:100%;height:46px;background:#a82414;color:#fff;border:none;border-radius:12px;font:800 14px var(--F);cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+.trk-review-submit:disabled{opacity:.5;cursor:not-allowed}
+.trk-review-submit:not(:disabled):active{transform:scale(.97)}
+.trk-review-submit-thanks{background:#16a34a !important;opacity:1 !important}
+.trk-review-shown{margin-top:14px;padding:14px;background:linear-gradient(160deg,rgba(250,204,21,.12),rgba(250,204,21,.04));border-radius:14px;border:1px solid rgba(250,204,21,.4)}
+.trk-review-shown-stars{font-size:24px;line-height:1;margin-bottom:6px;letter-spacing:2px}
+.trk-review-shown-text{font:500 13px var(--F);color:var(--T2);font-style:italic;line-height:1.5}
+.trk-review-shown-when{font:600 10px var(--F);color:var(--T4);margin-top:6px;text-transform:uppercase;letter-spacing:.06em}
+/* Mobile: prevent iOS Safari zoom-on-focus by ensuring inputs are >=16px on touch */
+@media (pointer:coarse){input:not([type=color]):not([type=range]):not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>
@@ -338,6 +440,8 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 <div class="hdr"><div class="hdr-top">
   <button class="hdr-back" onclick="history.back()">←</button>
   <div class="hdr-info"><div class="hdr-name" id="shopName">Loading...</div><div class="hdr-sub" id="shopStatus">Fresh meat daily</div></div>
+  <button id="langBtn" onclick="toggleLang()" title="Hindi/English" aria-label="Toggle language" style="height:34px;min-width:36px;padding:0 8px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);color:#fff;font:700 12px var(--F);border-radius:10px;cursor:pointer;margin-right:6px">हिं</button>
+  <button class="hdr-cart" onclick="openTrack()" title="Track your order" style="margin-right:6px">📋</button>
   <button class="hdr-cart" onclick="openDr()">🛒<span class="badge" id="badge">0</span></button>
 </div></div>
 
@@ -440,7 +544,7 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 var $=function(id){return document.getElementById(id)};
 function E(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
-var SID='',SU='',MID='1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg';
+var SID='',SU='',MID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
 var C={},SP=false,items=[],cart=[];
 var QL={kg:100,g:1000};
 
@@ -457,8 +561,19 @@ function err(t,m){var s=$('shim');if(s)s.style.display='none';$('list').innerHTM
 
 function lookup(slug,cb){
   if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
-  window.google.visualization.Query.setResponse=function(r){if(!r||!r.table||!r.table.rows){err('Store not found','"'+slug+'" does not exist');return}var cols=r.table.cols||[];r.table.rows.forEach(function(row){var o={};cols.forEach(function(c,i){var cl=row.c&&row.c[i];o[c.label.toLowerCase().replace(/\s+/g,'')]=cl?(cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''):''});if((o.slug||'').toLowerCase()===slug.toLowerCase()){SID=o.sheetid||'';SU=o.scripturl||o.script||''}});if(SID)cb();else err('Store not found','"'+slug+'" is not active')};
-  var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+MID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();s.onerror=function(){err('Connection error','Cannot reach registry')};document.body.appendChild(s);
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table||!r.table.rows||r.table.rows.length<2){err('Store not found','"'+slug+'" does not exist');return}
+    // headers=0 forces row 0 to hold headers, data starts at row 1
+    var hRow=r.table.rows[0],cols=[];
+    if(hRow&&hRow.c){for(var h=0;h<hRow.c.length;h++){var hc=hRow.c[h];cols.push(hc&&hc.v!=null?String(hc.v).toLowerCase().trim().replace(/\s+/g,''):'')}}
+    for(var i=1;i<r.table.rows.length;i++){
+      var row=r.table.rows[i],o={};
+      cols.forEach(function(k,j){var cl=row.c&&row.c[j];o[k]=cl?(cl.f!=null?String(cl.f).trim():cl.v!=null?String(cl.v).trim():''):''});
+      if((o.slug||'').toLowerCase()===slug.toLowerCase()){SID=o.sheetid||'';SU=o.scripturl||o.script||''}
+    }
+    if(SID)cb();else err('Store not found','"'+slug+'" is not active');
+  };
+  var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+MID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=0&_t='+Date.now();s.onerror=function(){err('Connection error','Cannot reach registry')};document.body.appendChild(s);
 }
 
 function loadCfg(cb){LS('Config',function(r){if(r&&r.table&&r.table.rows)r.table.rows.forEach(function(row){var a=row.c&&row.c[0],b=row.c&&row.c[1],k='',v='';if(a){k=a.f!=null?String(a.f).trim():a.v!=null?String(a.v).trim():''}if(b){v=b.f!=null?String(b.f).trim():b.v!=null?String(b.v).trim():''}if(k&&k.toLowerCase()!=='key')C[k]=v});if(!SU){SU=G('OrderScript','')||G('ScriptURL','')||G('Script','')||''}applyCfg();cb()})}
@@ -603,8 +718,9 @@ function add(name,em,price,id){
   var mx=QL[u]||1000;if(v>mx){$('q-'+id).value=mx;alert('Max '+mx+' '+u);return}
   var ql=v+' '+u,ex=cart.find(function(c){return c.name===name&&c.ql===ql});
   if(ex)ex.n++;else cart.push({name:name,em:em,price:price,qv:v,qu:u,ql:ql,n:1});
-  var b=$('b-'+id);if(b){b.classList.add('done');b.textContent='✓ Added';setTimeout(function(){b.classList.remove('done');b.textContent='🛒 Add to Cart'},1200)}
+  var b=$('b-'+id);if(b){b.classList.remove('tick');void b.offsetWidth;b.classList.add('tick','done');b.textContent='✓ Added';setTimeout(function(){b.classList.remove('done');b.textContent='🛒 Add to Cart'},1200)}
   updBar();
+  var bg=$('badge');if(bg){bg.classList.remove('bump');void bg.offsetWidth;bg.classList.add('bump')}
 }
 function rem(i){cart.splice(i,1);updBar();renDr();if(!cart.length)closeDr()}
 function updBar(){
@@ -731,10 +847,9 @@ function renCheckout(){
   h+='</div>';
   $('db').innerHTML=h;
   
-  // Footer
+  // Footer — single Place Order button (WhatsApp/Call become optional from success modal)
   var f='<div class="df-btns">';
-  f+='<button class="df-btn df-wa" onclick="submitOrder(\'whatsapp\')"><span class="df-icon">💬</span> Order on WhatsApp</button>';
-  f+='<button class="df-btn df-call" onclick="submitOrder(\'call\')"><span class="df-icon">📞</span> Call to Order</button>';
+  f+='<button class="df-btn df-call" onclick="submitOrder(\'place\')" style="background:var(--R);color:#fff"><span class="df-icon">✅</span> Place Order</button>';
   f+='<button class="df-btn" onclick="goBackToCart()" style="background:var(--BG);color:var(--T2);box-shadow:none;height:44px;font-size:14px">← Back to Cart</button>';
   f+='</div>';
   $('dft').innerHTML=f;
@@ -821,6 +936,14 @@ function submitOrder(method){
   if(!phone||phone.length<10){showCoErr('Please enter a valid 10-digit phone number');$('coPhone').focus();return}
   if(orderMode==='delivery'&&!addr){showCoErr('Please enter your delivery address');$('coAddr').focus();return}
 
+  // Show loader on Place Order button
+  var placeBtn=document.querySelector('.df-btn.df-call');
+  if(placeBtn){
+    placeBtn.classList.add('order-sending');
+    placeBtn.disabled=true;
+    placeBtn.innerHTML='<span style="display:inline-flex;align-items:center"><span class="order-spin"></span>Placing order…</span>';
+  }
+
   // Save customer info + mode
   savedCust={name:name,phone:phone,address:addr,mode:orderMode};
   try{localStorage.setItem('sp_meat_cust',JSON.stringify(savedCust))}catch(e){}
@@ -898,19 +1021,28 @@ function submitOrder(method){
     console.warn('[Meatshop] No script URL — order will only go via WhatsApp, not saved to sheet.');
   }
 
-  // ─── Open WhatsApp / call ───
-  if(method==='whatsapp'){
-    window.open('https://wa.me/'+String(shopPhone).replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
-  }else{
-    try{navigator.clipboard.writeText(msg)}catch(e){}
-    location.href='tel:+'+String(shopPhone).replace(/\D/g,'');
-  }
+  // ─── Cache the WhatsApp message + shop phone for the success modal's send button ───
+  // (We no longer fire WhatsApp/call directly here — customer confirms first via success modal)
+  window._lastOrderMsg=msg;
+  window._lastOrderShopPhone=String(shopPhone).replace(/\D/g,'');
 
-  // ─── Show success confirmation ───
-  showOrderSuccess(orderId,totalEst,orderMode);
-
-  // Clear cart
+  // Clear cart immediately so they can't double-submit
   cart=[];updBar();closeDr();
+
+  // ─── Show success confirmation — customer can now choose to send to WhatsApp / call ───
+  showOrderSuccess(orderId,totalEst,orderMode);
+}
+
+// Manual triggers from the success modal (replace the old auto-fire)
+function sendOrderWhatsApp(){
+  var p=window._lastOrderShopPhone||'';if(!p)return;
+  var m=window._lastOrderMsg||'';
+  window.open('https://wa.me/'+p+'?text='+encodeURIComponent(m),'_blank');
+}
+function callOrderShop(){
+  var p=window._lastOrderShopPhone||'';if(!p)return;
+  try{if(window._lastOrderMsg)navigator.clipboard.writeText(window._lastOrderMsg)}catch(e){}
+  location.href='tel:+'+p;
 }
 
 function showOrderSuccess(orderId,total,mode){
@@ -918,7 +1050,21 @@ function showOrderSuccess(orderId,total,mode){
   var box=document.createElement('div');box.id='mShopSuccess';
   box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .25s';
   var totLine=total>0?'<div style="font-size:13px;color:#666;margin-top:8px">Estimated: ₹'+total+'</div>':'<div style="font-size:13px;color:#666;margin-top:8px">Shop will confirm price & availability</div>';
-  box.innerHTML='<div style="background:#fff;border-radius:24px;max-width:360px;width:100%;padding:30px 24px 18px;text-align:center;font-family:\'DM Sans\',system-ui,sans-serif"><div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 20px rgba(34,197,94,.35)">✓</div><div style="font-size:20px;font-weight:800;color:#0b1220">Order Placed!</div><div style="font-size:13px;color:#666;margin-top:6px;line-height:1.5">The shop will confirm shortly via '+(mode==='delivery'?'delivery':'pickup')+'</div><div style="display:inline-block;margin-top:14px;padding:8px 16px;background:#f5f5f5;border-radius:10px;font-family:\'SF Mono\',Menlo,monospace;font-size:13px;font-weight:700;color:#a82414">#'+orderId+'</div>'+totLine+'<button style="margin-top:18px;width:100%;height:46px;background:#a82414;color:#fff;border:none;border-radius:12px;font:800 14px \'DM Sans\',sans-serif;cursor:pointer" onclick="document.getElementById(\'mShopSuccess\').remove()">Continue Shopping</button></div>';
+  box.innerHTML='<div style="background:#fff;border-radius:24px;max-width:380px;width:100%;padding:28px 22px 18px;text-align:center;font-family:\'DM Sans\',system-ui,sans-serif">'
+    +'<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 20px rgba(34,197,94,.35)">✓</div>'
+    +'<div style="font-size:22px;font-weight:800;color:#0b1220">Order Placed Successfully!</div>'
+    +'<div style="font-size:13px;color:#666;margin-top:6px;line-height:1.5">Your order has been received by the shop. The shopkeeper will confirm shortly via '+(mode==='delivery'?'delivery':'pickup')+'.</div>'
+    +'<div style="margin-top:16px;font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em">Your Order ID</div>'
+    +'<div style="display:flex;align-items:center;gap:6px;margin-top:6px;background:#fff5f4;border:1.5px dashed #a82414;border-radius:12px;padding:8px 12px"><div style="flex:1;font-family:\'SF Mono\',Menlo,monospace;font-size:13px;font-weight:700;color:#a82414;text-align:left;word-break:break-all">#'+orderId+'</div><button style="height:32px;padding:0 12px;background:#a82414;color:#fff;border:none;border-radius:8px;font:800 11px \'DM Sans\',sans-serif;cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:4px" onclick="copyOrderIdFromSuccess(\''+orderId+'\',this)">📋 Copy</button></div>'
+    +totLine
+    +'<div style="margin-top:18px;padding:14px 12px;background:linear-gradient(160deg,#f0fdf4,#dcfce7);border-radius:14px;border:1px solid rgba(34,197,94,.25)">'
+    +'<div style="font-size:11px;font-weight:800;color:#15803d;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">📬 Notify the shop directly?</div>'
+    +'<div style="font-size:11px;color:#3f4759;line-height:1.5;margin-bottom:10px">Optional, but helps the shop reply faster. Your order is already saved.</div>'
+    +'<div style="display:flex;gap:6px"><button style="flex:1;height:42px;background:#25d366;color:#fff;border:none;border-radius:10px;font:800 12px \'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px" onclick="sendOrderWhatsApp()">💬 WhatsApp</button>'
+    +'<button style="flex:1;height:42px;background:#fff;color:#0b1220;border:1.5px solid #e8eaef;border-radius:10px;font:800 12px \'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px" onclick="callOrderShop()">📞 Call</button>'
+    +'</div></div>'
+    +'<div style="display:flex;gap:8px;margin-top:14px"><button style="flex:1;height:46px;background:#f5f5f5;color:#0b1220;border:1px solid #e8eaef;border-radius:12px;font:800 13px \'DM Sans\',sans-serif;cursor:pointer" onclick="document.getElementById(\'mShopSuccess\').remove();openTrack(\''+orderId+'\')">📋 Track</button><button style="flex:1;height:46px;background:#a82414;color:#fff;border:none;border-radius:12px;font:800 13px \'DM Sans\',sans-serif;cursor:pointer" onclick="document.getElementById(\'mShopSuccess\').remove()">Done</button></div>'
+    +'</div>';
   document.body.appendChild(box);
 }
 
@@ -1101,6 +1247,310 @@ if(isStandalone){
 if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('/sw.js').catch(function(){});
 
 console.log('StorePro Meat Shop v'+APP_VERSION+(isStandalone?' [PWA]':' [Browser]'));
+
+// ════════════════════════════════════════════════════════════
+// ORDER TRACKING — read from Orders sheet, show shopkeeper messages
+// ════════════════════════════════════════════════════════════
+// ─── REVIEW: star picker + submit ───
+var _trkStars=0;
+function trkSetStars(n){
+  _trkStars=n;
+  document.querySelectorAll('#trkStars .trk-star').forEach(function(el){
+    var s=parseInt(el.dataset.star);el.classList.toggle('on',s<=n);
+  });
+  var btn=$('trkReviewSubmit');if(btn)btn.disabled=false;
+}
+function trkSubmitReview(orderId){
+  if(!_trkStars){return}
+  var text=($('trkReviewText')||{}).value||'';text=String(text).trim().slice(0,500);
+  var btn=$('trkReviewSubmit');
+  if(btn){btn.disabled=true;btn.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:trkSpin .7s linear infinite"></span> Sending...'}
+  if(!SU){
+    if(btn){btn.innerHTML='⚠️ Could not save (no script URL)';btn.style.background='#dc2626'}
+    return;
+  }
+  var img=new Image();
+  img.onload=img.onerror=function(){
+    if(btn){btn.innerHTML='✓ Thanks for your review!';btn.classList.add('trk-review-submit-thanks')}
+    // Save locally so we can show "already reviewed" instantly on re-track
+    try{
+      var rev=JSON.parse(localStorage.getItem('sp_meat_reviews')||'{}');
+      rev[orderId]={stars:_trkStars,text:text,ts:Date.now()};
+      localStorage.setItem('sp_meat_reviews',JSON.stringify(rev));
+    }catch(e){}
+    setTimeout(function(){doTrack()},1200); // re-fetch to show submitted state
+  };
+  img.src=SU+'?action=submitReview&orderId='+encodeURIComponent(orderId)+'&stars='+_trkStars+'&text='+encodeURIComponent(text);
+  _trkStars=0;
+}
+
+function copyOrderIdFromSuccess(id,btn){
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(id).then(function(){
+        if(btn){var orig=btn.innerHTML;btn.innerHTML='✓ Copied!';btn.style.background='#16a34a';setTimeout(function(){btn.innerHTML=orig;btn.style.background=''},1800)}
+      }).catch(function(){fallbackCopy(id,btn)});
+    }else{fallbackCopy(id,btn)}
+  }catch(e){fallbackCopy(id,btn)}
+}
+function fallbackCopy(id,btn){
+  var ta=document.createElement('textarea');ta.value=id;ta.style.cssText='position:fixed;top:-9999px;left:-9999px';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');if(btn){var orig=btn.innerHTML;btn.innerHTML='✓ Copied!';btn.style.background='#16a34a';setTimeout(function(){btn.innerHTML=orig;btn.style.background=''},1800)}}catch(e){}
+  document.body.removeChild(ta);
+}
+function openTrack(prefilledId){
+  var bg=$('trkBg');if(!bg){buildTrackUI();bg=$('trkBg')}
+  renderTrackHome(prefilledId);
+  bg.classList.add('open');
+  // Auto-track if an ID was passed (from the success modal)
+  if(prefilledId){
+    setTimeout(function(){
+      var input=$('trkId');if(input){input.value=prefilledId;doTrack()}
+    },50);
+  }
+}
+function closeTrack(){var b=$('trkBg');if(b)b.classList.remove('open')}
+function buildTrackUI(){
+  var bg=document.createElement('div');bg.className='trk-bg';bg.id='trkBg';
+  bg.onclick=function(e){if(e.target===bg)closeTrack()};
+  bg.innerHTML='<div class="trk-sheet">'
+    +'<div class="trk-handle"></div>'
+    +'<div class="trk-hdr"><h2>📋 Track Your Order</h2><button class="trk-close" onclick="closeTrack()">✕</button></div>'
+    +'<div class="trk-body" id="trkBody"></div>'
+    +'</div>';
+  document.body.appendChild(bg);
+}
+function renderTrackHome(prefilledId){
+  var html='<div class="trk-input-row">'
+    +'<input class="trk-input" id="trkId" placeholder="Enter Order ID (e.g. ORD-XXXXX)" value="'+E(prefilledId||'')+'" onkeydown="if(event.key===\'Enter\')doTrack()">'
+    +'<button class="trk-btn" onclick="doTrack()">Track</button>'
+    +'</div>';
+  // Recent orders cached in sp_meat_recent
+  var recent=[];try{recent=JSON.parse(localStorage.getItem('sp_meat_recent')||'[]')||[]}catch(e){}
+  if(recent.length){
+    html+='<div class="trk-section-h">📜 Recent Orders</div>';
+    html+='<div class="trk-recent">';
+    recent.forEach(function(o){
+      var ago=Math.floor((Date.now()-(o.ts||0))/60000);
+      var agoTxt=ago<1?'just now':ago<60?ago+'m ago':ago<1440?Math.floor(ago/60)+'h ago':Math.floor(ago/1440)+'d ago';
+      html+='<div class="trk-recent-item" onclick="document.getElementById(\'trkId\').value=\''+E(o.id||'')+'\';doTrack()">'
+        +'<div class="trk-recent-info">'
+        +'<div class="trk-recent-name">'+E(o.name||'Order')+'</div>'
+        +'<div class="trk-recent-meta"><span class="trk-recent-id">#'+E(String(o.id||'').slice(-6))+'</span> · '+agoTxt+(o.total>0?' · ₹'+o.total:'')+'</div>'
+        +'</div>'
+        +'<div class="trk-recent-arr">›</div>'
+        +'</div>';
+    });
+    html+='</div>';
+  }else{
+    html+='<div class="trk-empty"><div class="trk-empty-em">📦</div><h3>No orders yet</h3><p>Place an order — we\'ll save it here for easy tracking.</p></div>';
+  }
+  html+='<div id="trkResult"></div>';
+  $('trkBody').innerHTML=html;
+}
+function doTrack(){
+  var id=($('trkId').value||'').trim().toUpperCase();
+  if(!id){return}
+  $('trkResult').innerHTML='<div class="trk-loading"><div class="trk-spinner"></div><div style="margin-top:10px;font:600 12px var(--F);color:var(--T3)">Looking up order...</div></div>';
+  if(!SID){$('trkResult').innerHTML='<div class="trk-result"><div class="trk-empty"><div class="trk-empty-em">⚠️</div><h3>Store not loaded</h3><p>Refresh the page and try again.</p></div></div>';return}
+  LS('Orders',function(r){
+    if(!r||!r.table){$('trkResult').innerHTML='<div class="trk-result"><div class="trk-empty"><div class="trk-empty-em">📡</div><h3>Could not load orders</h3><p>Check your connection and try again.</p></div></div>';return}
+    var cols=r.table.cols||[],rows=r.table.rows||[];
+    if(!rows.length){$('trkResult').innerHTML='<div class="trk-result"><div class="trk-empty"><div class="trk-empty-em">🔍</div><h3>Order not found</h3><p>"'+E(id)+'" is not in our records yet. Orders may take a minute to appear.</p></div></div>';return}
+    // Header row + value parsing
+    var hd=cols.map(function(c){return(c.label||'').toLowerCase().replace(/\s+/g,'')});
+    var ds=0;
+    if(hd.every(function(h){return !h})&&rows.length>0){
+      hd=[];var fr=rows[0];if(fr.c)fr.c.forEach(function(cl){var v='';if(cl){v=cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''}hd.push(v.toLowerCase().replace(/\s+/g,''))});
+      ds=1;
+    }
+    var found=null;
+    for(var i=ds;i<rows.length;i++){
+      var row=rows[i];if(!row.c)continue;
+      var o={};
+      row.c.forEach(function(cl,ci){if(ci>=hd.length)return;var k=hd[ci];if(!k)return;var v='';if(cl){v=cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''}o[k]=v});
+      var rowId=String(o.orderid||'').trim().toUpperCase();
+      if(rowId===id){found=o;break}
+    }
+    if(!found){$('trkResult').innerHTML='<div class="trk-result"><div class="trk-empty"><div class="trk-empty-em">🔍</div><h3>Order not found</h3><p>"'+E(id)+'" doesn\'t match any order. Double-check the ID.</p></div></div>';return}
+    renderTrackResult(found,id);
+  });
+}
+function renderTrackResult(o,id){
+  var status=String(o.status||'New').toLowerCase().trim();
+  var cancelled=/cancel/.test(status);
+  var done=/deliver|done|complete|picked/.test(status);
+  var packed=/pack|out\s*for/.test(status);
+  var confirmed=/confirm/.test(status);
+  var sIdx=cancelled?-1:done?3:packed?2:confirmed?1:0;
+  var modeIsDelivery=String(o.mode||'').toLowerCase()==='delivery';
+  var steps=[
+    {l:'Received',e:'📥'},
+    {l:'Confirmed',e:'✅'},
+    {l:modeIsDelivery?'On the Way':'Ready',e:modeIsDelivery?'🛵':'📦'},
+    {l:modeIsDelivery?'Delivered':'Picked Up',e:'🎉'}
+  ];
+  var statusLabel=cancelled?'❌ Cancelled':sIdx>=0?steps[sIdx].e+' '+steps[sIdx].l:'';
+  var html='<div class="trk-result '+(cancelled?'cancel':done?'ok':'')+'">';
+  html+='<div class="trk-status-l">Order #'+E(String(id).slice(-6))+(o.total&&parseFloat(o.total)>0?' · ₹'+E(o.total):'')+'</div>';
+  html+='<div class="trk-status-v">'+E(statusLabel)+'</div>';
+  // Stepper
+  if(!cancelled){
+    html+='<div class="trk-stepper">';
+    steps.forEach(function(s,i){
+      var cls=i<sIdx?'done':(i===sIdx?'current':'');
+      html+='<div class="trk-step '+cls+'"><div class="trk-dot">'+(i<sIdx?'✓':s.e)+'</div><div class="trk-step-l">'+E(s.l)+'</div></div>';
+    });
+    html+='</div>';
+  }
+  // Shopkeeper messages — robust column detection
+  // Scan ALL keys for any that look like shopkeeper comments (handles "Shopkeeper Comment", "Comment", "Notes for customer", etc.)
+  var shopComment='';
+  Object.keys(o).forEach(function(k){
+    if(/(shopkeeper|comment|reply|message|notes?(for|to)customer)/i.test(k)&&!/customer|^order\s*notes/i.test(k.replace(/(shopkeeper|comment|reply|message)/i,''))){
+      // Skip purely-customer-note fields
+    }
+    if((k==='shopkeepercomment'||k==='comment'||k==='reply'||k==='message'||k==='shopnote'||k==='shopnotes'||k==='shopkeepernote'||k==='shopkeepernotes')&&o[k]){
+      if(!shopComment)shopComment=o[k];
+    }
+  });
+  console.log('[Track] order keys:',Object.keys(o),'shopComment:',shopComment);
+  if(shopComment){
+    var parts=String(shopComment).split(' | ').filter(function(p){return p.trim()});
+    html+='<div class="trk-shop-msg"><div class="trk-shop-msg-l">💬 Message from the shop</div><div class="trk-shop-msg-body">';
+    parts.forEach(function(p){html+='<p>'+E(p.trim())+'</p>'});
+    html+='</div></div>';
+  }
+  // Customer note
+  if(o.ordernotes||o.notes){
+    html+='<div class="trk-shop-msg" style="background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.04));border-left-color:#f59e0b"><div class="trk-shop-msg-l" style="color:#b45309">📝 Your Note</div><div class="trk-shop-msg-body">'+E(o.ordernotes||o.notes||'')+'</div></div>';
+  }
+  // Meta
+  html+='<div class="trk-meta-grid">';
+  html+='<div class="trk-meta"><div class="trk-meta-l">Mode</div><div class="trk-meta-v">'+(modeIsDelivery?'🛵 Delivery':'🏪 Pickup')+'</div></div>';
+  if(o.payment)html+='<div class="trk-meta"><div class="trk-meta-l">Payment</div><div class="trk-meta-v">'+E(String(o.payment).toUpperCase())+'</div></div>';
+  if(o.phone)html+='<div class="trk-meta"><div class="trk-meta-l">Phone</div><div class="trk-meta-v">'+E(o.phone)+'</div></div>';
+  if(o.address)html+='<div class="trk-meta" style="grid-column:1/-1"><div class="trk-meta-l">Address</div><div class="trk-meta-v">'+E(o.address)+'</div></div>';
+  html+='</div>';
+  // Items
+  if(o.items){html+='<div class="trk-items"><div class="trk-items-l">📦 Items</div><div class="trk-items-list">'+E(o.items)+'</div></div>'}
+
+  // ─── REVIEW: prompt if delivered & not yet reviewed; show if already reviewed ───
+  var rStars=parseInt(o.reviewstars||'0')||0;
+  var rText=o.reviewtext||'';
+  var rWhen=o.reviewedat||'';
+  if(rStars>0){
+    var starGlyphs='';for(var s=0;s<5;s++)starGlyphs+=(s<rStars?'⭐':'☆');
+    html+='<div class="trk-review-shown">';
+    html+='<div class="trk-review-shown-stars">'+starGlyphs+'</div>';
+    if(rText)html+='<div class="trk-review-shown-text">"'+E(rText)+'"</div>';
+    if(rWhen)html+='<div class="trk-review-shown-when">Reviewed '+E(rWhen)+'</div>';
+    html+='</div>';
+  }else if(done){
+    html+='<div class="trk-review-card">'
+      +'<div class="trk-review-card-l">⭐ Your feedback</div>'
+      +'<h3>How was your order?</h3>'
+      +'<p>Help the shop improve — takes 5 seconds.</p>'
+      +'<div class="trk-stars" id="trkStars">'
+      +'<button class="trk-star" data-star="1" onclick="trkSetStars(1)">★</button>'
+      +'<button class="trk-star" data-star="2" onclick="trkSetStars(2)">★</button>'
+      +'<button class="trk-star" data-star="3" onclick="trkSetStars(3)">★</button>'
+      +'<button class="trk-star" data-star="4" onclick="trkSetStars(4)">★</button>'
+      +'<button class="trk-star" data-star="5" onclick="trkSetStars(5)">★</button>'
+      +'</div>'
+      +'<textarea class="trk-review-text" id="trkReviewText" placeholder="Optional comment about quality, speed, packaging..."></textarea>'
+      +'<button class="trk-review-submit" id="trkReviewSubmit" disabled onclick="trkSubmitReview(\''+E(id)+'\')">Submit Review</button>'
+      +'</div>';
+  }
+
+  // Actions
+  html+='<div class="trk-actions">';
+  html+='<button class="trk-action-btn refresh" onclick="doTrack()">↻ Refresh</button>';
+  var wa=G('whatsapp','')||G('phone','');
+  if(wa){
+    var w=String(wa).replace(/\D/g,'');
+    var msg='Hi, I want to ask about my order #'+id;
+    html+='<a class="trk-action-btn wa" href="https://wa.me/'+w+'?text='+encodeURIComponent(msg)+'" target="_blank">💬 Ask Shop</a>';
+  }
+  html+='</div>';
+  html+='</div>';
+  $('trkResult').innerHTML=html;
+}
+
+// ─────────── HINDI / ENGLISH UI TOGGLE ───────────
+// Meatshop uses G() not cfg(). Persists per-store. Updates the search placeholder
+// and re-renders the menu so per-item buttons get re-translated.
+var lang='en';
+try{var saved=localStorage.getItem('sl_lang_meat');if(saved==='hi'||saved==='en')lang=saved}catch(e){}
+var L_MEAT={
+  en:{search:'Search chicken, mutton, fish...',placeOrder:'Place Order',addToCart:'🛒 Add to Cart',added:'✓ Added',cartEmpty:'Your cart is empty'},
+  hi:{search:'चिकन, मटन, मछली खोजें...',placeOrder:'ऑर्डर करें',addToCart:'🛒 कार्ट में जोड़ें',added:'✓ जोड़ा गया',cartEmpty:'आपका कार्ट खाली है'}
+};
+function t(k){if(lang==='hi'){var ov=G('hi_'+k,'');if(ov)return ov}return (L_MEAT[lang]&&L_MEAT[lang][k])||L_MEAT.en[k]||k}
+function applyLangToDom(){
+  var btn=document.getElementById('langBtn');if(btn){btn.textContent=lang==='en'?'हिं':'EN'}
+  var s=document.getElementById('si');if(s)s.placeholder=t('search');
+  if(typeof render==='function')render();
+  document.documentElement.setAttribute('lang',lang);
+}
+function toggleLang(){lang=lang==='en'?'hi':'en';try{localStorage.setItem('sl_lang_meat',lang)}catch(e){}applyLangToDom()}
+setTimeout(applyLangToDom,1500);
+
+// Schema.org JSON-LD — meatshop uses G() not cfg()
+(function(){
+  var attempts=0;
+  function tryInject(){
+    attempts++;if(attempts>30)return;
+    var name=G('ShopName','');
+    if(!name){setTimeout(tryInject,500);return}
+    try{
+      var slug=(new URLSearchParams(location.search)).get('store')||'';
+      var data={
+        '@context':'https://schema.org','@type':'Store',
+        name:name,
+        url:location.origin+location.pathname+(slug?'?store='+slug:''),
+        description:G('Tagline','')||(name+' — fresh meat, daily cuts'),
+        telephone:G('Phone','')||G('WhatsApp',''),
+        priceRange:G('PriceRange','')||'₹₹',
+        image:G('Logo','')||(location.origin+'/icon-512.png')
+      };
+      var addr=G('Address',''),city=G('City','');
+      if(addr||city)data.address={'@type':'PostalAddress',streetAddress:addr,addressLocality:city,addressCountry:'IN'};
+      var hours=G('BusinessHours','')||G('Timing','');
+      var m=hours&&String(hours).match(/(\d{1,2})(?::?(\d{2}))?\s*[-–to]+\s*(\d{1,2})(?::?(\d{2}))?/);
+      if(m){
+        var open=(m[1].length<2?'0'+m[1]:m[1])+':'+(m[2]||'00');
+        var close=(m[3].length<2?'0'+m[3]:m[3])+':'+(m[4]||'00');
+        data.openingHoursSpecification={'@type':'OpeningHoursSpecification',dayOfWeek:['Mo','Tu','We','Th','Fr','Sa','Su'],opens:open,closes:close};
+      }
+      var s=document.createElement('script');s.type='application/ld+json';s.id='storepro-ldjson';
+      s.textContent=JSON.stringify(data);document.head.appendChild(s);
+    }catch(e){console.warn('[schema] fail',e)}
+  }
+  setTimeout(tryInject,1000);
+})();
+
+// Test-mode banner
+(function(){
+  if((new URLSearchParams(location.search)).get('test')!=='1')return;
+  var bar=document.createElement('div');
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(90deg,#f59e0b,#fbbf24);color:#7c2d12;text-align:center;padding:9px 14px;font:700 12px DM Sans,system-ui,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.15)';
+  bar.innerHTML='🧪 TEST MODE — this is a real order, just for testing. Delete it from your Orders tab after.';
+  document.body.appendChild(bar);
+  document.body.style.paddingTop='34px';
+})();
+
+// Offline indicator
+(function(){
+  var bar=document.createElement('div');
+  bar.id='offlineBar';
+  bar.innerHTML='⚠️ You’re offline. Orders won’t go through until your connection is back.';
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:#fff;text-align:center;padding:8px 12px;font:600 12px DM Sans,system-ui,sans-serif;transform:translateY(-100%);transition:transform .3s ease;box-shadow:0 2px 8px rgba(0,0,0,.15)';
+  document.body.appendChild(bar);
+  function update(){bar.style.transform=navigator.onLine?'translateY(-100%)':'translateY(0)'}
+  window.addEventListener('online',update);window.addEventListener('offline',update);update();
+})();
 </script>
 </body>
 </html>

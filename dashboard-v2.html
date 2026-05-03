@@ -31,7 +31,10 @@
     var shortName=(displayName.split(/\s+/)[0]||'Store').slice(0,12);
     var typeLabel=cType?cType+' · ':'';
 
-    var startUrl=location.pathname+'?store='+encodeURIComponent(slug);
+    // Manifest is a blob: URL → relative URLs resolve against blob origin and break.
+    // Use absolute URLs so browser parses them correctly.
+    var startUrl=location.origin+location.pathname+'?store='+encodeURIComponent(slug);
+    var scopeUrl=location.origin+'/';
 
     // ─── Generate per-shop app icon (initial letter on brand gradient) ───
     function makeIcon(size){
@@ -92,8 +95,8 @@
         ];
       }else{
         icons=[
-          {src:'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
-          {src:'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
+          {src:location.origin+'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
+          {src:location.origin+'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
         ];
       }
     }
@@ -103,7 +106,7 @@
       short_name:shortName,
       description:'Manage orders, menu & customers — '+typeLabel+'powered by StorePro',
       start_url:startUrl,
-      scope:'/',
+      scope:scopeUrl,
       id:'storepro-dashboard-'+slug,
       display:'standalone',
       background_color:cBrand,
@@ -279,7 +282,9 @@ input,textarea,select{font-family:inherit}
 .o-row2{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:11px;color:var(--ink3);font-weight:500}
 .o-row3{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:11px;color:var(--ink3);font-weight:500}
 .o-dot{color:var(--ink4);opacity:.6}
-.o-id{font-size:11px;font-weight:700;color:var(--brand);font-family:'SF Mono',Menlo,monospace;letter-spacing:.02em}
+.o-id{font-size:10px;font-weight:800;color:var(--brand);font-family:'SF Mono',Menlo,monospace;letter-spacing:.02em;white-space:nowrap;background:var(--brand-bg);padding:2px 7px;border-radius:6px;cursor:pointer;display:inline-block;flex-shrink:0}
+.o-id:active{background:var(--brand);color:#fff}
+.o-review-chip{display:inline-flex;align-items:center;gap:2px;font:800 9px var(--f);padding:2px 6px;border-radius:6px;background:#fef3c7;color:#92400e;letter-spacing:.04em;flex-shrink:0}
 .o-ago{font-size:10px;color:var(--ink4);margin-left:auto;font-weight:500}
 .o-name{font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
 .o-amt-n{font-size:16px;font-weight:800;color:var(--ink);flex-shrink:0;font-variant-numeric:tabular-nums}
@@ -320,6 +325,12 @@ input,textarea,select{font-family:inherit}
 .bubble{padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.5;margin-top:8px;display:flex;flex-direction:column;gap:2px}
 .bubble-shop{background:var(--blue-bg);border-left:3px solid var(--blue);color:#1e3a5f}
 .bubble-cust{background:var(--yellow-bg);border-left:3px solid var(--yellow);color:#7a5a00;font-style:italic}
+.bubble-review{background:linear-gradient(135deg,#fef9c3,#fde68a);border-left:3px solid #f59e0b;color:#78350f}
+
+/* Status-change WhatsApp sheet header */
+.swa-status-row{display:flex;align-items:center;gap:12px;padding:14px 18px 10px}
+.swa-status-icon{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(34,197,94,.3)}
+.swa-status-info{flex:1;min-width:0}
 .bubble-l{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-style:normal}
 
 /* ───── ETA QUICK REPLY SHEET ───── */
@@ -464,6 +475,8 @@ input,textarea,select{font-family:inherit}
 .cfg-k{font-size:11px;font-weight:700;color:var(--brand);margin-bottom:6px}
 .cfg-row{display:flex;gap:8px;align-items:center}
 .cfg-input{flex:1;height:38px;padding:0 12px;border:1.5px solid var(--line);border-radius:10px;font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none}
+/* Mobile: prevent iOS Safari zoom-on-focus by bumping font to 16px on touch devices */
+@media (pointer:coarse){input:not([type=color]):not([type=range]):not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 .cfg-input:focus{border-color:var(--brand);background:var(--card)}
 .cfg-save{height:38px;padding:0 14px;background:var(--brand);color:#fff;border-radius:10px;font:700 11px var(--f);flex-shrink:0}
 .cfg-save.saved{background:var(--brand-bg);color:var(--brand)}
@@ -633,6 +646,24 @@ input,textarea,select{font-family:inherit}
     </div>
     <div class="pin-err" id="pinErr"></div>
     <button class="lock-btn" onclick="checkPin()">Unlock</button>
+    <div style="text-align:center;margin-top:14px;font:500 12px var(--f);color:var(--ink3)">
+      <a href="#" onclick="showForgotPin();return false" style="color:var(--brand);font-weight:600;text-decoration:none">Forgot PIN?</a>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot PIN sheet — z-index above the lock screen (.lock is 9999) -->
+<div class="sheet-bg" id="forgotPinSheet" style="z-index:10000" onclick="if(event.target===this)closeSheet('forgotPinSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>🔐 Forgot your PIN?</h3>
+    <div class="sheet-sub">No worries — we'll help you reset it.</div>
+    <div style="background:var(--brand-bg,#e8faed);border-radius:12px;padding:14px 16px;margin:12px 0;font:500 13px var(--f);line-height:1.6;color:var(--ink1)">
+      Send us a message with your <strong>shop name</strong> and registered <strong>phone number</strong>. We'll reset your PIN within ~30 minutes during business hours.
+    </div>
+    <a id="forgotWaBtn" target="_blank" rel="noopener" class="btn btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25d366;height:48px;font-size:14px;width:100%;text-decoration:none;color:#fff;border-radius:12px;margin-bottom:8px">💬 Message us on WhatsApp</a>
+    <a id="forgotMailBtn" class="btn" style="display:flex;align-items:center;justify-content:center;gap:8px;height:46px;font-size:13px;width:100%;text-decoration:none;color:var(--ink1);border:1.5px solid var(--line);border-radius:12px;background:var(--white)">✉️ Email amitnegimca@gmail.com</a>
+    <div class="sheet-actions"><button class="btn" onclick="closeSheet('forgotPinSheet')" style="width:100%">Close</button></div>
   </div>
 </div>
 
@@ -711,6 +742,8 @@ input,textarea,select{font-family:inherit}
       <div class="kpi"><div class="kpi-l">7-Day Orders</div><div class="kpi-v" id="ins7Ord">0</div><div class="kpi-d" id="ins7OrdD">—</div></div>
       <div class="kpi"><div class="kpi-l">Avg Ticket</div><div class="kpi-v" id="insAov">₹0</div><div class="kpi-d">per order</div></div>
       <div class="kpi"><div class="kpi-l">Repeat Rate</div><div class="kpi-v" id="insRepeat">0%</div><div class="kpi-d">returning</div></div>
+      <div class="kpi"><div class="kpi-l">⭐ Avg Rating</div><div class="kpi-v" id="insAvgStars">—</div><div class="kpi-d" id="insReviewCount">no reviews yet</div></div>
+      <div class="kpi"><div class="kpi-l">😊 Happy Customers</div><div class="kpi-v" id="insGoodPct">—</div><div class="kpi-d" id="insBadCount">all good ✓</div></div>
     </div>
 
     <div class="card">
@@ -740,6 +773,13 @@ input,textarea,select{font-family:inherit}
         <div class="top-list" id="topCustomersList"><div class="empty" style="padding:20px">No data yet</div></div>
       </div>
     </div>
+
+    <div class="card">
+      <div class="card-hdr"><h3>⭐ Recent Reviews</h3></div>
+      <div class="card-body">
+        <div class="top-list" id="recentReviewsList"><div class="empty" style="padding:20px">No reviews yet</div></div>
+      </div>
+    </div>
   </div>
 
   <!-- ─── PRODUCTS PAGE ─── -->
@@ -761,13 +801,16 @@ input,textarea,select{font-family:inherit}
       <div class="menu-row" onclick="openNotifSettings()"><div class="menu-ic" style="background:var(--yellow-bg);color:var(--yellow)">🔔</div><div class="menu-info"><div class="menu-title">Notifications</div><div class="menu-sub" id="notifSummary">Sound, vibration, browser alerts</div></div><div class="menu-arr">›</div></div>
       <div class="menu-row" id="installMenuRow" onclick="clickInstall()"><div class="menu-ic" style="background:var(--blue-bg);color:var(--blue)">📱</div><div class="menu-info"><div class="menu-title">Install as App</div><div class="menu-sub" id="installSub">Add to home screen for instant access</div></div><div class="menu-arr">›</div></div>
       <div class="menu-row" onclick="openSection('config')"><div class="menu-ic">⚙️</div><div class="menu-info"><div class="menu-title">Store Settings</div><div class="menu-sub">Pricing, hours, delivery, UPI</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-row" onclick="openThemePicker()"><div class="menu-ic" style="background:var(--pink-bg);color:var(--pink)">🎨</div><div class="menu-info"><div class="menu-title">Theme &amp; Colors</div><div class="menu-sub" id="themeCurrentSub">Pick a brand color for your store</div></div><div class="menu-arr">›</div></div>
       <div class="menu-row" onclick="openCustomers()"><div class="menu-ic" style="background:var(--purple-bg);color:var(--purple)">👥</div><div class="menu-info"><div class="menu-title">Customers</div><div class="menu-sub" id="custCountSub">View customer database</div></div><div class="menu-arr">›</div></div>
       <div class="menu-row" onclick="openMarketing()"><div class="menu-ic" style="background:var(--pink-bg);color:var(--pink)">📣</div><div class="menu-info"><div class="menu-title">Broadcast & Offers</div><div class="menu-sub">Send WhatsApp campaigns</div></div><div class="menu-arr">›</div></div>
       <div class="menu-row" onclick="openSection('inventory')"><div class="menu-ic" style="background:var(--orange-bg);color:var(--orange)">📦</div><div class="menu-info"><div class="menu-title">Inventory & Stock</div><div class="menu-sub">Manage products quickly</div></div><div class="menu-arr">›</div></div>
+      <div class="menu-row" onclick="placeTestOrder()"><div class="menu-ic" style="background:#fef3c7;color:#92400e">🧪</div><div class="menu-info"><div class="menu-title">Place Test Order</div><div class="menu-sub">Verify the full flow as a customer</div></div><div class="menu-arr">›</div></div>
     </div>
 
     <div class="sec-title"><h2>Help</h2></div>
     <div class="menu-list card">
+      <div class="menu-row" onclick="openSetupChecklist()"><div class="menu-ic" style="background:var(--green-bg);color:var(--green)">✅</div><div class="menu-info"><div class="menu-title">Setup Checklist</div><div class="menu-sub" id="setupChecklistSub">Complete your store setup</div></div><div class="menu-arr" id="setupChecklistBadge">›</div></div>
       <div class="menu-row" onclick="openSection('help')"><div class="menu-ic" style="background:var(--blue-bg);color:var(--blue)">💡</div><div class="menu-info"><div class="menu-title">Quick Tips</div><div class="menu-sub">Get more from StorePro</div></div><div class="menu-arr">›</div></div>
       <div class="menu-row" onclick="openSheet()"><div class="menu-ic" style="background:#fef3c7;color:#92400e">📋</div><div class="menu-info"><div class="menu-title">Open Google Sheet</div><div class="menu-sub">Edit raw data</div></div><div class="menu-arr">›</div></div>
       <div class="menu-row" onclick="lockNow()"><div class="menu-ic" style="background:var(--red-bg);color:var(--red)">🔒</div><div class="menu-info"><div class="menu-title">Lock Dashboard</div><div class="menu-sub">Sign out</div></div><div class="menu-arr">›</div></div>
@@ -861,6 +904,30 @@ input,textarea,select{font-family:inherit}
 
 <!-- ─── CONFIG SHEET ─── -->
 <!-- ─── PRODUCT EDITOR SHEET (dynamic fields per industry) ─── -->
+<!-- ─── STATUS-CHANGE WHATSAPP CONFIRMATION SHEET ─── -->
+<div class="sheet-bg" id="swaSheet" onclick="if(event.target===this)closeStatusWASheet()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="swa-status-row">
+      <div class="swa-status-icon">✅</div>
+      <div class="swa-status-info">
+        <h3 id="swaTitle" style="font:800 18px var(--f);color:var(--ink)">Status updated</h3>
+        <div id="swaSub" style="font:600 12px var(--f);color:var(--ink3);margin-top:2px">Notify customer on WhatsApp?</div>
+      </div>
+    </div>
+    <div style="padding:0 18px 14px">
+      <div style="font:700 11px var(--f);color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Message Preview <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink4)">· edit before sending</span></div>
+      <textarea class="sheet-textarea" id="swaText" style="min-height:120px"></textarea>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-ghost" onclick="skipStatusWA()" style="flex:0 0 auto;padding:0 14px">Cancel</button>
+        <button class="btn btn-secondary" onclick="saveStatusWAOnly()" style="flex:1;background:var(--bg);color:var(--brand);border:1.5px solid var(--brand-bg)">📋 Send to Tracking</button>
+        <button class="btn btn-wa" onclick="sendStatusWA()" style="flex:1.2">📱 Send via WhatsApp</button>
+      </div>
+      <div style="font-size:10px;color:var(--ink4);margin-top:8px;text-align:center;line-height:1.5"><b>📋 Send to Tracking</b> = customer sees it on tracking page · <b>📱 Send via WhatsApp</b> = also opens WhatsApp</div>
+    </div>
+  </div>
+</div>
+
 <div class="sheet-bg" id="prodSheet" onclick="if(event.target===this)closeSheet('prodSheet')">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -934,8 +1001,72 @@ input,textarea,select{font-family:inherit}
   </div>
 </div>
 
+<!-- ─── THEME PICKER ─── -->
+<div class="sheet-bg" id="themeSheet" onclick="if(event.target===this)closeSheet('themeSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>🎨 Theme &amp; Colors</h3>
+    <div class="sheet-sub">Pick a brand color — your storefront, dashboard, and email receipts will all match.</div>
+    <div id="themeSwatches" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:12px;margin:12px 0 4px"></div>
+    <div style="font:600 11px var(--f);color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px">Custom hex</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="color" id="themeCustomPicker" style="width:48px;height:42px;border:1px solid var(--line);border-radius:8px;background:transparent;cursor:pointer">
+      <input type="text" id="themeCustomHex" placeholder="#0c831f" maxlength="7" style="flex:1;height:42px;padding:0 12px;border:1px solid var(--line);border-radius:8px;font:600 14px monospace;color:var(--ink1)">
+      <button class="btn btn-primary" id="themeApplyCustom" onclick="applyCustomTheme()" style="height:42px;padding:0 18px">Apply</button>
+    </div>
+    <div class="sheet-actions"><button class="btn" onclick="closeSheet('themeSheet')" style="width:100%">Close</button></div>
+  </div>
+</div>
+
+<!-- ─── SETUP CHECKLIST ─── -->
+<div class="sheet-bg" id="setupSheet" onclick="if(event.target===this)closeSheet('setupSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>✅ Setup Checklist</h3>
+    <div class="sheet-sub" id="setupSheetSub">Finish these steps to get the most out of your store</div>
+    <div class="setup-progress-wrap">
+      <div class="setup-progress-track"><div class="setup-progress-fill" id="setupProgressFill" style="width:0%"></div></div>
+      <div class="setup-progress-text" id="setupProgressText">0 of 6 done</div>
+    </div>
+    <div id="setupItems"></div>
+    <div class="sheet-actions" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="closeSheet('setupSheet')" style="flex:1">Close</button>
+      <button class="btn btn-primary" onclick="dismissSetupForever()" id="setupDismissBtn" style="flex:1">Don't show again</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.setup-progress-wrap{margin:8px 0 14px}
+.setup-progress-track{height:8px;background:var(--bg);border-radius:6px;overflow:hidden;margin-bottom:6px}
+.setup-progress-fill{height:100%;background:linear-gradient(90deg,var(--green),#22c55e);border-radius:6px;transition:width .3s ease}
+.setup-progress-text{font:600 11px var(--f);color:var(--ink3);text-align:right}
+.setup-item{background:var(--card,#fff);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:.15s}
+.setup-item:active{transform:scale(.98)}
+.setup-item:hover{border-color:var(--brand);background:var(--brand-bg,#e8faed)}
+.setup-item.done{background:var(--bg);opacity:.7;cursor:default}
+.setup-item.done:hover{border-color:var(--line);background:var(--bg)}
+.setup-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:grid;place-items:center;font:700 12px var(--f);color:var(--ink3);transition:.2s;margin-top:1px}
+.setup-item.done .setup-check{background:var(--green);border-color:var(--green);color:#fff}
+.setup-item.done .setup-check::after{content:'✓'}
+.setup-info{flex:1;min-width:0}
+.setup-title{font:700 14px var(--f);color:var(--ink1);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.setup-item.done .setup-title{text-decoration:line-through;color:var(--ink3)}
+.setup-desc{font:500 12px var(--f);color:var(--ink3);line-height:1.5}
+.setup-arr{font:300 18px var(--f);color:var(--ink3);align-self:center;flex-shrink:0}
+.setup-item.done .setup-arr{display:none}
+.setup-help{display:none;margin-top:10px;padding:12px 14px;background:#f0f7ff;border-left:3px solid #1e40af;border-radius:8px;font:500 12px var(--f);color:#1e3a8a;line-height:1.6}
+.setup-help.open{display:block}
+.setup-help code{background:#dbeafe;padding:1px 6px;border-radius:4px;font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#1e3a8a}
+.setup-help ol,.setup-help ul{margin:6px 0 0 18px;padding:0}
+.setup-help li{margin-bottom:5px}
+.setup-help a{color:var(--brand);font-weight:600;text-decoration:none}
+.setup-help a:hover{text-decoration:underline}
+.setup-help .step-num{display:inline-block;width:18px;height:18px;background:var(--brand);color:#fff;border-radius:50%;text-align:center;line-height:18px;font:700 10px var(--f);margin-right:6px;vertical-align:1px}
+</style>
+
 <div class="toast" id="toast"></div>
 
-<script src="dashboard-v2.js?v=28"></script>
+<script src="dashboard-v2.js?v=39"></script>
 </body>
 </html>

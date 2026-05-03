@@ -216,7 +216,8 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 <body>
 
 <!-- PIN Lock -->
-<div class="lock" id="lockScreen"><div class="lock-box"><div style="font-size:36px">🔐</div><h2>Store Dashboard</h2><p>Enter PIN to manage your store</p><div class="pin-inputs"><input type="tel" maxlength="1" id="p1" oninput="pinNext(this,2)" onkeydown="pinBack(event,0)" autofocus><input type="tel" maxlength="1" id="p2" oninput="pinNext(this,3)" onkeydown="pinBack(event,1)"><input type="tel" maxlength="1" id="p3" oninput="pinNext(this,4)" onkeydown="pinBack(event,2)"><input type="tel" maxlength="1" id="p4" oninput="pinNext(this,0)" onkeydown="pinBack(event,3)"></div><div class="pin-err" id="pinErr"></div><button class="pin-submit" onclick="checkPin()">Unlock</button></div></div>
+<div class="lock" id="lockScreen"><div class="lock-box"><div style="font-size:36px">🔐</div><h2>Store Dashboard</h2><p>Enter PIN to manage your store</p><div class="pin-inputs"><input type="tel" maxlength="1" id="p1" oninput="pinNext(this,2)" onkeydown="pinBack(event,0)" autofocus><input type="tel" maxlength="1" id="p2" oninput="pinNext(this,3)" onkeydown="pinBack(event,1)"><input type="tel" maxlength="1" id="p3" oninput="pinNext(this,4)" onkeydown="pinBack(event,2)"><input type="tel" maxlength="1" id="p4" oninput="pinNext(this,0)" onkeydown="pinBack(event,3)"></div><div class="pin-err" id="pinErr"></div><button class="pin-submit" onclick="checkPin()">Unlock</button><div style="text-align:center;margin-top:14px;font:500 12px var(--f);color:var(--ink3)"><a href="#" id="forgotPinLink" style="color:var(--brand);font-weight:600;text-decoration:none">Forgot PIN?</a></div></div></div>
+<div id="forgotPinPop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'"><div style="background:#fff;max-width:360px;width:100%;border-radius:14px;padding:22px 22px 16px;font-family:system-ui,-apple-system,Segoe UI,sans-serif"><h3 style="font:700 18px system-ui;margin:0 0 6px">🔐 Forgot your PIN?</h3><div style="font:500 13px system-ui;color:#6b7280;margin-bottom:14px">Send us a message with your shop name and registered phone — we'll reset your PIN within ~30 minutes.</div><a id="forgotPinWa" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25d366;color:#fff;height:46px;border-radius:11px;text-decoration:none;font:700 14px system-ui;margin-bottom:8px">💬 Message us on WhatsApp</a><a id="forgotPinMail" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:#111;border:1.5px solid #e5e7eb;height:44px;border-radius:11px;text-decoration:none;font:600 13px system-ui;margin-bottom:10px">✉️ Email amitnegimca@gmail.com</a><button onclick="document.getElementById('forgotPinPop').style.display='none'" style="width:100%;height:42px;background:#f3f4f6;border:none;border-radius:10px;font:600 13px system-ui;color:#374151;cursor:pointer">Close</button></div></div>
 
 <!-- Top Bar -->
 <div class="top"><div class="top-row1"><h1>🏬 Store Dashboard</h1><div class="top-actions"><span style="font-size:10px;opacity:.6" id="lastUpdate"></span><button class="top-btn" onclick="playNotif()" title="Test notification sound">🔔</button><button class="top-btn" onclick="refreshCurrentTab()" id="refreshBtn">↻</button><button class="top-btn" onclick="lockDashboard()">🔒</button></div></div><div class="top-row2" id="dateRow"></div></div>
@@ -325,7 +326,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 <div class="toast" id="toast"></div>
 
 <script>
-var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var MASTER_SHEET_ID="1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
 var DEFAULT_STORE_SHEET="";
 var DEFAULT_SCRIPT="";
 var SHEET_ID="",SCRIPT_URL="";
@@ -954,6 +955,16 @@ function unlockAudio(){try{getAudioCtx()}catch(e){}}
 
 function printReceipt(orderId){
   var o=allOrders.find(function(x){return x.id===orderId});if(!o)return;
+
+  // ── Thermal-printer mode ─────────────────────────────────────────────
+  // If Config row "ReceiptWidth" is set to 58 or 80, use the narrow
+  // thermal-friendly layout. Otherwise fall through to the desktop
+  // receipt below (with UPI QR, status badges, etc).
+  var thermalWidth = parseInt(getConfigVal('receiptwidth','0'),10);
+  if (thermalWidth===58 || thermalWidth===80) {
+    return printThermalReceipt_(o, thermalWidth);
+  }
+
   var items=o.items.split(/[,\n]+/).map(function(it){return it.trim()}).filter(Boolean);
   var mode=o.mode==='delivery'?'🚚 Delivery':'🏪 Pickup';
   var status=o.status.charAt(0).toUpperCase()+o.status.slice(1);
@@ -1097,9 +1108,92 @@ function printReceipt(orderId){
     html=html.replace('id="receiptQr"','id="receiptQr" data-url="'+esc(upiUrl)+'"');
   }
   
-  html+='</body></html>';
+  html+='<\/body><\/html>';
   w.document.write(html);
   w.document.close();
+}
+
+// Narrow thermal-printer layout (58mm or 80mm rolls). Called from printReceipt
+// when Config "ReceiptWidth" is 58 or 80. Pure ASCII-aligned monospace; no QR
+// (most thermal printers don't render embedded images well). Match the layout
+// used by dashboard-v2.js so output is consistent across dashboards.
+function printThermalReceipt_(o, widthMm) {
+  var printableMm = widthMm - 6;
+  var shop = getConfigVal('shopname','My Store');
+  var addr = getConfigVal('address','');
+  var phone = getConfigVal('phone','') || getConfigVal('whatsapp','');
+  var upi = getConfigVal('upi','');
+  var slug = getConfigVal('slug','');
+
+  var itemLines = (o.items||'').split(/\n|,(?=\s*\d+\s*[x×])/).map(function(s){return s.trim()}).filter(Boolean);
+  var itemRows = itemLines.map(function(line){
+    var eq = line.lastIndexOf('=');
+    var left = (eq>=0 ? line.slice(0,eq) : line).trim();
+    var price = (eq>=0 ? line.slice(eq+1) : '').replace(/[₹\s]/g,'').trim();
+    return '<tr><td class="it">'+esc(left)+'</td><td class="r">'+(price?'₹'+esc(price):'')+'</td></tr>';
+  }).join('');
+
+  var dateStr = String(o.date||'');
+  var timeStr = '';
+  var dt = new Date(dateStr);
+  if (!isNaN(dt.getTime())) {
+    dateStr = dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    timeStr = dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  }
+
+  var modeLabel = (o.mode||'').toUpperCase()==='DELIVERY' ? 'DELIVERY' : 'PICKUP';
+  var paymentLabel = (o.payment||'COD').toUpperCase();
+  var fontBase = widthMm===58 ? 10 : 12;
+
+  var css =
+    '@page{size:'+widthMm+'mm auto;margin:3mm}'+
+    'html,body{margin:0;padding:0}'+
+    'body{font-family:"Courier New",ui-monospace,monospace;font-size:'+fontBase+'px;line-height:1.35;color:#000;width:'+printableMm+'mm;margin:0 auto;padding:0}'+
+    '.c{text-align:center}.r{text-align:right}.b{font-weight:700}'+
+    '.lg{font-size:'+(fontBase+3)+'px;font-weight:700}'+
+    '.sm{font-size:'+(fontBase-1)+'px}'+
+    'hr{border:0;border-top:1px dashed #000;margin:6px 0}'+
+    'hr.solid{border-top:1px solid #000}'+
+    'table{width:100%;border-collapse:collapse}'+
+    'td{padding:1px 0;vertical-align:top;word-break:break-word}'+
+    '.it{padding-right:6px}'+
+    '.kv td.k{width:34%}.kv td.v{font-weight:700}'+
+    '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+
+  var html = ''
+    + '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt '+esc(o.id)+'</title><style>'+css+'</style></head><body>'
+    + '<div class="c lg">'+esc(shop)+'</div>'
+    + (addr ? '<div class="c sm">'+esc(addr)+'</div>' : '')
+    + (phone ? '<div class="c sm">📞 '+esc(phone)+'</div>' : '')
+    + '<hr class="solid">'
+    + '<table class="kv"><tbody>'
+    +   '<tr><td class="k">Order #</td><td class="v">'+esc(o.id)+'</td></tr>'
+    +   (dateStr ? '<tr><td class="k">Date</td><td class="v">'+esc(dateStr)+(timeStr?' · '+esc(timeStr):'')+'</td></tr>' : '')
+    +   '<tr><td class="k">Mode</td><td class="v">'+esc(modeLabel)+'</td></tr>'
+    + '</tbody></table><hr>'
+    + '<table class="kv"><tbody>'
+    +   '<tr><td class="k">Customer</td><td class="v">'+esc(o.name||'-')+'</td></tr>'
+    +   (o.phone ? '<tr><td class="k">Phone</td><td class="v">'+esc(o.phone)+'</td></tr>' : '')
+    +   (o.address && modeLabel==='DELIVERY' ? '<tr><td class="k">Address</td><td class="v">'+esc(o.address)+'</td></tr>' : '')
+    + '</tbody></table><hr>'
+    + (itemRows ? '<table>'+itemRows+'</table>' : '<div>(no items)</div>')
+    + '<hr>'
+    + '<table><tbody><tr class="lg"><td>TOTAL</td><td class="r">₹'+esc(o.total)+'</td></tr></tbody></table>'
+    + '<hr>'
+    + '<div class="sm"><b>Payment:</b> '+esc(paymentLabel)+(paymentLabel==='COD'?' (Pay on '+(modeLabel==='DELIVERY'?'delivery':'pickup')+')':'')+'</div>'
+    + (upi && paymentLabel!=='COD' ? '<div class="sm">UPI: '+esc(upi)+'</div>' : '')
+    + (o.notes ? '<hr><div class="sm"><b>Notes:</b> '+esc(o.notes)+'</div>' : '')
+    + '<hr class="solid">'
+    + '<div class="c sm">Thank you! 🙏</div>'
+    + (slug ? '<div class="c sm">storepro.in/?store='+esc(slug)+'</div>' : '')
+    + '<div class="c sm" style="margin-top:4px;color:#666">Powered by StorePro</div>'
+    + '<\/body><\/html>';
+
+  var w = window.open('','_blank','width=380,height=600');
+  if (!w) return;
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function(){ try { w.focus(); w.print(); } catch(e){} }, 250);
 }
 
 // ═══════════════════════════════════
@@ -1377,6 +1471,8 @@ try{pinAttempts=parseInt(sessionStorage.getItem('pin_attempts')||'0');pinLockUnt
 
 function pinNext(el,n){if(el.value.length===1&&n>0)$('p'+n).focus();if(n===0&&el.value.length===1)checkPin()}
 function pinBack(e,i){if(e.key==='Backspace'&&i>0&&e.target.value==='')$('p'+i).focus()}
+var SUPPORT_WHATSAPP='919717732597',SUPPORT_EMAIL='amitnegimca@gmail.com';
+(function(){var lnk=$('forgotPinLink');if(!lnk)return;lnk.addEventListener('click',function(e){e.preventDefault();var slug=(new URLSearchParams(location.search)).get('store')||'';var msg='Hi! I forgot the dashboard PIN for my store '+(slug?'('+slug+')':'')+'. Please help me reset it.\n\nShop name: \nRegistered phone: ';$('forgotPinWa').href='https://wa.me/'+SUPPORT_WHATSAPP+'?text='+encodeURIComponent(msg);$('forgotPinMail').href='mailto:'+SUPPORT_EMAIL+'?subject='+encodeURIComponent('Dashboard PIN reset request'+(slug?' — '+slug:''))+'&body='+encodeURIComponent(msg);$('forgotPinPop').style.display='flex'})})();
 
 function checkPin(){
   unlockAudio(); // Unlock audio on user gesture
@@ -1570,7 +1666,7 @@ function resolveStore(cb){
   // No params — show help or redirect
   if(!slug){
     if(window.location.protocol!=='file:'){window.location.replace(window.location.href.split('dashboard.html')[0]);return}
-    document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:linear-gradient(135deg,#f0fdf4,#f5f5f5)"><div style="text-align:center;max-width:420px"><div style="font-size:64px;margin-bottom:8px">🏬</div><h1 style="font-size:24px;font-weight:800;color:#0c831f;margin-bottom:8px">StorePro Dashboard</h1><p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">Use the dashboard link given to you:<br><br><code style="background:#e8faed;padding:4px 10px;border-radius:6px;font-size:12px;color:#0c831f">dashboard.html?store=your-store-name</code></p><a href="https://wa.me/919760684971?text=Hi!%20I%20need%20my%20dashboard%20link" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#25d366;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">📱 Get my link</a></div></div>';
+    document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:linear-gradient(135deg,#f0fdf4,#f5f5f5)"><div style="text-align:center;max-width:420px"><div style="font-size:64px;margin-bottom:8px">🏬</div><h1 style="font-size:24px;font-weight:800;color:#0c831f;margin-bottom:8px">StorePro Dashboard</h1><p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">Use the dashboard link given to you:<br><br><code style="background:#e8faed;padding:4px 10px;border-radius:6px;font-size:12px;color:#0c831f">dashboard.html?store=your-store-name</code></p><a href="mailto:amitnegimca@gmail.com?subject=Need%20my%20dashboard%20link" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#0c831f;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">✉️ Email support</a></div></div>';
     return;
   }
   // Lookup slug in master registry
@@ -1595,11 +1691,11 @@ function resolveStore(cb){
     cb();
   };
   var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=1&_t='+Date.now();
   s.onerror=function(){showDashNotFound(slug)};
   document.body.appendChild(s);
 }
-function showDashNotFound(slug){var safe=slug.replace(/[<>"'&]/g,'');document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:#f5f5f5"><div style="text-align:center;max-width:400px"><div style="font-size:64px;margin-bottom:12px">🔍</div><h1 style="font-size:22px;font-weight:700;margin-bottom:8px">Dashboard not found</h1><p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">Store <strong>"'+safe+'"</strong> not found or inactive.</p><a href="https://wa.me/919760684971?text=Hi!%20I%20need%20help%20with%20store%20'+encodeURIComponent(safe)+'" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:#0c831f;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">📱 Contact Support</a></div></div>'}
+function showDashNotFound(slug){var safe=slug.replace(/[<>"'&]/g,'');document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:#f5f5f5"><div style="text-align:center;max-width:400px"><div style="font-size:64px;margin-bottom:12px">🔍</div><h1 style="font-size:22px;font-weight:700;margin-bottom:8px">Dashboard not found</h1><p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">Store <strong>"'+safe+'"</strong> not found or inactive.</p><a href="mailto:amitnegimca@gmail.com?subject=Help%20with%20store%20'+encodeURIComponent(safe)+'" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:#0c831f;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">✉️ Contact Support</a></div></div>'}
 resolveStore(function(){initDashboard()});
 </script>
 </body>

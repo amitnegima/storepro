@@ -1,7 +1,11 @@
-var CACHE_NAME = 'storepro-v5';
+var CACHE_NAME = 'storepro-v41';
 var SHELL_FILES = [
   '/',
   '/index.html',
+  '/about.html',
+  '/signup.html',
+  '/privacy.html',
+  '/terms.html',
   '/fastfood.html',
   '/meatshop.html',
   '/restaurant.html',
@@ -23,7 +27,7 @@ self.addEventListener('install', function(e) {
   self.skipWaiting();
 });
 
-// Activate — clean old caches
+// Activate — clean old caches AND notify clients to reload (self-heal stale tabs)
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(names) {
@@ -31,9 +35,14 @@ self.addEventListener('activate', function(e) {
         names.filter(function(n) { return n !== CACHE_NAME; })
              .map(function(n) { return caches.delete(n); })
       );
+    }).then(function(){
+      return self.clients.claim();
+    }).then(function(){
+      return self.clients.matchAll({ type: 'window' });
+    }).then(function(list){
+      list.forEach(function(c){ try { c.postMessage({ type: 'sw-updated', cache: CACHE_NAME }); } catch(e) {} });
     })
   );
-  self.clients.claim();
 });
 
 // Fetch — smart caching strategy

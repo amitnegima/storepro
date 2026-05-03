@@ -3,679 +3,881 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0c831f">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>StorePro — Your Store, Online in 5 Minutes</title>
-<meta name="description" content="Give your local store a professional online presence. Free Google Sheets-powered e-commerce for local shops. Orders on WhatsApp. No coding needed.">
-<meta property="og:title" content="StorePro — Online Store for Every Business">
-<meta property="og:description" content="Launch your local store online in 5 minutes. Free plan available. WhatsApp orders, UPI payments, delivery tracking.">
+<title>StorePro — Order from local shops near you</title>
+<meta name="description" content="Order groceries, fast food, meat, and restaurant meals from verified local shops. Pay via UPI. Free home delivery or store pickup.">
+<meta name="keywords" content="local shops india, kirana online, restaurant near me, fast food delivery, meat shop online, dhaba near me, storepro">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://storepro.in/">
+<meta property="og:site_name" content="StorePro">
+<meta property="og:title" content="StorePro — Order from local shops">
+<meta property="og:description" content="Find verified local shops near you. Groceries, food, meat and more.">
+<meta property="og:image" content="https://storepro.in/logo-hero.svg">
+<meta property="og:locale" content="en_IN">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="StorePro — Local shops near you">
+<meta name="twitter:description" content="Order from verified local shops. UPI payments. Delivery or pickup.">
+<meta name="twitter:image" content="https://storepro.in/logo-hero.svg">
+
+<!-- Schema.org Organization -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name":"StorePro",
+  "url":"https://storepro.in",
+  "logo":"https://storepro.in/logo-mark.svg",
+  "description":"Online stores for local Indian shops. WhatsApp orders, UPI payments, zero commission.",
+  "sameAs":[]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://docs.google.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#fafaf7;--ink:#111;--ink2:#444;--ink3:#777;--brand:#0c831f;--brand-dk:#065a14;--brand-bg:#e8faed;--wa:#25d366;--white:#fff;--line:#e5e7eb;--gold:#f59e0b;--blue:#2563eb;--f:'Outfit',system-ui,sans-serif;--fh:'Noto Sans Devanagari',sans-serif;--mw:1100px}
-html{scroll-behavior:smooth}
-body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{text-decoration:none;color:inherit}
+:root{
+  --bg:#fafaf7;
+  --surface:#fff;
+  --surface-2:#f5f5f0;
+  --ink:#0f1011;
+  --ink-2:#3f4144;
+  --ink-3:#6b6e72;
+  --ink-4:#a8acb1;
+  --line:#e7e7e2;
+  --line-2:#d4d8d4;
+  --brand:#0c831f;
+  --brand-dk:#065a14;
+  --brand-bg:#e8faed;
+  --gold:#f59e0b;
+  --gold-bg:#fef3c7;
+  --blue:#2563eb;
+  --blue-bg:#dbeafe;
+  --wa:#25d366;
+  --r:8px;
+  --r-2:14px;
+  --r-3:20px;
+  --f:'Outfit',system-ui,-apple-system,sans-serif;
+  --fh:'Noto Sans Devanagari',sans-serif;
+  --shadow-1:0 1px 2px rgba(15,16,17,.04);
+  --shadow-2:0 4px 14px rgba(15,16,17,.06);
+  --shadow-3:0 10px 32px rgba(15,16,17,.08);
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font-family:inherit}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,250,247,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06)}
-.nav-in{max-width:var(--mw);margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-size:20px;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:8px}
-.nav-logo span{font-size:22px}
-.nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{font-size:14px;font-weight:500;color:var(--ink2);transition:.15s}.nav-links a:hover{color:var(--brand)}
-.nav-cta{background:var(--brand);color:var(--white);padding:9px 22px;border-radius:8px;font:700 13px var(--f);transition:.15s;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px}.nav-cta:hover{background:var(--brand-dk);transform:translateY(-1px)}
+/* ─── Top header ─── */
+.hdr{position:sticky;top:0;z-index:80;background:rgba(250,250,247,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(15,16,17,.06)}
+.hdr-in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:12px}
+.brand{font-size:18px;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:7px;letter-spacing:-.02em;flex-shrink:0}
+.brand span{font-size:20px}
+.city-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;background:var(--surface);border:1px solid var(--line);border-radius:50px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:.15s;letter-spacing:-.01em;font-family:inherit}
+.city-pill:hover{border-color:var(--brand);color:var(--brand)}
+.city-pill svg{width:14px;height:14px;flex-shrink:0}
+.hdr-spacer{flex:1}
+.hdr-link{font-size:13px;font-weight:600;color:var(--ink-2);transition:.15s;padding:6px 10px;border-radius:6px}
+.hdr-link:hover{color:var(--brand);background:rgba(12,131,31,.05)}
+.hdr-cta{display:inline-flex;align-items:center;gap:5px;background:var(--brand);color:#fff;padding:8px 16px;border-radius:50px;font-size:13px;font-weight:700;transition:.15s;letter-spacing:-.01em}
+.hdr-cta:hover{background:var(--brand-dk);transform:translateY(-1px);box-shadow:var(--shadow-2)}
+@media(max-width:640px){.hdr-link{display:none}.hdr-cta{padding:7px 12px}}
 
-/* HERO */
-.hero{padding:120px 24px 80px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(12,131,31,.06),transparent);pointer-events:none}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:50px;background:var(--brand-bg);color:var(--brand);font:700 12px var(--f);margin-bottom:20px;letter-spacing:.02em}
-.hero-badge span{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:dot 1.5s infinite}
-@keyframes dot{0%,100%{opacity:1}50%{opacity:.3}}
-.hero h1{font-size:clamp(36px,6vw,64px);font-weight:900;line-height:1.08;max-width:750px;margin:0 auto 12px;letter-spacing:-.03em}
+/* ─── Hero ─── */
+.hero{padding:48px 20px 32px;text-align:center;position:relative}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:50px;background:var(--brand-bg);color:var(--brand);font-size:11px;font-weight:700;margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.08;letter-spacing:-.025em;max-width:680px;margin:0 auto 10px}
 .hero h1 .gr{background:linear-gradient(135deg,var(--brand),#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-hi{font-family:var(--fh);font-size:clamp(16px,2.5vw,22px);color:var(--brand);opacity:.7;margin-bottom:16px;font-weight:600}
-.hero-sub{font-size:clamp(16px,2vw,20px);color:var(--ink2);max-width:560px;margin:0 auto 36px;line-height:1.6;font-weight:400}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn-big{height:54px;padding:0 32px;border-radius:12px;font:700 16px var(--f);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.2s}.btn-big:active{transform:scale(.97)}
-.btn-brand{background:var(--brand);color:var(--white)}.btn-brand:hover{background:var(--brand-dk);box-shadow:0 8px 30px rgba(12,131,31,.25);transform:translateY(-2px)}
-.btn-wa{background:var(--wa);color:var(--white)}.btn-wa:hover{filter:brightness(.9);transform:translateY(-2px)}
-.btn-outline{background:transparent;color:var(--ink);border:2px solid var(--line)}.btn-outline:hover{border-color:var(--brand);color:var(--brand)}
-.hero-stats{display:flex;justify-content:center;gap:48px;margin-top:48px;flex-wrap:wrap}
-.hs{text-align:center}.hs-n{font-size:28px;font-weight:800;color:var(--brand)}.hs-l{font-size:12px;color:var(--ink3);margin-top:2px;font-weight:500}
+.hero-sub{font-size:clamp(14px,1.7vw,17px);color:var(--ink-2);max-width:520px;margin:0 auto 28px;line-height:1.55}
+.hero-hi{font-family:var(--fh);font-size:14px;color:var(--brand);opacity:.75;margin-bottom:14px;font-weight:600}
 
-/* SOCIAL PROOF */
-.proof{padding:32px 24px;text-align:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--white)}
-.proof-in{max-width:var(--mw);margin:0 auto;display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap}
-.proof-item{font-size:14px;color:var(--ink3);font-weight:500;display:flex;align-items:center;gap:8px}
-.proof-item span{font-size:20px}
+/* Search */
+.search-wrap{max-width:540px;margin:0 auto;position:relative}
+.search-input{width:100%;height:54px;padding:0 56px 0 50px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;font:500 15px var(--f);color:var(--ink);outline:none;transition:.15s;box-shadow:var(--shadow-1);letter-spacing:-.01em}
+.search-input::placeholder{color:var(--ink-3)}
+.search-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(12,131,31,.08),var(--shadow-2)}
+.search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--ink-3);width:18px;height:18px;pointer-events:none}
+.search-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:var(--surface-2);color:var(--ink-3);border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:14px}
+.search-clear.show{display:flex}
 
-/* SECTION */
-.sec{padding:80px 24px}.sec-in{max-width:var(--mw);margin:0 auto}
-.sec-tag{display:inline-block;padding:5px 14px;border-radius:50px;background:var(--brand-bg);color:var(--brand);font:700 11px var(--f);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
-.sec-h{font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:8px}
-.sec-sub{font-size:16px;color:var(--ink2);max-width:520px;line-height:1.6;margin-bottom:40px}
+/* Autocomplete dropdown */
+.ac-wrap{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-3);z-index:30;max-height:360px;overflow-y:auto;display:none}
+.ac-wrap.open{display:block;animation:fadeIn .15s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.ac-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:.08s;border-bottom:1px solid rgba(231,231,226,.6)}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item.selected{background:var(--surface-2)}
+.ac-icon{width:34px;height:34px;border-radius:8px;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background-size:cover;background-position:center}
+.ac-text{flex:1;min-width:0}
+.ac-name{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.01em;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-name-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ac-sub{font-size:11px;color:var(--ink-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-arrow{color:var(--ink-4);font-size:14px;flex-shrink:0}
+.ac-empty{padding:20px;text-align:center;font-size:13px;color:var(--ink-3)}
 
-/* FEATURES */
-.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.feat{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:28px;transition:.2s;position:relative;overflow:hidden}
-.feat:hover{box-shadow:0 8px 30px rgba(0,0,0,.06);transform:translateY(-3px)}
-.feat-ic{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
-.fi-green{background:var(--brand-bg)}.fi-blue{background:#eff6ff}.fi-orange{background:#fff7ed}.fi-purple{background:#f3f0ff}.fi-pink{background:#fdf2f8}.fi-yellow{background:#fffbeb}
-.feat h3{font-size:16px;font-weight:700;margin-bottom:6px}
-.feat p{font-size:13px;color:var(--ink3);line-height:1.6}
+/* ─── Category bar ─── */
+.cat-bar{position:sticky;top:57px;z-index:60;background:rgba(250,250,247,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(15,16,17,.04);padding:12px 0}
+.cat-scroll{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:var(--surface);border:1px solid var(--line);border-radius:50px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:.15s;flex-shrink:0;letter-spacing:-.01em;white-space:nowrap;font-family:inherit}
+.cat-chip:hover{border-color:var(--brand);color:var(--brand)}
+.cat-chip.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.cat-chip-icon{font-size:16px;line-height:1}
+/* Toggle pill (Open now) — distinct from category chips */
+.cat-toggle{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--surface);border:1px solid var(--line);border-radius:50px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:.15s;flex-shrink:0;letter-spacing:-.01em;white-space:nowrap;font-family:inherit}
+.cat-toggle::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--ink-4);transition:.15s}
+.cat-toggle:hover{border-color:var(--brand);color:var(--brand)}
+.cat-toggle.active{background:var(--brand-bg);color:var(--brand);border-color:rgba(12,131,31,.3)}
+.cat-toggle.active::before{background:var(--brand);box-shadow:0 0 0 3px rgba(12,131,31,.15);animation:pulse 1.6s infinite}
+.cat-divider{width:1px;height:24px;background:var(--line);flex-shrink:0;align-self:center}
 
-/* HOW IT WORKS */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;counter-reset:step}
-.step{position:relative;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:32px 24px;text-align:center;counter-increment:step}
-.step::before{content:counter(step);position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:var(--brand);color:var(--white);font:800 14px var(--f);display:flex;align-items:center;justify-content:center}
-.step-ic{font-size:36px;margin-bottom:12px}
-.step h3{font-size:15px;font-weight:700;margin-bottom:6px}
-.step p{font-size:12px;color:var(--ink3);line-height:1.5}
+/* ─── Sections wrapper ─── */
+.feed{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+.section{margin-bottom:36px}
+.section-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;gap:12px;padding:0 4px}
+.section-h{font-size:clamp(18px,2.5vw,22px);font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.section-h-emoji{font-size:24px;line-height:1}
+.section-count{font-size:12px;color:var(--ink-3);font-weight:500;background:var(--surface);padding:3px 10px;border-radius:50px;border:1px solid var(--line)}
+.section-link{font-size:13px;color:var(--brand);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:3px}
+.section-link:hover{text-decoration:underline}
 
-/* PRICING */
-.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:start}
-.plan{background:var(--white);border:1.5px solid var(--line);border-radius:20px;padding:32px 28px;position:relative;transition:.2s}
-.plan:hover{box-shadow:0 8px 30px rgba(0,0,0,.06)}
-.plan.popular{border-color:var(--brand);box-shadow:0 8px 30px rgba(12,131,31,.12)}
-.plan-pop{position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:4px 16px;border-radius:50px;background:var(--brand);color:var(--white);font:700 11px var(--f);letter-spacing:.04em}
-.plan-name{font-size:14px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.plan-price{display:flex;align-items:baseline;gap:4px;margin-bottom:4px}
-.plan-price .amt{font-size:36px;font-weight:900;letter-spacing:-.02em}
-.plan-price .per{font-size:13px;color:var(--ink3);font-weight:500}
-.plan-desc{font-size:12px;color:var(--ink3);margin-bottom:20px;line-height:1.5}
-.plan-features{list-style:none;margin-bottom:24px}
-.plan-features li{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:13px;color:var(--ink2);line-height:1.5}
-.plan-features li::before{content:'✓';color:var(--brand);font-weight:700;flex-shrink:0;margin-top:1px}
-.plan-btn{display:block;width:100%;height:46px;border-radius:10px;font:700 14px var(--f);border:none;cursor:pointer;transition:.15s}.plan-btn:active{transform:scale(.97)}
-.plan-btn.green{background:var(--brand);color:var(--white)}.plan-btn.green:hover{background:var(--brand-dk)}
-.plan-btn.outline{background:transparent;color:var(--brand);border:2px solid var(--brand)}.plan-btn.outline:hover{background:var(--brand-bg)}
-.plan-btn.gray{background:var(--bg);color:var(--ink2)}.plan-btn.gray:hover{background:var(--line)}
+/* Horizontal scroll grid */
+.h-scroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 4px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.h-scroll::-webkit-scrollbar{display:none}
+.h-scroll>.card{flex:0 0 240px;scroll-snap-align:start}
+@media(min-width:780px){.h-scroll>.card{flex:0 0 260px}}
 
-/* VERTICALS */
-.vert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.vert{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:20px 14px;text-align:center;transition:.15s;cursor:default}
-.vert:hover{border-color:var(--brand);box-shadow:0 4px 16px rgba(12,131,31,.08)}
-.vert-ic{font-size:28px;margin-bottom:6px}
-.vert h4{font-size:13px;font-weight:700}
-.vert p{font-size:10px;color:var(--ink3);margin-top:2px}
+/* Vertical grid (when filtered/searched) */
+.v-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;padding:6px 4px}
 
-/* TESTIMONIALS */
-.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.test{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:24px}
-.test-stars{color:var(--gold);font-size:14px;margin-bottom:8px;letter-spacing:2px}
-.test-q{font-size:14px;color:var(--ink2);line-height:1.6;font-style:italic;margin-bottom:12px}
-.test-who{display:flex;align-items:center;gap:10px}
-.test-av{width:36px;height:36px;border-radius:50%;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font:700 14px var(--f);color:var(--brand)}
-.test-name{font-size:13px;font-weight:700}
-.test-role{font-size:11px;color:var(--ink3)}
+/* ─── Store card ─── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:.18s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;color:inherit;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-3);border-color:transparent}
+.card-thumb{aspect-ratio:5/3;background:linear-gradient(135deg,#e8faed,#f5f5f0);background-size:cover;background-position:center;position:relative;overflow:hidden}
+.card-thumb-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:54px;opacity:.85;line-height:1}
+.card-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:5px;flex-wrap:wrap}
+.card-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:50px;color:#fff;backdrop-filter:blur(6px);display:inline-flex;align-items:center;gap:3px;letter-spacing:.02em;line-height:1.4}
+.card-badge.b-featured{background:rgba(245,158,11,.94)}
+.card-badge.b-verified{background:rgba(37,99,235,.94)}
+.card-badge.b-new{background:rgba(12,131,31,.94)}
+.card-status{position:absolute;bottom:10px;right:10px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:50px;background:rgba(255,255,255,.94);color:var(--brand);backdrop-filter:blur(6px);display:inline-flex;align-items:center;gap:4px}
+.card-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brand)}
+.card-status.closed{color:var(--ink-3)}
+.card-status.closed::before{background:var(--ink-3)}
+.card-body{padding:14px 14px 10px;flex:1;display:flex;flex-direction:column}
+.card-name{font-size:15px;font-weight:700;margin-bottom:3px;letter-spacing:-.01em;display:flex;align-items:center;gap:5px;line-height:1.3}
+.card-name-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-verified{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--blue);color:#fff;font-size:9px;font-weight:700;flex-shrink:0}
+.card-meta{font-size:12px;color:var(--ink-3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.card-meta .dot{color:var(--ink-4)}
+.card-tagline{font-size:12px;color:var(--ink-2);line-height:1.45;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+.card-foot{padding:10px 14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--surface-2)}
+.card-rating{font-size:12px;color:var(--ink-2);font-weight:600;display:flex;align-items:center;gap:3px}
+.card-rating-star{color:var(--gold);font-size:13px}
+.card-open{font-size:12px;font-weight:700;color:var(--brand);display:inline-flex;align-items:center;gap:3px}
 
-/* FAQ */
-.faq-list{max-width:680px}
-.faq{border-bottom:1px solid var(--line);padding:18px 0;cursor:pointer}
-.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;gap:12px}
-.faq-q::after{content:'+';font-size:20px;font-weight:300;color:var(--ink3);transition:.2s;flex-shrink:0}
-.faq.open .faq-q::after{transform:rotate(45deg);color:var(--brand)}
-.faq-a{max-height:0;overflow:hidden;transition:.3s;font-size:13px;color:var(--ink3);line-height:1.7}
-.faq.open .faq-a{max-height:200px;padding-top:10px}
+/* ─── Loading skeletons ─── */
+.skel{background:linear-gradient(90deg,#f0f0eb 25%,#e8e8e3 50%,#f0f0eb 75%);background-size:200% 100%;animation:shimmer 1.4s linear infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;flex:0 0 240px}
+.skel-card-thumb{aspect-ratio:5/3}
 
-/* CTA */
-.cta-sec{padding:80px 24px;text-align:center}
-.cta-box{max-width:680px;margin:0 auto;background:linear-gradient(135deg,#065a14,var(--brand),#22c55e);border-radius:24px;padding:56px 40px;color:var(--white);position:relative;overflow:hidden}
-.cta-box::before{content:'';position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.06)}
-.cta-box::after{content:'';position:absolute;left:-40px;bottom:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04)}
-.cta-box *{position:relative}
-.cta-box h2{font-size:clamp(24px,4vw,36px);font-weight:800;margin-bottom:8px;line-height:1.15}
-.cta-box p{font-size:16px;opacity:.85;margin-bottom:28px;line-height:1.5}
+/* ─── Empty state ─── */
+.empty{text-align:center;padding:60px 20px;color:var(--ink-3)}
+.empty-ic{font-size:48px;margin-bottom:14px;opacity:.7}
+.empty h3{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px;letter-spacing:-.01em}
+.empty p{font-size:14px;line-height:1.55;max-width:380px;margin:0 auto 18px}
+.empty-cta{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;background:var(--brand);color:#fff;border-radius:10px;font-weight:700;font-size:14px;transition:.15s;border:none;cursor:pointer;font-family:inherit}
+.empty-cta:hover{background:var(--brand-dk);transform:translateY(-1px)}
 
-/* SIGNUP FORM */
-.signup-sec{padding:80px 24px}
-.signup-in{max-width:580px;margin:0 auto}
-.signup-box{background:var(--white);border:1.5px solid var(--line);border-radius:20px;padding:36px 32px;box-shadow:0 8px 40px rgba(0,0,0,.06)}
-.signup-box h2{font-size:24px;font-weight:800;margin-bottom:4px;text-align:center}
-.signup-box .sub{font-size:13px;color:var(--ink3);text-align:center;margin-bottom:24px;line-height:1.5}
-.sf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.sf-group{display:flex;flex-direction:column;gap:4px}
-.sf-group.full{grid-column:1/-1}
-.sf-label{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
-.sf-label .req{color:var(--brand)}
-.sf-input{height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:10px;font:500 14px var(--f);color:var(--ink);outline:none;background:var(--bg);transition:.2s}
-.sf-input:focus{border-color:var(--brand);background:var(--white);box-shadow:0 0 0 3px rgba(12,131,31,.08)}
-.sf-textarea{height:80px;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;font:500 13px var(--f);color:var(--ink);outline:none;background:var(--bg);resize:none;transition:.2s}
-.sf-textarea:focus{border-color:var(--brand);background:var(--white);box-shadow:0 0 0 3px rgba(12,131,31,.08)}
-.sf-select{height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:10px;font:500 14px var(--f);color:var(--ink);outline:none;background:var(--bg);cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
-.sf-select:focus{border-color:var(--brand)}
-.sf-plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;grid-column:1/-1}
-.sf-plan{border:2px solid var(--line);border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;transition:.15s;position:relative}
-.sf-plan:hover{border-color:var(--brand)}
-.sf-plan.selected{border-color:var(--brand);background:var(--brand-bg)}
-.sf-plan-name{font-size:12px;font-weight:700;color:var(--ink)}
-.sf-plan-price{font-size:18px;font-weight:800;color:var(--brand);margin:2px 0}
-.sf-plan-per{font-size:10px;color:var(--ink3)}
-.sf-plan-pop{position:absolute;top:-8px;left:50%;transform:translateX(-50%);padding:2px 10px;border-radius:50px;background:var(--brand);color:var(--white);font:700 8px var(--f);letter-spacing:.04em;white-space:nowrap}
-.sf-submit{grid-column:1/-1;height:52px;border:none;border-radius:12px;background:var(--wa);color:var(--white);font:700 16px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;margin-top:4px}
-.sf-submit:hover{filter:brightness(.92);transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,.25)}
-.sf-submit:active{transform:scale(.98)}
-.sf-note{grid-column:1/-1;text-align:center;font-size:11px;color:var(--ink3);line-height:1.5}
-.sf-success{display:none;text-align:center;padding:32px 0}
-.sf-success.show{display:block}
-.sf-success .ic{font-size:48px;margin-bottom:12px}
-.sf-success h3{font-size:20px;font-weight:800;margin-bottom:6px;color:var(--brand)}
-.sf-success p{font-size:14px;color:var(--ink2);line-height:1.6}
-@media(max-width:768px){.sf-grid{grid-template-columns:1fr}.sf-plan-grid{grid-template-columns:repeat(3,1fr)}.signup-box{padding:28px 20px}}
-.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn-white{background:var(--white);color:var(--brand);height:52px;padding:0 28px;border-radius:12px;font:700 15px var(--f);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.15s}.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15)}
-.btn-ghost{background:rgba(255,255,255,.15);color:var(--white);height:52px;padding:0 28px;border-radius:12px;font:700 15px var(--f);border:1.5px solid rgba(255,255,255,.3);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.15s}.btn-ghost:hover{background:rgba(255,255,255,.25)}
+/* ─── Shopkeeper band ─── */
+.kk-band{margin:40px auto;max-width:1180px;padding:0 20px}
+.kk-card{background:linear-gradient(135deg,#0c831f 0%,#0a6e1a 50%,#22c55e 100%);border-radius:24px;padding:36px 28px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;position:relative;overflow:hidden;box-shadow:var(--shadow-3)}
+.kk-card::before{content:'';position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.06)}
+.kk-card::after{content:'';position:absolute;left:-50px;bottom:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04)}
+.kk-card>*{position:relative;z-index:1}
+.kk-text{flex:1;min-width:240px}
+.kk-h{font-size:clamp(20px,2.6vw,26px);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:6px}
+.kk-p{font-size:14px;opacity:.9;line-height:1.55;max-width:520px}
+.kk-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.kk-btn-primary{background:#fff;color:var(--brand);padding:13px 22px;border-radius:11px;font-size:14px;font-weight:700;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.kk-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.kk-btn-ghost{background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);padding:11px 22px;border-radius:11px;font-size:14px;font-weight:700;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.kk-btn-ghost:hover{background:rgba(255,255,255,.25)}
 
-/* FOOTER */
-footer{padding:40px 24px;border-top:1px solid var(--line);text-align:center}
-.ftr-in{max-width:var(--mw);margin:0 auto}
-.ftr-brand{font:800 18px var(--f);color:var(--brand);margin-bottom:8px}
-.ftr-links{display:flex;justify-content:center;gap:24px;margin-bottom:12px;flex-wrap:wrap}
-.ftr-links a{font-size:13px;color:var(--ink3);font-weight:500;transition:.15s}.ftr-links a:hover{color:var(--brand)}
-.ftr-copy{font-size:11px;color:var(--ink3)}
+/* ─── How it works (compressed) ─── */
+.about{max-width:1180px;margin:48px auto;padding:0 20px}
+.about-h{font-size:clamp(20px,2.5vw,28px);font-weight:800;letter-spacing:-.02em;text-align:center;margin-bottom:8px}
+.about-sub{text-align:center;color:var(--ink-3);margin-bottom:28px;font-size:14px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 20px;position:relative;text-align:center}
+.step-num{position:absolute;top:14px;left:14px;width:24px;height:24px;border-radius:50%;background:var(--brand-bg);color:var(--brand);font-size:12px;font-weight:800;line-height:24px}
+.step-ic{font-size:36px;margin-bottom:10px;line-height:1}
+.step-name{font-size:15px;font-weight:700;margin-bottom:4px;letter-spacing:-.01em}
+.step-desc{font-size:13px;color:var(--ink-3);line-height:1.5}
 
-/* ANIMATIONS */
-.fade-up{opacity:0;transform:translateY(30px);transition:.6s cubic-bezier(.22,1,.36,1)}
-.fade-up.vis{opacity:1;transform:translateY(0)}
+/* ─── Footer ─── */
+footer{padding:36px 20px 28px;border-top:1px solid var(--line);background:var(--surface-2)}
+.ftr{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+@media(max-width:640px){.ftr{grid-template-columns:1fr 1fr;gap:24px}}
+.ftr-brand{font-size:18px;font-weight:800;color:var(--brand);margin-bottom:8px;letter-spacing:-.01em}
+.ftr-tag{font-size:13px;color:var(--ink-3);line-height:1.55;max-width:280px}
+.ftr-col h4{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.ftr-col a{display:block;font-size:13px;color:var(--ink-2);padding:4px 0;transition:.1s}
+.ftr-col a:hover{color:var(--brand)}
+.ftr-bottom{max-width:1180px;margin:28px auto 0;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-3);text-align:center}
 
-@media(max-width:768px){
-  .nav-links a:not(.nav-cta){display:none}
-  .hero-stats{gap:24px}
-  .proof-in{gap:20px}
-  .feat-grid,.steps,.pricing-grid,.test-grid{grid-template-columns:1fr}
-  .vert-grid{grid-template-columns:repeat(3,1fr)}
-  .cta-box{padding:40px 24px}
+/* ─── Modal (city picker) ─── */
+.modal-bg{position:fixed;inset:0;background:rgba(15,16,17,.5);backdrop-filter:blur(3px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+@media(min-width:560px){.modal-bg{align-items:center;padding:20px}}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;animation:slideUp .25s cubic-bezier(.22,1,.36,1)}
+@media(min-width:560px){.modal{border-radius:18px;max-height:70vh}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hdr{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.modal-hdr h3{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.modal-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--surface-2);color:var(--ink-3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--line);color:var(--ink)}
+.modal-body{flex:1;overflow-y:auto;padding:8px}
+.city-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:.1s;font-size:14px}
+.city-item:hover{background:var(--surface-2)}
+.city-item.active{background:var(--brand-bg);color:var(--brand);font-weight:600}
+.city-item-name{flex:1}
+.city-item-count{font-size:12px;color:var(--ink-3);background:var(--surface-2);padding:2px 8px;border-radius:50px}
+.city-item.active .city-item-count{background:rgba(12,131,31,.15);color:var(--brand)}
+
+@media(max-width:640px){
+  .feed{padding:18px 14px 60px}
+  .section{margin-bottom:28px}
+  .h-scroll{padding-left:14px;padding-right:14px;margin:0 -14px}
+  .h-scroll>.card{flex:0 0 200px}
+  .card-thumb-icon{font-size:44px}
+  .v-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .kk-card{padding:28px 22px;border-radius:18px}
+  .cat-scroll{padding:0 14px}
 }
 </style>
 </head>
 <body>
 
-<nav>
-<div class="nav-in">
-<div class="nav-logo"><span>🏬</span> StorePro</div>
-<div class="nav-links">
-<a href="#features">Features</a>
-<a href="#pricing">Pricing</a>
-<a href="#faq">FAQ</a>
-<a class="nav-cta" href="#signup">📱 Start Free</a>
-</div>
-</div>
+<!-- Top header -->
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="/"><span>🏬</span> StorePro</a>
+    <button class="city-pill" onclick="openCityPicker()" id="cityPillBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span id="cityPillText">All cities</span>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="hdr-spacer"></div>
+    <a class="hdr-link" href="#how-it-works">How it works</a>
+    <a class="hdr-cta" href="/signup.html">Run a shop →</a>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-tag">Live now · serving stores across India</div>
+  <h1>Local shops,<br><span class="gr">online and open</span></h1>
+  <p class="hero-hi">अपनी पसंदीदा दुकान से ऑर्डर करें, घर पहुँच पाएँ</p>
+  <p class="hero-sub">Order groceries, fast food, meat, restaurant meals and more from real shops near you. Pay via UPI. Get delivery or pickup.</p>
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input class="search-input" id="searchInput" type="search" placeholder="Search shops, cuisines or items..." autocomplete="off" aria-label="Search shops">
+    <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="Clear search">✕</button>
+    <div class="ac-wrap" id="acWrap" role="listbox"></div>
+  </div>
+</section>
+
+<!-- Category bar -->
+<nav class="cat-bar" aria-label="Shop categories">
+  <div class="cat-scroll" id="catScroll">
+    <button class="cat-toggle" id="openNowToggle" onclick="toggleOpenNow(this)" aria-pressed="false">
+      Open now
+    </button>
+    <span class="cat-divider"></span>
+    <button class="cat-chip active" data-cat="all" onclick="setCat('all',this)">
+      <span class="cat-chip-icon">🏪</span> All shops
+    </button>
+    <button class="cat-chip" data-cat="grocery" onclick="setCat('grocery',this)">
+      <span class="cat-chip-icon">🛒</span> Grocery
+    </button>
+    <button class="cat-chip" data-cat="restaurant" onclick="setCat('restaurant',this)">
+      <span class="cat-chip-icon">🍽️</span> Restaurant
+    </button>
+    <button class="cat-chip" data-cat="fastfood" onclick="setCat('fastfood',this)">
+      <span class="cat-chip-icon">🍔</span> Fast food
+    </button>
+    <button class="cat-chip" data-cat="dhaba" onclick="setCat('dhaba',this)">
+      <span class="cat-chip-icon">🥘</span> Dhaba
+    </button>
+    <button class="cat-chip" data-cat="meatshop" onclick="setCat('meatshop',this)">
+      <span class="cat-chip-icon">🥩</span> Meat shop
+    </button>
+    <button class="cat-chip" data-cat="bakery" onclick="setCat('bakery',this)">
+      <span class="cat-chip-icon">🍰</span> Bakery
+    </button>
+    <button class="cat-chip" data-cat="pharmacy" onclick="setCat('pharmacy',this)">
+      <span class="cat-chip-icon">💊</span> Pharmacy
+    </button>
+    <button class="cat-chip" data-cat="cafe" onclick="setCat('cafe',this)">
+      <span class="cat-chip-icon">☕</span> Café
+    </button>
+    <button class="cat-chip" data-cat="hardware" onclick="setCat('hardware',this)">
+      <span class="cat-chip-icon">🔧</span> Hardware
+    </button>
+  </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-<img src="/logo-hero.svg" alt="StorePro · Zero Infrastructure" style="max-width:min(560px,90%);height:auto;display:block;margin:0 auto 18px">
-<div class="hero-badge"><span></span> Now serving stores across India</div>
-<h1>Your Local Store,<br><span class="gr">Online in 5 Minutes</span></h1>
-<p class="hero-hi">अपनी दुकान को ऑनलाइन लाएं — मुफ़्त में!</p>
-<p class="hero-sub">No coding. No app to build. No monthly fees to start. Just a Google Sheet, a WhatsApp number, and your products. Customers order online, you deliver locally.</p>
-<div class="hero-btns">
-<a class="btn-big btn-wa" href="#signup">📱 Create Your Free Store</a>
-<a class="btn-big btn-outline" href="javascript:void(0)" onclick="openDemo()">👀 See Demo Store</a>
-</div>
-<div class="hero-stats">
-<div class="hs"><div class="hs-n">₹0</div><div class="hs-l">To get started</div></div>
-<div class="hs"><div class="hs-n">5 min</div><div class="hs-l">Setup time</div></div>
-<div class="hs"><div class="hs-n">0</div><div class="hs-l">Code needed</div></div>
-<div class="hs"><div class="hs-n">24/7</div><div class="hs-l">Store is open</div></div>
-</div>
+<!-- Main feed -->
+<main class="feed" id="feed">
+  <div class="section">
+    <div class="section-hdr"><div class="section-h">Loading shops near you...</div></div>
+    <div class="h-scroll" id="initSkel"></div>
+  </div>
+</main>
+
+<!-- Shopkeeper band -->
+<aside class="kk-band">
+  <div class="kk-card">
+    <div class="kk-text">
+      <div class="kk-h">Run a shop? Be online in 5 minutes.</div>
+      <div class="kk-p">Free 14-day trial · Zero commission · WhatsApp orders · No coding · Your data lives in your own Google Sheet.</div>
+    </div>
+    <div class="kk-actions">
+      <a class="kk-btn-primary" href="/signup.html">Start free →</a>
+      <a class="kk-btn-ghost" href="#how-it-works">How it works</a>
+    </div>
+  </div>
+</aside>
+
+<!-- How it works (compressed) -->
+<section class="about" id="how-it-works">
+  <h2 class="about-h">How StorePro works</h2>
+  <p class="about-sub">For shopkeepers — three steps, five minutes, zero coding.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-ic">📝</div>
+      <div class="step-name">Sign up your shop</div>
+      <div class="step-desc">Pick your category, enter your details, choose a plan. Your storefront and dashboard are ready instantly.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-ic">📦</div>
+      <div class="step-name">Add your products</div>
+      <div class="step-desc">We pre-fill 8-10 starter items based on your shop type. Edit, replace, or add more from your dashboard.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-ic">🚀</div>
+      <div class="step-name">Share your link</div>
+      <div class="step-desc">Paste your store link on WhatsApp, Instagram bio, Google Business. Customers order, you deliver. UPI auto-collects payment.</div>
+    </div>
+  </div>
 </section>
 
-<!-- SOCIAL PROOF -->
-<div class="proof">
-<div class="proof-in">
-<div class="proof-item"><span>🛒</span> Grocery</div>
-<div class="proof-item"><span>💊</span> Pharmacy</div>
-<div class="proof-item"><span>🍽️</span> Restaurant</div>
-<div class="proof-item"><span>🍰</span> Bakery</div>
-<div class="proof-item"><span>🔧</span> Hardware</div>
-<div class="proof-item"><span>👕</span> Clothing</div>
-<div class="proof-item"><span>📱</span> Electronics</div>
-</div>
-</div>
-
-<!-- FEATURES -->
-<section class="sec" id="features">
-<div class="sec-in">
-<div class="sec-tag">Features</div>
-<h2 class="sec-h">Everything your store needs</h2>
-<p class="sec-sub">A complete online store that runs on Google Sheets. No server, no database, no technical knowledge needed.</p>
-<div class="feat-grid">
-<div class="feat fade-up"><div class="feat-ic fi-green">📱</div><h3>WhatsApp Orders</h3><p>Customers place orders, you get them on WhatsApp instantly. One tap to confirm. No new app to learn.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-blue">📊</div><h3>Google Sheets CMS</h3><p>Your product catalog IS a spreadsheet. Add items, change prices, update stock — just edit cells. It's that simple.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-orange">💳</div><h3>UPI Payments</h3><p>Auto-generated QR codes with exact order amount. GPay, PhonePe, Paytm — all supported. Money goes straight to you.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-purple">🚚</div><h3>Delivery + Pickup</h3><p>Customers choose delivery or store pickup. Set delivery fees, free delivery thresholds, night charges — all from Config.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-pink">📦</div><h3>Order Dashboard</h3><p>Track orders, update status (New → Confirmed → Packed → Delivered), revenue stats, WhatsApp/call customers. PIN protected.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-yellow">🌐</div><h3>PWA — Installable App</h3><p>Your store installs like a real app on customers' phones. Works offline. Shows on their home screen. No Play Store needed.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-green">🏷️</div><h3>Discounts & Offers</h3><p>MRP vs selling price with automatic % OFF badges. Create offers in a sheet tab. Minimum order enforcement.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-blue">🔍</div><h3>Search & Categories</h3><p>Instant product search, category filters, Veg/Non-Veg badges. Customers find what they want in seconds.</p></div>
-<div class="feat fade-up"><div class="feat-ic fi-orange">📈</div><h3>Google Analytics</h3><p>Add one config key and get full visitor analytics — page views, popular products, conversion rates. All free via GA4.</p></div>
-</div>
-</div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="sec" style="background:var(--white)">
-<div class="sec-in">
-<div class="sec-tag">How it works</div>
-<h2 class="sec-h">3 steps. 5 minutes. Done.</h2>
-<p class="sec-sub">No forms to fill. No accounts to create. Just WhatsApp us and we'll set everything up.</p>
-<div class="steps">
-<div class="step fade-up"><div class="step-ic">💬</div><h3>WhatsApp us</h3><p>Send us your shop name, phone number, address, and a list of products with prices. That's it.</p></div>
-<div class="step fade-up"><div class="step-ic">📋</div><h3>We create your sheet</h3><p>We set up your Google Sheet with Config, Products, and Offers tabs. You get the link to edit anytime.</p></div>
-<div class="step fade-up"><div class="step-ic">🚀</div><h3>Share your store link</h3><p>Your store is live! Share the link on WhatsApp, Instagram, Google Maps. Customers start ordering immediately.</p></div>
-</div>
-</div>
-</section>
-
-<!-- PRICING -->
-<section class="sec" id="pricing">
-<div class="sec-in">
-<div class="sec-tag">Pricing</div>
-<h2 class="sec-h">Start free. Upgrade when you grow.</h2>
-<p class="sec-sub">No credit card. No hidden charges. Pay only when your store needs more power.</p>
-<div class="pricing-grid">
-
-<div class="plan">
-<div class="plan-name">Free</div>
-<div class="plan-price"><span class="amt">₹0</span><span class="per">forever</span></div>
-<div class="plan-desc">Perfect for trying out. Get your store online today.</div>
-<ul class="plan-features">
-<li>Up to 10 products</li>
-<li>WhatsApp orders</li>
-<li>UPI payment QR</li>
-<li>Order dashboard</li>
-<li>"Powered by StorePro" badge</li>
-</ul>
-<a class="plan-btn gray" href="https://wa.me/919760684971?text=Hi!%20I%20want%20the%20Free%20plan%20for%20my%20store" target="_blank">Start Free</a>
-</div>
-
-<div class="plan popular">
-<div class="plan-pop">Most Popular</div>
-<div class="plan-name">Starter</div>
-<div class="plan-price"><span class="amt">₹499</span><span class="per">/month</span></div>
-<div class="plan-desc">For growing stores that want more products and full control.</div>
-<ul class="plan-features">
-<li>Up to 50 products</li>
-<li>Everything in Free</li>
-<li>Product management dashboard</li>
-<li>Config editor (change fees, timing, etc.)</li>
-<li>Email order confirmations</li>
-<li>Google Analytics integration</li>
-<li>No "Powered by" badge</li>
-</ul>
-<a class="plan-btn green" href="https://wa.me/919760684971?text=Hi!%20I%20want%20the%20Starter%20plan%20(₹499/mo)%20for%20my%20store" target="_blank">Get Starter</a>
-</div>
-
-<div class="plan">
-<div class="plan-name">Pro</div>
-<div class="plan-price"><span class="amt">₹999</span><span class="per">/month</span></div>
-<div class="plan-desc">Unlimited everything. For serious local businesses.</div>
-<ul class="plan-features">
-<li>Unlimited products</li>
-<li>Everything in Starter</li>
-<li>Custom domain support</li>
-<li>Priority WhatsApp support</li>
-<li>Weekly sales report email</li>
-<li>Stock tracking + low stock alerts</li>
-<li>Multi-language support</li>
-</ul>
-<a class="plan-btn outline" href="https://wa.me/919760684971?text=Hi!%20I%20want%20the%20Pro%20plan%20(₹999/mo)%20for%20my%20store" target="_blank">Get Pro</a>
-</div>
-
-</div>
-<p style="text-align:center;margin-top:20px;font-size:13px;color:var(--ink3)">One-time setup fee: ₹1,999 – ₹4,999 (includes product entry, sheet setup, and deployment)</p>
-</div>
-</section>
-
-<!-- VERTICALS -->
-<section class="sec" style="background:var(--white)">
-<div class="sec-in">
-<div class="sec-tag">Works for every shop</div>
-<h2 class="sec-h">9 industry verticals, one platform</h2>
-<p class="sec-sub">Same powerful system, customized for your business type.</p>
-<div class="vert-grid">
-<div class="vert fade-up"><div class="vert-ic">🛒</div><h4>Grocery</h4><p>Kirana, general store</p></div>
-<div class="vert fade-up"><div class="vert-ic">💊</div><h4>Pharmacy</h4><p>Medical, wellness</p></div>
-<div class="vert fade-up"><div class="vert-ic">🍽️</div><h4>Restaurant</h4><p>Cloud kitchen, café</p></div>
-<div class="vert fade-up"><div class="vert-ic">💇</div><h4>Salon</h4><p>Beauty, spa, parlour</p></div>
-<div class="vert fade-up"><div class="vert-ic">🔧</div><h4>Hardware</h4><p>Paint, tools, plumbing</p></div>
-<div class="vert fade-up"><div class="vert-ic">👕</div><h4>Clothing</h4><p>Boutique, fashion</p></div>
-<div class="vert fade-up"><div class="vert-ic">🍰</div><h4>Bakery</h4><p>Sweets, confectionery</p></div>
-<div class="vert fade-up"><div class="vert-ic">📱</div><h4>Electronics</h4><p>Mobile, accessories</p></div>
-<div class="vert fade-up"><div class="vert-ic">🌸</div><h4>Flowers</h4><p>Gifts, decorations</p></div>
-</div>
-</div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="sec">
-<div class="sec-in">
-<div class="sec-tag">Trusted by shopkeepers</div>
-<h2 class="sec-h">What store owners say</h2>
-<p class="sec-sub">Real feedback from real shopkeepers who launched their stores with StorePro.</p>
-<div class="test-grid">
-<div class="test fade-up">
-<div class="test-stars">★★★★★</div>
-<div class="test-q">"I was paying ₹2,000/month for a website that nobody used. StorePro gave me more orders on WhatsApp for free. My customers love it."</div>
-<div class="test-who"><div class="test-av">RK</div><div><div class="test-name">Rajesh Kumar</div><div class="test-role">Grocery store, Dehradun</div></div></div>
-</div>
-<div class="test fade-up">
-<div class="test-stars">★★★★★</div>
-<div class="test-q">"Setup was done in 10 minutes. I just shared my product list on WhatsApp and they did everything. Now I manage my store from my phone."</div>
-<div class="test-who"><div class="test-av">PS</div><div><div class="test-name">Priya Sharma</div><div class="test-role">Bakery, Srinagar Garhwal</div></div></div>
-</div>
-<div class="test fade-up">
-<div class="test-stars">★★★★★</div>
-<div class="test-q">"My pharmacy needed online ordering during COVID. StorePro was the fastest solution. Customers place orders, I deliver. Simple."</div>
-<div class="test-who"><div class="test-av">AJ</div><div><div class="test-name">Dr. Ankit Joshi</div><div class="test-role">Medical store, Pauri</div></div></div>
-</div>
-</div>
-</div>
-</section>
-
-<!-- FAQ -->
-<section class="sec" id="faq" style="background:var(--white)">
-<div class="sec-in">
-<div class="sec-tag">FAQ</div>
-<h2 class="sec-h">Common questions</h2>
-<p class="sec-sub">Everything you need to know before starting.</p>
-<div class="faq-list">
-<div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Do I need to know coding?</div><div class="faq-a">Not at all. Your entire store runs on a Google Sheet. If you can edit a spreadsheet, you can run your store. Adding a product = adding a row. Changing a price = changing a cell.</div></div>
-<div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">How do customers pay?</div><div class="faq-a">Customers can pay via UPI (GPay, PhonePe, Paytm) using the auto-generated QR code, or Cash on Delivery. The money goes directly to your UPI ID — we never touch your payments.</div></div>
-<div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Is there a commission on orders?</div><div class="faq-a">No. Zero commission. No transaction fees. 100% of the order amount goes to you. We only charge the monthly plan fee (and the Free plan is truly free).</div></div>
-<div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Can I use my own domain?</div><div class="faq-a">Yes, on the Pro plan. You can host your store on yourstorename.com. On Free and Starter, your store lives on our subdomain.</div></div>
-<div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">What happens to my data?</div><div class="faq-a">Your data lives in YOUR Google Sheet, in YOUR Google account. You own it completely. If you stop using StorePro, your data stays with you. We never have access to your payments or customer data.</div></div>
-<div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">How is this different from Shopify or Dukaan?</div><div class="faq-a">Shopify costs ₹2,000+/month and requires learning a complex dashboard. Dukaan charges commission. StorePro starts free, runs on Google Sheets (you already know how to use it), and charges zero commission. It's built specifically for local shops.</div></div>
-</div>
-</div>
-</section>
-
-<!-- SIGNUP FORM -->
-<section class="signup-sec" id="signup">
-<div class="signup-in">
-<div class="signup-box">
-<div id="signupForm">
-<h2>🏬 Create Your Store</h2>
-<p class="sub">Fill the form below. Your store will be created instantly — no waiting!</p>
-<div class="sf-grid">
-
-<div class="sf-group full"><label class="sf-label">Shop name <span class="req">*</span></label><input class="sf-input" id="sShop" placeholder="e.g. Sharma General Store"></div>
-
-<div class="sf-group"><label class="sf-label">Your name <span class="req">*</span></label><input class="sf-input" id="sName" placeholder="Your full name"></div>
-<div class="sf-group"><label class="sf-label">WhatsApp number <span class="req">*</span></label><input class="sf-input" id="sPhone" type="tel" placeholder="10-digit mobile number"></div>
-
-<div class="sf-group"><label class="sf-label">Email (optional)</label><input class="sf-input" id="sEmail" type="email" placeholder="you@email.com"></div>
-<div class="sf-group"><label class="sf-label">City <span class="req">*</span></label><input class="sf-input" id="sCity" placeholder="e.g. Dehradun"></div>
-
-<div class="sf-group full"><label class="sf-label">Shop address</label><input class="sf-input" id="sAddr" placeholder="Full address with pin code"></div>
-
-<div class="sf-group"><label class="sf-label">Shop type</label>
-<select class="sf-select" id="sType">
-<option value="Grocery">🛒 Grocery / Kirana</option>
-<option value="Pharmacy">💊 Pharmacy</option>
-<option value="Restaurant">🍽️ Restaurant / Café</option>
-<option value="Bakery">🍰 Bakery / Sweets</option>
-<option value="Hardware">🔧 Hardware</option>
-<option value="Clothing">👕 Clothing / Boutique</option>
-<option value="Electronics">📱 Electronics</option>
-<option value="Salon">💇 Salon / Spa</option>
-<option value="Flowers">🌸 Flowers / Gifts</option>
-<option value="Other">Other</option>
-</select></div>
-
-<div class="sf-group"><label class="sf-label">UPI ID (for payments)</label><input class="sf-input" id="sUpi" placeholder="e.g. 9876543210@paytm"></div>
-
-<div class="sf-group full"><label class="sf-label">Choose your plan</label></div>
-<div class="sf-plan-grid">
-<div class="sf-plan selected" onclick="selPlan(this,'Free')" id="planFree"><div class="sf-plan-name">Free</div><div class="sf-plan-price">₹0</div><div class="sf-plan-per">10 products</div></div>
-<div class="sf-plan" onclick="selPlan(this,'Starter')" id="planStarter"><div class="sf-plan-pop">Popular</div><div class="sf-plan-name">Starter</div><div class="sf-plan-price">₹499</div><div class="sf-plan-per">50 products</div></div>
-<div class="sf-plan" onclick="selPlan(this,'Pro')" id="planPro"><div class="sf-plan-name">Pro</div><div class="sf-plan-price">₹999</div><div class="sf-plan-per">Unlimited</div></div>
-</div>
-
-<div class="sf-group full"><label class="sf-label">Tell us about your products (optional)</label><textarea class="sf-textarea" id="sProducts" placeholder="e.g. I sell atta, dal, rice, cooking oil, spices, sweets. About 40 products."></textarea></div>
-
-<button class="sf-submit" id="submitBtn" onclick="submitSignup()">🚀 Create My Store Now</button>
-<div class="sf-note">Your store is created instantly. Free plan — no payment needed.</div>
-</div>
-</div>
-
-<!-- Loading state -->
-<div id="signupLoading" style="display:none;text-align:center;padding:48px 0">
-<div style="width:40px;height:40px;border:4px solid #e5e7eb;border-top-color:#0c831f;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px"></div>
-<h3 style="font-size:18px;font-weight:700;margin-bottom:6px">Creating your store...</h3>
-<p style="font-size:13px;color:#777">Setting up your Google Sheet, configuring products tab, generating your unique store link...</p>
-</div>
-
-<!-- Success state -->
-<div class="sf-success" id="signupSuccess">
-<div class="ic">🎉</div>
-<h3>Your Store is Live!</h3>
-<p style="margin-bottom:20px">Share these links with your customers. Bookmark your dashboard to manage orders.</p>
-
-<div style="background:#e8faed;border-radius:12px;padding:16px;text-align:left;margin-bottom:16px">
-<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;margin-bottom:6px">Your Store Link</div>
-<a id="resultStoreUrl" href="#" target="_blank" style="font-size:14px;color:#0c831f;font-weight:700;word-break:break-all"></a>
-<button onclick="copyLink('resultStoreUrl')" style="margin-top:6px;padding:4px 12px;border:1px solid #0c831f;border-radius:6px;background:#fff;color:#0c831f;font:600 11px var(--f);cursor:pointer">Copy Link</button>
-</div>
-
-<div style="background:#eff6ff;border-radius:12px;padding:16px;text-align:left;margin-bottom:16px">
-<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;margin-bottom:6px">Your Dashboard</div>
-<a id="resultDashUrl" href="#" target="_blank" style="font-size:14px;color:#2563eb;font-weight:700;word-break:break-all"></a>
-<div style="margin-top:8px;font-size:12px;color:#444">PIN: <strong id="resultPin" style="font-size:18px;letter-spacing:3px;color:#0c831f"></strong></div>
-</div>
-
-<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px">
-<a class="btn-big btn-brand" id="resultOpenStore" href="#" target="_blank" style="font-size:14px;height:46px">👀 Open My Store</a>
-<a class="btn-big btn-outline" id="resultOpenDash" href="#" target="_blank" style="font-size:14px;height:46px">📋 Open Dashboard</a>
-<a class="btn-big btn-wa" id="resultWaShare" href="#" target="_blank" style="font-size:14px;height:46px">📱 Share on WhatsApp</a>
-</div>
-
-<p style="margin-top:20px;font-size:12px;color:#777;line-height:1.6">Next steps: Add your products in the Dashboard (📦 Products tab), then share your store link on WhatsApp, Instagram, and Google Maps!</p>
-</div>
-</div>
-</div>
-</section>
-
-<!-- CTA -->
-<section class="cta-sec">
-<div class="cta-box">
-<h2>Ready to take your<br>store online?</h2>
-<p>Join shopkeepers across India who are growing their business with StorePro. Start for free in 5 minutes.</p>
-<div class="cta-btns">
-<a class="btn-white" href="#signup">📱 Create Your Store</a>
-<a class="btn-ghost" href="javascript:void(0)" onclick="openDemo()">👀 See Demo Store</a>
-</div>
-</div>
-</section>
-
+<!-- Footer -->
 <footer>
-<div class="ftr-in">
-<div class="ftr-brand">🏬 StorePro</div>
-<div class="ftr-links">
-<a href="#features">Features</a>
-<a href="#pricing">Pricing</a>
-<a href="#faq">FAQ</a>
-<a href="https://wa.me/919760684971" target="_blank">Contact</a>
-<a href="javascript:void(0)" onclick="openDemo()">Demo Store</a>
-</div>
-<div class="ftr-copy">© 2026 StorePro. Built with ❤️ for local shopkeepers. No coding required.</div>
-</div>
+  <div class="ftr">
+    <div>
+      <div class="ftr-brand">🏬 StorePro</div>
+      <div class="ftr-tag">Online stores for local shops. Built for Indian retailers — kiranas, fast food, restaurants, dhabas, meat shops and more.</div>
+    </div>
+    <div class="ftr-col">
+      <h4>For shoppers</h4>
+      <a href="#" onclick="document.getElementById('searchInput').focus();return false">Find a shop</a>
+      <a href="#" onclick="openCityPicker();return false">Change city</a>
+      <a href="mailto:amitnegimca@gmail.com">Help on WhatsApp</a>
+    </div>
+    <div class="ftr-col">
+      <h4>For shopkeepers</h4>
+      <a href="/signup.html">Sign up free</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="mailto:amitnegimca@gmail.com">Talk to us</a>
+    </div>
+    <div class="ftr-col">
+      <h4>StorePro</h4>
+      <a href="/admin.html">Admin</a>
+      <a href="mailto:amitnegimca@gmail.com">Contact</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </div>
+  <div class="ftr-bottom">© 2026 StorePro · Built with ❤️ for local shopkeepers · storepro.in · <a href="/privacy.html" style="color:inherit;opacity:.7">Privacy</a> · <a href="/terms.html" style="color:inherit;opacity:.7">Terms</a></div>
 </footer>
 
+<!-- City picker modal -->
+<div class="modal-bg" id="cityModal" onclick="if(event.target===this)closeCityPicker()">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-hdr">
+      <h3>Choose your city</h3>
+      <button class="modal-close" onclick="closeCityPicker()" aria-label="Close">✕</button>
+    </div>
+    <div style="padding:10px 16px 6px;border-bottom:1px solid var(--line)">
+      <button onclick="detectCity()" id="geoBtn" style="display:flex;align-items:center;gap:8px;width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink);cursor:pointer;font:600 13px var(--f);transition:.15s">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6m11-11h-6m-10 0H1"/></svg>
+        <span id="geoBtnText">Use my current location</span>
+      </button>
+    </div>
+    <div class="modal-body" id="cityList"></div>
+  </div>
+</div>
+
 <script>
-// If ?store= or ?shop= param present, this is a store URL — load the store
+var MASTER_SHEET_ID = "1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
+var SITE_URL = "https://storepro.in";
+
+// Slug router (legacy): if landed on /?store=<slug>, redirect to right .html
 (function(){
   var p=new URLSearchParams(window.location.search);
-  var store=p.get('store');
-  var shop=p.get('shop');
+  var store=p.get('store');var shop=p.get('shop');
   if(store||shop){
-    // On deployed site — redirect to store.html
     if(window.location.protocol!=='file:'){
-      window.location.replace('store.html'+window.location.search);
-      return;
+      window.location.replace('store.html'+window.location.search);return;
     }
-    // On file:// — load store directly using the shop ID
-    if(shop){
-      window.location.replace('store.html?shop='+shop);
-      return;
-    }
-    // On file:// with ?store=slug — can't do registry lookup, use deployed URL
+    if(shop){window.location.replace('store.html?shop='+shop);return}
     window.location.replace('https://rawatgroceryconfectionery.vercel.app/?store='+store);
   }
 })();
 
-// Open demo store - works from file:// and deployed
-function openDemo(){
-  var shopParam='?store=grocery-srinagar';
-  if(window.location.protocol==='file:'){
-    // On file:// — open the deployed store directly
-    window.open('https://rawatgroceryconfectionery.vercel.app/','_blank');
-  }else{
-    // On deployed site — open store.html with param
-    window.open('store.html'+shopParam,'_blank');
+function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML}
+function $(id){return document.getElementById(id)}
+
+var allStores=[],allCities=[];
+var state={cat:'all',city:'all',q:'',openNow:false};
+var acIdx=-1; // autocomplete keyboard selection
+
+var TYPE_ICONS={grocery:'🛒',pharmacy:'💊',restaurant:'🍽️',fastfood:'🍔',dhaba:'🥘',meatshop:'🥩',bakery:'🍰',hardware:'🔧',clothing:'👕',electronics:'📱',flowers:'🌸',salon:'💇',cafe:'☕'};
+var TYPE_LABELS={grocery:'Grocery',pharmacy:'Pharmacy',restaurant:'Restaurant',fastfood:'Fast food',dhaba:'Dhaba',meatshop:'Meat shop',bakery:'Bakery',hardware:'Hardware',clothing:'Clothing',electronics:'Electronics',flowers:'Flowers',salon:'Salon',cafe:'Café'};
+var TYPE_PLURAL={grocery:'Grocery & kirana',pharmacy:'Pharmacies',restaurant:'Restaurants',fastfood:'Fast food',dhaba:'Dhabas',meatshop:'Meat shops',bakery:'Bakeries',hardware:'Hardware',clothing:'Clothing',electronics:'Electronics',flowers:'Flowers',salon:'Salons',cafe:'Cafés'};
+var SECTION_ORDER=['restaurant','fastfood','dhaba','meatshop','grocery','bakery','cafe','pharmacy','hardware','clothing','electronics','flowers','salon'];
+
+function typeIcon(t){return TYPE_ICONS[t]||'🏪'}
+function typeLabel(t){return TYPE_LABELS[t]||'Shop'}
+function typePlural(t){return TYPE_PLURAL[t]||(typeLabel(t)+'s')}
+function parseDate(ds){if(!ds)return null;ds=String(ds).trim();var gd=ds.match(/Date\((\d{4}),(\d+),(\d+)\)/);if(gd)return new Date(+gd[1],+gd[2],+gd[3]);var p=ds.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);if(p)return new Date(+p[3],+p[2]-1,+p[1]);var iso=ds.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);if(iso)return new Date(+iso[1],+iso[2]-1,+iso[3]);var d=new Date(ds);return isNaN(d)?null:d}
+
+function showInitialSkeleton(){
+  var html='';
+  for(var i=0;i<6;i++){
+    html+='<div class="skel-card"><div class="skel skel-card-thumb"></div><div style="padding:14px"><div class="skel" style="height:14px;width:65%;margin-bottom:7px"></div><div class="skel" style="height:11px;width:42%;margin-bottom:9px"></div><div class="skel" style="height:11px;width:88%"></div></div></div>';
   }
+  $('initSkel').innerHTML=html;
+}
+showInitialSkeleton();
+
+function loadStores(){
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table){renderEmpty('Could not load stores','Please try again in a moment.');return}
+    var cols=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim().replace(/\s+/g,'')});
+    var stores=[];
+    var skipped=[];
+    (r.table.rows||[]).forEach(function(row){
+      var o={};cols.forEach(function(k,i){var c=row.c&&row.c[i];o[k]=c&&c.v!=null?String(c.v).trim():''});
+      var verified=(o.verified||'').toLowerCase()==='yes'||(o.verified||'').toLowerCase()==='true';
+      var featured=(o.featured||'').toLowerCase()==='yes'||(o.featured||'').toLowerCase()==='true';
+      var acceptingOrders=(o.acceptingorders||'yes').toLowerCase()!=='no';
+      // Open directory: any registry row with a slug appears on the homepage.
+      // To hide a shop, set Active=No OR Public=No (both are explicit opt-outs)
+      // OR delete the row entirely. Blank values are treated as "show".
+      var actVal=String(o.active||'').toLowerCase();
+      var pubVal=String(o.public||'').toLowerCase();
+      var explicitlyHidden=(actVal==='no'||actVal==='false'||actVal==='0'||actVal==='inactive'||pubVal==='no'||pubVal==='false'||pubVal==='0');
+      if(!o.slug){skipped.push({reason:'no slug',row:o});return}
+      if(explicitlyHidden){skipped.push({reason:'Active='+o.active+' / Public='+o.public,slug:o.slug});return}
+      var createdAt=parseDate(o.createdat);
+      var isNew=createdAt&&(Date.now()-createdAt.getTime()<14*24*3600000);
+      stores.push({
+        slug:o.slug||'',shop:o.shopname||o.slug||'Store',city:o.city||'',
+        type:(o.shoptype||'').toLowerCase(),
+        url:o.url||(SITE_URL+'/?store='+encodeURIComponent(o.slug)),
+        logo:o.logo||'',tagline:o.tagline||'',
+        verified:verified,featured:featured,isNew:isNew,acceptingOrders:acceptingOrders,
+        rating:parseFloat(o.rating||'0')||0,
+        reviewCount:parseInt(o.reviewcount||'0')||0,
+        brandColor:o.brandcolor||'',
+        createdAt:createdAt
+      });
+    });
+    allStores=stores;
+    if(skipped.length){console.log('[StorePro] Showing '+stores.length+' stores. Skipped '+skipped.length+':',skipped)}
+    else{console.log('[StorePro] Showing '+stores.length+' stores from registry')}
+    buildCityList();
+    var savedCity=localStorage.getItem('storepro_city');
+    if(savedCity&&savedCity!=='all'&&allCities.indexOf(savedCity)>=0)state.city=savedCity;
+    if(localStorage.getItem('storepro_open_now')==='1'){
+      state.openNow=true;
+      var t=$('openNowToggle');if(t){t.classList.add('active');t.setAttribute('aria-pressed','true')}
+    }
+    updateCityPill();
+    renderFeed();
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=1&_t='+Date.now();
+  s.onerror=function(){renderEmpty('Could not load','Network error. Please refresh.')};
+  document.body.appendChild(s);
 }
 
-// Scroll animations
-var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}})},{threshold:0.15});
-document.querySelectorAll('.fade-up').forEach(function(el,i){el.style.transitionDelay=(i%3)*80+'ms';obs.observe(el)});
-
-// Plan selection
-var selectedPlan='Free';
-function selPlan(el,plan){
-  selectedPlan=plan;
-  document.querySelectorAll('.sf-plan').forEach(function(p){p.classList.remove('selected')});
-  el.classList.add('selected');
+function buildCityList(){
+  var counts={};
+  allStores.forEach(function(s){if(s.city)counts[s.city]=(counts[s.city]||0)+1});
+  allCities=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]});
+  var html='<div class="city-item'+(state.city==='all'?' active':'')+'" onclick="setCity(\'all\')">'
+    +'<span class="city-item-name">📍 All cities</span>'
+    +'<span class="city-item-count">'+allStores.length+'</span></div>';
+  allCities.forEach(function(c){
+    html+='<div class="city-item'+(state.city===c?' active':'')+'" onclick="setCity(\''+esc(c).replace(/'/g,"\\'")+'\')">'
+      +'<span class="city-item-name">'+esc(c)+'</span>'
+      +'<span class="city-item-count">'+counts[c]+'</span></div>';
+  });
+  $('cityList').innerHTML=html;
+}
+function updateCityPill(){
+  $('cityPillText').textContent=state.city==='all'?'All cities':state.city;
+}
+function openCityPicker(){buildCityList();$('cityModal').classList.add('open')}
+function closeCityPicker(){$('cityModal').classList.remove('open')}
+function setCity(city){
+  state.city=city;
+  localStorage.setItem('storepro_city',city);
+  updateCityPill();
+  closeCityPicker();
+  renderFeed();
 }
 
-// Copy link helper
-function copyLink(id){
-  var el=document.getElementById(id);
-  var url=el.href||el.textContent;
-  navigator.clipboard.writeText(url).then(function(){
-    var btn=el.nextElementSibling;if(btn){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy Link'},2000)}
+function setCat(cat,el){
+  state.cat=cat;
+  document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('active')});
+  if(el)el.classList.add('active');
+  if(el){
+    var nav=$('catScroll');
+    nav.scrollTo({left:el.offsetLeft-nav.clientWidth/2+el.clientWidth/2,behavior:'smooth'});
+  }
+  renderFeed();
+}
+
+// ─── Search ────────────────────────────────────────────────────────
+$('searchInput').addEventListener('input',function(e){
+  state.q=e.target.value.toLowerCase().trim();
+  $('searchClear').classList.toggle('show',!!state.q);
+  renderAutocomplete();
+  renderFeed();
+});
+$('searchInput').addEventListener('focus',function(){
+  if(state.q)renderAutocomplete();
+});
+$('searchInput').addEventListener('keydown',function(e){
+  var ac=$('acWrap');
+  if(!ac.classList.contains('open'))return;
+  var items=ac.querySelectorAll('.ac-item');
+  if(!items.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();acIdx=Math.min(items.length-1,acIdx+1);updateAcSelection(items)}
+  else if(e.key==='ArrowUp'){e.preventDefault();acIdx=Math.max(0,acIdx-1);updateAcSelection(items)}
+  else if(e.key==='Enter'){e.preventDefault();if(acIdx>=0&&items[acIdx])items[acIdx].click()}
+  else if(e.key==='Escape'){closeAutocomplete()}
+});
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.search-wrap'))closeAutocomplete();
+});
+function renderAutocomplete(){
+  var ac=$('acWrap');acIdx=-1;
+  if(!state.q||state.q.length<2){ac.classList.remove('open');return}
+  var matches=allStores.filter(function(s){
+    var hay=(s.shop+' '+s.slug+' '+s.city+' '+s.type+' '+s.tagline).toLowerCase();
+    return hay.indexOf(state.q)>=0;
+  }).sort(sortByScore).slice(0,6);
+  if(!matches.length){
+    ac.innerHTML='<div class="ac-empty">No shops match "'+esc(state.q)+'"</div>';
+    ac.classList.add('open');return;
+  }
+  ac.innerHTML=matches.map(function(s){
+    var icon=typeIcon(s.type);
+    var iconStyle=s.logo?'background-image:url('+esc(s.logo)+');background-color:transparent':'';
+    return '<div class="ac-item" onclick="trackView(\''+s.slug+'\');window.open(\''+esc(s.url)+'\',\'_blank\')">'
+      +'<div class="ac-icon" style="'+iconStyle+'">'+(s.logo?'':icon)+'</div>'
+      +'<div class="ac-text">'
+        +'<div class="ac-name"><span class="ac-name-text">'+esc(s.shop)+'</span>'+(s.verified?'<span class="card-verified" title="Verified">✓</span>':'')+'</div>'
+        +'<div class="ac-sub">'+esc(typeLabel(s.type))+(s.city?' · '+esc(s.city):'')+(s.rating?' · ★ '+s.rating.toFixed(1):'')+'</div>'
+      +'</div>'
+      +'<div class="ac-arrow">→</div>'
+      +'</div>';
+  }).join('');
+  ac.classList.add('open');
+}
+function updateAcSelection(items){
+  items.forEach(function(it,i){if(i===acIdx)it.classList.add('selected');else it.classList.remove('selected')});
+  if(items[acIdx])items[acIdx].scrollIntoView({block:'nearest'});
+}
+function closeAutocomplete(){$('acWrap').classList.remove('open');acIdx=-1}
+function clearSearch(){
+  $('searchInput').value='';state.q='';
+  $('searchClear').classList.remove('show');
+  closeAutocomplete();
+  $('searchInput').focus();
+  renderFeed();
+}
+
+// ─── Open now toggle ───────────────────────────────────────────────
+function toggleOpenNow(el){
+  state.openNow=!state.openNow;
+  el.classList.toggle('active',state.openNow);
+  el.setAttribute('aria-pressed',state.openNow?'true':'false');
+  localStorage.setItem('storepro_open_now',state.openNow?'1':'0');
+  renderFeed();
+}
+
+// ─── Recently viewed (localStorage) ────────────────────────────────
+function trackView(slug){
+  if(!slug)return;
+  try{
+    var key='storepro_viewed';
+    var raw=localStorage.getItem(key);
+    var arr=raw?JSON.parse(raw):[];
+    arr=arr.filter(function(s){return s!==slug});
+    arr.unshift(slug);
+    arr=arr.slice(0,8);
+    localStorage.setItem(key,JSON.stringify(arr));
+  }catch(e){}
+}
+function getRecentlyViewed(){
+  try{
+    var raw=localStorage.getItem('storepro_viewed');
+    var slugs=raw?JSON.parse(raw):[];
+    var byslug={};allStores.forEach(function(s){byslug[s.slug]=s});
+    var list=[];slugs.forEach(function(sl){if(byslug[sl])list.push(byslug[sl])});
+    return list;
+  }catch(e){return []}
+}
+
+// ─── Geolocation city detection ────────────────────────────────────
+function detectCity(){
+  var btn=$('geoBtn'),txt=$('geoBtnText');
+  if(!navigator.geolocation){txt.textContent='Geolocation not supported';return}
+  txt.textContent='Detecting...';btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat=pos.coords.latitude,lon=pos.coords.longitude;
+    fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lon+'&zoom=10&addressdetails=1',{
+      headers:{'Accept':'application/json'}
+    }).then(function(r){return r.json()}).then(function(data){
+      btn.disabled=false;
+      var addr=data.address||{};
+      var detected=addr.city||addr.town||addr.village||addr.suburb||addr.county||'';
+      if(!detected){txt.textContent='Couldn\'t detect — pick manually';return}
+      // Fuzzy match against known cities
+      var match=null;
+      for(var i=0;i<allCities.length;i++){
+        var c=allCities[i];
+        if(c.toLowerCase()===detected.toLowerCase()||c.toLowerCase().indexOf(detected.toLowerCase())>=0||detected.toLowerCase().indexOf(c.toLowerCase())>=0){match=c;break}
+      }
+      if(match){
+        setCity(match);
+        txt.textContent='✓ Set to '+match;
+      }else{
+        txt.textContent='No shops in '+detected+' yet';
+        setTimeout(function(){txt.textContent='Use my current location'},2400);
+      }
+    }).catch(function(){btn.disabled=false;txt.textContent='Couldn\'t detect — pick manually'});
+  },function(err){
+    btn.disabled=false;
+    if(err.code===1)txt.textContent='Permission denied — pick manually';
+    else txt.textContent='Couldn\'t get location';
+  },{timeout:8000,maximumAge:600000});
+}
+
+function getFiltered(){
+  return allStores.filter(function(s){
+    if(state.city!=='all'&&s.city!==state.city)return false;
+    if(state.cat!=='all'&&s.type.indexOf(state.cat)<0)return false;
+    if(state.openNow&&!s.acceptingOrders)return false;
+    if(state.q){
+      var hay=(s.shop+' '+s.slug+' '+s.city+' '+s.type+' '+s.tagline).toLowerCase();
+      if(hay.indexOf(state.q)<0)return false;
+    }
+    return true;
   });
 }
 
-// Registry Apps Script URL (deploy on your Master Registry sheet)
-var REGISTRY_SCRIPT = "PUT_YOUR_REGISTRY_SCRIPT_URL_HERE";
-var SITE_URL = "https://storepro.in";
-var ADMIN_WA = "919760684971";
+// Trending score: rating × log(reviews + 1)
+// Excludes new shops (give them a fair shake before competing on metrics)
+function trendingScore(s){
+  if(!s.rating)return 0;
+  return s.rating*Math.log((s.reviewCount||0)+1)+s.rating*0.1;
+}
 
-function submitSignup(){
-  var shop=document.getElementById('sShop').value.trim();
-  var name=document.getElementById('sName').value.trim();
-  var phone=document.getElementById('sPhone').value.trim();
-  var email=document.getElementById('sEmail').value.trim();
-  var city=document.getElementById('sCity').value.trim();
-  var addr=document.getElementById('sAddr').value.trim();
-  var type=document.getElementById('sType').value;
-  var upi=document.getElementById('sUpi').value.trim();
-  var products=document.getElementById('sProducts').value.trim();
+function cardHtml(s){
+  var icon=typeIcon(s.type);
+  var thumbStyle=s.logo?'background-image:url('+esc(s.logo)+')':(s.brandColor?'background:linear-gradient(135deg,'+esc(s.brandColor)+',#f5f5f0)':'');
+  var badges='';
+  if(s.featured)badges+='<span class="card-badge b-featured">★ Featured</span>';
+  if(s.verified&&!s.featured)badges+='<span class="card-badge b-verified">✓ Verified</span>';
+  if(s.isNew&&!s.featured)badges+='<span class="card-badge b-new">New</span>';
+  var statusBadge=s.acceptingOrders
+    ? '<span class="card-status">Open</span>'
+    : '<span class="card-status closed">Closed</span>';
+  return '<a class="card" href="'+esc(s.url)+'" target="_blank" rel="noopener" onclick="trackView(\''+s.slug+'\')">'
+    +'<div class="card-thumb" style="'+thumbStyle+'">'
+      +(s.logo?'':'<div class="card-thumb-icon">'+icon+'</div>')
+      +(badges?'<div class="card-badges">'+badges+'</div>':'')
+      +statusBadge
+    +'</div>'
+    +'<div class="card-body">'
+      +'<div class="card-name"><span class="card-name-text">'+esc(s.shop)+'</span>'+(s.verified?'<span class="card-verified" title="Verified">✓</span>':'')+'</div>'
+      +'<div class="card-meta">'+icon+' '+esc(typeLabel(s.type))+(s.city?' <span class="dot">·</span> '+esc(s.city):'')+'</div>'
+      +'<div class="card-tagline">'+(s.tagline?esc(s.tagline):'<span style="opacity:.5">Tap to explore the menu</span>')+'</div>'
+    +'</div>'
+    +'<div class="card-foot">'
+      +(s.rating?'<div class="card-rating"><span class="card-rating-star">★</span> '+s.rating.toFixed(1)+(s.reviewCount?' <span style="color:var(--ink-3);font-weight:500">('+s.reviewCount+')</span>':'')+'</div>':'<div class="card-rating" style="color:var(--ink-3);font-weight:500">New shop</div>')
+      +'<div class="card-open">Open →</div>'
+    +'</div>'
+    +'</a>';
+}
 
-  if(!shop){alert('Please enter your shop name');document.getElementById('sShop').focus();return}
-  if(!name){alert('Please enter your name');document.getElementById('sName').focus();return}
-  if(!phone||!/^\d{10}$/.test(phone)){alert('Please enter a valid 10-digit WhatsApp number');document.getElementById('sPhone').focus();return}
-  if(!city){alert('Please enter your city');document.getElementById('sCity').focus();return}
+function sectionHtml(title, emoji, stores, opts){
+  if(!stores.length)return '';
+  opts=opts||{};
+  var layout=opts.layout||'h-scroll';
+  var count=stores.length;
+  return '<section class="section">'
+    +'<div class="section-hdr">'
+      +'<div class="section-h">'+(emoji?'<span class="section-h-emoji">'+emoji+'</span>':'')+esc(title)+'<span class="section-count">'+count+'</span></div>'
+      +(opts.linkLabel?'<a class="section-link" onclick="'+opts.linkAction+'">'+esc(opts.linkLabel)+' →</a>':'')
+    +'</div>'
+    +'<div class="'+layout+'">'+stores.map(cardHtml).join('')+'</div>'
+    +'</section>';
+}
 
-  // Show loading
-  document.getElementById('signupForm').style.display='none';
-  document.getElementById('signupLoading').style.display='block';
-
-  // Build params for Apps Script
-  var params='action=createStore'
-    +'&shopName='+encodeURIComponent(shop)
-    +'&name='+encodeURIComponent(name)
-    +'&phone='+encodeURIComponent(phone)
-    +'&email='+encodeURIComponent(email)
-    +'&city='+encodeURIComponent(city)
-    +'&address='+encodeURIComponent(addr)
-    +'&type='+encodeURIComponent(type)
-    +'&upi='+encodeURIComponent(upi)
-    +'&plan='+encodeURIComponent(selectedPlan);
-
-  // Try auto-creation via Apps Script
-  if(REGISTRY_SCRIPT&&REGISTRY_SCRIPT.indexOf('PUT_')!==0){
-    fetch(REGISTRY_SCRIPT+'?'+params)
-      .then(function(r){return r.json()})
-      .then(function(data){
-        if(data.success){
-          showSuccess(data.storeUrl,data.dashboardUrl,data.pin,data.slug,shop);
-        }else{
-          // Script error — fallback to WhatsApp
-          fallbackWhatsApp(shop,name,phone,email,city,addr,type,upi,products);
-        }
-      })
-      .catch(function(){
-        // Network error — fallback to WhatsApp
-        fallbackWhatsApp(shop,name,phone,email,city,addr,type,upi,products);
-      });
-  }else{
-    // No registry script configured — fallback to WhatsApp
-    fallbackWhatsApp(shop,name,phone,email,city,addr,type,upi,products);
+function sortByScore(a,b){
+  // City-affinity boost: when a city is selected, shops in that city win all ties.
+  // This means the homepage feels relevant even within the global "All shops" view.
+  if(state.city&&state.city!=='all'){
+    var aCity=String(a.city||'').toLowerCase()===state.city.toLowerCase();
+    var bCity=String(b.city||'').toLowerCase()===state.city.toLowerCase();
+    if(aCity!==bCity)return aCity?-1:1;
   }
+  if(a.featured!==b.featured)return (b.featured?1:0)-(a.featured?1:0);
+  if(b.rating!==a.rating)return b.rating-a.rating;
+  if(a.verified!==b.verified)return (b.verified?1:0)-(a.verified?1:0);
+  if(a.acceptingOrders!==b.acceptingOrders)return (b.acceptingOrders?1:0)-(a.acceptingOrders?1:0);
+  return a.shop.localeCompare(b.shop);
 }
 
-function showSuccess(storeUrl,dashUrl,pin,slug,shopName){
-  document.getElementById('signupLoading').style.display='none';
-  document.getElementById('signupSuccess').classList.add('show');
-
-  var storeLink=document.getElementById('resultStoreUrl');
-  storeLink.href=storeUrl;storeLink.textContent=storeUrl;
-
-  var dashLink=document.getElementById('resultDashUrl');
-  dashLink.href=dashUrl;dashLink.textContent=dashUrl;
-
-  document.getElementById('resultPin').textContent=pin;
-  document.getElementById('resultOpenStore').href=storeUrl;
-  document.getElementById('resultOpenDash').href=dashUrl;
-
-  // WhatsApp share message
-  var waMsg='Check out my online store!\n\n🏬 *'+shopName+'*\n🛒 Order here: '+storeUrl+'\n\nOrder groceries online, pay via UPI, get home delivery!';
-  document.getElementById('resultWaShare').href='https://wa.me/?text='+encodeURIComponent(waMsg);
+function emptyHtml(h,p){
+  return '<div class="empty">'
+    +'<div class="empty-ic">🔍</div>'
+    +'<h3>'+esc(h)+'</h3>'
+    +'<p>'+esc(p)+'</p>'
+    +'<button class="empty-cta" onclick="resetFilters()">Show all shops</button>'
+    +'</div>';
+}
+function renderEmpty(h,p){$('feed').innerHTML=emptyHtml(h,p)}
+function resetFilters(){
+  state.q='';state.cat='all';state.city='all';
+  $('searchInput').value='';$('searchClear').classList.remove('show');
+  document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('active')});
+  document.querySelector('.cat-chip[data-cat="all"]').classList.add('active');
+  localStorage.setItem('storepro_city','all');
+  updateCityPill();
+  renderFeed();
 }
 
-function fallbackWhatsApp(shop,name,phone,email,city,addr,type,upi,products){
-  // Build WhatsApp message with all details
-  var msg='*New Store Signup — StorePro* 🏬\n\n';
-  msg+='*Shop:* '+shop+'\n';
-  msg+='*Owner:* '+name+'\n';
-  msg+='*WhatsApp:* '+phone+'\n';
-  if(email)msg+='*Email:* '+email+'\n';
-  msg+='*City:* '+city+'\n';
-  if(addr)msg+='*Address:* '+addr+'\n';
-  msg+='*Type:* '+type+'\n';
-  msg+='*Plan:* '+selectedPlan+'\n';
-  if(upi)msg+='*UPI:* '+upi+'\n';
-  if(products)msg+='\n*Products:*\n'+products+'\n';
-  msg+='\nPlease set up my store. 🙏';
+function renderFeed(){
+  var feed=$('feed');
+  var list=getFiltered();
 
-  var waUrl='https://wa.me/'+ADMIN_WA+'?text='+encodeURIComponent(msg);
+  // If user is searching or filtering by category → single result section
+  if(state.q||state.cat!=='all'){
+    if(!list.length){
+      feed.innerHTML=emptyHtml(
+        state.q?'No shops match "'+state.q+'"':'No '+typePlural(state.cat).toLowerCase()+(state.city!=='all'?' in '+state.city:' yet'),
+        state.q?'Try a different search term, or change category/city.':(state.city!=='all'?'Try another city or browse all shops.':'Be the first to list yours.')
+      );
+      return;
+    }
+    list.sort(sortByScore);
+    var title;
+    if(state.q)title='Results for "'+state.q+'"';
+    else if(state.cat!=='all')title=typePlural(state.cat);
+    else title='All shops';
+    if(state.city!=='all')title+=' in '+state.city;
+    feed.innerHTML=sectionHtml(title,(state.cat!=='all'?typeIcon(state.cat):''),list,{layout:'v-grid'});
+    return;
+  }
 
-  // Generate estimated URLs
-  var slug=(shop+'-'+city).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,40);
-  var storeUrl=SITE_URL+'/store.html?store='+slug;
-  var dashUrl=SITE_URL+'/dashboard.html?store='+slug;
+  // Default home: featured + new + per-category sections
+  if(!list.length){
+    feed.innerHTML=emptyHtml(
+      state.city!=='all'?'No shops in '+state.city+' yet':'No shops live yet',
+      state.city!=='all'?'We\'re expanding fast. Try All cities or check back soon.':'Be the first to list your shop. It takes 5 minutes and is free.'
+    );
+    return;
+  }
 
-  document.getElementById('signupLoading').style.display='none';
-  document.getElementById('signupSuccess').classList.add('show');
+  var html='';
 
-  var storeLink=document.getElementById('resultStoreUrl');
-  storeLink.href=waUrl;storeLink.textContent='Store will be ready in 24 hours';
+  // Recently viewed — only render on return visits with matches in current filter
+  var recent=getRecentlyViewed().filter(function(s){
+    if(state.city!=='all'&&s.city!==state.city)return false;
+    if(state.openNow&&!s.acceptingOrders)return false;
+    return true;
+  });
+  if(recent.length>=2){
+    html+=sectionHtml('Recently viewed','🕘',recent);
+  }
 
-  var dashLink=document.getElementById('resultDashUrl');
-  dashLink.href=waUrl;dashLink.textContent='Dashboard link will be shared on WhatsApp';
+  // Featured (gold star)
+  var featured=list.filter(function(s){return s.featured}).sort(sortByScore);
+  if(featured.length){
+    html+=sectionHtml('Featured',null,featured.slice(0,12));
+  }
 
-  document.getElementById('resultPin').textContent='••••';
-  document.getElementById('resultOpenStore').href=waUrl;
-  document.getElementById('resultOpenStore').textContent='📱 Message us on WhatsApp';
-  document.getElementById('resultOpenDash').style.display='none';
-  document.getElementById('resultWaShare').href=waUrl;
+  // Trending — rated shops sorted by composite popularity score
+  // Only render when there's enough data (≥4 rated shops) so it doesn't look thin
+  var rated=list.filter(function(s){return s.rating>0&&!s.featured});
+  if(rated.length>=4){
+    rated.sort(function(a,b){return trendingScore(b)-trendingScore(a)});
+    html+=sectionHtml('Trending','🔥',rated.slice(0,10));
+  }
 
-  // Auto open WhatsApp
-  window.open(waUrl,'_blank');
+  // New on StorePro
+  var newOnes=list.filter(function(s){return s.isNew&&!s.featured}).sort(function(a,b){
+    return (b.createdAt?b.createdAt.getTime():0)-(a.createdAt?a.createdAt.getTime():0);
+  });
+  if(newOnes.length){
+    html+=sectionHtml('New on StorePro','✨',newOnes.slice(0,12));
+  }
+  SECTION_ORDER.forEach(function(cat){
+    var subset=list.filter(function(s){return s.type.indexOf(cat)>=0}).sort(sortByScore);
+    if(subset.length){
+      html+=sectionHtml(typePlural(cat),typeIcon(cat),subset.slice(0,12),{
+        linkLabel:'View all',
+        linkAction:'setCat(\''+cat+'\',document.querySelector(\'.cat-chip[data-cat=&quot;'+cat+'&quot;]\'))'
+      });
+    }
+  });
+  var others=list.filter(function(s){return SECTION_ORDER.indexOf(s.type)<0}).sort(sortByScore);
+  if(others.length){
+    html+=sectionHtml('Other shops','🏪',others.slice(0,12));
+  }
+
+  feed.innerHTML=html||emptyHtml('No shops to show','Adjust your filters above.');
 }
+
+loadStores();
 </script>
 </body>
 </html>

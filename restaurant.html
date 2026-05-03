@@ -11,7 +11,36 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--white:#fff;--bg:#fafafa;--card:#fff;--ink:#1a1a1a;--ink2:#3d3d3d;--ink3:#7a7a7a;--ink4:#b0b0b0;--brand:#e63946;--brand-bg:#fef2f2;--brand-dk:#c92a37;--green:#0c831f;--green-bg:#e8faed;--orange:#f59e0b;--orange-bg:#fff4eb;--red:#dc2626;--red-bg:#fdecea;--line:#ebebeb;--line2:#d9d9d9;--sh:0 1px 4px rgba(0,0,0,.05);--sh2:0 4px 16px rgba(0,0,0,.08);--sh3:0 8px 32px rgba(0,0,0,.12);--r:8px;--r2:12px;--r3:16px;--pill:100px;--f:'DM Sans',system-ui,sans-serif;--ease:cubic-bezier(.4,0,.2,1);--mw:780px;--px:max(16px,env(safe-area-inset-left,16px))}
+:root{
+  --white:#fff;--bg:#f5f7fb;--card:#fff;
+  --ink:#0b1220;--ink2:#3b4252;--ink3:#6b7280;--ink4:#9ca3af;
+  --brand:#e63946;--brand2:#ef4d5b;--brand-bg:#fef2f2;--brand-dk:#c92a37;
+  --green:#0c831f;--green-bg:#e8faed;
+  --blue:#2563eb;--blue-bg:#eff6ff;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --yellow:#d97706;--yellow-bg:#fffbeb;
+  --purple:#7c3aed;--purple-bg:#f3eaff;
+  --line:#e6e8ee;--line2:#d9dbe1;
+  --sh:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.06);
+  --sh2:0 4px 16px rgba(15,23,42,.08);
+  --sh3:0 8px 32px rgba(15,23,42,.12);
+  --r:10px;--r2:14px;--r3:20px;--r4:28px;--pill:100px;
+  --f:'DM Sans',system-ui,sans-serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --mw:780px;--px:max(16px,env(safe-area-inset-left,16px))
+}
+/* Modern micro-animations + loader — same family as store / fastfood / dashboard-v2 */
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.bump{animation:bump .2s var(--ease)}
+@keyframes tickFlash{0%{background:var(--brand);color:#fff;transform:scale(1)}40%{background:var(--brand);color:#fff;transform:scale(1.04)}100%{transform:scale(1)}}
+.dish-add-btn.tick{animation:tickFlash .26s var(--ease)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmerSweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.order-sending{pointer-events:none;position:relative;cursor:wait;overflow:hidden}
+.order-sending::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);background-size:200% 100%;animation:shimmerSweep 1.4s var(--ease) infinite;pointer-events:none}
+.order-spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-right-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-3px;flex-shrink:0}
+@media (prefers-reduced-motion:reduce){.bump,.dish-add-btn.tick,.order-sending::after{animation:none!important}*{transition-duration:.01ms!important}}
 body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100dvh;line-height:1.5}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -121,7 +150,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .cust-add-price{background:rgba(255,255,255,.2);padding:4px 8px;border-radius:4px;font-weight:800}
 
 /* Sticky cart bar */
-.cart-bar{position:fixed;bottom:0;left:0;right:0;z-index:90;transform:translateY(100%);transition:.3s var(--ease);pointer-events:none}.cart-bar.show{transform:translateY(0);pointer-events:auto}
+.cart-bar{position:fixed;bottom:0;left:0;right:0;z-index:90;transform:translateY(100%);transition:.3s var(--ease);pointer-events:none;padding-bottom:env(safe-area-inset-bottom)}.cart-bar.show{transform:translateY(0);pointer-events:auto}
 .cart-bar-in{max-width:var(--mw);margin:0 auto;padding:0 var(--px) env(safe-area-inset-bottom)}
 .cart-bar-card{background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;border-radius:var(--r3) var(--r3) 0 0;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 -4px 24px rgba(0,0,0,.15)}
 .cart-bar-card:hover{filter:brightness(1.08)}
@@ -204,7 +233,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .success-icon{width:80px;height:80px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px}
 .success-title{font-size:20px;font-weight:800;margin-bottom:6px}
 .success-sub{font-size:13px;color:var(--ink2);margin-bottom:6px}
-.success-id{font-size:11px;color:var(--ink3);font-family:monospace;background:var(--bg);padding:6px 12px;border-radius:6px;display:inline-block;margin:8px 0}
+.success-id{font-size:11px;color:var(--ink3);font-family:monospace;background:var(--bg);padding:6px 12px;border-radius:6px;display:inline-block;margin:8px 0;cursor:pointer;user-select:all;transition:background .15s var(--ease)}
+.success-id:hover{background:var(--line)}
+.success-id::after{content:'  📋';font-size:10px;opacity:.5}
 .success-time{font-size:13px;color:var(--brand);font-weight:700;margin:12px 0}
 .success-btn{width:100%;height:42px;background:var(--brand);color:#fff;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;margin-top:12px}.success-btn:hover{filter:brightness(1.1)}
 
@@ -215,6 +246,8 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 @keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
 
 @media(max-width:640px){.dish-img-area{width:100px;height:100px}}
+/* Mobile: prevent iOS Safari zoom-on-focus by ensuring inputs are >=16px on touch */
+@media (pointer:coarse){input:not([type=color]):not([type=range]):not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>
@@ -226,6 +259,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 <div class="top-name" id="topName">Loading...</div>
 <div class="top-meta"><span class="top-status" id="topStatus">●</span><span id="topTime">--</span></div>
 </div>
+<button id="langBtn" onclick="toggleLang()" title="Hindi/English" aria-label="Toggle language" style="height:34px;min-width:36px;padding:0 8px;border:1.5px solid var(--line);background:var(--white);color:var(--ink2);font:700 12px var(--f);border-radius:10px;cursor:pointer;margin-right:6px">हिं</button>
 <div class="top-cart-icon" onclick="openCart()">🛒<span class="top-cart-badge" id="cartBadge" style="display:none">0</span></div>
 </div>
 
@@ -317,11 +351,15 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 <div class="success-bg" id="successBg">
 <div class="success-box">
 <div class="success-icon">✓</div>
-<div class="success-title">Order Placed!</div>
-<div class="success-sub">Your delicious food is being prepared</div>
-<div class="success-id" id="successId"></div>
+<div class="success-title">Order Saved!</div>
+<div class="success-sub">The shop has received your order</div>
+<div class="success-id" id="successId" onclick="copyOrderId()" title="Tap to copy"></div>
 <div class="success-time" id="successTime">⏱️ Arriving in 30-45 min</div>
-<button class="success-btn" onclick="closeSuccess()">Continue Browsing</button>
+<div id="successTotalRow" style="font:700 15px var(--f);color:var(--ink);margin:10px 0 4px">Total: <span id="successTotal">₹0</span></div>
+<div style="font:500 12px var(--f);color:var(--ink3);margin:14px 0 8px">Send confirmation to the shop?</div>
+<button class="success-btn" id="successWaBtn" style="background:#25d366;display:flex;align-items:center;justify-content:center;gap:8px" onclick="sendOrderWhatsApp()">💬 Send on WhatsApp</button>
+<button class="success-btn" id="successCallBtn" style="background:var(--white);color:var(--ink);border:2px solid var(--line);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="callOrderShop()">📞 Call Shop</button>
+<button class="success-btn" style="background:var(--bg);color:var(--ink2);margin-top:10px" onclick="closeSuccess()">Continue Browsing</button>
 </div>
 </div>
 
@@ -329,7 +367,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 
 <script>
 // ═══ CONFIG ══
-var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var MASTER_SHEET_ID="1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
 var SHEET_ID="",SCRIPT_URL="";
 var DEFAULT_PHONE="",DEFAULT_WA="";
 
@@ -418,7 +456,15 @@ function resolveStore(cb){
 
 function showNotFound(slug){
   var safe=String(slug).replace(/[<>"'&]/g,'');
-  document.body.innerHTML='<div style="padding:40px 20px;text-align:center;font-family:DM Sans,sans-serif"><div style="font-size:48px">🔍</div><h1 style="margin:12px 0 8px;font-size:22px">Restaurant not found</h1><p style="color:#666;font-size:13px">"'+safe+'" doesn\'t exist or is no longer active.</p></div>';
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:#f5f5f5">'
+    +'<div style="text-align:center;max-width:400px">'
+    +'<div style="font-size:64px;margin-bottom:12px">🍽️</div>'
+    +'<h1 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#111">Restaurant not found</h1>'
+    +'<p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">The restaurant <strong>"'+safe+'"</strong> doesn\'t exist or is no longer active.</p>'
+    +'<div style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">'
+    +'<a href="/" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 28px;background:#e63946;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">🏠 Go to StorePro</a>'
+    +'<a href="/signup.html" style="font-size:13px;color:#e63946;font-weight:600;text-decoration:none;padding:8px">Want your own store? Create one free →</a>'
+    +'</div></div></div>';
 }
 
 // ══ INIT ══
@@ -721,7 +767,7 @@ function renderDish(d){
   var price=fnum(d.price),mrp=fnum(d.mrp);
   var off=mrp>price?Math.round(((mrp-price)/mrp)*100):0;
   
-  var html='<div class="dish'+(oos?' oos':'')+'">';
+  var html='<div class="dish'+(oos?' oos':'')+'" data-di="'+i+'">';
   html+='<div class="dish-info">';
   html+='<div class="dish-tag '+(isVeg?'veg':'nv')+'"></div>';
   html+='<div class="dish-name">'+esc(d.name);
@@ -758,20 +804,42 @@ function renderDish(d){
   }
   if(hasCustom&&!oos)html+='<div class="dish-customize">Customize</div>';
   
-  if(oos){
-    html+='<div style="position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font:700 10px var(--f);padding:5px 12px;border-radius:var(--r);text-transform:uppercase;letter-spacing:.05em">Sold Out</div>';
-  }else if(qty>0&&!hasCustom){
-    html+='<div class="dish-stepper">';
-    html+='<button onclick="changeQty('+i+',-1)">−</button>';
-    html+='<span>'+qty+'</span>';
-    html+='<button onclick="changeQty('+i+',1)">+</button>';
-    html+='</div>';
-  }else{
-    html+='<button class="dish-add-btn" onclick="onAddDish('+i+')">'+(hasCustom?'CUSTOMIZE':'ADD')+(qty>0?' ('+qty+')':'')+'</button>';
-  }
+  // Action slot — wrapped so addToCart/changeQty can update just this area
+  // without redrawing the whole menu (avoids screen-refresh flash).
+  html+='<span class="dish-action" data-di="'+i+'">'+dishActionHtml_(d,i,qty,oos,hasCustom)+'</span>';
   html+='</div></div>';
   return html;
 }
+
+// Build the action slot HTML for one dish (sold-out tag / stepper / add btn).
+function dishActionHtml_(d,i,qty,oos,hasCustom){
+  if(oos)return '<div style="position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font:700 10px var(--f);padding:5px 12px;border-radius:var(--r);text-transform:uppercase;letter-spacing:.05em">Sold Out</div>';
+  if(qty>0&&!hasCustom){
+    return '<div class="dish-stepper">'
+      +'<button onclick="changeQty('+i+',-1)">−</button>'
+      +'<span>'+qty+'</span>'
+      +'<button onclick="changeQty('+i+',1)">+</button>'
+      +'</div>';
+  }
+  return '<button class="dish-add-btn" onclick="onAddDish('+i+')">'+(hasCustom?'CUSTOMIZE':'ADD')+(qty>0?' ('+qty+')':'')+'</button>';
+}
+// Surgically update one dish's action slot. Avoids the full-menu repaint.
+function updateDishAction_(i){
+  var slot=document.querySelector('.dish-action[data-di="'+i+'"]');
+  if(!slot)return;
+  var d=allDishes[i];if(!d)return;
+  var oos=(d.stock||'').toLowerCase().indexOf('out')>=0;
+  var hasCustom=d.options||d.addons||d.sizes;
+  var qty=getCartQty(d.name);
+  slot.innerHTML=dishActionHtml_(d,i,qty,oos,hasCustom);
+  var qtyEl=slot.querySelector('.dish-stepper span');
+  if(qtyEl){qtyEl.classList.remove('bump');void qtyEl.offsetWidth;qtyEl.classList.add('bump')}
+}
+function syncDishActions_(){
+  var slots=document.querySelectorAll('.dish-action[data-di]');
+  for(var k=0;k<slots.length;k++){var idx=parseInt(slots[k].getAttribute('data-di'),10);if(!isNaN(idx))updateDishAction_(idx)}
+}
+function bumpEl_(id){var el=document.getElementById(id);if(!el)return;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
 
 // ══ ADD DISH ══
 function onAddDish(i){
@@ -790,15 +858,15 @@ function showAddedFeedback(name){
 
 function changeQty(i,delta){
   var d=allDishes[i];if(!d)return;
-  // Find FIRST cart item matching name (without customization)
   var idx=cart.findIndex(function(c){return c.name===d.name&&!c.customization});
   if(idx>=0){
     cart[idx].qty+=delta;
     if(cart[idx].qty<=0)cart.splice(idx,1);
   }else if(delta>0){
     addToCart(d,1,null,d.price);
+    return; // addToCart already updated UI
   }
-  saveCart();renderMenu();updateCartBar();
+  saveCart();updateDishAction_(i);updateCartBar();
 }
 
 function addToCart(dish,qty,customization,price){
@@ -820,7 +888,17 @@ function addToCart(dish,qty,customization,price){
       veg:(dish.veg||'').toLowerCase()
     });
   }
-  saveCart();renderMenu();updateCartBar();
+  saveCart();
+  // Surgical UI: tick the add button + refresh that dish's action slot only
+  var di=allDishes.findIndex(function(x){return x.name===dish.name});
+  if(di>=0){
+    var card=document.querySelector('.dish[data-di="'+di+'"]');
+    var addBtn=card&&card.querySelector('.dish-add-btn');
+    if(addBtn){addBtn.classList.add('tick');setTimeout(function(){addBtn.classList.remove('tick')},260)}
+    updateDishAction_(di);
+  }
+  bumpEl_('cartBadge');
+  updateCartBar();
 }
 
 function saveCart(){try{localStorage.setItem('rest_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}}
@@ -1163,7 +1241,11 @@ function placeOrder(){
   if(!name){alert('Please enter your name');return}
   if(!phone||phone.length<10){alert('Please enter a valid 10-digit phone number');return}
   if(activeMode==='delivery'&&!address){alert('Please enter your delivery address');return}
-  
+
+  // Modern loader on the Place Order button while we send.
+  var placeBtn=$('placeBtn'),placeBtnPrev=placeBtn?placeBtn.innerHTML:'';
+  if(placeBtn){placeBtn.classList.add('order-sending');placeBtn.innerHTML='<span class="order-spin"></span>Placing order...'}
+
   // Save customer
   savedCustomer={name:name,phone:phone,address:address};
   try{localStorage.setItem('rest_cust_'+SHEET_ID,JSON.stringify(savedCustomer))}catch(e){}
@@ -1198,6 +1280,7 @@ function placeOrder(){
   if(SCRIPT_URL){
     var params='action=newOrder';
     params+='&id='+encodeURIComponent(oid);
+    params+='&orderId='+encodeURIComponent(oid);
     params+='&name='+encodeURIComponent(name);
     params+='&phone='+encodeURIComponent(phone);
     params+='&address='+encodeURIComponent(address);
@@ -1208,9 +1291,11 @@ function placeOrder(){
     params+='&notes='+encodeURIComponent(notes);
     params+='&date='+encodeURIComponent(new Date().toLocaleString('en-IN'));
     var img=new Image();img.src=SCRIPT_URL+'?'+params+'&_t='+Date.now();
+  }else{
+    console.error('[StorePro] Order NOT saved: no ScriptURL configured. Set it in master registry or Config tab.');
   }
   
-  // WhatsApp confirmation
+  // Build WhatsApp message + cache shop phone (do NOT auto-open — customer chooses from success modal)
   var phoneCfg=cfg('whatsapp',DEFAULT_WA);
   var waMsg='Hi! New order:\n\n*Order #'+oid+'*\n\n👤 '+name+'\n📞 '+phone+'\n'+
     (activeMode==='delivery'?'📍 '+address:'🏪 Pickup')+'\n\n*Items:*\n'+itemsStr+
@@ -1220,18 +1305,42 @@ function placeOrder(){
     '\n*Total: ₹'+grand+'*'+
     '\n\n💳 Payment: '+(activePayment==='cod'?'Cash on '+(activeMode==='delivery'?'Delivery':'Pickup'):'UPI')+
     (notes?'\n\n📝 Notes: '+notes:'');
-  
-  var waUrl='https://wa.me/'+phoneCfg+'?text='+encodeURIComponent(waMsg);
-  window.open(waUrl,'_blank');
-  
+
+  window._lastOrderMsg=waMsg;
+  window._lastOrderShopPhone=phoneCfg?String(phoneCfg).replace(/\D/g,''):'';
+  window._lastOrderId=oid;
+  window._lastOrderTotal=grand;
+
   // Clear cart
   cart=[];saveCart();updateCartBar();
-  
-  // Show success
+
+  // Reset Place Order button + show success
+  if(placeBtn){placeBtn.classList.remove('order-sending');placeBtn.innerHTML=placeBtnPrev}
   closeCheckout();
   $('successId').textContent=oid;
   $('successTime').textContent=activeMode==='delivery'?'⏱️ Arriving in '+(cfg('estimateddeliverytime','30-45 min')):'⏱️ Ready for pickup in 20 min';
+  if($('successTotal'))$('successTotal').textContent=cfg('currency','₹')+grand.toLocaleString('en-IN');
+  var waBtn=$('successWaBtn'),callBtn=$('successCallBtn');
+  if(waBtn)waBtn.style.display=window._lastOrderShopPhone?'':'none';
+  if(callBtn)callBtn.style.display=window._lastOrderShopPhone?'':'none';
   $('successBg').classList.add('open');
+}
+
+function sendOrderWhatsApp(){
+  var p=window._lastOrderShopPhone||'';if(!p){showToast('Shop WhatsApp not configured');return}
+  var m=window._lastOrderMsg||'';
+  window.open('https://wa.me/'+p+'?text='+encodeURIComponent(m),'_blank');
+}
+function callOrderShop(){
+  var p=window._lastOrderShopPhone||'';if(!p){showToast('Shop phone not configured');return}
+  try{if(window._lastOrderMsg)navigator.clipboard.writeText(window._lastOrderMsg)}catch(e){}
+  window.location.href='tel:'+p;
+}
+function copyOrderId(){
+  var oid=window._lastOrderId||$('successId').textContent||'';
+  if(!oid)return;
+  try{navigator.clipboard.writeText(oid);showToast('✓ Order ID copied')}
+  catch(e){showToast('Copy failed — '+oid)}
 }
 
 function closeSuccess(){$('successBg').classList.remove('open');renderMenu()}
@@ -1253,6 +1362,99 @@ document.addEventListener('keydown',function(e){
 
 // Init
 init();
+
+// ─────────── HINDI / ENGLISH UI TOGGLE ───────────
+var lang='en';
+try{var saved=localStorage.getItem('sl_lang_'+SHEET_ID);if(saved==='hi'||saved==='en')lang=saved}catch(e){}
+var L={
+  en:{search:'Search dishes...',placeOrder:'Place Order',pickup:'Pickup',delivery:'Delivery',cartEmpty:'Your cart is empty',oos:'Out of Stock',addToCart:'ADD',customize:'CUSTOMIZE',sending:'Placing order…'},
+  hi:{search:'व्यंजन खोजें...',placeOrder:'ऑर्डर करें',pickup:'पिकअप',delivery:'डिलीवरी',cartEmpty:'आपका कार्ट खाली है',oos:'स्टॉक में नहीं',addToCart:'जोड़ें',customize:'कस्टमाइज़',sending:'ऑर्डर भेज रहे हैं…'}
+};
+function t(k){if(lang==='hi'){var ov=cfg('hi_'+k,'');if(ov)return ov}return (L[lang]&&L[lang][k])||L.en[k]||k}
+function applyLangToDom(){
+  var btn=document.getElementById('langBtn');if(btn){btn.textContent=lang==='en'?'हिं':'EN';btn.style.background=lang==='hi'?'var(--brand-bg)':'var(--white)';btn.style.color=lang==='hi'?'var(--brand)':'var(--ink2)';btn.style.borderColor=lang==='hi'?'var(--brand)':'var(--line)'}
+  var s=document.getElementById('searchInput');if(s)s.placeholder=t('search');
+  if(typeof syncDishActions_==='function')syncDishActions_();
+  if(typeof renderCart==='function')renderCart();
+  document.documentElement.setAttribute('lang',lang);
+}
+function toggleLang(){lang=lang==='en'?'hi':'en';try{localStorage.setItem('sl_lang_'+SHEET_ID,lang)}catch(e){}applyLangToDom()}
+setTimeout(applyLangToDom,1500);
+
+// Schema.org JSON-LD
+(function(){
+  var attempts=0;
+  function tryInject(){
+    attempts++;if(attempts>30)return;
+    if(!window.config||!cfg('shopname','')){setTimeout(tryInject,500);return}
+    try{
+      var name=cfg('shopname','');
+      var slug=(new URLSearchParams(location.search)).get('store')||'';
+      var data={
+        '@context':'https://schema.org','@type':'Restaurant',
+        name:name,
+        url:location.origin+location.pathname+(slug?'?store='+slug:''),
+        description:cfg('tagline','')||cfg('herosubtitle','')||(name+' — order online'),
+        telephone:cfg('phone','')||cfg('whatsapp',''),
+        priceRange:cfg('pricerange','')||'₹₹',
+        image:cfg('logo','')||cfg('ogimage','')||(location.origin+'/icon-512.png'),
+        servesCuisine:cfg('cuisine','Indian')
+      };
+      var addr=cfg('address',''),city=cfg('city','');
+      if(addr||city)data.address={'@type':'PostalAddress',streetAddress:addr,addressLocality:city,addressCountry:'IN'};
+      var hours=cfg('businesshours','')||cfg('timing','');
+      var m=hours&&String(hours).match(/(\d{1,2})(?::?(\d{2}))?\s*[-–to]+\s*(\d{1,2})(?::?(\d{2}))?/);
+      if(m){
+        var open=(m[1].length<2?'0'+m[1]:m[1])+':'+(m[2]||'00');
+        var close=(m[3].length<2?'0'+m[3]:m[3])+':'+(m[4]||'00');
+        data.openingHoursSpecification={'@type':'OpeningHoursSpecification',dayOfWeek:['Mo','Tu','We','Th','Fr','Sa','Su'],opens:open,closes:close};
+      }
+      var s=document.createElement('script');s.type='application/ld+json';s.id='storepro-ldjson';
+      s.textContent=JSON.stringify(data);document.head.appendChild(s);
+    }catch(e){console.warn('[schema] fail',e)}
+  }
+  setTimeout(tryInject,1000);
+})();
+
+// Offline indicator
+(function(){
+  var bar=document.createElement('div');
+  bar.id='offlineBar';
+  bar.innerHTML='⚠️ You’re offline. Orders won’t go through until your connection is back.';
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:#fff;text-align:center;padding:8px 12px;font:600 12px DM Sans,system-ui,sans-serif;transform:translateY(-100%);transition:transform .3s ease;box-shadow:0 2px 8px rgba(0,0,0,.15)';
+  document.body.appendChild(bar);
+  function update(){bar.style.transform=navigator.onLine?'translateY(-100%)':'translateY(0)'}
+  window.addEventListener('online',update);window.addEventListener('offline',update);update();
+})();
+
+// Test-mode banner
+(function(){
+  if((new URLSearchParams(location.search)).get('test')!=='1')return;
+  var bar=document.createElement('div');
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(90deg,#f59e0b,#fbbf24);color:#7c2d12;text-align:center;padding:9px 14px;font:700 12px DM Sans,system-ui,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.15)';
+  bar.innerHTML='🧪 TEST MODE — this is a real order, just for testing. Delete it from your Orders tab after.';
+  document.body.appendChild(bar);
+  document.body.style.paddingTop='34px';
+})();
+
+// PWA install prompt
+(function(){
+  if(localStorage.getItem('sl_install_dismissed')==='1')return;
+  var deferred=null;
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();deferred=e;
+    setTimeout(function(){
+      if(!deferred||document.getElementById('installBar'))return;
+      var bar=document.createElement('div');
+      bar.id='installBar';
+      bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#e63946;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:998;font:600 13px DM Sans,system-ui,sans-serif;box-shadow:0 -4px 20px rgba(0,0,0,.15)';
+      bar.innerHTML='<span>📲 Install this app on your phone</span><div style="display:flex;gap:8px"><button id="installYes" style="background:#fff;color:#e63946;border:none;padding:8px 16px;border-radius:6px;font:700 12px DM Sans,sans-serif;cursor:pointer">Install</button><button id="installNo" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 12px;border-radius:6px;font:600 12px DM Sans,sans-serif;cursor:pointer">✕</button></div>';
+      document.body.appendChild(bar);
+      document.getElementById('installYes').onclick=function(){deferred.prompt();deferred.userChoice.then(function(){deferred=null;bar.remove()})};
+      document.getElementById('installNo').onclick=function(){try{localStorage.setItem('sl_install_dismissed','1')}catch(e){}bar.remove()};
+    },30000);
+  });
+})();
 </script>
 </body>
 </html>

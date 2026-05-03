@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0c831f">
+<title>Privacy Policy — StorePro</title>
+<link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#0c831f;--brand-dk:#065a14;--ink:#0b1220;--ink2:#3b4252;--ink3:#6b7280;--bg:#f9fafb;--white:#fff;--line:#e5e7eb;--f:'DM Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+header{background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;padding:32px 20px;text-align:center}
+header a{color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;font-weight:600;opacity:.9}
+header h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+header p{font-size:13px;opacity:.85}
+main{max-width:760px;margin:0 auto;padding:36px 20px 60px}
+main section{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:26px 30px;margin-bottom:14px}
+main h2{font-size:18px;font-weight:700;margin-bottom:10px;color:var(--ink)}
+main h3{font-size:14px;font-weight:700;margin:18px 0 6px;color:var(--ink2)}
+main p,main li{font-size:14px;color:var(--ink2);margin-bottom:10px}
+main ul{margin-left:20px}
+main a{color:var(--brand);text-decoration:none;font-weight:600}
+main a:hover{text-decoration:underline}
+.tldr{background:#e8faed;border-left:4px solid var(--brand);padding:14px 18px;border-radius:8px;margin-bottom:16px;font-size:13px;color:#065a14}
+.tldr strong{font-weight:700}
+.updated{font-size:12px;color:var(--ink3);text-align:center;margin-bottom:24px}
+footer{text-align:center;padding:30px 20px;color:var(--ink3);font-size:12px}
+footer a{color:var(--ink3);text-decoration:none;margin:0 8px}
+footer a:hover{color:var(--brand)}
+@media (max-width:480px){header h1{font-size:22px}main section{padding:20px 18px}}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/">← Back to StorePro</a>
+  <h1>Privacy Policy</h1>
+  <p>How StorePro handles your data and your customers' data</p>
+</header>
+
+<main>
+
+<div class="updated">Last updated: 3 May 2026</div>
+
+<div class="tldr">
+  <strong>TL;DR</strong> — StorePro is a tool that helps small shops run an online store. Each shop owns its own data. We collect the minimum needed to make the service work, never sell anyone's data, and you can request deletion at any time by emailing <a href="mailto:amitnegimca@gmail.com">amitnegimca@gmail.com</a>.
+</div>
+
+<section>
+<h2>1. Who is "we"</h2>
+<p>"StorePro", "we", "our" refers to the operator of <strong>storepro.in</strong>, contactable at <a href="mailto:amitnegimca@gmail.com">amitnegimca@gmail.com</a>. StorePro is a software service that lets small Indian retailers create an online store and accept orders.</p>
+</section>
+
+<section>
+<h2>2. Two types of users</h2>
+
+<h3>Shopkeepers (our direct users)</h3>
+<p>People who sign up at <a href="/signup.html">storepro.in/signup</a> to create an online store for their business.</p>
+
+<h3>Customers (your users)</h3>
+<p>People who order from a shop's storefront. <strong>Customers are users of the shopkeeper's store</strong>, not direct StorePro users. The shopkeeper, not StorePro, is the data controller for customer orders. We process customer data on the shopkeeper's behalf.</p>
+</section>
+
+<section>
+<h2>3. What we collect from shopkeepers</h2>
+<p>When you sign up, we ask for:</p>
+<ul>
+  <li>Shop name, owner name, phone number, optional email</li>
+  <li>City and shop type (so we can pre-fill your menu)</li>
+  <li>Optional: address, UPI ID, business hours, brand color, tagline</li>
+</ul>
+<p>This goes into the StorePro master registry (a Google Sheet we control) so we can route customer orders to your store.</p>
+<p>We may also collect support emails / WhatsApp messages you send us.</p>
+</section>
+
+<section>
+<h2>4. What customers' data the shopkeeper collects</h2>
+<p>When a customer places an order at a shop's storefront, the following gets stored in <strong>that shop's own Google Sheet</strong> (which the shopkeeper owns and controls):</p>
+<ul>
+  <li>Customer name and phone number</li>
+  <li>Delivery address (only for delivery orders)</li>
+  <li>Order items, total, payment mode, and any notes</li>
+  <li>Approximate location coordinates (if the customer taps "Use my current location")</li>
+</ul>
+<p>StorePro itself does not centrally store, read, or analyse this data. It sits on the shopkeeper's Google account.</p>
+</section>
+
+<section>
+<h2>5. Cookies and tracking</h2>
+<p>StorePro pages use <strong>localStorage</strong> (not cookies) to:</p>
+<ul>
+  <li>Remember the shopkeeper's dashboard session token (so they don't re-enter the PIN every time)</li>
+  <li>Remember a customer's name, phone, and address on the storefront so re-ordering is one tap</li>
+  <li>Cache shop branding so the page doesn't flash white on slow connections</li>
+</ul>
+<p>If a shopkeeper has configured Google Analytics for their store (Config row <code>AnalyticsID</code>), Analytics cookies are set on that storefront. Each shopkeeper is responsible for disclosing this to their customers.</p>
+</section>
+
+<section>
+<h2>6. Push notifications</h2>
+<p>If a shopkeeper allows browser notifications on their dashboard, we register a push subscription with their browser vendor (Apple, Google, or Mozilla). The subscription endpoint is stored on a Cloudflare Worker we operate. We use it only to send "new order" alerts to that shopkeeper's devices.</p>
+<p>Customers do not receive push notifications.</p>
+</section>
+
+<section>
+<h2>7. Telegram alerts (optional)</h2>
+<p>Shopkeepers may set up a private Telegram bot to receive order alerts on their phone. The bot token and chat ID live in the shopkeeper's own Apps Script project. StorePro never stores them. If we operated the bot, we would mention it here — but we don't, the shopkeeper does.</p>
+</section>
+
+<section>
+<h2>8. Where data is stored</h2>
+<ul>
+  <li><strong>Master registry</strong> — Google Sheets, in our Google account</li>
+  <li><strong>Shop data</strong> — Google Sheets, in the shopkeeper's Google account</li>
+  <li><strong>Static site</strong> — Vercel (Frankfurt / Mumbai edge)</li>
+  <li><strong>Push relay</strong> — Cloudflare Workers (global edge)</li>
+</ul>
+<p>Google Sheets data is processed under Google's privacy terms. Vercel and Cloudflare are processors, not data sources.</p>
+</section>
+
+<section>
+<h2>9. What we share</h2>
+<p>We don't sell or rent data. Period.</p>
+<p>We may share data only when:</p>
+<ul>
+  <li>You explicitly ask us to (e.g. you request a sheet be transferred)</li>
+  <li>A law enforcement order compels disclosure (we will notify you unless legally barred)</li>
+  <li>The Google service operating the sheet has its own privacy policy that applies</li>
+</ul>
+</section>
+
+<section>
+<h2>10. Your rights</h2>
+<p>As a shopkeeper:</p>
+<ul>
+  <li><strong>Access</strong> — your shop's Google Sheet is already yours; you have full access</li>
+  <li><strong>Correction</strong> — edit your Sheet or settings any time</li>
+  <li><strong>Deletion</strong> — email <a href="mailto:amitnegimca@gmail.com">amitnegimca@gmail.com</a> with your shop slug; we'll remove the registry row and unlink the Sheet within 7 days</li>
+  <li><strong>Portability</strong> — your Sheet is already a Google Sheet; you can export to CSV or transfer ownership at any time</li>
+</ul>
+<p>As a customer of a shop, contact the shop directly to access, correct, or delete your order history. The shop has the data, not us.</p>
+</section>
+
+<section>
+<h2>11. Children</h2>
+<p>StorePro is intended for adults running businesses. We do not knowingly collect data from anyone under 18.</p>
+</section>
+
+<section>
+<h2>12. Security</h2>
+<p>We follow industry-standard practices:</p>
+<ul>
+  <li>HTTPS everywhere</li>
+  <li>Per-shop cryptographic secrets (HMAC) for push notifications, derived from a master key we never expose</li>
+  <li>Hashed dashboard PINs (SHA-256, never stored in plaintext)</li>
+  <li>Constant-time comparison on auth tokens</li>
+</ul>
+<p>No system is perfectly secure. If you discover a vulnerability, please email <a href="mailto:amitnegimca@gmail.com">amitnegimca@gmail.com</a> before disclosing publicly.</p>
+</section>
+
+<section>
+<h2>13. Changes</h2>
+<p>If we materially change this policy, we'll notify shopkeepers via email at least 14 days before the change takes effect. Minor wording fixes don't count as material changes.</p>
+</section>
+
+<section>
+<h2>14. Contact</h2>
+<p>For any privacy question or data-deletion request:</p>
+<p>📧 <a href="mailto:amitnegimca@gmail.com">amitnegimca@gmail.com</a></p>
+</section>
+
+</main>
+
+<footer>
+  <a href="/">Home</a> ·
+  <a href="/terms.html">Terms of Service</a> ·
+  <a href="/signup.html">Sign up</a>
+  <div style="margin-top:10px">© StorePro · Made for small Indian shops</div>
+</footer>
+
+</body>
+</html>

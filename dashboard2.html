@@ -838,7 +838,7 @@ img{max-width:100%;display:block}
 // ═══════════════════════════════════════
 // CORE STATE & UTILITIES
 // ═══════════════════════════════════════
-var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var MASTER_SHEET_ID="1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
 var SHEET_ID="",SCRIPT_URL="";
 var allOrders=[],activeFilter='all',selectedDate='today',sortByPriority=false,prevNewCount=-1;
 var configData=[],productData=[],productHeaders=[],editingRow=null,currentPage='home',orderInterval=null;
@@ -1655,19 +1655,171 @@ function delProduct(row,name){if(!confirm('Delete "'+name+'"?'))return;sendCmd('
 // ═══════════════════════════════════════
 function printReceipt(orderId){
   var o=allOrders.find(function(x){return x.id===orderId});if(!o)return;
+
+  // ── Thermal-printer mode ─────────────────────────────────────────────
+  // If Config row "ReceiptWidth" is set to 58 or 80, use the narrow
+  // thermal-friendly layout. Otherwise use the desktop receipt below.
+  var thermalWidth = parseInt(getConfigVal('receiptwidth','0'),10);
+  if (thermalWidth===58 || thermalWidth===80) {
+    return printThermalReceipt2_(o, thermalWidth);
+  }
+
+  // ── Desktop / regular-printer receipt ────────────────────────────────
   var items=o.items.split(/[,\n]+/).map(function(it){return it.trim()}).filter(Boolean);
   var shopName=getConfigVal('shopname','Store'),shopAddr=getConfigVal('address',''),shopPhone=getConfigVal('phone','');
-  var w=window.open('','_blank','width=420,height=720');
-  var h='<!DOCTYPE html><html><head><title>Receipt '+esc(o.id)+'</title><style>body{font-family:system-ui;padding:24px;max-width:380px;margin:0 auto;font-size:13px}.h{text-align:center;padding-bottom:14px;border-bottom:2px solid #000}.h h1{font-size:18px;margin-bottom:4px}.h p{font-size:11px;color:#666;margin:2px 0}.id{text-align:center;padding:12px 0;border-bottom:1px dashed #ccc}.id .n{font-size:20px;font-weight:800;color:#0c831f;font-family:monospace}.s{padding:10px 0;border-bottom:1px dashed #ddd}.s h3{font-size:9px;color:#888;margin-bottom:6px;letter-spacing:1.5px;text-transform:uppercase}.r{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}.r .l{color:#888}.it{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #eee}.tot{padding:12px 0;border-top:2px solid #000;border-bottom:2px solid #000;display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin:8px 0}.f{text-align:center;padding:14px 0;font-size:11px;color:#888}@media print{.pb{display:none}}</style></head><body>';
-  h+='<div class="h"><h1>'+esc(shopName)+'</h1>'+(shopAddr?'<p>'+esc(shopAddr)+'</p>':'')+(shopPhone?'<p>📞 '+esc(shopPhone)+'</p>':'')+'</div>';
-  h+='<div class="id"><div class="n">'+esc(o.id)+'</div><div style="font-size:10px;color:#888">'+esc(o.date)+'</div></div>';
-  h+='<div class="s"><h3>Customer</h3><div class="r"><span class="l">Name</span><span>'+esc(o.name)+'</span></div><div class="r"><span class="l">Phone</span><span>'+esc(o.phone)+'</span></div><div class="r"><span class="l">Mode</span><span>'+(o.mode==='delivery'?'🚚 Delivery':'🏪 Pickup')+'</span></div>'+(o.address?'<div class="r"><span class="l">Address</span><span style="text-align:right;max-width:200px;font-size:11px">'+esc(o.address)+'</span></div>':'')+'</div>';
-  h+='<div class="s"><h3>Items</h3>';items.forEach(function(it,i){var p=it.split('=');h+='<div class="it"><span>'+(i+1)+'. '+esc(p[0].trim())+'</span>'+(p[1]?'<span>'+esc(p[1].trim())+'</span>':'')+'</div>'});h+='</div>';
-  h+='<div class="tot"><span>TOTAL</span><span>₹'+o.total.toLocaleString('en-IN')+'</span></div>';
-  h+='<div class="f">Thank you! 🙏<br><strong>'+esc(shopName)+'</strong></div>';
-  h+='<div class="pb" style="text-align:center;margin-top:16px"><button onclick="window.print()" style="padding:12px 32px;background:#0c831f;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">🖨️ Print</button></div>';
-  h+='</body></html>';
+  var upi=getConfigVal('upi','');
+  var modeLabel = o.mode==='delivery' ? '🚚 Delivery' : '🏪 Pickup';
+  var paymentLabel = (o.payment||'COD').toUpperCase();
+  var payClass = paymentLabel==='UPI' ? 'pay-upi' : 'pay-cod';
+
+  // Format date if parseable
+  var dateStr = String(o.date||''), timeStr='';
+  var dt = new Date(dateStr);
+  if (!isNaN(dt.getTime())) {
+    dateStr = dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    timeStr = dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  }
+
+  var w=window.open('','_blank','width=440,height=750');
+  if(!w) return;
+  var css = ''
+    + '*{margin:0;padding:0;box-sizing:border-box}'
+    + 'body{font-family:-apple-system,Helvetica,Arial,sans-serif;padding:24px;max-width:380px;margin:0 auto;color:#1a1a1a;font-size:13px;background:#fff}'
+    + '.h{text-align:center;padding-bottom:14px;border-bottom:2px solid #1a1a1a}'
+    + '.h h1{font-size:18px;font-weight:800;letter-spacing:.3px}'
+    + '.h p{font-size:11px;color:#666;margin-top:3px;line-height:1.5}'
+    + '.id{text-align:center;padding:12px 0;border-bottom:1px dashed #ccc}'
+    + '.id .n{font-size:18px;font-weight:800;font-family:Menlo,Consolas,monospace;letter-spacing:1.5px;color:#0c831f}'
+    + '.id .d{font-size:10px;color:#888;margin-top:4px}'
+    + '.s{padding:10px 0;border-bottom:1px dashed #ddd}'
+    + '.s h3{font-size:9px;font-weight:700;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}'
+    + '.r{display:flex;justify-content:space-between;padding:2px 0;font-size:12px;gap:8px}'
+    + '.r .l{color:#888;flex-shrink:0}'
+    + '.r .v{text-align:right;word-break:break-word}'
+    + '.it{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #eee;gap:8px}'
+    + '.it:last-child{border-bottom:none}'
+    + '.it .num{color:#888;width:20px;flex-shrink:0}'
+    + '.it .nm{flex:1}'
+    + '.it .pr{font-weight:600;text-align:right;flex-shrink:0}'
+    + '.tot{padding:12px 0;border-top:2px solid #1a1a1a;border-bottom:2px solid #1a1a1a;display:flex;justify-content:space-between;font-size:20px;font-weight:800;margin:8px 0}'
+    + '.pay{text-align:center;padding:8px 0}'
+    + '.pay-badge{display:inline-block;padding:4px 12px;border-radius:14px;font-weight:700;font-size:11px}'
+    + '.pay-cod{background:#fff4eb;color:#f59e0b}'
+    + '.pay-upi{background:#e8faed;color:#0c831f}'
+    + '.notes{background:#fff8ed;border-left:3px solid #f59e0b;padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0;font-size:11px;color:#7a5a00;line-height:1.5}'
+    + '.notes b{display:block;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#b8860b;margin-bottom:3px}'
+    + '.f{text-align:center;padding:14px 0;font-size:11px;color:#888;line-height:1.6}'
+    + '.f strong{color:#444}'
+    + '.pb{text-align:center;margin-top:16px}'
+    + '.pb button{padding:12px 32px;font-size:14px;font-weight:700;background:#0c831f;color:#fff;border:none;border-radius:8px;cursor:pointer}'
+    + '@media print{.pb{display:none}body{padding:12px}}';
+
+  var h = ''
+    + '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt '+esc(o.id)+'</title><style>'+css+'</style></head><body>'
+    + '<div class="h"><h1>'+esc(shopName)+'</h1>'
+    +   (shopAddr ? '<p>'+esc(shopAddr)+'</p>' : '')
+    +   (shopPhone ? '<p>📞 '+esc(shopPhone)+(upi?' &nbsp;·&nbsp; UPI: '+esc(upi):'')+'</p>' : '')
+    + '</div>'
+    + '<div class="id"><div class="n">'+esc(o.id)+'</div><div class="d">'+esc(dateStr)+(timeStr?' &nbsp;·&nbsp; '+esc(timeStr):'')+'</div></div>'
+    + '<div class="s"><h3>Customer</h3>'
+    +   '<div class="r"><span class="l">Name</span><span class="v">'+esc(o.name||'-')+'</span></div>'
+    +   (o.phone ? '<div class="r"><span class="l">Phone</span><span class="v">'+esc(o.phone)+'</span></div>' : '')
+    +   '<div class="r"><span class="l">Mode</span><span class="v">'+modeLabel+'</span></div>'
+    +   (o.address ? '<div class="r"><span class="l">Address</span><span class="v" style="font-size:11px">'+esc(o.address)+'</span></div>' : '')
+    + '</div>'
+    + (o.notes ? '<div class="notes"><b>📝 Customer notes</b>'+esc(o.notes)+'</div>' : '')
+    + '<div class="s"><h3>Items</h3>';
+  items.forEach(function(it,i){
+    var p=it.split('=');
+    h+='<div class="it"><span class="num">'+(i+1)+'.</span><span class="nm">'+esc((p[0]||it).trim())+'</span>'+(p[1]?'<span class="pr">'+esc(p[1].trim())+'</span>':'')+'</div>';
+  });
+  h += '</div>'
+    + '<div class="tot"><span>TOTAL</span><span>₹'+o.total.toLocaleString('en-IN')+'</span></div>'
+    + '<div class="pay"><span class="pay-badge '+payClass+'">'+esc(paymentLabel==='UPI'?'UPI / Online':'Cash on '+(o.mode==='delivery'?'Delivery':'Pickup'))+'</span></div>'
+    + '<div class="f">Thank you! 🙏<br><strong>'+esc(shopName)+'</strong>'+(thermalWidth?'':'<br><span style="font-size:9px;color:#bbb">This is a computer-generated receipt</span>')+'</div>'
+    + '<div class="pb"><button onclick="window.print()">🖨️ Print Receipt</button></div>'
+    + '<\/body><\/html>';
   w.document.write(h);w.document.close();
+}
+
+// Narrow thermal-printer layout (58mm or 80mm rolls). Mirrors the same layout
+// used by dashboard.html and dashboard-v2.js so output is consistent.
+function printThermalReceipt2_(o, widthMm) {
+  var printableMm = widthMm - 6;
+  var shop = getConfigVal('shopname','My Store');
+  var addr = getConfigVal('address','');
+  var phone = getConfigVal('phone','') || getConfigVal('whatsapp','');
+  var upi = getConfigVal('upi','');
+  var slug = getConfigVal('slug','');
+
+  var itemLines = (o.items||'').split(/\n|,(?=\s*\d+\s*[x×])/).map(function(s){return s.trim()}).filter(Boolean);
+  var itemRows = itemLines.map(function(line){
+    var eq = line.lastIndexOf('=');
+    var left = (eq>=0 ? line.slice(0,eq) : line).trim();
+    var price = (eq>=0 ? line.slice(eq+1) : '').replace(/[₹\s]/g,'').trim();
+    return '<tr><td class="it">'+esc(left)+'</td><td class="r">'+(price?'₹'+esc(price):'')+'</td></tr>';
+  }).join('');
+
+  var dateStr = String(o.date||''), timeStr='';
+  var dt = new Date(dateStr);
+  if (!isNaN(dt.getTime())) {
+    dateStr = dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    timeStr = dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  }
+
+  var modeLabel = (o.mode||'').toUpperCase()==='DELIVERY' ? 'DELIVERY' : 'PICKUP';
+  var paymentLabel = (o.payment||'COD').toUpperCase();
+  var fontBase = widthMm===58 ? 10 : 12;
+
+  var css =
+    '@page{size:'+widthMm+'mm auto;margin:3mm}'+
+    'html,body{margin:0;padding:0}'+
+    'body{font-family:"Courier New",ui-monospace,monospace;font-size:'+fontBase+'px;line-height:1.35;color:#000;width:'+printableMm+'mm;margin:0 auto;padding:0}'+
+    '.c{text-align:center}.r{text-align:right}.b{font-weight:700}'+
+    '.lg{font-size:'+(fontBase+3)+'px;font-weight:700}'+
+    '.sm{font-size:'+(fontBase-1)+'px}'+
+    'hr{border:0;border-top:1px dashed #000;margin:6px 0}'+
+    'hr.solid{border-top:1px solid #000}'+
+    'table{width:100%;border-collapse:collapse}'+
+    'td{padding:1px 0;vertical-align:top;word-break:break-word}'+
+    '.it{padding-right:6px}'+
+    '.kv td.k{width:34%}.kv td.v{font-weight:700}'+
+    '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+
+  var html = ''
+    + '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt '+esc(o.id)+'</title><style>'+css+'</style></head><body>'
+    + '<div class="c lg">'+esc(shop)+'</div>'
+    + (addr ? '<div class="c sm">'+esc(addr)+'</div>' : '')
+    + (phone ? '<div class="c sm">📞 '+esc(phone)+'</div>' : '')
+    + '<hr class="solid">'
+    + '<table class="kv"><tbody>'
+    +   '<tr><td class="k">Order #</td><td class="v">'+esc(o.id)+'</td></tr>'
+    +   (dateStr ? '<tr><td class="k">Date</td><td class="v">'+esc(dateStr)+(timeStr?' · '+esc(timeStr):'')+'</td></tr>' : '')
+    +   '<tr><td class="k">Mode</td><td class="v">'+esc(modeLabel)+'</td></tr>'
+    + '</tbody></table><hr>'
+    + '<table class="kv"><tbody>'
+    +   '<tr><td class="k">Customer</td><td class="v">'+esc(o.name||'-')+'</td></tr>'
+    +   (o.phone ? '<tr><td class="k">Phone</td><td class="v">'+esc(o.phone)+'</td></tr>' : '')
+    +   (o.address && modeLabel==='DELIVERY' ? '<tr><td class="k">Address</td><td class="v">'+esc(o.address)+'</td></tr>' : '')
+    + '</tbody></table><hr>'
+    + (itemRows ? '<table>'+itemRows+'</table>' : '<div>(no items)</div>')
+    + '<hr>'
+    + '<table><tbody><tr class="lg"><td>TOTAL</td><td class="r">₹'+esc(o.total)+'</td></tr></tbody></table>'
+    + '<hr>'
+    + '<div class="sm"><b>Payment:</b> '+esc(paymentLabel)+(paymentLabel==='COD'?' (Pay on '+(modeLabel==='DELIVERY'?'delivery':'pickup')+')':'')+'</div>'
+    + (upi && paymentLabel!=='COD' ? '<div class="sm">UPI: '+esc(upi)+'</div>' : '')
+    + (o.notes ? '<hr><div class="sm"><b>Notes:</b> '+esc(o.notes)+'</div>' : '')
+    + '<hr class="solid">'
+    + '<div class="c sm">Thank you! 🙏</div>'
+    + (slug ? '<div class="c sm">storepro.in/?store='+esc(slug)+'</div>' : '')
+    + '<div class="c sm" style="margin-top:4px;color:#666">Powered by StorePro</div>'
+    + '<\/body><\/html>';
+
+  var w = window.open('','_blank','width=380,height=600');
+  if (!w) return;
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function(){ try { w.focus(); w.print(); } catch(e){} }, 250);
 }
 
 // ═══════════════════════════════════════
@@ -1806,7 +1958,7 @@ function resolveStore(cb){
     if(!SHEET_ID){document.body.innerHTML='<div style="text-align:center;padding:48px;font-family:Inter,sans-serif"><h1>🔍 Store "'+esc(slug)+'" not found</h1></div>';return}
     cb();
   };
-  var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();document.body.appendChild(s);
+  var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=1&_t='+Date.now();document.body.appendChild(s);
 }
 
 // Init audio + notification permissions on first interaction

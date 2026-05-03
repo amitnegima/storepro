@@ -35,7 +35,26 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--white:#fff;--bg:#f5f5f5;--card:#fff;--ink:#1e1e1e;--ink2:#484848;--ink3:#7e7e7e;--ink4:#b0b0b0;--brand:#0c831f;--brand-bg:#e8faed;--brand-dk:#096b18;--orange:#e46c0a;--orange-bg:#fff4eb;--red:#d32f2f;--red-bg:#fdecea;--blue:#1a73e8;--blue-bg:#e8f0fe;--wa:#25d366;--line:#ebebeb;--line2:#d9d9d9;--sh:0 1px 4px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.08);--sh3:0 8px 32px rgba(0,0,0,.12);--sh4:0 16px 48px rgba(0,0,0,.15);--r:8px;--r2:12px;--r3:16px;--pill:100px;--f:'DM Sans',system-ui,sans-serif;--fh:'Tiro Devanagari Hindi',serif;--ease:cubic-bezier(.4,0,.2,1);--mw:1200px;--px:max(16px,env(safe-area-inset-left,16px))}
+:root{
+  --white:#fff;--bg:#f5f7fb;--card:#fff;
+  --ink:#0b1220;--ink2:#3b4252;--ink3:#6b7280;--ink4:#9ca3af;
+  --brand:#0c831f;--brand2:#10a02b;--brand-bg:#e8faed;--brand-dk:#065a14;
+  --blue:#2563eb;--blue-bg:#eff6ff;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --yellow:#d97706;--yellow-bg:#fffbeb;
+  --purple:#7c3aed;--purple-bg:#f3eaff;
+  --wa:#25d366;
+  --line:#e6e8ee;--line2:#d9dbe1;
+  --sh:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.06);
+  --sh2:0 4px 16px rgba(15,23,42,.08);
+  --sh3:0 8px 32px rgba(15,23,42,.12);
+  --sh4:0 16px 48px rgba(15,23,42,.15);
+  --r:10px;--r2:14px;--r3:20px;--r4:28px;--pill:100px;
+  --f:'DM Sans',system-ui,sans-serif;--fh:'Tiro Devanagari Hindi',serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --mw:1200px;--px:max(16px,env(safe-area-inset-left,16px))
+}
 html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
 .ann{background:var(--brand);color:#fff;font-size:12px;font-weight:600;text-align:center;padding:8px 40px 8px 16px;position:relative;display:none;line-height:1.4}
@@ -91,8 +110,14 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .shimmer-line{height:12px;border-radius:4px;background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin:8px 12px}.shimmer-line.w60{width:60%}.shimmer-line.w40{width:40%}.shimmer-line.w80{width:80%}.shimmer-line:last-child{margin-bottom:12px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .pc{background:var(--card);border-radius:var(--r2);overflow:hidden;border:1px solid var(--line);transition:.25s var(--ease);cursor:pointer;position:relative;display:flex;flex-direction:column;opacity:0;transform:translateY(12px);animation:cardIn .4s var(--ease) forwards}.pc:hover{border-color:var(--brand);box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-3px)}
-.pc.oos{opacity:.55;pointer-events:none}.pc.oos .pc-btn,.pc.oos .pc-stepper{display:none!important}
-.pc-oos-tag{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;font:700 11px var(--f);padding:6px 16px;border-radius:var(--pill);z-index:2;text-transform:uppercase;letter-spacing:.05em;backdrop-filter:blur(4px)}
+/* Out-of-stock: dim the whole card except the tag, image desaturates,
+   "Sold out" badge sits above the image with crisp legibility. */
+.pc.oos{pointer-events:none;cursor:default}
+.pc.oos .pc-btn,.pc.oos .pc-stepper{display:none!important}
+.pc.oos .pc-bot{opacity:.55}
+.pc.oos .pc-top img{filter:grayscale(.65) brightness(.92)}
+.pc.oos .pc-top::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.35)}
+.pc-oos-tag{position:absolute;top:10px;right:10px;background:var(--ink);color:#fff;font:700 10px var(--f);padding:5px 11px;border-radius:var(--pill);z-index:3;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 4px 12px rgba(0,0,0,.18)}
 .pc-top{position:relative;background:#f8f8f8;padding:0;display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;overflow:hidden}
 .pc-top img{width:100%;height:100%;object-fit:cover;transition:.4s var(--ease)}.pc:hover .pc-top img{transform:scale(1.08)}
 .pc-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;background:linear-gradient(135deg,var(--bg),var(--card))}
@@ -112,7 +137,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .pc-stepper{display:flex;align-items:center;border:2px solid var(--brand);border-radius:var(--r);overflow:hidden;flex-shrink:0;height:32px;background:var(--brand)}
 .pc-stepper button{width:30px;height:100%;border:none;background:transparent;color:#fff;font:700 16px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.1s}.pc-stepper button:hover{background:rgba(255,255,255,.15)}.pc-stepper button:active{transform:scale(.9)}
 .pc-stepper span{min-width:22px;text-align:center;font:700 13px var(--f);color:#fff;user-select:none;transition:.15s}
-.stickybar{position:fixed;bottom:0;left:0;right:0;z-index:95;transform:translateY(100%);transition:transform .3s var(--ease);pointer-events:none}.stickybar.show{transform:translateY(0);pointer-events:auto}
+.stickybar{position:fixed;bottom:0;left:0;right:0;z-index:95;transform:translateY(100%);transition:transform .3s var(--ease);pointer-events:none;padding-bottom:env(safe-area-inset-bottom)}.stickybar.show{transform:translateY(0);pointer-events:auto}
 .stickybar-in{max-width:var(--mw);margin:0 auto;padding:0 var(--px)}
 .stickybar-card{background:linear-gradient(135deg,var(--brand-dk),var(--brand));color:#fff;border-radius:var(--r3) var(--r3) 0 0;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 -4px 24px rgba(0,0,0,.12);transition:.15s}.stickybar-card:hover{filter:brightness(1.08)}
 .stickybar-card:active{transform:scale(.99)}
@@ -138,7 +163,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .cd-info-banner{background:var(--blue-bg);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-size:12px;color:var(--blue);line-height:1.5;display:flex;flex-direction:column;gap:4px}
 .cd-info-banner .cib-row{display:flex;justify-content:space-between;align-items:center}.cib-row strong{font-weight:700}
 .cd-info-banner .cib-free{color:var(--brand);font-weight:700}
-.ci{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);transition:.15s}
+.ci{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);overflow:hidden}
 .ci-img{width:48px;height:48px;border-radius:var(--r2);object-fit:cover;background:var(--bg);flex-shrink:0}.ci-info{flex:1;min-width:0}
 .ci-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ci-sub{font-size:11px;color:var(--ink3);font-weight:500}
 .ci-rm{font:600 11px var(--f);color:var(--red);background:0;border:0;cursor:pointer;margin-top:2px;padding:2px 0;opacity:.7;transition:.15s}.ci-rm:hover{opacity:1}
@@ -179,14 +204,30 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .del-form input,.del-form textarea{width:100%;height:38px;padding:0 12px;border:1.5px solid var(--line);border-radius:6px;font:500 13px var(--f);color:var(--ink);background:var(--white);outline:none;transition:.2s}.del-form input:focus,.del-form textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(12,131,31,.08)}
 .del-form textarea{height:60px;padding:10px 12px;resize:none}
 .del-form .del-note{font-size:11px;color:var(--ink4);line-height:1.4}
-.success-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:16px}.success-bg.open{display:flex;animation:fadeIn .2s}
-.success-box{background:var(--white);border-radius:var(--r3);max-width:380px;width:100%;padding:32px 24px;text-align:center;box-shadow:var(--sh4);animation:slideUp .3s var(--ease)}
-.success-box h3{font-size:20px;font-weight:700;margin:8px 0 4px}.success-box p{font-size:13px;color:var(--ink3);line-height:1.6;margin-bottom:16px}
-.success-oid{font:700 14px var(--f);color:var(--brand);background:var(--brand-bg);padding:6px 16px;border-radius:var(--r);display:inline-block;margin-bottom:12px}
-.success-btns{display:flex;gap:8px}.success-btns button{flex:1;height:44px;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.s-wa{background:var(--wa);color:#fff}.s-wa:hover{filter:brightness(.9)}.s-done{background:var(--bg);color:var(--ink2);border:1px solid var(--line)}.s-done:hover{background:var(--line)}
-.order-sending{pointer-events:none;opacity:.7}
-.order-spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px}
+.success-bg{display:none;position:fixed;inset:0;background:rgba(11,18,32,.55);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:16px}.success-bg.open{display:flex;animation:fadeIn .2s}
+.success-box{background:var(--white);border-radius:var(--r3);max-width:380px;width:100%;padding:36px 28px 28px;text-align:center;box-shadow:var(--sh4);animation:slideUp .3s var(--ease);position:relative;overflow:hidden}
+/* Decorative gradient sweep at the top */
+.success-box::before{content:'';position:absolute;inset:0 0 auto 0;height:6px;background:linear-gradient(90deg,var(--brand),var(--brand2),var(--brand))}
+/* Animated check ring */
+.success-check{width:72px;height:72px;border-radius:50%;background:var(--brand-bg);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--brand);font-weight:700;animation:successPop .5s var(--ease) both;position:relative}
+.success-check::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--brand);opacity:0;animation:successRing .9s var(--ease) .15s both}
+@keyframes successPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@keyframes successRing{0%{transform:scale(.85);opacity:.7}100%{transform:scale(1.25);opacity:0}}
+.success-box h3{font-size:22px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em}
+.success-box p{font-size:14px;color:var(--ink3);line-height:1.6;margin-bottom:18px}
+.success-oid{font:800 14px/1 var(--f);color:var(--brand);background:var(--brand-bg);padding:8px 18px;border-radius:var(--pill);display:inline-block;margin-bottom:18px;letter-spacing:.04em}
+.success-btns{display:flex;gap:8px}.success-btns button{flex:1;height:46px;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+.success-btns button:active{transform:scale(.97)}
+.s-wa{background:var(--wa);color:#fff}.s-wa:hover{filter:brightness(.9);box-shadow:0 4px 14px rgba(37,211,102,.3)}
+.s-done{background:var(--bg);color:var(--ink2);border:1px solid var(--line)}.s-done:hover{background:var(--line2);color:var(--ink)}
+/* Order placement loader — refined to match modern e-commerce feel.
+   Conic-gradient spinner reads cleaner than the old border-spin (no jagged
+   sub-pixel artifacts), and a shimmer sweep over the button gives a sense
+   of work-in-progress without feeling broken. */
+.order-sending{pointer-events:none;position:relative;cursor:wait;overflow:hidden}
+.order-sending::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);background-size:200% 100%;animation:shimmerSweep 1.4s var(--ease) infinite;pointer-events:none}
+@keyframes shimmerSweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.order-spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-right-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-3px;flex-shrink:0}
 /* Track Order */
 .track-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:16px}.track-bg.open{display:flex;animation:fadeIn .2s}
 .track-box{background:var(--card);border-radius:var(--r3);max-width:400px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--sh4);animation:slideUp .25s var(--ease);padding:24px}
@@ -249,8 +290,26 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .state{text-align:center;padding:64px 16px}.spin{width:32px;height:32px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 16px}
 .rbtn{margin-top:12px;height:38px;padding:0 24px;border:1.5px solid var(--brand);background:0;color:var(--brand);border-radius:var(--r);font:700 13px var(--f);cursor:pointer}.rbtn:hover{background:var(--brand);color:#fff}
 .no-res{grid-column:1/-1;text-align:center;padding:48px 16px;color:var(--ink3);font-size:14px}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes cardIn{to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}.pop{animation:pop .25s var(--ease)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* "Bump" — brief scale used to acknowledge a state change without flashing.
+   ~200ms is the sweet spot: long enough to register, short enough not to
+   feel like the UI is performing for you. */
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.bump{animation:bump .2s var(--ease)}
+/* "Tick" — green flash on the ADD button right before it morphs to the
+   stepper. Tells the user "got it" without needing a separate toast. */
+@keyframes tickFlash{0%{background:var(--brand);color:#fff;transform:scale(1)}40%{background:var(--brand);color:#fff;transform:scale(1.04)}100%{background:var(--brand-bg);color:var(--brand);transform:scale(1)}}
+.pc-btn.tick{animation:tickFlash .26s var(--ease)}
+/* Smooth transitions on the action slot so its width change (ADD vs stepper)
+   and color don't jump. */
+.pc-action{display:inline-flex;align-items:center;transition:opacity .15s ease}
+.pc-btn,.pc-stepper,.ci-q,.cd-go,.btn-cart{transition:background-color .15s ease,color .15s ease,border-color .15s ease,box-shadow .2s ease,transform .1s ease}
 @media(max-width:640px){.hdr-in{gap:6px;flex-wrap:wrap;height:auto;padding:10px 0}.hdr{height:auto}.hdr-search{order:10;max-width:100%}.hero-box{padding:20px}.grid,.shimmer-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.pc-bot{padding:8px 10px 10px}.pc-name{font-size:12px}.pc-unit{display:none}.btn-call span{display:none}.btn-cart .cl{display:none}.ocard{flex:0 0 200px}.ocard-text{flex:0 0 180px}.info-grid{grid-template-columns:1fr;padding:16px}.stickybar-card{padding:12px 16px}.cd{width:100%}.map-card iframe{height:200px}.success-box{padding:24px 20px}.pc-share{opacity:.7}}
+/* Mobile: prevent iOS Safari zoom-on-focus by ensuring inputs are >=16px on touch */
+@media (pointer:coarse){input:not([type=color]):not([type=range]):not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>
@@ -304,7 +363,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
   </div>
 </div>
 
-<div class="success-bg" id="successBg"><div class="success-box"><div style="font-size:48px">✅</div><h3 id="successH">Order Placed!</h3><div class="success-oid" id="successOid"></div><p id="successP">Your order has been received. The shopkeeper will confirm shortly via WhatsApp.</p><p style="font-size:12px;color:var(--ink3);margin-bottom:12px">📱 Please send the order details to the shopkeeper on WhatsApp for quick confirmation.</p><div class="success-btns" style="flex-direction:column;gap:8px"><button class="s-wa" id="successWa" style="width:100%">📱 Send Order on WhatsApp</button><div style="display:flex;gap:8px"><button class="s-done" style="flex:1" onclick="document.getElementById('successBg').classList.remove('open');openTracker(lastOrderId)">📦 Track Order</button><button class="s-done" style="flex:1" onclick="document.getElementById('successBg').classList.remove('open')">✕ Close</button></div></div></div></div>
+<div class="success-bg" id="successBg"><div class="success-box"><div class="success-check">✓</div><h3 id="successH">Order Placed!</h3><div class="success-oid" id="successOid"></div><p id="successP">Your order has been received. The shopkeeper will confirm shortly via WhatsApp.</p><p style="font-size:12px;color:var(--ink3);margin-bottom:12px">📱 Please send the order details to the shopkeeper on WhatsApp for quick confirmation.</p><div class="success-btns" style="flex-direction:column;gap:8px"><button class="s-wa" id="successWa" style="width:100%">📱 Send Order on WhatsApp</button><div style="display:flex;gap:8px"><button class="s-done" style="flex:1" onclick="document.getElementById('successBg').classList.remove('open');openTracker(lastOrderId)">📦 Track Order</button><button class="s-done" style="flex:1" onclick="document.getElementById('successBg').classList.remove('open')">✕ Close</button></div></div></div></div>
 
 <!-- Track Order Modal -->
 <div class="track-bg" id="trackBg" onclick="if(event.target===this)this.classList.remove('open')">
@@ -340,11 +399,11 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 // MASTER_SHEET_ID = Your PRIVATE registry sheet (separate from any store)
 // Create a new Google Sheet with a "Stores" tab containing: Slug | SheetID | ScriptURL
 // Publish it and paste the Sheet ID below. Shopkeepers NEVER see this sheet.
-var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var MASTER_SHEET_ID="1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
 
 // DEFAULT_STORE_SHEET = Fallback when no ?store= or ?shop= parameter
 var DEFAULT_STORE_SHEET="";
-var SHEET_ID="";
+var SHEET_ID="",SCRIPT_URL="";
 var DEFAULT_PHONE="",DEFAULT_WA="";
 var config={},allProducts=[],products=[],offers=[],filtered=[],activeCat="All",searchTerm="",cart=[];
 // Restore cart from localStorage
@@ -364,8 +423,40 @@ prefillCustomer();
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function cfg(k,d){return config[k.toLowerCase().replace(/\s+/g,'')]||d||''}
 function getCartQty(name,unit){var it=cart.find(function(c){return c.name===name&&c.unit===unit});return it?it.qty:0}
-function loadSheet(n,cb){if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};window.google.visualization.Query.setResponse=function(r){cb(r)};var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(n)+'&_t='+Date.now();s.onerror=function(){cb(null)};document.body.appendChild(s)}
-function parseRows(r){if(!r||!r.table)return[];var h=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim()});return(r.table.rows||[]).map(function(row){var o={};h.forEach(function(k,i){var c=row.c&&row.c[i];o[k]=c?(c.v!=null?String(c.v).trim():''):''});return o})}
+function loadSheet(n,cb){
+  if(!SHEET_ID){console.error('[StorePro] loadSheet skipped — SHEET_ID is empty. Slug not resolved against master registry.');cb(null);return}
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table){console.error('[StorePro] Sheet "'+n+'" returned no data — check that the tenant sheet is shared "Anyone with the link → Viewer" (sheetId: '+SHEET_ID+')')}
+    cb(r);
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(n)+'&_t='+Date.now();
+  s.onerror=function(){console.error('[StorePro] Could not reach tenant sheet "'+n+'". Likely access_denied (sheetId: '+SHEET_ID+'). Share the sheet as "Anyone with the link → Viewer".');cb(null)};
+  document.body.appendChild(s);
+}
+function parseRows(r){
+  if(!r||!r.table)return[];
+  var h=(r.table.cols||[]).map(function(c){return(c.label||'').toLowerCase().trim()});
+  var rows=r.table.rows||[];
+  // Detect merged-headers shape (gviz sometimes returns all labels concatenated into cols[0].label
+  // with the actual header row sitting at rows[0]). When that happens, pull headers from rows[0]
+  // and shift data rows down by one.
+  var labelsLookMerged=h.length===1&&h[0].indexOf(',')>=0;
+  var labelsAreEmpty=h.every(function(k){return !k});
+  if((labelsLookMerged||labelsAreEmpty)&&rows.length){
+    h=(rows[0].c||[]).map(function(c){return c&&c.v!=null?String(c.v).toLowerCase().trim():''});
+    rows=rows.slice(1);
+  }
+  return rows.map(function(row){
+    var o={};
+    h.forEach(function(k,i){
+      var c=row.c&&row.c[i];
+      o[k]=c?(c.f!=null?String(c.f).trim():c.v!=null?String(c.v).trim():''):'';
+    });
+    return o;
+  });
+}
 function parseKV(r){
   if(!r||!r.table)return{};var o={};
   (r.table.rows||[]).forEach(function(row){
@@ -384,7 +475,7 @@ function parseKV(r){
 function resolveStore(callback){
   var params=new URLSearchParams(window.location.search);
   // Direct Sheet ID — bypass registry
-  if(params.get('shop')){SHEET_ID=params.get('shop');callback();return}
+  if(params.get('shop')){SHEET_ID=params.get('shop');SCRIPT_URL=params.get('script')||'';callback();return}
   // Slug lookup from master registry
   var slug=params.get('store');
   // No params — redirect to landing page (index.html)
@@ -396,38 +487,52 @@ function resolveStore(callback){
     showWelcomePage();return;
   }
   // Load the "Stores" tab from master sheet
+  console.log('[StorePro] Resolving slug "'+slug+'" against master registry '+MASTER_SHEET_ID);
   if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
   window.google.visualization.Query.setResponse=function(r){
-    if(!r||!r.table){showStoreNotFound(slug);return}
-    var cols=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim()});
-    var found=false;
-    (r.table.rows||[]).forEach(function(row){
-      if(found)return;
-      var o={};cols.forEach(function(k,i){var c=row.c&&row.c[i];o[k]=c?(c.v!=null?String(c.v).trim():''):''});
+    if(!r||!r.table||!r.table.rows||r.table.rows.length<2){
+      console.error('[StorePro] Master registry returned no rows. Check the master sheet is shared "Anyone with link → Viewer" and has data in the Stores tab.');
+      showStoreNotFound(slug);return;
+    }
+    // With headers=0, row 0 holds headers, data starts at row 1 — avoids gviz two-shape ambiguity
+    var headerRow=r.table.rows[0];
+    var cols=[];
+    if(headerRow&&headerRow.c){for(var h=0;h<headerRow.c.length;h++){var hc=headerRow.c[h];cols.push(hc&&hc.v!=null?String(hc.v).toLowerCase().trim().replace(/\s+/g,''):'')}}
+    var found=false;var seen=[];
+    for(var i=1;i<r.table.rows.length;i++){
+      if(found)break;
+      var row=r.table.rows[i];
+      var o={};cols.forEach(function(k,j){var c=row.c&&row.c[j];o[k]=c&&c.v!=null?String(c.v).trim():''});
       var rowSlug=(o.slug||o.store||o.name||'').toLowerCase().trim();
+      if(rowSlug)seen.push(rowSlug);
       if(rowSlug===slug.toLowerCase()){
         SHEET_ID=o.sheetid||o.sheet||o.id||'';
+        SCRIPT_URL=o.scripturl||o.script||'';
+        console.log('[StorePro] Slug matched. SHEET_ID='+SHEET_ID+' SCRIPT_URL='+(SCRIPT_URL?'(set)':'(empty)'));
         found=true;
       }
-    });
-    if(!SHEET_ID){showStoreNotFound(slug);return}
+    }
+    if(!SHEET_ID){
+      console.error('[StorePro] Slug "'+slug+'" not found in registry. Slugs seen: '+seen.join(', '));
+      showStoreNotFound(slug);return;
+    }
     callback();
   };
   var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=0&_t='+Date.now();
   s.onerror=function(){showStoreNotFound(slug)};
   document.body.appendChild(s);
 }
 
 function showWelcomePage(){
-  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:linear-gradient(135deg,#f0fdf4,#f5f5f5)">'
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:linear-gradient(135deg,#f0fdf4,#f5f5f5)">'
     +'<div style="text-align:center;max-width:440px">'
     +'<div style="font-size:72px;margin-bottom:8px">🏬</div>'
     +'<h1 style="font-size:28px;font-weight:800;margin-bottom:4px;color:#0c831f">StorePro</h1>'
     +'<p style="font-size:16px;color:#666;margin-bottom:8px">Your Store, Online in 5 Minutes</p>'
     +'<p style="font-family:Noto Sans Devanagari,sans-serif;font-size:14px;color:#0c831f;opacity:.6;margin-bottom:32px">Your store. Your sheet. Your customers.</p>'
     +'<div style="display:flex;flex-direction:column;gap:10px;max-width:300px;margin:0 auto">'
-    +'<a href="https://wa.me/919760684971?text=Hi!%20I%20want%20to%20create%20my%20online%20store" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;background:#25d366;color:#fff;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none">📱 Create Your Free Store</a>'
+    +'<a href="/signup.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;background:#0c831f;color:#fff;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none">🚀 Create Your Free Store</a>'
     +'<a href="?store=grocery-grocery" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;background:#fff;color:#333;border:2px solid #e5e7eb;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none">👀 See Demo Store</a>'
     +'</div>'
     +'<div style="margin-top:40px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap">'
@@ -441,14 +546,14 @@ function showWelcomePage(){
 
 function showStoreNotFound(slug){
   var safe=slug.replace(/[<>"'&]/g,'');
-  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:#f5f5f5">'
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px;font-family:DM Sans,system-ui,sans-serif;background:#f5f5f5">'
     +'<div style="text-align:center;max-width:400px">'
     +'<div style="font-size:64px;margin-bottom:12px">🏬</div>'
     +'<h1 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#111">Store not found</h1>'
     +'<p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">The store <strong>"'+safe+'"</strong> doesn\'t exist or is no longer active.</p>'
     +'<div style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">'
     +'<a href="?" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 28px;background:#0c831f;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">🏠 Go to StorePro</a>'
-    +'<a href="https://wa.me/919760684971?text=Hi!%20I%20want%20to%20create%20my%20own%20store" target="_blank" style="font-size:13px;color:#0c831f;font-weight:600;text-decoration:none;padding:8px">Want your own store? Create one free →</a>'
+    +'<a href="/signup.html" style="font-size:13px;color:#0c831f;font-weight:600;text-decoration:none;padding:8px">Want your own store? Create one free →</a>'
     +'</div></div></div>';
 }
 
@@ -460,6 +565,8 @@ function loadAll(){
   document.getElementById('stateMsg').style.display='none';
   document.getElementById('grid').innerHTML='';
   loadSheet('Config',function(r){config=r?parseKV(r):{};applyConfig();
+    // If registry didn't supply ScriptURL, fall back to the Config tab
+    if(!SCRIPT_URL)SCRIPT_URL=cfg('orderscript','')||cfg('scripturl','')||cfg('script','');
     loadSheet('Offers',function(r2){offers=r2?parseRows(r2).filter(function(o){return o.title}):[];renderOffers();
       loadSheet('Products',function(r3){allProducts=r3?parseRows(r3).filter(function(p){return p.name}):[];
         if(!allProducts.length){loadSheet('Sheet1',function(r4){allProducts=r4?parseRows(r4).filter(function(p){return p.name}):[];finish()})}
@@ -567,7 +674,7 @@ function updateStoreStatus(timing){
   }
 }
 
-function applyConfig(){var name=cfg('shopname','StorePro Store');document.title=name+' 🏬';document.getElementById('logoName').textContent=name;document.getElementById('logoSub').textContent=cfg('tagline','');document.getElementById('logoMark').textContent=cfg('logoemoji','🏬');document.getElementById('heroH').textContent=cfg('herotitle','Welcome to '+name);document.getElementById('heroP').textContent=cfg('herosubtitle','');var hi=cfg('hinditagline','');if(hi){var el=document.getElementById('heroHi');el.textContent=hi;el.style.display='block'}var tags='';if(cfg('deliveryinfo'))tags+='<div class="hchip">🚚 '+esc(cfg('deliveryinfo'))+'</div>';if(cfg('deliverytime'))tags+='<div class="hchip">⏰ '+esc(cfg('deliverytime'))+'</div>';if(cfg('timing'))tags+='<div class="hchip">🕐 '+esc(cfg('timing'))+'</div>';document.getElementById('heroTags').innerHTML=tags;var ann=cfg('announcement','');if(ann){document.getElementById('annText').textContent=ann;document.getElementById('annBar').style.display='block'}if(cfg('searchhint'))document.getElementById('sBox').placeholder=cfg('searchhint');var phone=cfg('phone','+91 '+DEFAULT_PHONE);document.getElementById('callBtn').href='tel:'+phone.replace(/[^0-9+]/g,'');var wa=cfg('whatsapp',DEFAULT_WA);var fab=document.getElementById('waFab');fab.style.display='flex';fab.onclick=function(){window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hi! I want to place an order from '+name),'_blank')};document.getElementById('ftrName').textContent=name;document.getElementById('ftrAddr').textContent=cfg('address','');if(cfg('upi'))document.getElementById('upiPayBtn').style.display='flex';
+function applyConfig(){var name=cfg('shopname','StorePro Store');document.title=name+' 🏬';document.getElementById('logoName').textContent=name;document.getElementById('logoSub').textContent=cfg('tagline','');document.getElementById('logoMark').textContent=cfg('logoemoji','🏬');document.getElementById('heroH').textContent=cfg('herotitle','Welcome to '+name);document.getElementById('heroP').textContent=cfg('herosubtitle','');var hi=cfg('hinditagline','');if(hi){var el=document.getElementById('heroHi');el.textContent=hi;el.style.display='block'}var tags='';if(cfg('deliveryinfo'))tags+='<div class="hchip">🚚 '+esc(cfg('deliveryinfo'))+'</div>';if(cfg('deliverytime'))tags+='<div class="hchip">⏰ '+esc(cfg('deliverytime'))+'</div>';if(cfg('timing'))tags+='<div class="hchip">🕐 '+esc(cfg('timing'))+'</div>';document.getElementById('heroTags').innerHTML=tags;var ann=cfg('announcement','');if(ann){document.getElementById('annText').textContent=ann;document.getElementById('annBar').style.display='block'}if(cfg('searchhint'))document.getElementById('sBox').placeholder=cfg('searchhint');var phone=cfg('phone','');var callBtn=document.getElementById('callBtn');if(phone){callBtn.href='tel:'+phone.replace(/[^0-9+]/g,'');callBtn.style.display='';}else{callBtn.style.display='none';}var wa=cfg('whatsapp','');var fab=document.getElementById('waFab');if(wa){fab.style.display='flex';fab.onclick=function(){window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('Hi! I want to place an order from '+name),'_blank')};}else{fab.style.display='none';}document.getElementById('ftrName').textContent=name;document.getElementById('ftrAddr').textContent=cfg('address','');if(cfg('upi'))document.getElementById('upiPayBtn').style.display='flex';
   var addr=cfg('address','');if(addr)document.getElementById('pickNote').textContent='🏪 We\'ll pack your order. Pickup from: '+addr;
   if(cfg('deliveryinfo'))document.getElementById('delNote').textContent='🚚 '+cfg('deliveryinfo')+'. Cash on delivery available.';
   // Open/Closed status from Timing
@@ -640,18 +747,36 @@ function renderGrid(){
     var price=Number(p.price||0),mrp=p.mrp?Number(p.mrp):0,hasMrp=mrp>price&&price>0,pct=hasMrp?Math.round(((mrp-price)/mrp)*100):0;
     var stk=(p.stock||'').toLowerCase(),isOOS=stk==='out of stock'||stk==='out'||stk==='no';
     var qty=getCartQty(p.name,p.unit||'');
-    var actionBtn;if(isOOS)actionBtn='';else if(qty>0)actionBtn='<div class="pc-stepper" onclick="event.stopPropagation()"><button onclick="cartDelta('+i+',-1)">−</button><span>'+qty+'</span><button onclick="cartDelta('+i+',1)">+</button></div>';else actionBtn='<button class="pc-btn" onclick="event.stopPropagation();addToCart('+i+')">ADD</button>';
+    var actionBtn=cardActionHtml_(i,qty,isOOS);
     var hasImg=isValidImg(p.image);
     var imgHtml=hasImg?'<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'" loading="lazy" onerror="imgErr(this,\''+esc(p.category||'').replace(/'/g,'')+'\')">'
       :'<div class="pc-ph"><span class="pc-ph-icon">'+phIcon(p.category)+'</span><span class="pc-ph-text">'+esc(p.category||'Product')+'</span></div>';
-    return '<div class="pc'+(isOOS?' oos':'')+'" style="animation-delay:'+(i*.03)+'s" onclick="openModal('+i+')">'
+    return '<div class="pc'+(isOOS?' oos':'')+'" data-pi="'+i+'" style="animation-delay:'+(i*.03)+'s" onclick="openModal('+i+')">'
       +(isOOS?'<div class="pc-oos-tag">'+t('oos')+'</div>':'')
       +'<div class="pc-top">'+imgHtml+(tags?'<div class="pc-tags">'+tags+'</div>':'')+(pct?'<div class="pc-off">'+pct+'% '+t('off')+'</div>':'')
       +'<div class="pc-share" onclick="event.stopPropagation();shareProduct('+i+')" title="Share on WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg></div>'
       +'</div><div class="pc-bot">'+(p.category?'<div class="pc-cat">'+esc(p.category)+'</div>':'')
       +'<div class="pc-name">'+esc(p.name)+'</div>'+(p.unit?'<div class="pc-unit">'+esc(p.unit)+'</div>':'')
-      +'<div class="pc-foot"><div class="pc-prices"><span class="pc-price">'+cur+price.toLocaleString('en-IN')+'</span>'+(hasMrp?'<span class="pc-mrp">'+cur+mrp.toLocaleString('en-IN')+'</span>':'')+'</div>'+actionBtn+'</div></div></div>'
+      +'<div class="pc-foot"><div class="pc-prices"><span class="pc-price">'+cur+price.toLocaleString('en-IN')+'</span>'+(hasMrp?'<span class="pc-mrp">'+cur+mrp.toLocaleString('en-IN')+'</span>':'')+'</div><span class="pc-action">'+actionBtn+'</span></div></div></div>'
   }).join('');
+}
+// Render just the action slot (ADD button or ± stepper) for a single card.
+function cardActionHtml_(i,qty,isOOS){
+  if(isOOS)return '';
+  if(qty>0)return '<div class="pc-stepper" onclick="event.stopPropagation()"><button onclick="cartDelta('+i+',-1)">−</button><span>'+qty+'</span><button onclick="cartDelta('+i+',1)">+</button></div>';
+  return '<button class="pc-btn" onclick="event.stopPropagation();addToCart('+i+')">ADD</button>';
+}
+// Surgically update one product card's add/stepper without redrawing the grid.
+// Used by addToCart and cartDelta so the screen doesn't flash on every tap.
+function updateCardAction_(i){
+  var card=document.querySelector('.pc[data-pi="'+i+'"]');
+  if(!card)return;
+  var slot=card.querySelector('.pc-action');
+  if(!slot)return;
+  var p=filtered[i];if(!p)return;
+  var stk=(p.stock||'').toLowerCase();var isOOS=stk==='out of stock'||stk==='out'||stk==='no';
+  var qty=getCartQty(p.name,p.unit||'');
+  slot.innerHTML=cardActionHtml_(i,qty,isOOS);
 }
 
 function openModal(i){var p=filtered[i],m=document.getElementById('modal'),img=document.getElementById('mImg'),cur=cfg('currency','₹');if(isValidImg(p.image)){img.src=p.image;img.style.display='block';img.onerror=function(){img.style.display='none'}}else img.style.display='none';document.getElementById('mCat').textContent=p.category||'';document.getElementById('mName').textContent=p.name||'';document.getElementById('mUnit').textContent=p.unit||'';document.getElementById('mDesc').textContent=p.description||'';var price=Number(p.price||0),mrp=p.mrp?Number(p.mrp):0,hasMrp=mrp>price&&price>0;document.getElementById('mPrice').textContent=cur+price.toLocaleString('en-IN');var me=document.getElementById('mMrp'),se=document.getElementById('mSave');if(hasMrp){var pct=Math.round(((mrp-price)/mrp)*100);me.textContent=cur+mrp.toLocaleString('en-IN');me.style.display='inline';se.textContent=t('save')+' '+pct+'%';se.style.display='inline'}else{me.style.display='none';se.style.display='none'}var tags='',typ=(p.type||'').toLowerCase();if(typ==='veg')tags+='<span class="t t-veg">● '+t('veg')+'</span>';else if(typ.indexOf('non')>=0)tags+='<span class="t t-nv">● '+t('nonveg')+'</span>';if(p.badge)tags+='<span class="t t-offer">'+esc(p.badge)+'</span>';document.getElementById('mTags').innerHTML=tags;document.getElementById('mAddBtn').onclick=function(){addToCart(i);m.classList.remove('open')};document.getElementById('mWaBtn').onclick=function(){shareProduct(i)};m.classList.add('open')}
@@ -673,11 +798,90 @@ function shareProduct(i){
   if(window.gtag)gtag('event','share',{method:'whatsapp',content_type:'product',item_id:p.name});
 }
 
-function addToCart(i){var p=filtered[i],ex=cart.find(function(c){return c.name===p.name&&c.unit===p.unit});if(ex)ex.qty++;else cart.push(Object.assign({},p,{qty:1}));afterCartChange();var badge=document.getElementById('cBadge');badge.classList.remove('pop');void badge.offsetWidth;badge.classList.add('pop');if(window.gtag)gtag('event','add_to_cart',{currency:'INR',value:parseFloat(p.price||0),items:[{item_name:p.name,item_category:p.category||'',price:parseFloat(p.price||0)}]})}
-function cartDelta(i,d){var p=filtered[i],ex=cart.find(function(c){return c.name===p.name&&c.unit===p.unit});if(!ex)return;ex.qty+=d;if(ex.qty<=0)cart=cart.filter(function(c){return c!==ex});afterCartChange()}
-function rmCart(id){cart.splice(id,1);afterCartChange()}
-function updQty(id,d){cart[id].qty+=d;if(cart[id].qty<=0)cart.splice(id,1);afterCartChange()}
-function afterCartChange(){syncCartPrices();try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}renderCart();renderGrid();updateStickyBar()}
+function addToCart(i){
+  var p=filtered[i],ex=cart.find(function(c){return c.name===p.name&&c.unit===p.unit});
+  // Tick the ADD button before morphing to stepper. Quick "got it" feedback.
+  var card=document.querySelector('.pc[data-pi="'+i+'"]'),addBtn=card&&card.querySelector('.pc-btn');
+  if(addBtn){addBtn.classList.add('tick');setTimeout(function(){addBtn.classList.remove('tick')},260)}
+  if(ex)ex.qty++;else cart.push(Object.assign({},p,{qty:1}));
+  afterCartChange();updateCardAction_(i);bumpEl_('cBadge');
+  if(window.gtag)gtag('event','add_to_cart',{currency:'INR',value:parseFloat(p.price||0),items:[{item_name:p.name,item_category:p.category||'',price:parseFloat(p.price||0)}]})
+}
+// Apply the .bump keyframe to an element by id. Idempotent — removes the
+// class before re-adding so consecutive calls each produce a fresh bump.
+function bumpEl_(id){var el=document.getElementById(id);if(!el)return;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
+function cartDelta(i,d){
+  var p=filtered[i],ex=cart.find(function(c){return c.name===p.name&&c.unit===p.unit});
+  if(!ex)return;
+  ex.qty+=d;if(ex.qty<=0)cart=cart.filter(function(c){return c!==ex});
+  afterCartChange();updateCardAction_(i);
+  // Bump the qty digit so the change is visible without a flash
+  var card=document.querySelector('.pc[data-pi="'+i+'"]'),qtyEl=card&&card.querySelector('.pc-stepper span');
+  if(qtyEl){qtyEl.classList.remove('bump');void qtyEl.offsetWidth;qtyEl.classList.add('bump')}
+}
+// Surgical cart updates — change just the visible qty / slide rows out
+// instead of innerHTML-replacing the whole list. Without this, every +/-
+// tap reset the cart scroll position to the top and felt like a glitch.
+function updQty(id,d){
+  var item=cart[id];if(!item)return;
+  item.qty+=d;
+  if(item.qty<=0){return rmCart(id);}
+  // Update qty in place
+  var rows=document.querySelectorAll('#cdList .ci');
+  if(rows[id]){var span=rows[id].querySelector('.ci-q span');if(span)span.textContent=item.qty}
+  // Recompute totals + sticky bar + grid steppers (no innerHTML on cart list)
+  syncCartPrices();
+  try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}
+  refreshCartTotals_();
+  updateStickyBar();
+  renderGrid();
+}
+function rmCart(id){
+  var rows=document.querySelectorAll('#cdList .ci');
+  var row=rows[id];
+  if(cart.length<=1){cart.splice(id,1);afterCartChange();return}
+  // Drop the row + data instantly, refresh totals only (no animation).
+  if(row)row.remove();
+  cart.splice(id,1);
+  syncCartPrices();
+  try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}
+  refreshCartTotals_();
+  updateStickyBar();
+  renderGrid();
+}
+// Updates only the cart drawer's totals/footer/badge — leaves the .ci rows
+// untouched. Mirrors the totals math from renderCart() so the two stay in sync.
+function refreshCartTotals_(){
+  var cur=cfg('currency','₹'),count=cart.reduce(function(s,c){return s+c.qty},0),subtotal=cart.reduce(function(s,c){return s+parseFloat(c.price||0)*c.qty},0);
+  var badge=document.getElementById('cBadge');if(badge){badge.textContent=count;badge.style.display=count>0?'flex':'none'}
+  var title=document.getElementById('cdTitle');if(title)title.textContent='Cart ('+count+')';
+  var totalEl=document.getElementById('cdTotal');if(totalEl)totalEl.textContent=cur+subtotal.toLocaleString('en-IN');
+  // Re-run the full renderCart only when the structure changes (mode toggle etc).
+  // Otherwise refresh the fee breakdown lazily — cheapest correct path is to
+  // call renderCart but preserve scroll. updQty already kept rows intact so
+  // we're safe to do a full re-render of just the footer fees here.
+  try{
+    var ct=document.getElementById('cdList');var keep=ct?ct.scrollTop:0;
+    renderCart();
+    if(ct)ct.scrollTop=keep;
+  }catch(e){}
+}
+// NOTE: deliberately no renderGrid() here — the grid never needs a full
+// repaint on cart change. addToCart / cartDelta call updateCardAction_(i)
+// for the one affected card. rmCart re-syncs all visible cards via
+// syncGridActions_() since it doesn't know which grid index the removed
+// item maps to.
+function afterCartChange(){syncCartPrices();try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}renderCart();updateStickyBar();syncGridActions_()}
+// Walk the visible grid and update each card's action slot in place. Used
+// after rmCart (where we don't know which grid index changed) and after
+// syncCartPrices (which may have removed OOS items from the cart).
+function syncGridActions_(){
+  var cards=document.querySelectorAll('.pc[data-pi]');
+  for(var k=0;k<cards.length;k++){
+    var idx=parseInt(cards[k].getAttribute('data-pi'),10);
+    if(!isNaN(idx))updateCardAction_(idx);
+  }
+}
 
 // Sync cart prices with latest product data — if shopkeeper changed a price, cart updates immediately
 function syncCartPrices(){
@@ -736,26 +940,25 @@ function calcFees(subtotal){
   };
 }
 
-function renderCart(){
+// Builds the cart drawer's chrome — badge, title, totals, fees, place button.
+// Does NOT touch the row list. Called both on full re-render AND from the
+// surgical updQty/rmCart paths so totals stay correct without a list flash.
+function renderCartChrome_(){
   var cur=cfg('currency','₹'),count=cart.reduce(function(s,c){return s+c.qty},0),subtotal=cart.reduce(function(s,c){return s+parseFloat(c.price||0)*c.qty},0);
-  var badge=document.getElementById('cBadge');badge.textContent=count;badge.style.display=count>0?'flex':'none';
-  document.getElementById('cdTitle').textContent='Cart ('+count+')';
-  var ct=document.getElementById('cdList'),ft=document.getElementById('cdFoot');
-  if(!cart.length){ct.innerHTML='<div class="cd-empty">'+t('cartEmpty')+'</div>';ft.style.display='none';return}
-  ft.style.display='block';
-  
+  var badge=document.getElementById('cBadge');if(badge){badge.textContent=count;badge.style.display=count>0?'flex':'none'}
+  var title=document.getElementById('cdTitle');if(title)title.textContent='Cart ('+count+')';
+  var ft=document.getElementById('cdFoot');
+  if(!cart.length){if(ft)ft.style.display='none';return null}
+  if(ft)ft.style.display='block';
+
   var f=calcFees(subtotal);
   var minOrder=parseInt(cfg('minorder','0'))||0;
   var belowMin=minOrder&&subtotal<minOrder;
-  
-  // Subtotal
-  document.getElementById('cdTotal').textContent=cur+subtotal.toLocaleString('en-IN');
-  
-  // Fee breakdown
+
+  var totalEl=document.getElementById('cdTotal');if(totalEl)totalEl.textContent=cur+subtotal.toLocaleString('en-IN');
+
   var del=document.getElementById('cdDel');
   var h='';
-  
-  // Delivery fee
   if(f.isDelivery){
     if(f.isFreeDelivery){
       h+='<div class="cd-fee"><span>🚚 Delivery Fee</span><span style="color:var(--brand);font-weight:700">FREE ✓</span></div>';
@@ -768,44 +971,37 @@ function renderCart(){
   }else{
     h+='<div style="font-size:11px;color:var(--ink3);margin-bottom:2px">🏪 No delivery fee for pickup</div>';
   }
-  
-  // Packing fee (applies to both modes)
   if(f.packingFee>0)h+='<div class="cd-fee"><span>📦 Packing Fee</span><span>'+cur+f.packingFee.toLocaleString('en-IN')+'</span></div>';
-  
-  // Handling fee
   if(f.handlingFee>0)h+='<div class="cd-fee"><span>🔧 Handling Fee</span><span>'+cur+f.handlingFee.toLocaleString('en-IN')+'</span></div>';
-  
-  // Platform fee
   if(f.platformFee>0)h+='<div class="cd-fee"><span>💳 Platform Fee</span><span>'+cur+f.platformFee.toLocaleString('en-IN')+'</span></div>';
-  
-  // Night fee
   if(f.nightFee>0)h+='<div class="cd-fee"><span>🌙 Night Delivery Fee</span><span>'+cur+f.nightFee.toLocaleString('en-IN')+'</span></div>';
-  
-  // Discount
   if(f.discount>0)h+='<div class="cd-fee"><span style="color:var(--brand)">🏷️ Discount</span><span style="color:var(--brand);font-weight:700">-'+cur+f.discount.toLocaleString('en-IN')+'</span></div>';
-  
-  // Grand total
   if(f.isDelivery||f.totalFees>0||f.discount>0){
     h+='<div class="cd-grand"><span>Grand Total</span><span>'+cur+f.grand.toLocaleString('en-IN')+'</span></div>';
   }
-  
-  // Min order warning (show at top, before fees)
   if(belowMin){
     h='<div class="cd-del err">⚠️ Minimum order is '+cur+minOrder.toLocaleString('en-IN')+'. Add '+cur+(minOrder-subtotal).toLocaleString('en-IN')+' more to place order.</div>'+h;
   }
-  del.innerHTML=h;
-  
-  // Enable/disable Place Order button
+  if(del)del.innerHTML=h;
+
   var btn=document.getElementById('placeBtn');
-  if(belowMin){
-    btn.classList.add('disabled');
-    btn.textContent='Add '+cur+(minOrder-subtotal).toLocaleString('en-IN')+' more to order';
-  }else{
-    btn.classList.remove('disabled');
-    btn.textContent='📱 '+t('placeOrder');
+  if(btn){
+    if(belowMin){btn.classList.add('disabled');btn.textContent='Add '+cur+(minOrder-subtotal).toLocaleString('en-IN')+' more to order'}
+    else{btn.classList.remove('disabled');btn.textContent='📱 '+t('placeOrder')}
   }
-  
-  // Build cart items with delivery info banner after items
+  return {subtotal:subtotal,cur:cur};
+}
+// Override the surgical refresh hook to use the focused chrome update only —
+// no list innerHTML rewrites, so scroll position + row state are preserved.
+function refreshCartTotals_(){renderCartChrome_()}
+
+function renderCart(){
+  var ctx=renderCartChrome_();
+  var ct=document.getElementById('cdList');
+  if(!cart.length){if(ct)ct.innerHTML='<div class="cd-empty">'+t('cartEmpty')+'</div>';return}
+  if(!ctx||!ct)return;
+  var cur=ctx.cur;
+  // Delivery info banner appended after the rows (kept identical to before)
   var bannerHtml='';
   var deliveryFee=parseFloat(cfg('deliveryfee','0'))||0;
   var freeAbove=parseFloat(cfg('freedelivery','0'))||0;
@@ -902,11 +1098,11 @@ function submitOrder(nm,ph,email,addr,subtotal,f){
   if(f.discount>0)msg+='🏷️ Discount: -'+cur+f.discount.toLocaleString('en-IN')+'\n';
   msg+='\n*Total: '+cur+f.grand.toLocaleString('en-IN')+'*\n';
   if(cfg('deliveryinfo'))msg+=cfg('deliveryinfo')+'\n';msg+='\nPlease confirm order & delivery. 🙏';
-  var waUrl='https://wa.me/'+wa+'?text='+encodeURIComponent(msg);
+  var waUrl=wa?('https://wa.me/'+wa+'?text='+encodeURIComponent(msg)):'';
   function done(){
     btn.classList.remove('order-sending');btn.textContent='📱 '+t('placeOrder');
     document.getElementById('successOid').textContent=oid;document.getElementById('successH').textContent=t('orderPlaced');document.getElementById('successP').textContent=t('orderMsg');
-    document.getElementById('successWa').onclick=function(){window.open(waUrl,'_blank')};
+    var swa=document.getElementById('successWa');if(waUrl){swa.style.display='';swa.onclick=function(){window.open(waUrl,'_blank')};}else{swa.style.display='none';}
     document.getElementById('successBg').classList.add('open');toggleCart();
     if(window.gtag)gtag('event','purchase',{transaction_id:oid,value:f.grand,currency:'INR',shipping:f.actualDelivery,items:cart.map(function(it){return{item_name:it.name,item_category:it.category||'',price:parseFloat(it.price||0),quantity:it.qty}})});
     cart=[];afterCartChange();
@@ -914,7 +1110,8 @@ function submitOrder(nm,ph,email,addr,subtotal,f){
     document.getElementById('pickName').value='';document.getElementById('pickPhone').value='';document.getElementById('pickEmail').value='';
     document.getElementById('delName').value='';document.getElementById('delPhone').value='';document.getElementById('delEmail').value='';document.getElementById('delAddr').value='';setMode('pickup');
   }
-  var scriptUrl=cfg('orderscript','');
+  // Resolve script URL: registry's ScriptURL global takes priority, then Config tab fallbacks
+  var scriptUrl=SCRIPT_URL||cfg('orderscript','')||cfg('scripturl','')||cfg('script','');
   if(scriptUrl){
     var fn=[];
     if(f.actualDelivery>0)fn.push('Delivery:'+f.actualDelivery);
@@ -924,15 +1121,23 @@ function submitOrder(nm,ph,email,addr,subtotal,f){
     if(f.nightFee>0)fn.push('Night:'+f.nightFee);
     if(f.discount>0)fn.push('Discount:-'+f.discount);
     var itemsFull=itemsStr+(fn.length?' [Fees: '+fn.join(', ')+']':'');
-    var params='orderId='+encodeURIComponent(oid)+'&date='+encodeURIComponent(new Date().toLocaleString('en-IN'))+'&mode='+orderMode+'&name='+encodeURIComponent(nm)+'&phone='+ph+'&email='+encodeURIComponent(email)+'&address='+encodeURIComponent(addr)+'&items='+encodeURIComponent(itemsFull)+'&total='+f.grand+'&status=New&shopname='+encodeURIComponent(cfg('shopname','Store'));
+    var params='action=newOrder&orderId='+encodeURIComponent(oid)+'&date='+encodeURIComponent(new Date().toLocaleString('en-IN'))+'&mode='+orderMode+'&name='+encodeURIComponent(nm)+'&phone='+ph+'&email='+encodeURIComponent(email)+'&address='+encodeURIComponent(addr)+'&items='+encodeURIComponent(itemsFull)+'&total='+f.grand+'&status=New&shopname='+encodeURIComponent(cfg('shopname','Store'));
     var img=new Image();var sent=false;
     img.onload=img.onerror=function(){if(!sent){sent=true;done()}};
-    img.src=scriptUrl+'?'+params;
+    img.src=scriptUrl+'?'+params+'&_t='+Date.now();
     setTimeout(function(){if(!sent){sent=true;done()}},4000);
-  }else{done()}
+  }else{
+    // No URL anywhere — order can't be saved. Surface a clear error so this is fixable.
+    console.error('[StorePro] Order NOT saved: no ScriptURL configured.\n'
+      +' • Master registry Stores row → ScriptURL column is empty\n'
+      +' • Config tab → ScriptURL / OrderScript row is empty\n'
+      +' • Deploy scripts/store-apps-script.js as Web App and paste the URL into either place.');
+    if(typeof showToast==='function')showToast('⚠️ Order cannot be saved — store not configured. Please contact the shopkeeper.');
+    done();
+  }
 }
 
-function buildInfo(){var items=[];if(cfg('address'))items.push({ic:'📍',cl:'si-o',l:'Address',t:esc(cfg('address'))});var phone=cfg('phone','+91 '+DEFAULT_PHONE);items.push({ic:'📞',cl:'si-g',l:'Phone',t:'<a href="tel:'+phone.replace(/[^0-9+]/g,'')+'">'+esc(phone)+'</a>'});var wa=cfg('whatsapp',DEFAULT_WA);items.push({ic:'💬',cl:'si-g',l:'WhatsApp',t:'<a href="https://wa.me/'+esc(wa)+'" target="_blank">Chat with us</a>'});if(cfg('email'))items.push({ic:'✉️',cl:'si-b',l:'Email',t:esc(cfg('email'))});if(cfg('timing'))items.push({ic:'🕐',cl:'si-y',l:'Store Timing',t:esc(cfg('timing'))});if(cfg('upi'))items.push({ic:'📲',cl:'si-b',l:'UPI Payment',t:'<a href="#" onclick="event.preventDefault();showUpiQR()">Scan QR to Pay</a> · '+esc(cfg('upi'))});if(cfg('deliveryinfo'))items.push({ic:'🚚',cl:'si-g',l:'Delivery',t:esc(cfg('deliveryinfo'))});if(cfg('deliverytime'))items.push({ic:'⏰',cl:'si-y',l:'Delivery Time',t:esc(cfg('deliverytime'))});if(!items.length)return;document.getElementById('infoSec').style.display='block';document.getElementById('infoCard').innerHTML=items.map(function(it){return '<div class="si"><div class="si-ic '+it.cl+'">'+it.ic+'</div><div class="si-body"><div class="si-l">'+it.l+'</div>'+it.t+'</div></div>'}).join('');
+function buildInfo(){var items=[];if(cfg('address'))items.push({ic:'📍',cl:'si-o',l:'Address',t:esc(cfg('address'))});var phone=cfg('phone','');if(phone)items.push({ic:'📞',cl:'si-g',l:'Phone',t:'<a href="tel:'+phone.replace(/[^0-9+]/g,'')+'">'+esc(phone)+'</a>'});var wa=cfg('whatsapp','');if(wa)items.push({ic:'💬',cl:'si-g',l:'WhatsApp',t:'<a href="https://wa.me/'+esc(wa)+'" target="_blank">Chat with us</a>'});if(cfg('email'))items.push({ic:'✉️',cl:'si-b',l:'Email',t:esc(cfg('email'))});if(cfg('timing'))items.push({ic:'🕐',cl:'si-y',l:'Store Timing',t:esc(cfg('timing'))});if(cfg('upi'))items.push({ic:'📲',cl:'si-b',l:'UPI Payment',t:'<a href="#" onclick="event.preventDefault();showUpiQR()">Scan QR to Pay</a> · '+esc(cfg('upi'))});if(cfg('deliveryinfo'))items.push({ic:'🚚',cl:'si-g',l:'Delivery',t:esc(cfg('deliveryinfo'))});if(cfg('deliverytime'))items.push({ic:'⏰',cl:'si-y',l:'Delivery Time',t:esc(cfg('deliverytime'))});if(!items.length)return;document.getElementById('infoSec').style.display='block';document.getElementById('infoCard').innerHTML=items.map(function(it){return '<div class="si"><div class="si-ic '+it.cl+'">'+it.ic+'</div><div class="si-body"><div class="si-l">'+it.l+'</div>'+it.t+'</div></div>'}).join('');
   var mapEmbed=cfg('mapembed',''),mapLink=cfg('maplink','');
   if(mapEmbed){document.getElementById('mapSec').style.display='block';document.getElementById('mapFrame').src=mapEmbed;document.getElementById('mapName').textContent=cfg('shopname','Our Store');document.getElementById('mapAddr').textContent=cfg('address','');if(mapLink)document.getElementById('mapDirBtn').href=mapLink;else document.getElementById('mapDirBtn').style.display='none'}
 }
@@ -1036,15 +1241,51 @@ function showTrackResult(o){
   if(address)html+='<div class="td-row"><div class="td-label">Address</div><div class="td-val" style="max-width:200px">'+esc(address)+'</div></div>';
   html+='<div class="td-row"><div class="td-label">Total</div><div class="td-val" style="font-size:15px">₹'+esc(total)+'</div></div>';
   if(items)html+='<div class="track-items">'+esc(items).replace(/,\s*/g,'\n')+'</div>';
-  
+
+  // ─── REVIEW UI ───
+  var rStars=parseInt(o.reviewstars||'0')||0;
+  var rText=o.reviewtext||'';
+  var rWhen=o.reviewedat||'';
+  if(rStars>0){
+    var sg='';for(var s=0;s<5;s++)sg+=(s<rStars?'⭐':'☆');
+    html+='<div style="margin-top:14px;padding:14px;background:linear-gradient(160deg,#fef9c3,#fde68a);border-radius:12px;border:1px solid rgba(251,191,36,.4);text-align:center"><div style="font-size:24px;letter-spacing:2px;line-height:1;margin-bottom:6px">'+sg+'</div>'+(rText?'<div style="font-size:13px;font-style:italic;color:#78350f;line-height:1.5">"'+esc(rText)+'"</div>':'')+(rWhen?'<div style="font-size:10px;font-weight:700;color:#a16207;margin-top:6px;text-transform:uppercase;letter-spacing:.06em">Reviewed '+esc(rWhen)+'</div>':'')+'</div>';
+  }else if(currentIdx===3&&!isCancelled){
+    html+='<div style="margin-top:14px;padding:18px 16px;background:linear-gradient(160deg,#fffbeb,#fef3c7);border-radius:12px;border:1.5px solid #fbbf24"><div style="font:800 10px sans-serif;color:#b45309;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">⭐ Your feedback</div><h3 style="font:800 16px sans-serif;color:#0b1220;margin-bottom:4px">How was your order?</h3><p style="font:500 12px sans-serif;color:#3f4759;line-height:1.5">Help the shop improve — takes 5 seconds.</p>';
+    html+='<div id="ffStars" style="display:flex;justify-content:center;gap:6px;margin:14px 0 12px">';
+    for(var ii=1;ii<=5;ii++)html+='<button class="ff-star" data-star="'+ii+'" onclick="ffSetStars('+ii+')" style="width:42px;height:42px;font-size:32px;background:none;border:none;cursor:pointer;color:#d1d5db;line-height:1;padding:0">★</button>';
+    html+='</div>';
+    html+='<textarea id="ffReviewText" placeholder="Optional comment about quality, freshness, packaging..." style="width:100%;min-height:60px;padding:10px 12px;border:1.5px solid #e8eaef;border-radius:10px;font:500 13px sans-serif;color:#0b1220;background:#fff;outline:none;resize:vertical;line-height:1.5"></textarea>';
+    html+='<button id="ffReviewSubmit" disabled onclick="ffSubmitReview(\''+esc(id)+'\')" style="width:100%;height:46px;background:var(--brand);color:#fff;border:none;border-radius:12px;font:800 14px sans-serif;cursor:pointer;margin-top:10px;opacity:.5">Submit Review</button>';
+    html+='</div>';
+  }
+
   document.getElementById('trackDetails').innerHTML=html;
   document.getElementById('trackResult').style.display='block';
+}
+
+// Review handlers
+var _ffStars=0;
+function ffSetStars(n){_ffStars=n;document.querySelectorAll('#ffStars .ff-star').forEach(function(el){var s=parseInt(el.dataset.star);el.style.color=s<=n?'#facc15':'#d1d5db'});var b=document.getElementById('ffReviewSubmit');if(b){b.disabled=false;b.style.opacity='1'}}
+function ffSubmitReview(orderId){
+  if(!_ffStars)return;
+  var text=(document.getElementById('ffReviewText')||{}).value||'';text=String(text).trim().slice(0,500);
+  var btn=document.getElementById('ffReviewSubmit');
+  if(btn){btn.disabled=true;btn.innerText='Sending...'}
+  if(!SCRIPT_URL){if(btn){btn.innerText='⚠️ No script URL';btn.style.background='#dc2626'}return}
+  var img=new Image();
+  img.onload=img.onerror=function(){
+    if(btn){btn.innerText='✓ Thanks for your review!';btn.style.background='#16a34a'}
+    setTimeout(function(){trackOrder()},1200);
+  };
+  img.src=SCRIPT_URL+'?action=submitReview&orderId='+encodeURIComponent(orderId)+'&stars='+_ffStars+'&text='+encodeURIComponent(text);
+  _ffStars=0;
 }
 
 // Save last order ID for easy re-tracking
 var _origDone=null;
 
 // Start: resolve store from registry, then load data
+try{showShimmer()}catch(e){}
 resolveStore(function(){loadAll()});
 
 // ══════ PWA SERVICE WORKER ══════
@@ -1070,6 +1311,81 @@ function installPWA(){
 }
 // Scroll-to-top button visibility
 window.addEventListener('scroll',function(){var btn=document.getElementById('scrollTop');if(window.scrollY>400)btn.classList.add('show');else btn.classList.remove('show')},{passive:true});
+
+// Schema.org JSON-LD for LocalBusiness — runs after config loads.
+// Improves Google rich-results / Knowledge Graph eligibility. Re-runs whenever
+// applyConfig fires so the data stays in sync with shopkeeper edits.
+function injectSchemaLD_(){
+  try{
+    var name=cfg('shopname','');if(!name)return;
+    var type=String(cfg('shoptype','')).toLowerCase();
+    var schemaType='LocalBusiness';
+    if(/restaurant|fastfood|dhaba|cafe|hotel/i.test(type))schemaType='Restaurant';
+    else if(/bakery/i.test(type))schemaType='Bakery';
+    else if(/pharmacy/i.test(type))schemaType='Pharmacy';
+    else if(/hardware/i.test(type))schemaType='HardwareStore';
+    else if(/grocery|kirana|store|meat/i.test(type))schemaType='Store';
+    var slug=(new URLSearchParams(location.search)).get('store')||'';
+    var data={
+      '@context':'https://schema.org',
+      '@type':schemaType,
+      name:name,
+      url:location.origin+location.pathname+(slug?'?store='+slug:''),
+      description:cfg('tagline','')||cfg('herosubtitle','')||(name+' — order online'),
+      telephone:cfg('phone','')||cfg('whatsapp',''),
+      priceRange:cfg('pricerange','')||'₹₹',
+      image:cfg('logo','')||cfg('ogimage','')||(location.origin+'/icon-512.png')
+    };
+    var addr=cfg('address',''),city=cfg('city','');
+    if(addr||city){
+      data.address={'@type':'PostalAddress',streetAddress:addr,addressLocality:city,addressCountry:'IN'};
+    }
+    var hours=cfg('businesshours','')||cfg('timing','');
+    if(hours){
+      var m=String(hours).match(/(\d{1,2})(?::?(\d{2}))?\s*[-–to]+\s*(\d{1,2})(?::?(\d{2}))?/);
+      if(m){
+        var open=(m[1].length<2?'0'+m[1]:m[1])+':'+(m[2]||'00');
+        var close=(m[3].length<2?'0'+m[3]:m[3])+':'+(m[4]||'00');
+        data.openingHoursSpecification={'@type':'OpeningHoursSpecification',dayOfWeek:['Mo','Tu','We','Th','Fr','Sa','Su'],opens:open,closes:close};
+      }
+    }
+    var existing=document.getElementById('storepro-ldjson');if(existing)existing.remove();
+    var s=document.createElement('script');s.type='application/ld+json';s.id='storepro-ldjson';
+    s.textContent=JSON.stringify(data);
+    document.head.appendChild(s);
+  }catch(e){console.warn('[schema] inject failed',e)}
+}
+// Wrap applyConfig so schema regenerates after every config refresh
+(function(){var orig=window.applyConfig;if(typeof orig==='function'){window.applyConfig=function(){var r=orig.apply(this,arguments);injectSchemaLD_();return r}}})();
+
+// Offline indicator — shows a top banner whenever the device loses connectivity.
+// Order submit also checks navigator.onLine and refuses to fire when offline.
+(function(){
+  var bar=document.createElement('div');
+  bar.id='offlineBar';
+  bar.innerHTML='⚠️ You’re offline. Orders won’t go through until your connection is back.';
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:#fff;text-align:center;padding:8px 12px;font:600 12px DM Sans,system-ui,sans-serif;transform:translateY(-100%);transition:transform .3s ease;box-shadow:0 2px 8px rgba(0,0,0,.15)';
+  document.body.appendChild(bar);
+  function update(){bar.style.transform=navigator.onLine?'translateY(-100%)':'translateY(0)'}
+  window.addEventListener('online',update);
+  window.addEventListener('offline',update);
+  update();
+})();
+
+// Test-mode banner — shopkeeper opens the storefront via the dashboard's
+// "Place Test Order" button which appends ?test=1. The order itself isn't
+// sandboxed (it really lands in the Orders tab and triggers Telegram — that
+// proves the wiring works); this banner just reminds the shopkeeper to delete
+// it from the Orders tab afterwards.
+(function(){
+  var p=new URLSearchParams(location.search);
+  if(p.get('test')!=='1')return;
+  var bar=document.createElement('div');
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(90deg,#f59e0b,#fbbf24);color:#7c2d12;text-align:center;padding:9px 14px;font:700 12px DM Sans,system-ui,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.15)';
+  bar.innerHTML='🧪 TEST MODE — this is a real order, just for testing. Delete it from your Orders tab after.';
+  document.body.appendChild(bar);
+  document.body.style.paddingTop='34px';
+})();
 </script>
 </body>
 </html>

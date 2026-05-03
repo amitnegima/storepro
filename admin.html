@@ -8,378 +8,838 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0f1117;--card:#1a1d27;--card2:#22252f;--ink:#f0f0f0;--ink2:#a0a4b0;--ink3:#6b6f7e;--green:#22c55e;--green-bg:rgba(34,197,94,.12);--blue:#3b82f6;--blue-bg:rgba(59,130,246,.12);--orange:#f59e0b;--orange-bg:rgba(245,158,11,.12);--red:#ef4444;--red-bg:rgba(239,68,68,.12);--purple:#a855f7;--purple-bg:rgba(168,85,247,.12);--line:rgba(255,255,255,.06);--line2:rgba(255,255,255,.1);--f:'DM Sans',system-ui,sans-serif;--r:8px;--r2:12px;--r3:16px}
-body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100dvh}
+:root{
+  --bg:#08090a;
+  --bg-2:#0e0e10;
+  --surface:#121214;
+  --surface-2:#17181a;
+  --surface-3:#1c1d20;
+  --line:rgba(255,255,255,.06);
+  --line-2:rgba(255,255,255,.09);
+  --line-3:rgba(255,255,255,.14);
+  --ink:#e8e8e9;
+  --ink-2:#a1a1a3;
+  --ink-3:#6b6b6e;
+  --ink-4:#46464a;
+  --accent:#5e6ad2;
+  --accent-2:#7479dd;
+  --accent-bg:rgba(94,106,210,.1);
+  --accent-line:rgba(94,106,210,.3);
+  --green:#3fb950;
+  --green-bg:rgba(63,185,80,.1);
+  --orange:#d29922;
+  --orange-bg:rgba(210,153,34,.1);
+  --red:#f85149;
+  --red-bg:rgba(248,81,73,.1);
+  --purple:#a371f7;
+  --purple-bg:rgba(163,113,247,.1);
+  --r:6px;
+  --r-2:8px;
+  --r-3:12px;
+  --f:'DM Sans','Inter','SF Pro Display',system-ui,sans-serif;
+  --shadow-3:0 16px 48px rgba(0,0,0,.6);
+}
 
-/* Lock */
-.lock{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}.lock.hidden{display:none}
-.lock-box{background:var(--card);border:1px solid var(--line2);border-radius:var(--r3);padding:40px 32px;max-width:380px;width:100%;text-align:center}
-.lock-box h2{font-size:20px;margin:12px 0 4px}.lock-box p{font-size:13px;color:var(--ink2);margin-bottom:20px}
-.lock-pwd-wrap{position:relative;margin-bottom:4px}
-.lock-input{width:100%;height:48px;background:var(--bg);border:1.5px solid var(--line2);border-radius:var(--r);color:var(--ink);font:500 15px var(--f);padding:0 44px 0 16px;outline:none;transition:.2s}.lock-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
-.lock-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:transparent;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:14px}.lock-toggle:hover{color:var(--ink);background:rgba(255,255,255,.06)}
-.lock-err{color:var(--red);font-size:12px;min-height:20px;margin:8px 0;font-weight:600}
-.lock-btn{width:100%;height:46px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font:700 14px var(--f);cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}.lock-btn:hover{filter:brightness(1.1)}.lock-btn:active{transform:scale(.98)}.lock-btn:disabled{opacity:.6;cursor:not-allowed}
-.lock-reset{margin-top:12px;font-size:11px;color:var(--ink3)}
-.lock-reset a{color:var(--blue);cursor:pointer;text-decoration:none}.lock-reset a:hover{text-decoration:underline}
+html,body{height:100%}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
 
-/* Top */
-.top{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);max-width:1200px;margin:0 auto}
-.top-left{display:flex;align-items:center;gap:12px}
-.top-logo{width:36px;height:36px;border-radius:var(--r);background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
-.top h1{font-size:17px;font-weight:700}.top-sub{font-size:11px;color:var(--ink3)}
-.top-actions{display:flex;gap:6px}
-.top-btn{height:34px;padding:0 14px;border:1px solid var(--line2);border-radius:var(--r);background:transparent;color:var(--ink2);font:600 12px var(--f);cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s}.top-btn:hover{background:var(--card2);color:var(--ink)}
-.top-btn.add{background:var(--green);color:#fff;border:none}.top-btn.add:hover{filter:brightness(1.1)}
+/* ─── Lock screen ─── */
+.lock{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.lock.hidden{display:none}
+.lock-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-3);padding:36px 32px;max-width:380px;width:100%;text-align:center;box-shadow:var(--shadow-3)}
+.lock-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#b794ff);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:-.02em}
+.lock-box h2{font-size:18px;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+.lock-box p{font-size:12px;color:var(--ink-3);margin-bottom:24px}
+.lock-pwd{position:relative;margin-bottom:8px}
+.lock-input{width:100%;height:40px;background:var(--bg);border:1px solid var(--line-2);border-radius:var(--r);color:var(--ink);font:500 13px var(--f);padding:0 40px 0 14px;outline:none;transition:.15s}
+.lock-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.lock-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;background:transparent;color:var(--ink-3);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px}
+.lock-toggle:hover{color:var(--ink);background:var(--surface-3)}
+.lock-err{color:var(--red);font-size:12px;min-height:18px;margin:6px 0;font-weight:500}
+.lock-btn{width:100%;height:38px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font:600 13px var(--f);cursor:pointer;transition:.15s}
+.lock-btn:hover{background:var(--accent-2)}
+.lock-btn:active{transform:scale(.98)}
+.lock-btn:disabled{opacity:.5;cursor:not-allowed}
+.lock-hint{margin-top:14px;font-size:11px;color:var(--ink-4)}
 
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:16px 24px;max-width:1200px;margin:0 auto}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;cursor:pointer;transition:.15s}.stat:hover{border-color:var(--line2)}
-.stat-label{font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-.stat-val{font-size:24px;font-weight:700;margin-top:3px;line-height:1}
-.stat-sub{font-size:10px;color:var(--ink3);margin-top:3px}
-.sv-green{color:var(--green)}.sv-blue{color:var(--blue)}.sv-orange{color:var(--orange)}.sv-purple{color:var(--purple)}.sv-red{color:var(--red)}
+/* ─── App shell ─── */
+.app{display:grid;grid-template-columns:240px 1fr;height:100vh;height:100dvh}
 
-/* Filter */
-.filter{max-width:1200px;margin:0 auto;padding:10px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.search{flex:1;min-width:180px;position:relative}
-.search input{width:100%;height:36px;padding:0 12px 0 34px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font:500 12px var(--f);outline:none}.search input:focus{border-color:var(--blue)}
-.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink3)}
-.pill-btn{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:20px;background:transparent;color:var(--ink3);font:600 11px var(--f);cursor:pointer;transition:.15s;white-space:nowrap}.pill-btn:hover{background:var(--card2);color:var(--ink)}.pill-btn.active{background:var(--blue-bg);color:var(--blue);border-color:rgba(59,130,246,.3)}
+/* Sidebar */
+.sidebar{background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px 0;overflow-y:auto}
+.sb-brand{display:flex;align-items:center;gap:9px;padding:0 16px 14px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.sb-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#b794ff);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:-.02em}
+.sb-name{font-size:13px;font-weight:600;letter-spacing:-.01em}
+.sb-search{margin:0 12px 12px;position:relative}
+.sb-search input{width:100%;height:30px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font:500 12px var(--f);padding:0 50px 0 30px;outline:none;cursor:pointer;transition:.15s}
+.sb-search input::placeholder{color:var(--ink-3)}
+.sb-search input:hover{border-color:var(--line-2);background:var(--surface-2)}
+.sb-search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+.sb-search-kbd{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--ink-3);background:var(--surface-3);border:1px solid var(--line);padding:2px 5px;border-radius:4px;font-family:var(--f);font-weight:600}
+.sb-section{padding:0 8px;margin-top:14px}
+.sb-section-h{font-size:10px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;padding:0 8px 4px}
+.sb-link{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:5px;color:var(--ink-2);font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:.1s;margin:1px 0;letter-spacing:-.01em}
+.sb-link:hover{background:var(--surface);color:var(--ink)}
+.sb-link.active{background:var(--surface-2);color:var(--ink)}
+.sb-link svg{width:14px;height:14px;color:var(--ink-3);flex-shrink:0;stroke-width:2}
+.sb-link.active svg{color:var(--accent)}
+.sb-link-count{margin-left:auto;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.sb-foot{margin-top:auto;padding:10px 12px 0;border-top:1px solid var(--line)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:5px;cursor:default;transition:.1s}
+.sb-user:hover{background:var(--surface)}
+.sb-avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#b794ff);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.sb-user-info{flex:1;min-width:0}
+.sb-user-name{font-size:12px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-role{font-size:10px;color:var(--ink-3)}
+.sb-lock{width:24px;height:24px;border:none;background:transparent;color:var(--ink-3);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sb-lock:hover{background:var(--surface-3);color:var(--ink)}
 
-/* Stores */
-.stores{max-width:1200px;margin:0 auto;padding:6px 24px 80px}
-.empty{text-align:center;padding:48px 20px;color:var(--ink3)}
-.store{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);margin-bottom:8px;overflow:hidden;transition:.2s}.store:hover{border-color:var(--line2)}
-.store.inactive{opacity:.5}
-.store-head{padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer}
-.store-avatar{width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
-.sa-grocery{background:var(--green-bg)}.sa-pharmacy{background:var(--blue-bg)}.sa-salon{background:var(--purple-bg)}.sa-restaurant{background:var(--orange-bg)}.sa-default{background:var(--blue-bg)}
-.store-info{flex:1;min-width:0}
-.store-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.store-meta{display:flex;gap:8px;font-size:10px;color:var(--ink3);margin-top:1px;flex-wrap:wrap}
-.store-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.plan-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
-.pb-free{background:var(--green-bg);color:var(--green)}.pb-starter{background:var(--blue-bg);color:var(--blue)}.pb-pro{background:var(--purple-bg);color:var(--purple)}.pb-expired{background:var(--red-bg);color:var(--red)}
-.store-revenue{text-align:right}.store-rev-amt{font-size:13px;font-weight:700}.store-rev-orders{font-size:9px;color:var(--ink3)}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.sd-active{background:var(--green);box-shadow:0 0 6px var(--green)}.sd-expiring{background:var(--orange);animation:pulse 1.5s infinite}.sd-inactive{background:var(--red)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* Mobile sidebar overlay */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:79}
+.sb-overlay.open{display:block}
+
+/* Main */
+.main{display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:48px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:8px;background:var(--bg);flex-shrink:0}
+.crumb{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.crumb-count{font-size:11px;color:var(--ink-3);font-weight:500;font-variant-numeric:tabular-nums;background:var(--surface-2);padding:2px 7px;border-radius:4px;border:1px solid var(--line)}
+.tb-spacer{flex:1}
+.btn{height:28px;padding:0 11px;border:1px solid var(--line-2);border-radius:5px;background:transparent;color:var(--ink-2);font:600 12px var(--f);cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:.12s;letter-spacing:-.01em;white-space:nowrap}
+.btn:hover{background:var(--surface);color:var(--ink);border-color:var(--line-3)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:#fff}
+.btn-icon{padding:0;width:28px;justify-content:center}
+.btn svg{width:13px;height:13px;stroke-width:2}
+.btn.spin svg{animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Store body (expanded) */
-.store-body{display:none;border-top:1px solid var(--line);padding:14px 16px}.store.open .store-body{display:block}
-.sb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:12px}
-.sb-item{background:var(--bg);border-radius:var(--r);padding:8px 12px}
-.sb-item-label{font-size:9px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
-.sb-item-val{font-size:12px;font-weight:600;margin-top:2px;word-break:break-all}
-.sb-actions{display:flex;gap:6px;flex-wrap:wrap}
-.sb-btn{height:32px;padding:0 14px;border:1px solid var(--line2);border-radius:var(--r);background:var(--card2);color:var(--ink2);font:600 11px var(--f);cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s;white-space:nowrap}.sb-btn:hover{background:var(--bg);color:var(--ink)}
-.sb-open{border-color:rgba(34,197,94,.3);color:var(--green)}.sb-dash{border-color:rgba(59,130,246,.3);color:var(--blue)}
-.sb-wa{border-color:rgba(37,211,102,.3);color:#25d366}.sb-sheet{border-color:rgba(245,158,11,.3);color:var(--orange)}
-.sb-toggle{border:none;padding:0 14px}.sb-toggle.active{background:var(--green-bg);color:var(--green)}.sb-toggle.inactive{background:var(--red-bg);color:var(--red)}
+.mobile-only{display:none}
+@media(max-width:840px){.mobile-only{display:inline-flex}}
 
-/* Modal */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;padding:16px}.modal-bg.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--line2);border-radius:var(--r3);max-width:520px;width:100%;max-height:85vh;overflow-y:auto;padding:24px}
-.modal h3{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mg-f{display:flex;flex-direction:column;gap:4px}.mg-f.full{grid-column:1/-1}
-.mg-l{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
-.mg-i{height:38px;padding:0 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none}.mg-i:focus{border-color:var(--blue)}
-.mg-s{height:38px;padding:0 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none;-webkit-appearance:none}
-.mg-btns{display:flex;gap:8px;grid-column:1/-1;margin-top:8px}
-.mg-btn{height:40px;padding:0 20px;border:none;border-radius:var(--r);font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}.mg-btn:active{transform:scale(.97)}
-.mg-save{background:var(--green);color:#fff}.mg-save:hover{filter:brightness(1.1)}
-.mg-cancel{background:var(--card2);color:var(--ink2);border:1px solid var(--line2)}.mg-cancel:hover{background:var(--bg)}
+.content{flex:1;overflow-y:auto;background:var(--bg)}
 
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#fff;color:#111;padding:10px 20px;border-radius:var(--r2);font:600 12px var(--f);z-index:400;opacity:0;transition:.3s;box-shadow:0 4px 20px rgba(0,0,0,.3)}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* KPI grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;padding:14px 18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-2);padding:12px 14px;cursor:pointer;transition:.15s;position:relative}
+.kpi:hover{border-color:var(--line-2);background:var(--surface-2)}
+.kpi-label{font-size:10px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.kpi-val{font-size:22px;font-weight:600;margin-top:2px;line-height:1.1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.kpi-sub{font-size:11px;color:var(--ink-3);margin-top:2px;font-variant-numeric:tabular-nums}
 
-/* Tools panel */
-.tools-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:300;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}.tools-bg.open{display:flex}
-.tools-box{background:var(--card);border:1px solid var(--line2);border-radius:var(--r3);max-width:700px;width:100%;padding:0}
-.tools-hdr{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.tools-hdr h3{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
-.tools-close{width:32px;height:32px;border-radius:var(--r);border:1px solid var(--line2);background:transparent;color:var(--ink2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}.tools-close:hover{background:var(--card2)}
-.tools-body{padding:20px 24px}
-.tool-sec{margin-bottom:24px}
-.tool-sec-h{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.tool-sec-h::after{content:'';flex:1;height:1px;background:var(--line)}
+/* Filter bar */
+.filter-bar{display:flex;gap:6px;align-items:center;padding:6px 18px 12px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.pill{height:26px;padding:0 10px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--ink-3);font:500 12px var(--f);cursor:pointer;transition:.1s;display:inline-flex;align-items:center;gap:5px;letter-spacing:-.01em}
+.pill:hover{background:var(--surface);color:var(--ink-2)}
+.pill.active{background:var(--surface-2);color:var(--ink);border-color:var(--line-2)}
+
+/* List */
+.list-head{display:grid;grid-template-columns:32px 1fr 110px 100px 100px 110px 70px;gap:12px;padding:8px 18px;border-bottom:1px solid var(--line);font-size:10px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0;background:var(--bg);z-index:1}
+.list-row{display:grid;grid-template-columns:32px 1fr 110px 100px 100px 110px 70px;gap:12px;padding:9px 18px;border-bottom:1px solid var(--line);align-items:center;cursor:pointer;transition:background .08s}
+.list-row:hover{background:var(--surface)}
+.list-row.dim{opacity:.55}
+.lr-avatar{width:24px;height:24px;border-radius:5px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;border:1px solid var(--line)}
+.lr-name{font-size:13px;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.lr-meta{font-size:11px;color:var(--ink-3);margin-top:1px;display:flex;gap:8px;align-items:center;white-space:nowrap;overflow:hidden}
+.lr-meta span+span::before{content:'·';margin-right:8px;color:var(--ink-4)}
+.lr-cell{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr-cell-strong{font-weight:600;color:var(--ink)}
+
+/* Empty + skeleton */
+.empty{padding:80px 20px;text-align:center}
+.empty-icon{width:42px;height:42px;border-radius:10px;background:var(--surface-2);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:18px}
+.empty-h{font-size:14px;font-weight:600;margin-bottom:4px;letter-spacing:-.01em}
+.empty-p{font-size:12px;color:var(--ink-3);margin-bottom:14px}
+.skel{background:linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.4s linear infinite;border-radius:4px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-row{display:grid;grid-template-columns:32px 1fr 110px 100px 100px 110px 70px;gap:12px;padding:10px 18px;border-bottom:1px solid var(--line);align-items:center}
+
+/* Status & badges */
+.pill-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;letter-spacing:-.01em}
+.pill-status::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.ps-trial{color:var(--orange);background:var(--orange-bg)}
+.ps-live{color:var(--green);background:var(--green-bg)}
+.ps-paused{color:var(--ink-3);background:var(--surface-3)}
+.ps-suspended{color:var(--red);background:var(--red-bg)}
+.ps-churned{color:var(--ink-4);background:var(--surface-3)}
+
+.pill-plan{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:.02em;text-transform:uppercase}
+.pp-free{color:var(--ink-3);background:var(--surface-3)}
+.pp-starter{color:var(--accent);background:var(--accent-bg)}
+.pp-pro{color:var(--purple);background:var(--purple-bg)}
+.pp-expired{color:var(--red);background:var(--red-bg)}
+
+.verified-icon{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:var(--accent);color:#fff;font-size:8px;font-weight:700;flex-shrink:0}
+.featured-icon{display:inline-block;color:var(--orange);font-size:11px;flex-shrink:0}
+
+.last-chip{font-size:11px;font-weight:500}
+.lc-fresh{color:var(--green)}
+.lc-warm{color:var(--orange)}
+.lc-stale{color:var(--ink-3)}
+.lc-none{color:var(--ink-4)}
+
+/* Slide-out */
+.so-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.so-bg.open{opacity:1;pointer-events:auto}
+.so{position:fixed;top:0;right:0;bottom:0;width:600px;max-width:100vw;background:var(--surface);border-left:1px solid var(--line-2);z-index:201;transform:translateX(100%);transition:transform .25s cubic-bezier(.25,.1,.25,1);display:flex;flex-direction:column;box-shadow:var(--shadow-3)}
+.so.open{transform:translateX(0)}
+.so-hdr{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);flex-shrink:0;gap:10px}
+.so-title-wrap{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.so-avatar{width:32px;height:32px;border-radius:7px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;border:1px solid var(--line)}
+.so-title{font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.so-sub{font-size:11px;color:var(--ink-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.so-close{width:28px;height:28px;border:none;background:transparent;color:var(--ink-3);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.so-close:hover{background:var(--surface-3);color:var(--ink)}
+
+.so-actions{display:flex;gap:6px;padding:10px 20px;border-bottom:1px solid var(--line);flex-shrink:0;flex-wrap:wrap}
+
+.so-tabs{display:flex;gap:0;padding:0 16px;border-bottom:1px solid var(--line);overflow-x:auto;flex-shrink:0;scrollbar-width:none}
+.so-tabs::-webkit-scrollbar{display:none}
+.so-tab{padding:9px 12px;border:none;background:transparent;color:var(--ink-3);font:500 12px var(--f);cursor:pointer;border-bottom:1.5px solid transparent;white-space:nowrap;transition:.1s;letter-spacing:-.01em;margin-bottom:-1px}
+.so-tab:hover{color:var(--ink-2)}
+.so-tab.active{color:var(--ink);border-bottom-color:var(--accent)}
+.so-tab.danger.active{color:var(--red);border-bottom-color:var(--red)}
+.so-body{flex:1;overflow-y:auto;padding:18px 20px}
+.so-panel{display:none}
+.so-panel.active{display:block;animation:fadeIn .15s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+.so-ftr{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;background:var(--surface)}
+
+/* Form */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ff{display:flex;flex-direction:column;gap:5px}
+.ff.full{grid-column:1/-1}
+.fl{font-size:11px;font-weight:500;color:var(--ink-2);letter-spacing:-.01em}
+.fi{height:32px;padding:0 10px;border:1px solid var(--line-2);border-radius:5px;font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none;transition:.15s}
+/* Mobile: ensure inputs are >=16px so iOS doesn't zoom on focus */
+@media (pointer:coarse){.fi,.fs,input:not([type=color]):not([type=range]):not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
+.fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.fi[type="color"]{padding:2px;cursor:pointer;height:32px;width:60px}
+.fi[readonly]{background:var(--surface-2);color:var(--ink-3);cursor:not-allowed;border-color:var(--line)}
+.fta{min-height:64px;padding:8px 10px;border:1px solid var(--line-2);border-radius:5px;font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none;resize:vertical;font-family:var(--f);transition:.15s}
+.fta:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.fs{height:32px;padding:0 26px 0 10px;border:1px solid var(--line-2);border-radius:5px;font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none;-webkit-appearance:none;cursor:pointer;transition:.15s;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'><path fill='%236b6b6e' d='M8 11L3 6h10z'/></svg>");background-repeat:no-repeat;background-position:right 8px center}
+.fs:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.fhelp{font-size:11px;color:var(--ink-3);margin-top:1px;line-height:1.4}
+.fimg-prev{width:48px;height:48px;border-radius:6px;background:var(--surface-3);background-size:cover;background-position:center;border:1px solid var(--line);flex-shrink:0}
+.fimg-row{display:flex;gap:8px;align-items:center}
+.ftog{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--line-2);border-radius:5px;cursor:pointer;font-size:12px;font-weight:500;color:var(--ink);transition:.15s;user-select:none}
+.ftog:hover{background:var(--surface-2);border-color:var(--line-3)}
+.ftog input{margin:0;cursor:pointer;accent-color:var(--accent)}
+.fread{padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:5px;font-size:13px;font-weight:500;color:var(--ink-2);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+.danger-box{padding:12px;background:var(--red-bg);border:1px solid rgba(248,81,73,.2);border-radius:var(--r-2);margin-bottom:10px}
+.danger-h{font-size:12px;font-weight:600;color:var(--red);margin-bottom:3px}
+.danger-p{font-size:11px;color:var(--ink-2);margin-bottom:10px;line-height:1.5}
+.danger-btn{height:30px;padding:0 12px;background:transparent;border:1px solid var(--red);color:var(--red);border-radius:5px;font:600 12px var(--f);cursor:pointer;transition:.15s}
+.danger-btn:hover{background:var(--red);color:#fff}
+
+/* Command palette */
+.cmdk-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);z-index:300;display:none;align-items:flex-start;justify-content:center;padding:14vh 16px 0}
+.cmdk-bg.open{display:flex}
+.cmdk{background:var(--surface);border:1px solid var(--line-2);border-radius:10px;width:100%;max-width:560px;max-height:70vh;display:flex;flex-direction:column;box-shadow:var(--shadow-3);overflow:hidden}
+.cmdk-input-wrap{display:flex;align-items:center;gap:9px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cmdk-input-wrap svg{color:var(--ink-3);flex-shrink:0}
+.cmdk-input{flex:1;border:none;background:transparent;color:var(--ink);font:500 14px var(--f);outline:none;letter-spacing:-.01em}
+.cmdk-input::placeholder{color:var(--ink-3)}
+.cmdk-esc{font-size:10px;color:var(--ink-3);background:var(--surface-3);border:1px solid var(--line);padding:2px 6px;border-radius:4px;font-weight:600}
+.cmdk-list{flex:1;overflow-y:auto;padding:6px}
+.cmdk-section{padding:6px 0}
+.cmdk-section-h{font-size:10px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px}
+.cmdk-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:5px;cursor:pointer;transition:.05s}
+.cmdk-item:hover,.cmdk-item.selected{background:var(--surface-2)}
+.cmdk-item-icon{width:20px;height:20px;border-radius:4px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.cmdk-item-text{flex:1;min-width:0}
+.cmdk-item-title{font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.cmdk-item-sub{font-size:11px;color:var(--ink-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmdk-empty{padding:32px 20px;text-align:center;font-size:12px;color:var(--ink-3)}
+
+/* Tools */
+.tools-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);z-index:200;align-items:flex-start;justify-content:center;padding:5vh 16px 5vh;overflow-y:auto}
+.tools-bg.open{display:flex}
+.tools-box{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-3);max-width:680px;width:100%;padding:0;box-shadow:var(--shadow-3)}
+.tools-hdr{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.tools-hdr h3{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.tools-body{padding:16px 20px}
+.tool-sec{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.tool-sec:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.tool-sec-h{font-size:11px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
 .tool-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap}
-.tool-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
-.tool-label{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase}
-.tool-input{height:38px;padding:0 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none}.tool-input:focus{border-color:var(--blue)}
-.tool-output{width:100%;padding:10px 12px;border:1.5px solid var(--line2);border-radius:var(--r);font:500 11px var(--f);color:var(--green);background:var(--bg);min-height:38px;word-break:break-all;cursor:pointer;transition:.15s;font-family:monospace}.tool-output:hover{border-color:var(--green)}
-.tool-btn{height:38px;padding:0 16px;border:none;border-radius:var(--r);font:700 12px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s;white-space:nowrap}.tool-btn:active{transform:scale(.96)}
-.tool-btn-blue{background:var(--blue);color:#fff}.tool-btn-blue:hover{filter:brightness(1.1)}
-.tool-btn-green{background:var(--green);color:#fff}.tool-btn-green:hover{filter:brightness(1.1)}
-.tool-btn-ghost{background:var(--card2);color:var(--ink2);border:1px solid var(--line2)}.tool-btn-ghost:hover{background:var(--bg)}
+.tool-field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px}
+.tool-out{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:5px;font:500 11px monospace;color:var(--green);background:var(--bg);min-height:32px;word-break:break-all;cursor:pointer;transition:.1s}
+.tool-out:hover{border-color:var(--line-2)}
 
 /* Sheet viewer */
-.sv-tabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
-.sv-tab{padding:6px 14px;border:1px solid var(--line2);border-radius:var(--r);background:transparent;color:var(--ink3);font:600 11px var(--f);cursor:pointer;transition:.15s}.sv-tab:hover{background:var(--card2)}.sv-tab.active{background:var(--blue-bg);color:var(--blue);border-color:rgba(59,130,246,.3)}
-.sv-table-wrap{max-height:350px;overflow:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.sv-tabs{display:flex;gap:2px;margin-bottom:8px;flex-wrap:wrap}
+.sv-tab{padding:5px 11px;border:1px solid var(--line-2);border-radius:5px;background:transparent;color:var(--ink-3);font:500 11px var(--f);cursor:pointer;transition:.1s}
+.sv-tab:hover{background:var(--surface-2);color:var(--ink)}
+.sv-tab.active{background:var(--accent-bg);color:var(--accent);border-color:var(--accent-line)}
+.sv-table-wrap{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
 .sv-table{width:100%;border-collapse:collapse;font-size:11px}
-.sv-table th{position:sticky;top:0;background:var(--card2);color:var(--ink2);font-weight:700;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
-.sv-table td{padding:6px 10px;border-bottom:1px solid var(--line);color:var(--ink);white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
-.sv-table tr:hover td{background:rgba(59,130,246,.05)}
-.sv-empty{padding:24px;text-align:center;color:var(--ink3);font-size:12px}
-.sv-info{font-size:10px;color:var(--ink3);margin-top:6px}
+.sv-table th{position:sticky;top:0;background:var(--surface-2);color:var(--ink-3);font-weight:600;text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.sv-table td{padding:5px 9px;border-bottom:1px solid var(--line);color:var(--ink);white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.sv-table tr:hover td{background:var(--surface)}
+.sv-empty{padding:20px;text-align:center;color:var(--ink-3);font-size:12px}
 
-@media(max-width:640px){.stats{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px}.stat{padding:10px 12px}.stat-val{font-size:18px}.store-head{padding:10px 12px}.sb-grid{grid-template-columns:1fr 1fr}.filter{padding:8px 12px}.stores{padding:4px 12px 80px}.mg{grid-template-columns:1fr}.top-actions .top-btn span{display:none}}
+/* Toast */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface);color:var(--ink);padding:9px 16px;border:1px solid var(--line-2);border-radius:7px;font:500 12px var(--f);z-index:400;opacity:0;transition:.25s cubic-bezier(.25,.1,.25,1);box-shadow:var(--shadow-3);letter-spacing:-.01em}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* Mobile */
+@media(max-width:840px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:240px;z-index:80;transform:translateX(-100%);transition:transform .2s ease-out}
+  .sidebar.open{transform:translateX(0)}
+  .topbar{padding:0 12px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);padding:12px}
+  .filter-bar{padding:6px 12px 10px;gap:5px}
+  .list-head{display:none}
+  .list-row{grid-template-columns:32px 1fr auto;padding:10px 12px;gap:8px}
+  .list-row .lr-cell{display:none}
+  .list-row .lr-cell.lr-mob{display:flex;justify-content:flex-end;gap:6px;font-size:11px}
+  .so{width:100vw}
+  .fg{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<!-- Lock -->
-<div class="lock" id="lockScreen"><div class="lock-box"><div style="font-size:36px;margin-bottom:4px">🔐</div><h2>StorePro Admin</h2><p>Enter your admin password</p><div class="lock-pwd-wrap"><input class="lock-input" type="password" id="adminPwd" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkAdmin()" autocomplete="off"><button class="lock-toggle" id="pwdToggle" onclick="togglePwdVisibility()" type="button" title="Show password">👁</button></div><div class="lock-err" id="adminErr"></div><button class="lock-btn" onclick="checkAdmin()">Unlock</button><div class="lock-reset">Password is stored in Master Registry → Settings tab</div></div></div>
-
-<!-- Top -->
-<div class="top">
-<div class="top-left"><div class="top-logo">K</div><div><h1>StorePro Admin</h1><div class="top-sub" id="topSub">Loading...</div></div></div>
-<div class="top-actions">
-<button class="top-btn add" onclick="openAddStore()">+ <span>Add Store</span></button>
-<button class="top-btn" onclick="openTools()">🛠️ <span>Tools</span></button>
-<button class="top-btn" id="refreshBtn" onclick="loadStores()">↻ <span>Refresh</span></button>
-<button class="top-btn" onclick="lockAdmin()">🔒</button>
-</div>
-</div>
-
-<!-- Stats -->
-<div class="stats">
-<div class="stat"><div class="stat-label">Total Stores</div><div class="stat-val sv-blue" id="sTotal">-</div><div class="stat-sub" id="sActive"></div></div>
-<div class="stat"><div class="stat-label">Revenue</div><div class="stat-val sv-green" id="sRevenue">₹0</div><div class="stat-sub" id="sOrders"></div></div>
-<div class="stat"><div class="stat-label">Paid Plans</div><div class="stat-val sv-purple" id="sPaid">0</div><div class="stat-sub" id="sMrr"></div></div>
-<div class="stat"><div class="stat-label">Expiring</div><div class="stat-val sv-orange" id="sExpiring">0</div><div class="stat-sub">need renewal</div></div>
-<div class="stat"><div class="stat-label">Inactive</div><div class="stat-val sv-red" id="sInactive">0</div><div class="stat-sub">stores off</div></div>
+<!-- Lock screen -->
+<div class="lock" id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-icon">K</div>
+    <h2>StorePro Admin</h2>
+    <p>Sign in with your admin password</p>
+    <div class="lock-pwd">
+      <input class="lock-input" type="password" id="adminPwd" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkAdmin()" autocomplete="off">
+      <button class="lock-toggle" id="pwdToggle" onclick="togglePwdVisibility()" type="button" title="Show password">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <div class="lock-err" id="adminErr"></div>
+    <button class="lock-btn" onclick="checkAdmin()">Continue</button>
+    <div class="lock-hint">Stored in Apps Script · Project Settings</div>
+  </div>
 </div>
 
-<!-- Filter -->
-<div class="filter">
-<div class="search"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg><input type="text" id="searchInput" placeholder="Search stores..." oninput="renderStores()"></div>
-<button class="pill-btn active" onclick="setFilter('all',this)">All</button>
-<button class="pill-btn" onclick="setFilter('active',this)">Active</button>
-<button class="pill-btn" onclick="setFilter('inactive',this)">Inactive</button>
-<button class="pill-btn" onclick="setFilter('free',this)">Free</button>
-<button class="pill-btn" onclick="setFilter('paid',this)">Paid</button>
-<button class="pill-btn" onclick="setFilter('expiring',this)">Expiring</button>
+<!-- App shell -->
+<div class="app" id="app" style="display:none">
+  <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-mark">K</div>
+      <div class="sb-name">StorePro</div>
+    </div>
+    <div class="sb-search">
+      <svg class="sb-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="sidebarSearch" placeholder="Search or jump..." readonly onclick="openCmdk()">
+      <span class="sb-search-kbd">⌘K</span>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-h">Workspace</div>
+      <a class="sb-link active" data-section="stores" onclick="navigate('stores',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Stores
+        <span class="sb-link-count" id="sbCountStores">—</span>
+      </a>
+      <a class="sb-link" data-section="insights" onclick="navigate('insights',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Insights
+      </a>
+      <a class="sb-link" onclick="openTools()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Tools
+      </a>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-h">Filter</div>
+      <a class="sb-link" data-filter="all" onclick="setFilter('all',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        All
+        <span class="sb-link-count" id="sbCountAll">—</span>
+      </a>
+      <a class="sb-link" data-filter="active" onclick="setFilter('active',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="9 12 12 14 15 10"/></svg>
+        Active
+        <span class="sb-link-count" id="sbCountActive">—</span>
+      </a>
+      <a class="sb-link" data-filter="trial" onclick="setFilter('trial',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Trial
+        <span class="sb-link-count" id="sbCountTrial">—</span>
+      </a>
+      <a class="sb-link" data-filter="paid" onclick="setFilter('paid',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h4.5a2.5 2.5 0 0 1 0 5h-3a2.5 2.5 0 0 0 0 5H15"/></svg>
+        Paid
+        <span class="sb-link-count" id="sbCountPaid">—</span>
+      </a>
+      <a class="sb-link" data-filter="expiring" onclick="setFilter('expiring',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Expiring
+        <span class="sb-link-count" id="sbCountExpiring">—</span>
+      </a>
+      <a class="sb-link" data-filter="stale" onclick="setFilter('stale',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Stale
+        <span class="sb-link-count" id="sbCountStale">—</span>
+      </a>
+      <a class="sb-link" data-filter="verified" onclick="setFilter('verified',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Verified
+        <span class="sb-link-count" id="sbCountVerified">—</span>
+      </a>
+      <a class="sb-link" data-filter="featured" onclick="setFilter('featured',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Featured
+        <span class="sb-link-count" id="sbCountFeatured">—</span>
+      </a>
+      <a class="sb-link" data-filter="inactive" onclick="setFilter('inactive',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        Inactive
+        <span class="sb-link-count" id="sbCountInactive">—</span>
+      </a>
+    </div>
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="sb-avatar">A</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name">Admin</div>
+          <div class="sb-user-role">Owner</div>
+        </div>
+        <button class="sb-lock" onclick="lockAdmin()" title="Lock">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="btn btn-icon mobile-only" onclick="toggleSidebar()" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="crumb"><span id="crumbText">Stores</span><span class="crumb-count" id="crumbCount">—</span></div>
+      <div class="tb-spacer"></div>
+      <button class="btn btn-icon" onclick="openCmdk()" title="Search · ⌘K">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <button class="btn btn-icon" onclick="loadStores()" title="Refresh" id="refreshBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+      <button class="btn btn-primary" onclick="openAddStore()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="hide-sm">Add Store</span>
+      </button>
+    </header>
+
+    <div class="content">
+      <!-- Stores section -->
+      <div data-pane="stores">
+        <div class="kpi-grid">
+          <div class="kpi" onclick="setFilter('all')"><div class="kpi-label">Total</div><div class="kpi-val" id="sTotal">—</div><div class="kpi-sub" id="sActive">—</div></div>
+          <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-val" id="sRevenue">—</div><div class="kpi-sub" id="sOrders">—</div></div>
+          <div class="kpi"><div class="kpi-label">MRR</div><div class="kpi-val" id="sMrr">—</div><div class="kpi-sub" id="sPaid">—</div></div>
+          <div class="kpi" onclick="setFilter('trial')"><div class="kpi-label">Trials</div><div class="kpi-val" id="sTrials">—</div><div class="kpi-sub" id="sTrialsExpiring">—</div></div>
+          <div class="kpi" onclick="setFilter('expiring')"><div class="kpi-label">Expiring</div><div class="kpi-val" id="sExpiring">—</div><div class="kpi-sub">need renewal</div></div>
+          <div class="kpi" onclick="setFilter('stale')"><div class="kpi-label">Stale</div><div class="kpi-val" id="sStale">—</div><div class="kpi-sub">no orders 14d+</div></div>
+          <div class="kpi" onclick="setFilter('inactive')"><div class="kpi-label">Inactive</div><div class="kpi-val" id="sInactive">—</div><div class="kpi-sub">stores off</div></div>
+        </div>
+        <div class="filter-bar">
+          <button class="pill active" onclick="setFilter('all',this)">All</button>
+          <button class="pill" onclick="setFilter('active',this)">Active</button>
+          <button class="pill" onclick="setFilter('trial',this)">Trial</button>
+          <button class="pill" onclick="setFilter('paid',this)">Paid</button>
+          <button class="pill" onclick="setFilter('expiring',this)">Expiring</button>
+          <button class="pill" onclick="setFilter('stale',this)">Stale</button>
+          <button class="pill" onclick="setFilter('verified',this)">Verified</button>
+          <button class="pill" onclick="setFilter('featured',this)">Featured</button>
+          <button class="pill" onclick="setFilter('inactive',this)">Inactive</button>
+        </div>
+        <div class="list-head">
+          <div></div>
+          <div>Store</div>
+          <div>Status</div>
+          <div>Plan</div>
+          <div>Last Order</div>
+          <div>Revenue</div>
+          <div>Orders</div>
+        </div>
+        <div id="storesList"></div>
+      </div>
+
+      <!-- Insights placeholder -->
+      <div data-pane="insights" style="display:none">
+        <div class="empty">
+          <div class="empty-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="empty-h">Insights coming soon</div>
+          <div class="empty-p">Cohort retention, MRR trends, and churn funnel will live here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="stores" id="storesList"><div class="empty">Loading stores...</div></div>
+<!-- Slide-out (Add/Edit) -->
+<div class="so-bg" id="soBg" onclick="closeSlideout()"></div>
+<aside class="so" id="slideout" role="dialog" aria-modal="true">
+  <div class="so-hdr">
+    <div class="so-title-wrap">
+      <div class="so-avatar" id="soAvatar">🏪</div>
+      <div style="min-width:0;flex:1">
+        <div class="so-title" id="soTitle">Add Store</div>
+        <div class="so-sub" id="soSub">New tenant</div>
+      </div>
+    </div>
+    <button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button>
+  </div>
+  <div class="so-actions" id="soActions" style="display:none">
+    <button class="btn" onclick="soOpenStore()">Open Store ↗</button>
+    <button class="btn" onclick="soOpenDash()">Dashboard ↗</button>
+    <button class="btn" onclick="soOpenSheet()">Sheet ↗</button>
+    <button class="btn" onclick="soOpenWA()">WhatsApp ↗</button>
+    <button class="btn" onclick="soResetPin()" title="Reset this tenant's dashboard PIN">🔒 Reset PIN</button>
+  </div>
+  <div class="so-tabs">
+    <button class="so-tab active" data-panel="basics" onclick="switchTab(this)">Basics</button>
+    <button class="so-tab" data-panel="branding" onclick="switchTab(this)">Branding</button>
+    <button class="so-tab" data-panel="location" onclick="switchTab(this)">Location</button>
+    <button class="so-tab" data-panel="contact" onclick="switchTab(this)">Contact</button>
+    <button class="so-tab" data-panel="billing" onclick="switchTab(this)">Billing</button>
+    <button class="so-tab" data-panel="config" onclick="switchTab(this)">Config</button>
+    <button class="so-tab" data-panel="activity" onclick="switchTab(this)">Activity</button>
+    <button class="so-tab danger" data-panel="danger" onclick="switchTab(this)">Danger</button>
+  </div>
+  <div class="so-body">
 
-<!-- Add/Edit Store Modal -->
-<div class="modal-bg" id="storeModal" onclick="if(event.target===this)this.classList.remove('open')">
-<div class="modal">
-<h3 id="modalTitle">🏬 Add New Store</h3>
-<div class="mg">
-<div class="mg-f full"><div class="mg-l">Shop Name *</div><input class="mg-i" id="mShop" placeholder="Sharma General Store"></div>
-<div class="mg-f"><div class="mg-l">Slug *</div><input class="mg-i" id="mSlug" placeholder="sharma-grocery"></div>
-<div class="mg-f"><div class="mg-l">Sheet ID *</div><input class="mg-i" id="mSheet" placeholder="Google Sheet ID"></div>
-<div class="mg-f"><div class="mg-l">Owner Name</div><input class="mg-i" id="mOwner" placeholder="Rajesh Sharma"></div>
-<div class="mg-f"><div class="mg-l">Phone</div><input class="mg-i" id="mPhone" placeholder="9876543210"></div>
-<div class="mg-f"><div class="mg-l">Shop Type</div>
-<select class="mg-s" id="mType"><option value="Grocery">🛒 Grocery</option><option value="Pharmacy">💊 Pharmacy</option><option value="Restaurant">🍽️ Restaurant</option><option value="Bakery">🍰 Bakery</option><option value="Hardware">🔧 Hardware</option><option value="Clothing">👕 Clothing</option><option value="Electronics">📱 Electronics</option><option value="Salon">💇 Salon</option><option value="Flowers">🌸 Flowers</option><option value="Other">Other</option></select></div>
-<div class="mg-f"><div class="mg-l">City</div><input class="mg-i" id="mCity" placeholder="Dehradun"></div>
-<div class="mg-f"><div class="mg-l">Plan</div>
-<select class="mg-s" id="mPlan"><option value="Free">Free</option><option value="Starter">Starter ₹499</option><option value="Pro">Pro ₹999</option></select></div>
-<div class="mg-f"><div class="mg-l">Plan Expiry</div><input class="mg-i" id="mExpiry" type="date"></div>
-<div class="mg-f"><div class="mg-l">Active</div>
-<select class="mg-s" id="mActive"><option value="Yes">Yes</option><option value="No">No</option></select></div>
-<div class="mg-f full"><div class="mg-l">Script URL</div><input class="mg-i" id="mScript" placeholder="Apps Script deployment URL"></div>
-<div class="mg-f full"><div class="mg-l">Store URL <button type="button" onclick="autoGenUrl()" style="background:var(--blue-bg);color:var(--blue);border:none;padding:2px 8px;border-radius:4px;font:600 9px var(--f);cursor:pointer;margin-left:6px">Auto Generate</button></div><input class="mg-i" id="mUrl" placeholder="https://storepro.in/?store=slug"></div>
-<div class="mg-f full"><div class="mg-l">Dashboard URL <button type="button" onclick="autoGenDash()" style="background:var(--blue-bg);color:var(--blue);border:none;padding:2px 8px;border-radius:4px;font:600 9px var(--f);cursor:pointer;margin-left:6px">Auto Generate</button></div><input class="mg-i" id="mDashUrl" placeholder="https://storepro.in/dashboard.html?store=slug"></div>
-<div class="mg-btns">
-<button class="mg-btn mg-save" id="modalSaveBtn" onclick="saveStore()">Save Store</button>
-<button class="mg-btn mg-cancel" onclick="document.getElementById('storeModal').classList.remove('open')">Cancel</button>
-</div>
-</div>
-</div>
+    <div class="so-panel active" id="panel-basics">
+      <div class="fg">
+        <div class="ff full"><div class="fl">Shop Name *</div><input class="fi" id="mShop" placeholder="Sharma General Store"></div>
+        <div class="ff"><div class="fl">Slug *</div><input class="fi" id="mSlug" placeholder="sharma-grocery"></div>
+        <div class="ff"><div class="fl">Sheet ID *</div><input class="fi" id="mSheet" placeholder="Google Sheet ID"></div>
+        <div class="ff"><div class="fl">Owner</div><input class="fi" id="mOwner" placeholder="Rajesh Sharma"></div>
+        <div class="ff"><div class="fl">Phone</div><input class="fi" id="mPhone" placeholder="9876543210"></div>
+        <div class="ff"><div class="fl">Shop Type</div>
+          <select class="fs" id="mType">
+            <option value="Grocery">Grocery</option>
+            <option value="Pharmacy">Pharmacy</option>
+            <option value="Restaurant">Restaurant</option>
+            <option value="FastFood">Fast Food</option>
+            <option value="Dhaba">Dhaba</option>
+            <option value="MeatShop">Meat Shop</option>
+            <option value="Bakery">Bakery</option>
+            <option value="Hardware">Hardware</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Salon">Salon</option>
+            <option value="Flowers">Flowers</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="ff"><div class="fl">City</div><input class="fi" id="mCity" placeholder="Dehradun"></div>
+        <div class="ff full"><div class="fl">Script URL</div><input class="fi" id="mScript" placeholder="Apps Script deployment URL"></div>
+        <div class="ff full"><div class="fl">Store URL</div><input class="fi" id="mUrl" placeholder="https://storepro.in/?store=slug"></div>
+        <div class="ff full"><div class="fl">Dashboard URL</div><input class="fi" id="mDashUrl" placeholder="https://storepro.in/dashboard.html?store=slug"></div>
+      </div>
+    </div>
+
+    <div class="so-panel" id="panel-branding">
+      <div class="fg">
+        <div class="ff full">
+          <div class="fl">Logo URL</div>
+          <div class="fimg-row">
+            <div class="fimg-prev" id="mLogoPrev"></div>
+            <input class="fi" id="mLogo" placeholder="https://..." style="flex:1" oninput="document.getElementById('mLogoPrev').style.backgroundImage=this.value?'url('+this.value+')':''">
+          </div>
+          <div class="fhelp">Square image, 192×192 or larger</div>
+        </div>
+        <div class="ff"><div class="fl">Brand Color</div><input class="fi" id="mBrandColor" type="color" value="#5e6ad2"></div>
+        <div class="ff"><div class="fl">Tagline</div><input class="fi" id="mTagline" placeholder="Fresh meat. Free delivery."></div>
+        <div class="ff full"><label class="ftog"><input type="checkbox" id="mVerified"> <span>Verified · shows ✓ in listings</span></label></div>
+        <div class="ff full"><label class="ftog"><input type="checkbox" id="mFeatured"> <span>Featured · promote on home page</span></label></div>
+      </div>
+    </div>
+
+    <div class="so-panel" id="panel-location">
+      <div class="fg">
+        <div class="ff full"><div class="fl">Address</div><textarea class="fta" id="mAddress" placeholder="Shop no 12, Main Road, Sector 7"></textarea></div>
+        <div class="ff full"><div class="fl">Business Hours</div><input class="fi" id="mHours" placeholder="9:00 AM – 9:00 PM"></div>
+        <div class="ff full"><label class="ftog"><input type="checkbox" id="mAcceptingOrders" checked> <span>Currently accepting orders</span></label><div class="fhelp">Uncheck for store-wide pause</div></div>
+      </div>
+    </div>
+
+    <div class="so-panel" id="panel-contact">
+      <div class="fg">
+        <div class="ff"><div class="fl">WhatsApp</div><input class="fi" id="mWhatsApp" placeholder="9876543210"></div>
+        <div class="ff"><div class="fl">Language</div>
+          <select class="fs" id="mLanguage"><option value="en">English</option><option value="hi">हिन्दी (Hindi)</option></select>
+        </div>
+        <div class="ff full"><div class="fl">Email</div><input class="fi" id="mEmail" type="email" placeholder="owner@example.com"></div>
+      </div>
+    </div>
+
+    <div class="so-panel" id="panel-billing">
+      <div class="fg">
+        <div class="ff"><div class="fl">Plan</div>
+          <select class="fs" id="mPlan" onchange="onPlanChange()">
+            <option value="Free">Free</option>
+            <option value="Starter">Starter ₹499</option>
+            <option value="Pro">Pro ₹999</option>
+          </select>
+        </div>
+        <div class="ff"><div class="fl">Status</div>
+          <select class="fs" id="mStatus">
+            <option value="Trial">Trial</option>
+            <option value="Live">Live</option>
+            <option value="Paused">Paused</option>
+            <option value="Suspended">Suspended</option>
+            <option value="Churned">Churned</option>
+          </select>
+        </div>
+        <div class="ff"><div class="fl">Plan Expiry</div><input class="fi" id="mExpiry" type="date"></div>
+        <div class="ff"><div class="fl">Trial Ends</div><input class="fi" id="mTrialEnds" type="date"></div>
+        <div class="ff"><div class="fl">Monthly Fee (₹)</div><input class="fi" id="mMonthlyFee" type="number" placeholder="0"></div>
+        <div class="ff"><div class="fl">Active</div>
+          <select class="fs" id="mActive"><option value="Yes">Yes</option><option value="No">No</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="so-panel" id="panel-config">
+      <div class="fg">
+        <div class="ff"><div class="fl">Template</div>
+          <select class="fs" id="mTemplate">
+            <option value="">Auto from Shop Type</option>
+            <option value="store">store</option>
+            <option value="fastfood">fastfood</option>
+            <option value="restaurant">restaurant</option>
+            <option value="dhaba">dhaba</option>
+            <option value="meatshop">meatshop</option>
+          </select>
+          <div class="fhelp">Storefront HTML used for this tenant</div>
+        </div>
+        <div class="ff"><div class="fl">Min Order (₹)</div><input class="fi" id="mMinOrder" type="number" placeholder="199"></div>
+      </div>
+    </div>
+
+    <div class="so-panel" id="panel-activity">
+      <div class="fg">
+        <div class="ff"><div class="fl">Created</div><div class="fread" id="mCreatedAt">—</div></div>
+        <div class="ff"><div class="fl">Last Order</div><div class="fread" id="mLastOrderAt">—</div></div>
+        <div class="ff"><div class="fl">Total Orders</div><div class="fread" id="mTotalOrders">—</div></div>
+        <div class="ff"><div class="fl">Total Revenue</div><div class="fread" id="mTotalRevenue">—</div></div>
+        <div class="ff"><div class="fl">Rating</div><div class="fread" id="mRating">—</div></div>
+        <div class="ff"><div class="fl">Reviews</div><div class="fread" id="mReviewCount">—</div></div>
+        <div class="ff full"><button type="button" class="btn" style="width:100%;justify-content:center" onclick="recalcHealthForOne()">Recalculate from Sheet</button><div class="fhelp">Reads this tenant's Orders tab and updates metrics</div></div>
+      </div>
+    </div>
+
+    <div class="so-panel" id="panel-danger">
+      <div class="danger-box">
+        <div class="danger-h">Suspend Tenant</div>
+        <div class="danger-p">Sets status to Suspended and deactivates the store. Customers cannot place orders. Reversible from Billing.</div>
+        <button type="button" class="danger-btn" onclick="dangerSuspend()">Suspend</button>
+      </div>
+      <div class="danger-box">
+        <div class="danger-h">Reset Dashboard PIN</div>
+        <div class="danger-p">Generates a new 4-digit PIN and writes it to the tenant's Config tab.</div>
+        <button type="button" class="danger-btn" onclick="dangerResetPin()">Reset PIN</button>
+      </div>
+      <div class="danger-box">
+        <div class="danger-h">Mark as Churned</div>
+        <div class="danger-p">Hides from active counts and default views. Sheet data is preserved.</div>
+        <button type="button" class="danger-btn" onclick="dangerChurn()">Mark Churned</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="so-ftr">
+    <button class="btn" onclick="closeSlideout()">Cancel</button>
+    <button class="btn btn-primary" id="modalSaveBtn" onclick="saveStore()">Save</button>
+  </div>
+</aside>
+
+<!-- Command palette -->
+<div class="cmdk-bg" id="cmdkBg" onclick="if(event.target===this)closeCmdk()">
+  <div class="cmdk">
+    <div class="cmdk-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input class="cmdk-input" id="cmdkInput" placeholder="Search stores or run a command..." autocomplete="off">
+      <span class="cmdk-esc">esc</span>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
 </div>
 
-<!-- Tools Modal -->
+<!-- Tools -->
 <div class="tools-bg" id="toolsBg" onclick="if(event.target===this)this.classList.remove('open')">
-<div class="tools-box">
-<div class="tools-hdr"><h3>🛠️ Admin Tools</h3><button class="tools-close" onclick="$('toolsBg').classList.remove('open')">✕</button></div>
-<div class="tools-body">
+  <div class="tools-box">
+    <div class="tools-hdr">
+      <h3>Admin Tools</h3>
+      <button class="btn btn-icon" onclick="$('toolsBg').classList.remove('open')">✕</button>
+    </div>
+    <div class="tools-body">
+      <div class="tool-sec">
+        <div class="tool-sec-h">Submit Onboarding Request</div>
+        <p style="font-size:12px;color:var(--ink-3);margin-bottom:9px;line-height:1.5">Fill the 4 required fields below. On submit we:<br>
+        <strong>1.</strong> Log the request in the registry's <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">Onboarding Requests</code> tab<br>
+        <strong>2.</strong> Email the dev team with all the customer details and a one-click provisioning snippet<br>
+        <strong>3.</strong> Email the customer (if provided) confirming their store will be ready within 30 minutes<br>
+        The store is <strong>not</strong> provisioned automatically — the dev team handles that to verify each shop manually. Configure the dev email via Script Property <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">ONBOARDING_NOTIFICATION_EMAIL</code> on the master registry.</p>
+        <div class="tool-row">
+          <div class="tool-field" style="min-width:180px"><div class="fl">Shop name *</div><input class="fi" id="obShop" placeholder="Sharma General Store"></div>
+          <div class="tool-field" style="min-width:140px"><div class="fl">Owner name *</div><input class="fi" id="obOwner" placeholder="Rajesh Sharma"></div>
+          <div class="tool-field" style="min-width:120px"><div class="fl">Phone (10-digit) *</div><input class="fi" id="obPhone" placeholder="9876543210" maxlength="10"></div>
+        </div>
+        <div class="tool-row" style="margin-top:6px">
+          <div class="tool-field" style="min-width:140px"><div class="fl">Shop type *</div>
+            <select class="fs" id="obType">
+              <option value="store">Store / Grocery</option>
+              <option value="fastfood">Fast Food</option>
+              <option value="restaurant">Restaurant</option>
+              <option value="dhaba">Dhaba</option>
+              <option value="meatshop">Meat Shop</option>
+              <option value="cafe">Cafe</option>
+              <option value="bakery">Bakery</option>
+              <option value="pharmacy">Pharmacy</option>
+              <option value="hardware">Hardware</option>
+            </select>
+          </div>
+          <div class="tool-field" style="min-width:120px"><div class="fl">City (optional)</div><input class="fi" id="obCity" placeholder="Dehradun"></div>
+          <div class="tool-field" style="min-width:160px"><div class="fl">Owner email (optional, for welcome mail)</div><input class="fi" id="obEmail" placeholder="owner@example.com"></div>
+          <button class="btn btn-primary" onclick="onboardCreateStore()">Submit request</button>
+        </div>
+        <div class="tool-out" id="obOut" style="white-space:pre-wrap;font-size:11px;line-height:1.6;color:var(--ink-2);min-height:36px;cursor:default">Fill the form above and click <strong>Submit request</strong>...</div>
+      </div>
 
-<!-- Tool 1: PIN Hash Generator -->
-<div class="tool-sec">
-<div class="tool-sec-h">PIN Hash Generator</div>
-<p style="font-size:11px;color:var(--ink3);margin-bottom:10px;line-height:1.5">Generate a SHA-256 hash for a dashboard PIN. Add the hash as <code style="background:var(--bg);padding:1px 6px;border-radius:4px">PINHash</code> in the store's Config sheet for secure authentication.</p>
-<div class="tool-row">
-<div class="tool-field"><div class="tool-label">Enter PIN</div><input class="tool-input" id="toolPin" type="text" maxlength="10" placeholder="e.g. 9999" oninput="generatePinHash()"></div>
-<button class="tool-btn tool-btn-blue" onclick="generatePinHash()">Generate Hash</button>
-</div>
-<div class="tool-output" id="toolPinHash" onclick="copyToClipboard(this.textContent,'Hash copied!')" title="Click to copy">Enter a PIN above...</div>
-<div style="display:flex;gap:6px;margin-top:6px">
-<button class="tool-btn tool-btn-ghost" onclick="copyToClipboard($('toolPinHash').textContent,'Hash copied!')">📋 Copy Hash</button>
-<button class="tool-btn tool-btn-ghost" onclick="generateRandomPin()">🎲 Random PIN</button>
-</div>
-</div>
+      <div class="tool-sec">
+        <div class="tool-sec-h">Dashboard PIN Hash Generator</div>
+        <p style="font-size:12px;color:var(--ink-3);margin-bottom:9px;line-height:1.5">SHA-256 hash of a dashboard PIN. Use this to manually reset a tenant's PIN:<br>
+        <strong>1.</strong> Type or generate a PIN below → copy the hash<br>
+        <strong>2.</strong> Open the tenant's <strong>Apps Script editor</strong> → ⚙ <strong>Project Settings</strong> → <strong>Script Properties</strong><br>
+        <strong>3.</strong> Set <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">DASHBOARD_PIN_HASH</code> = the hash<br>
+        <strong>4.</strong> Optional: delete the <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">DASHBOARD_TOKEN</code> property to kick out logged-in dashboards</p>
+        <div class="tool-row">
+          <div class="tool-field"><div class="fl">Enter PIN</div><input class="fi" id="toolPin" type="text" maxlength="10" placeholder="e.g. 9999" oninput="generatePinHash()"></div>
+          <button class="btn btn-primary" onclick="generatePinHash()">Generate</button>
+        </div>
+        <div class="tool-out" id="toolPinHash" onclick="copyToClipboard(this.textContent,'Hash copied')" title="Click to copy">Enter a PIN above...</div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <button class="btn" onclick="copyToClipboard($('toolPinHash').textContent,'Hash copied')">Copy hash</button>
+          <button class="btn" onclick="generateRandomPin()">Random PIN</button>
+          <button class="btn" onclick="copyPinAndHashRow()" title="Copies PIN and hash side-by-side for pasting into a notes file">Copy PIN + hash</button>
+        </div>
+      </div>
 
-<!-- Tool 2: Sheet Data Viewer -->
-<div class="tool-sec">
-<div class="tool-sec-h">Sheet Data Viewer</div>
-<p style="font-size:11px;color:var(--ink3);margin-bottom:10px;line-height:1.5">View data from any store's Google Sheet. Select a store or enter a Sheet ID directly.</p>
-<div class="tool-row">
-<div class="tool-field"><div class="tool-label">Store</div>
-<select class="tool-input" id="svStore" onchange="onStoreSelect()">
-<option value="">Select a store...</option>
-</select></div>
-<div class="tool-field" style="flex:1.5"><div class="tool-label">Or enter Sheet ID</div><input class="tool-input" id="svSheetId" placeholder="Google Sheet ID"></div>
-<button class="tool-btn tool-btn-blue" onclick="loadSheetViewer()">Load</button>
-</div>
-<div class="sv-tabs" id="svTabs"></div>
-<div class="sv-table-wrap" id="svTableWrap" style="display:none"><table class="sv-table" id="svTable"></table></div>
-<div class="sv-info" id="svInfo"></div>
-</div>
+      <div class="tool-sec">
+        <div class="tool-sec-h">Telegram Chat ID Finder</div>
+        <p style="font-size:12px;color:var(--ink-3);margin-bottom:9px;line-height:1.5">Reads a tenant's Telegram bot updates and lists every chat that has messaged the bot — so you can grab the shopkeeper's <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">TELEGRAM_CHAT_IDS</code> without opening JSON URLs.<br>
+        <strong>1.</strong> Shopkeeper opens their bot in Telegram and presses <strong>Start</strong> (or sends any message)<br>
+        <strong>2.</strong> Paste the bot token below → <strong>Fetch chats</strong><br>
+        <strong>3.</strong> Click any row to copy that chat ID<br>
+        <strong>4.</strong> Save it: tenant Apps Script → ⚙ Project Settings → Script Properties → <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">TELEGRAM_CHAT_IDS</code> = the ID(s)</p>
+        <div class="tool-row">
+          <div class="tool-field" style="flex:2"><div class="fl">Bot token</div><input class="fi" id="tgToken" type="text" placeholder="7234567890:AAH..." autocomplete="off" spellcheck="false"></div>
+          <button class="btn btn-primary" onclick="fetchTelegramChats()">Fetch chats</button>
+          <button class="btn" onclick="sendTelegramTest()" title="Send a test message to the chat ID below">Send test</button>
+        </div>
+        <div class="tool-row" style="margin-top:6px">
+          <div class="tool-field" style="flex:2"><div class="fl">Chat ID (for test send)</div><input class="fi" id="tgChatId" type="text" placeholder="e.g. 5783950460 — auto-filled from results below" autocomplete="off"></div>
+        </div>
+        <div class="tool-out" id="tgOut" style="white-space:pre-wrap;font-size:11px;line-height:1.6;color:var(--ink-2);min-height:48px;cursor:default">Paste a token and click <strong>Fetch chats</strong>...</div>
+        <p style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5"><strong>Empty result?</strong> Either the polling trigger already consumed all messages, or the shopkeeper hasn't messaged the bot yet. Have them send <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">/start</code> to the bot and re-fetch within a few seconds. If polling is running, temporarily run <code style="background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11px">removeTelegramPollingTrigger</code> in the tenant's Apps Script before fetching, then re-install after.</p>
+      </div>
 
-<!-- Tool 3: Password Hash Generator -->
-<div class="tool-sec">
-<div class="tool-sec-h">Password Hash Generator</div>
-<p style="font-size:11px;color:var(--ink3);margin-bottom:10px;line-height:1.5">Generate SHA-256 hash for any password. Useful for verifying admin passwords.</p>
-<div class="tool-row">
-<div class="tool-field"><div class="tool-label">Enter Password</div><input class="tool-input" id="toolPwd" type="text" placeholder="Your password"></div>
-<button class="tool-btn tool-btn-blue" onclick="generatePwdHash()">Generate</button>
-</div>
-<div class="tool-output" id="toolPwdHash" onclick="copyToClipboard(this.textContent,'Hash copied!')" title="Click to copy">Enter a password above...</div>
-</div>
+      <div class="tool-sec">
+        <div class="tool-sec-h">Sheet Data Viewer</div>
+        <div class="tool-row">
+          <div class="tool-field"><div class="fl">Store</div>
+            <select class="fs" id="svStore" onchange="onStoreSelect()"><option value="">Select a store...</option></select>
+          </div>
+          <div class="tool-field" style="flex:1.5"><div class="fl">Or Sheet ID</div><input class="fi" id="svSheetId" placeholder="Google Sheet ID"></div>
+          <button class="btn btn-primary" onclick="loadSheetViewer()">Load</button>
+        </div>
+        <div class="sv-tabs" id="svTabs"></div>
+        <div class="sv-table-wrap" id="svTableWrap" style="display:none"><table class="sv-table" id="svTable"></table></div>
+        <div style="font-size:11px;color:var(--ink-3);margin-top:6px" id="svInfo"></div>
+      </div>
 
-</div></div></div>
+      <div class="tool-sec">
+        <div class="tool-sec-h">Password Hash Generator</div>
+        <div class="tool-row">
+          <div class="tool-field"><div class="fl">Password</div><input class="fi" id="toolPwd" type="text" placeholder="Your password"></div>
+          <button class="btn btn-primary" onclick="generatePwdHash()">Generate</button>
+        </div>
+        <div class="tool-out" id="toolPwdHash" onclick="copyToClipboard(this.textContent,'Hash copied')">Enter a password above...</div>
+      </div>
+
+      <div class="tool-sec">
+        <div class="tool-sec-h">Registry Maintenance</div>
+        <p style="font-size:12px;color:var(--ink-3);margin-bottom:9px;line-height:1.5"><strong>Migrate Schema</strong> adds missing columns to the Stores tab. Idempotent. <strong>Recalc Health</strong> reads each tenant's Orders tab and updates LastOrderAt, TotalOrders, etc.</p>
+        <div class="tool-row">
+          <button class="btn btn-primary" onclick="runMigrateSchema()">Migrate Schema</button>
+          <button class="btn" onclick="runRecalcHealth()">Recalc Health</button>
+        </div>
+        <div class="tool-out" id="toolMigrateOut">Click a button to run...</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
-var REGISTRY_SCRIPT="https://script.google.com/macros/s/AKfycbz5HRLQlaFx5eB-PUR9QqU9zBHLhK9Qt4MIE_TZcXsbD4XeGHacuhY2VAOGRaAC0tik6A/exec";
+var MASTER_SHEET_ID="1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
+var REGISTRY_SCRIPT="https://script.google.com/macros/s/AKfycbydLrd3U3K-uFU11rU3aptaGbexw2qQfxRrVkJTxUOpxSbPvBMxLpuTXFfulVZvtqxVGw/exec";
 var SITE_URL="https://storepro.in";
-var ADMIN_TOKEN=""; // Set after successful login
+var ADMIN_TOKEN="";
 
-var allStores=[],activeFilter='all',editingRow=null;
+var allStores=[],activeFilter='all',editingRow=null,cmdkSelected=0;
 var loginAttempts=0,lockUntil=0;
 try{loginAttempts=parseInt(sessionStorage.getItem('admin_attempts')||'0');lockUntil=parseInt(sessionStorage.getItem('admin_lockuntil')||'0')}catch(e){}
 
 function $(id){return document.getElementById(id)}
-function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML}
 function showToast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
 
-// ══ AUTH — Always verify against Settings tab in Master Registry ══
-// Settings tab must have: AdminPasswordHash = SHA-256 hash of your password
-// Generate the hash using the Tools panel → Password Hash Generator
-
-function togglePwdVisibility(){
-  var inp=$('adminPwd'),btn=$('pwdToggle');
-  if(inp.type==='password'){inp.type='text';btn.textContent='🙈'}
-  else{inp.type='password';btn.textContent='👁'}
-}
-
+/* ──────── Auth ──────── */
+// Single source of truth: ADMIN_PASSWORD lives in the registry script's
+// Script Properties. We POST the entered password to the verifyAdmin endpoint;
+// the script does a constant-time compare server-side and returns a token.
+// No client-side hashing, no Settings-tab lookup — keeps the password in one
+// place so it can't drift.
+function togglePwdVisibility(){var inp=$('adminPwd');inp.type=inp.type==='password'?'text':'password'}
 function checkAdmin(){
   if(lockUntil&&Date.now()<lockUntil){
     var mins=Math.ceil((lockUntil-Date.now())/60000);
-    $('adminErr').textContent='Too many attempts. Try again in '+mins+' min.';
-    return;
+    $('adminErr').textContent='Too many attempts. Try again in '+mins+' min.';return;
   }
   var pwd=$('adminPwd').value;
   if(!pwd){$('adminErr').textContent='Enter password';return}
-  
+  if(!REGISTRY_SCRIPT){$('adminErr').textContent='Registry script not configured';return}
   $('adminErr').textContent='';
-  var btn=document.querySelector('.lock-btn');
-  btn.innerHTML='<span style="display:inline-block;animation:spin .6s linear infinite">↻</span> Verifying...';btn.disabled=true;
-  
-  // Hash the entered password
-  sha256Admin(pwd).then(function(enteredHash){
-    // Load Settings tab from Master Registry to get stored hash
-    loadSettingsTab(function(settings){
-      btn.innerHTML='Unlock';btn.disabled=false;
-      
-      if(!settings){
-        $('adminErr').textContent='Could not load Settings tab. Check your Master Registry sheet.';
-        return;
-      }
-      
-      var storedHash=settings.adminpasswordhash||settings.adminpwdhash||settings.passwordhash||'';
-      var storedRawPwd=settings.adminpassword||'';
-      
-      if(!storedHash&&!storedRawPwd){
-        $('adminErr').textContent='No AdminPasswordHash found in Settings tab. Add it first.';
-        return;
-      }
-      
-      var match=false;
-      
-      // Method 1: Compare against stored hash (recommended)
-      if(storedHash&&enteredHash===storedHash){
-        match=true;
-      }
-      
-      // Method 2: Compare against raw password via hash (backward compatible)
-      if(!match&&storedRawPwd){
-        sha256Admin(storedRawPwd).then(function(rawHash){
-          if(enteredHash===rawHash)match=true;
-          finishAuth(match,pwd);
-        });
-        return;
-      }
-      
-      finishAuth(match,pwd);
+  var btn=document.querySelector('.lock-btn');btn.textContent='Verifying...';btn.disabled=true;
+  fetch(REGISTRY_SCRIPT+'?action=verifyAdmin&pwd='+encodeURIComponent(pwd)+'&_t='+Date.now())
+    .then(function(r){return r.json()})
+    .then(function(data){
+      btn.textContent='Continue';btn.disabled=false;
+      if(data&&data.ok&&data.token)onLoginSuccess(data.token);
+      else onLoginFail('Wrong password');
+    })
+    .catch(function(){
+      btn.textContent='Continue';btn.disabled=false;
+      $('adminErr').textContent='Could not reach registry. Check connection or registry deployment.';
     });
-  });
 }
-
-function finishAuth(match,pwd){
-  if(match){
-    // On HTTPS, also get a server token for write operations
-    if(window.location.protocol!=='file:'&&REGISTRY_SCRIPT){
-      fetch(REGISTRY_SCRIPT+'?action=verifyAdmin&pwd='+encodeURIComponent(pwd))
-        .then(function(r){return r.json()})
-        .then(function(data){
-          onLoginSuccess(data.token||'local_verified');
-        })
-        .catch(function(){
-          onLoginSuccess('local_verified');
-        });
-    }else{
-      onLoginSuccess('local_verified');
-    }
-  }else{
-    onLoginFail('Wrong password');
-  }
-}
-
-function loadSettingsTab(cb){
-  var origSetResponse=window.google&&window.google.visualization&&window.google.visualization.Query?window.google.visualization.Query.setResponse:null;
-  
-  if(!window.google)window.google={};
-  if(!window.google.visualization)window.google.visualization={};
-  if(!window.google.visualization.Query)window.google.visualization.Query={};
-  
-  window.google.visualization.Query.setResponse=function(r){
-    // Restore original handler
-    if(origSetResponse)window.google.visualization.Query.setResponse=origSetResponse;
-    
-    if(!r||!r.table||!r.table.rows){cb(null);return}
-    var settings={};
-    (r.table.rows||[]).forEach(function(row){
-      var k=row.c&&row.c[0]&&row.c[0].v!=null?String(row.c[0].v).trim().toLowerCase().replace(/\s+/g,''):'';
-      var v=row.c&&row.c[1]&&row.c[1].v!=null?String(row.c[1].v).trim():'';
-      if(k)settings[k]=v;
-    });
-    cb(settings);
-  };
-  
-  var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Settings&_t='+Date.now();
-  s.onerror=function(){cb(null)};
-  document.body.appendChild(s);
-}
-
 function sha256Admin(str){
   var encoder=new TextEncoder();
   return crypto.subtle.digest('SHA-256',encoder.encode(str)).then(function(buf){
     return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
   });
 }
-
 function onLoginSuccess(token){
   ADMIN_TOKEN=token;
   sessionStorage.setItem('admin_token',token);
@@ -388,41 +848,32 @@ function onLoginSuccess(token){
   loginAttempts=0;sessionStorage.setItem('admin_attempts','0');
   sessionStorage.removeItem('admin_lockuntil');
   $('lockScreen').classList.add('hidden');
+  $('app').style.display='grid';
   loadStores();
 }
-
 function onLoginFail(msg){
-  loginAttempts++;
-  sessionStorage.setItem('admin_attempts',String(loginAttempts));
+  loginAttempts++;sessionStorage.setItem('admin_attempts',String(loginAttempts));
   if(loginAttempts>=5){
     lockUntil=Date.now()+5*60*1000;
     sessionStorage.setItem('admin_lockuntil',String(lockUntil));
-    $('adminErr').textContent='Too many attempts. Locked for 5 minutes.';
+    $('adminErr').textContent='Too many attempts. Locked 5 min.';
   }else{
     $('adminErr').textContent=msg+' ('+(5-loginAttempts)+' attempts left)';
   }
   $('adminPwd').value='';$('adminPwd').focus();
 }
-
 function lockAdmin(){
   ADMIN_TOKEN='';
-  sessionStorage.removeItem('admin_ok');
-  sessionStorage.removeItem('admin_token');
-  sessionStorage.removeItem('admin_time');
-  $('lockScreen').classList.remove('hidden');
-  $('adminPwd').value='';$('adminPwd').type='password';$('pwdToggle').textContent='👁';
-  $('adminPwd').focus();
+  sessionStorage.removeItem('admin_ok');sessionStorage.removeItem('admin_token');sessionStorage.removeItem('admin_time');
+  $('lockScreen').classList.remove('hidden');$('app').style.display='none';
+  $('adminPwd').value='';$('adminPwd').type='password';$('adminPwd').focus();
 }
-
 function isSessionValid(){
-  var tok=sessionStorage.getItem('admin_token');
-  var time=parseInt(sessionStorage.getItem('admin_time')||'0');
+  var tok=sessionStorage.getItem('admin_token'),time=parseInt(sessionStorage.getItem('admin_time')||'0');
   if(!tok||!time)return false;
   if(Date.now()-time>2*60*60*1000){lockAdmin();return false}
-  ADMIN_TOKEN=tok;
-  return true;
+  ADMIN_TOKEN=tok;return true;
 }
-
 function sendCmd(params,cb){
   var img=new Image();var done=false;
   img.onload=img.onerror=function(){if(!done){done=true;if(cb)cb()}};
@@ -430,119 +881,272 @@ function sendCmd(params,cb){
   setTimeout(function(){if(!done){done=true;if(cb)cb()}},5000);
 }
 
-// ══ LOAD STORES ══
+/* ──────── Sidebar / Nav ──────── */
+function toggleSidebar(){
+  $('sidebar').classList.toggle('open');
+  $('sbOverlay').classList.toggle('open');
+}
+function closeSidebar(){
+  $('sidebar').classList.remove('open');
+  $('sbOverlay').classList.remove('open');
+}
+function navigate(section,el){
+  document.querySelectorAll('.sb-link[data-section]').forEach(function(l){l.classList.remove('active')});
+  if(el)el.classList.add('active');
+  document.querySelectorAll('[data-pane]').forEach(function(s){
+    s.style.display=s.getAttribute('data-pane')===section?'':'none';
+  });
+  $('crumbText').textContent=section.charAt(0).toUpperCase()+section.slice(1);
+  closeSidebar();
+}
+
+/* ──────── Loading ──────── */
 function loadStores(){
-  $('refreshBtn').innerHTML='<span style="display:inline-block;animation:spin .6s linear infinite">↻</span>';
+  $('refreshBtn').classList.add('spin');
+  showSkeleton();
   if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
   window.google.visualization.Query.setResponse=function(r){
-    $('refreshBtn').innerHTML='↻ <span>Refresh</span>';
-    if(!r||!r.table){$('storesList').innerHTML='<div class="empty">No Stores tab found.</div>';return}
+    $('refreshBtn').classList.remove('spin');
+    if(!r||!r.table){$('storesList').innerHTML=emptyState('Could not load registry','Check your Master Registry Sheet ID and access permissions.');return}
+    // Handle both gviz response shapes:
+    // 1) Proper labels per column → r.table.cols[i].label
+    // 2) Merged labels in first col → r.table.cols[0].label = "Slug,SheetID,..."
+    //    In that case the actual headers live in r.table.rows[0] and real data starts at row[1].
     var cols=r.table.cols.map(function(c){return(c.label||'').toLowerCase().trim().replace(/\s+/g,'')});
+    var rows=r.table.rows||[];
+    var labelsLookMerged=cols.length===1&&cols[0].indexOf(',')>=0;
+    var labelsAreEmpty=cols.every(function(k){return !k});
+    var rowOffset=2; // sheet row of rows[0] in the normal shape (header is row 1)
+    if((labelsLookMerged||labelsAreEmpty)&&rows.length){
+      cols=(rows[0].c||[]).map(function(c){return c&&c.v!=null?String(c.v).toLowerCase().trim().replace(/\s+/g,''):''});
+      rows=rows.slice(1);
+      rowOffset=3; // header occupied row 2 of the response, real data starts at row 3 in the sheet
+    }
     allStores=[];
-    (r.table.rows||[]).forEach(function(row,idx){
+    rows.forEach(function(row,idx){
       var o={};cols.forEach(function(k,i){var c=row.c&&row.c[i];if(!c){o[k]='';return}o[k]=c.v!=null?String(c.v).trim():''});
       var s={
-        _row:idx+2,
-        slug:o.slug||'',
-        sheetId:o.sheetid||'',
-        scriptUrl:o.scripturl||'',
-        owner:o.ownername||'',
-        phone:o.ownerphone||'',
-        shop:o.shopname||'',
-        type:(o.shoptype||'grocery').toLowerCase(),
-        city:o.city||'',
-        plan:(o.plan||'free').toLowerCase(),
-        planExpiry:o.planexpiry||'',
+        _row:idx+rowOffset,
+        slug:o.slug||'',sheetId:o.sheetid||'',scriptUrl:o.scripturl||'',
+        owner:o.ownername||'',phone:o.ownerphone||'',shop:o.shopname||'',
+        type:(o.shoptype||'grocery').toLowerCase(),city:o.city||'',
+        plan:(o.plan||'free').toLowerCase(),planExpiry:o.planexpiry||'',
         active:(o.active||'yes').toLowerCase()==='yes',
-        url:o.url||'',
-        dashUrl:o.dashboardurl||o.dashurl||'',
+        url:o.url||'',dashUrl:o.dashboardurl||o.dashurl||'',
         totalRevenue:parseFloat(o.totalrevenue||'0')||0,
         totalOrders:parseInt(o.totalorders||'0')||0,
-        monthlyFee:parseFloat(o.monthlyfee||'0')||0
+        monthlyFee:parseFloat(o.monthlyfee||'0')||0,
+        logo:o.logo||'',brandColor:o.brandcolor||'',tagline:o.tagline||'',
+        verified:(o.verified||'').toLowerCase()==='yes'||(o.verified||'').toLowerCase()==='true',
+        featured:(o.featured||'').toLowerCase()==='yes'||(o.featured||'').toLowerCase()==='true',
+        address:o.address||'',businessHours:o.businesshours||'',
+        acceptingOrders:(o.acceptingorders||'yes').toLowerCase()!=='no',
+        whatsapp:o.whatsapp||'',email:o.email||'',language:o.language||'en',
+        trialEndsAt:o.trialendsat||'',status:(o.status||'').toLowerCase(),
+        template:o.template||'',minOrderAmount:parseFloat(o.minorderamount||'0')||0,
+        createdAt:o.createdat||'',lastOrderAt:o.lastorderat||'',
+        rating:parseFloat(o.rating||'0')||0,reviewCount:parseInt(o.reviewcount||'0')||0
       };
       if(s.slug||s.sheetId)allStores.push(s);
     });
     updateStats();renderStores();
-    $('topSub').textContent=allStores.length+' stores registered';
+    $('crumbCount').textContent=allStores.length;
   };
   var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&_t='+Date.now();
-  s.onerror=function(){$('refreshBtn').innerHTML='↻ <span>Refresh</span>';$('storesList').innerHTML='<div class="empty">Could not load registry.</div>'};
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=1&_t='+Date.now();
+  s.onerror=function(){$('refreshBtn').classList.remove('spin');$('storesList').innerHTML=emptyState('Could not load','Network error or registry not shared.')};
   document.body.appendChild(s);
 }
 
-// ══ DATE HELPERS ══
+function showSkeleton(){
+  var html='';
+  for(var i=0;i<6;i++){
+    html+='<div class="skel-row">'
+      +'<div class="skel" style="width:24px;height:24px"></div>'
+      +'<div><div class="skel" style="width:60%;height:13px;margin-bottom:5px"></div><div class="skel" style="width:40%;height:11px"></div></div>'
+      +'<div class="skel" style="width:60px;height:14px"></div>'
+      +'<div class="skel" style="width:50px;height:14px"></div>'
+      +'<div class="skel" style="width:70px;height:14px"></div>'
+      +'<div class="skel" style="width:60px;height:14px"></div>'
+      +'<div class="skel" style="width:30px;height:14px"></div>'
+      +'</div>';
+  }
+  $('storesList').innerHTML=html;
+}
+function emptyState(h,p){
+  return '<div class="empty"><div class="empty-icon">○</div><div class="empty-h">'+esc(h)+'</div><div class="empty-p">'+esc(p)+'</div></div>';
+}
+
+/* ──────── Date helpers ──────── */
 function parseDate(ds){if(!ds)return null;ds=String(ds).trim();var gd=ds.match(/Date\((\d{4}),(\d+),(\d+)\)/);if(gd)return new Date(parseInt(gd[1]),parseInt(gd[2]),parseInt(gd[3]));var p=ds.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);if(p)return new Date(p[3],p[2]-1,p[1]);var iso=ds.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);if(iso)return new Date(iso[1],iso[2]-1,iso[3]);var d=new Date(ds);return isNaN(d)?null:d}
 function daysUntilExpiry(ds){var d=parseDate(ds);if(!d)return null;var now=new Date();now.setHours(0,0,0,0);return Math.ceil((d-now)/(1000*60*60*24))}
 function isExpiringSoon(ds){var d=daysUntilExpiry(ds);return d!==null&&d>=0&&d<=7}
 function isExpired(ds){var d=daysUntilExpiry(ds);return d!==null&&d<0}
-function expiryLabel(ds,plan){if(!ds||plan==='free')return'—';var d=daysUntilExpiry(ds);if(d===null)return esc(ds);if(d<0)return'<span style="color:var(--red)">Expired '+Math.abs(d)+'d ago</span>';if(d===0)return'<span style="color:var(--red)">Expires today!</span>';if(d<=7)return'<span style="color:var(--orange)">'+d+'d left</span>';return esc(ds)+' <span style="color:var(--ink3)">('+d+'d)</span>'}
+function expiryLabel(ds,plan){if(!ds||plan==='free')return'—';var d=daysUntilExpiry(ds);if(d===null)return esc(ds);if(d<0)return'Expired '+Math.abs(d)+'d ago';if(d===0)return'Today';if(d<=7)return d+'d left';return esc(ds)}
 
-// ══ STATS ══
+/* ──────── Stats ──────── */
+function fmtMoney(n){
+  if(n>=10000000)return(n/10000000).toFixed(1)+'Cr';
+  if(n>=100000)return(n/100000).toFixed(1)+'L';
+  if(n>=1000)return(n/1000).toFixed(1)+'k';
+  return n.toLocaleString('en-IN');
+}
 function updateStats(){
-  var total=allStores.length,active=0,paid=0,expiring=0,inactive=0,rev=0,orders=0,mrr=0;
-  allStores.forEach(function(s){if(s.active)active++;else inactive++;if(s.plan!=='free'){paid++;mrr+=s.monthlyFee}if(isExpiringSoon(s.planExpiry)||(isExpired(s.planExpiry)&&s.plan!=='free'))expiring++;rev+=s.totalRevenue;orders+=s.totalOrders});
-  $('sTotal').textContent=total;$('sActive').textContent=active+' active';$('sRevenue').textContent='₹'+rev.toLocaleString('en-IN');$('sOrders').textContent=orders+' orders';$('sPaid').textContent=paid;$('sMrr').textContent='MRR ₹'+mrr.toLocaleString('en-IN');$('sExpiring').textContent=expiring;$('sInactive').textContent=inactive;
+  var total=allStores.length,active=0,paid=0,expiring=0,inactive=0,rev=0,orders=0,mrr=0,trials=0,trialsExpiring=0,stale=0,verified=0,featured=0;
+  allStores.forEach(function(s){
+    if(s.active)active++;else inactive++;
+    if(s.plan!=='free'){paid++;mrr+=s.monthlyFee}
+    if(isExpiringSoon(s.planExpiry)||(isExpired(s.planExpiry)&&s.plan!=='free'))expiring++;
+    rev+=s.totalRevenue;orders+=s.totalOrders;
+    var st=effectiveStatus(s);
+    if(st==='trial'){trials++;if(isExpiringSoon(s.trialEndsAt)||isExpired(s.trialEndsAt))trialsExpiring++}
+    if(s.active&&isStale(s))stale++;
+    if(s.verified)verified++;
+    if(s.featured)featured++;
+  });
+  $('sTotal').textContent=total;$('sActive').textContent=active+' active';
+  $('sRevenue').textContent='₹'+fmtMoney(rev);$('sOrders').textContent=orders+' orders';
+  $('sMrr').textContent='₹'+fmtMoney(mrr);$('sPaid').textContent=paid+' paid plans';
+  $('sTrials').textContent=trials;$('sTrialsExpiring').textContent=trialsExpiring+' expiring soon';
+  $('sExpiring').textContent=expiring;$('sStale').textContent=stale;$('sInactive').textContent=inactive;
+  $('sbCountStores').textContent=total;$('sbCountAll').textContent=total;
+  $('sbCountActive').textContent=active;$('sbCountTrial').textContent=trials;
+  $('sbCountPaid').textContent=paid;$('sbCountExpiring').textContent=expiring;
+  $('sbCountStale').textContent=stale;$('sbCountVerified').textContent=verified;
+  $('sbCountFeatured').textContent=featured;$('sbCountInactive').textContent=inactive;
 }
 
-// ══ FILTER ══
-function setFilter(f,el){activeFilter=f;document.querySelectorAll('.pill-btn').forEach(function(b){b.classList.remove('active')});el.classList.add('active');renderStores()}
-function getFiltered(){var list=allStores,q=($('searchInput').value||'').toLowerCase();if(q)list=list.filter(function(s){return(s.shop+s.slug+s.owner+s.city+s.phone+s.type+s.plan).toLowerCase().indexOf(q)>=0});if(activeFilter==='active')list=list.filter(function(s){return s.active});else if(activeFilter==='inactive')list=list.filter(function(s){return!s.active});else if(activeFilter==='free')list=list.filter(function(s){return s.plan==='free'});else if(activeFilter==='paid')list=list.filter(function(s){return s.plan!=='free'});else if(activeFilter==='expiring')list=list.filter(function(s){return isExpiringSoon(s.planExpiry)||isExpired(s.planExpiry)});return list}
+/* ──────── Filter ──────── */
+function setFilter(f,el){
+  activeFilter=f;
+  document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.sb-link[data-filter]').forEach(function(l){l.classList.remove('active')});
+  if(el){
+    if(el.classList.contains('pill'))el.classList.add('active');
+    if(el.hasAttribute('data-filter'))el.classList.add('active');
+  }else{
+    // sync pill state when invoked from KPI card
+    var p=Array.from(document.querySelectorAll('.pill')).find(function(b){return b.textContent.trim().toLowerCase()===f});
+    if(p)p.classList.add('active');
+    else{var allPill=document.querySelector('.pill');if(allPill&&f==='all')allPill.classList.add('active')}
+    var sb=document.querySelector('.sb-link[data-filter="'+f+'"]');
+    if(sb)sb.classList.add('active');
+  }
+  renderStores();
+}
+function getFiltered(){
+  var list=allStores;
+  if(activeFilter==='active')list=list.filter(function(s){return s.active});
+  else if(activeFilter==='inactive')list=list.filter(function(s){return!s.active});
+  else if(activeFilter==='paid')list=list.filter(function(s){return s.plan!=='free'});
+  else if(activeFilter==='trial')list=list.filter(function(s){return effectiveStatus(s)==='trial'});
+  else if(activeFilter==='expiring')list=list.filter(function(s){return isExpiringSoon(s.planExpiry)||isExpired(s.planExpiry)});
+  else if(activeFilter==='stale')list=list.filter(function(s){return s.active&&isStale(s)});
+  else if(activeFilter==='verified')list=list.filter(function(s){return s.verified});
+  else if(activeFilter==='featured')list=list.filter(function(s){return s.featured});
+  return list;
+}
 
-// ══ RENDER ══
-function typeAvatar(t){var i={grocery:'🛒',pharmacy:'💊',salon:'💇',restaurant:'🍽️',hardware:'🔧',clothing:'👕',bakery:'🍰',electronics:'📱',flowers:'🌸'};var c={grocery:'sa-grocery',pharmacy:'sa-pharmacy',salon:'sa-salon',restaurant:'sa-restaurant'};return'<div class="store-avatar '+(c[t]||'sa-default')+'">'+(i[t]||'🏪')+'</div>'}
-function planBadge(s){if(isExpired(s.planExpiry)&&s.plan!=='free')return'<span class="plan-badge pb-expired">Expired</span>';if(s.plan==='pro')return'<span class="plan-badge pb-pro">Pro</span>';if(s.plan==='starter')return'<span class="plan-badge pb-starter">Starter</span>';return'<span class="plan-badge pb-free">Free</span>'}
-function statusDot(s){if(!s.active)return'<div class="status-dot sd-inactive" title="Inactive"></div>';if(isExpiringSoon(s.planExpiry))return'<div class="status-dot sd-expiring" title="Expiring"></div>';return'<div class="status-dot sd-active" title="Active"></div>'}
+/* ──────── Status & badges ──────── */
+function effectiveStatus(s){
+  if(s.status)return s.status;
+  if(!s.active)return 'paused';
+  if(s.plan==='free')return 'trial';
+  return 'live';
+}
+function statusPill(s){
+  var st=effectiveStatus(s);
+  var label={trial:'Trial',live:'Live',paused:'Paused',suspended:'Suspended',churned:'Churned'}[st]||'Live';
+  return '<span class="pill-status ps-'+st+'">'+label+'</span>';
+}
+function planBadge(s){
+  if(isExpired(s.planExpiry)&&s.plan!=='free')return'<span class="pill-plan pp-expired">Expired</span>';
+  if(s.plan==='pro')return'<span class="pill-plan pp-pro">Pro</span>';
+  if(s.plan==='starter')return'<span class="pill-plan pp-starter">Starter</span>';
+  return'<span class="pill-plan pp-free">Free</span>';
+}
+function typeIcon(t){var i={grocery:'🛒',pharmacy:'💊',salon:'💇',restaurant:'🍽',hardware:'🔧',clothing:'👕',bakery:'🍰',electronics:'📱',flowers:'🌸',fastfood:'🍔',dhaba:'🥘',meatshop:'🥩'};return i[t]||'🏪'}
+function verifiedIcon(s){return s.verified?'<span class="verified-icon" title="Verified">✓</span>':''}
+function featuredIcon(s){return s.featured?'<span class="featured-icon" title="Featured">★</span>':''}
+function lastOrderLabel(ds){
+  if(!ds)return 'No orders';
+  var d=parseDate(ds);if(!d)return esc(ds);
+  var diffMs=Date.now()-d.getTime();
+  var hours=Math.floor(diffMs/3600000);
+  if(hours<1)return 'Just now';
+  if(hours<24)return hours+'h ago';
+  var days=Math.floor(hours/24);
+  if(days<7)return days+'d ago';
+  if(days<30)return Math.floor(days/7)+'w ago';
+  return Math.floor(days/30)+'mo ago';
+}
+function lastOrderChip(s){
+  if(!s.lastOrderAt)return '<span class="last-chip lc-none">— no orders</span>';
+  var d=parseDate(s.lastOrderAt);if(!d)return '';
+  var hours=Math.floor((Date.now()-d.getTime())/3600000);
+  var cls=hours<48?'lc-fresh':(hours<168?'lc-warm':'lc-stale');
+  return '<span class="last-chip '+cls+'" title="Last order '+esc(s.lastOrderAt)+'">'+lastOrderLabel(s.lastOrderAt)+'</span>';
+}
+function isStale(s){
+  if(!s.lastOrderAt)return true;
+  var d=parseDate(s.lastOrderAt);if(!d)return false;
+  return (Date.now()-d.getTime())>14*24*3600000;
+}
 
+/* ──────── Render list ──────── */
 function renderStores(){
   var list=getFiltered(),el=$('storesList');
-  if(!list.length){el.innerHTML='<div class="empty">No stores match this filter.</div>';return}
+  if(!list.length){el.innerHTML=emptyState('No stores match','Try a different filter or click + Add Store.');return}
   el.innerHTML=list.map(function(s){
-    var storeUrl=s.url||SITE_URL+'/?store='+encodeURIComponent(s.slug);
-    var dashUrl=s.dashUrl||SITE_URL+'/dashboard.html?store='+encodeURIComponent(s.slug);
-    var sheetUrl='https://docs.google.com/spreadsheets/d/'+s.sheetId+'/edit';
-    return '<div class="store'+(s.active?'':' inactive')+'" onclick="this.classList.toggle(\'open\')">'
-      +'<div class="store-head">'+statusDot(s)+typeAvatar(s.type)
-      +'<div class="store-info"><div class="store-name">'+esc(s.shop||s.slug)+'</div><div class="store-meta"><span>'+esc(s.city||'—')+'</span><span>'+esc(s.owner||'—')+'</span><span>'+esc(s.slug)+'</span></div></div>'
-      +'<div class="store-right">'+planBadge(s)+'<div class="store-revenue"><div class="store-rev-amt">₹'+s.totalRevenue.toLocaleString('en-IN')+'</div><div class="store-rev-orders">'+s.totalOrders+' orders</div></div></div></div>'
-      +'<div class="store-body"><div class="sb-grid">'
-      +'<div class="sb-item"><div class="sb-item-label">Owner</div><div class="sb-item-val">'+esc(s.owner||'—')+'</div></div>'
-      +'<div class="sb-item"><div class="sb-item-label">Phone</div><div class="sb-item-val">'+esc(s.phone||'—')+'</div></div>'
-      +'<div class="sb-item"><div class="sb-item-label">Type</div><div class="sb-item-val">'+esc(s.type)+'</div></div>'
-      +'<div class="sb-item"><div class="sb-item-label">Plan</div><div class="sb-item-val">'+esc(s.plan)+' — ₹'+s.monthlyFee+'/mo</div></div>'
-      +'<div class="sb-item"><div class="sb-item-label">Expiry</div><div class="sb-item-val">'+expiryLabel(s.planExpiry,s.plan)+'</div></div>'
-      +'<div class="sb-item"><div class="sb-item-label">Sheet ID</div><div class="sb-item-val" style="font-size:10px">'+esc(s.sheetId.substring(0,20))+'...</div></div>'
+    var dim=!s.active?' dim':'';
+    return '<div class="list-row'+dim+'" data-row="'+s._row+'" onclick="openEditStore('+s._row+')">'
+      +'<div class="lr-avatar">'+typeIcon(s.type)+'</div>'
+      +'<div style="min-width:0">'
+        +'<div class="lr-name">'+esc(s.shop||s.slug)+verifiedIcon(s)+featuredIcon(s)+'</div>'
+        +'<div class="lr-meta"><span>'+esc(s.city||'—')+'</span><span>'+esc(s.slug)+'</span>'+(s.tagline?'<span>'+esc(s.tagline)+'</span>':'')+'</div>'
       +'</div>'
-      +'<div class="sb-actions">'
-      +'<button class="sb-btn sb-toggle '+(s.active?'active':'inactive')+'" onclick="event.stopPropagation();toggleStore('+s._row+','+(s.active?'false':'true')+',\''+esc(s.shop).replace(/'/g,'')+'\')">'+(s.active?'✓ Active — Disable':'✕ Inactive — Enable')+'</button>'
-      +'<button class="sb-btn" onclick="event.stopPropagation();openEditStore('+s._row+')">✏️ Edit</button>'
-      +'<button class="sb-btn sb-open" onclick="event.stopPropagation();window.open(\''+storeUrl+'\',\'_blank\')">🌐 Store</button>'
-      +'<button class="sb-btn sb-dash" onclick="event.stopPropagation();window.open(\''+dashUrl+'\',\'_blank\')">📊 Dashboard</button>'
-      +'<button class="sb-btn sb-sheet" onclick="event.stopPropagation();window.open(\''+sheetUrl+'\',\'_blank\')">📋 Sheet</button>'
-      +(s.phone?'<button class="sb-btn sb-wa" onclick="event.stopPropagation();window.open(\'https://wa.me/91'+s.phone.replace(/\D/g,'')+'\',\'_blank\')">📱 WhatsApp</button>':'')
-      +'</div></div></div>';
+      +'<div class="lr-cell">'+statusPill(s)+'</div>'
+      +'<div class="lr-cell">'+planBadge(s)+'</div>'
+      +'<div class="lr-cell">'+lastOrderChip(s)+'</div>'
+      +'<div class="lr-cell lr-cell-strong">₹'+fmtMoney(s.totalRevenue)+'</div>'
+      +'<div class="lr-cell">'+s.totalOrders+'</div>'
+      +'</div>';
   }).join('');
 }
 
-// ══ TOGGLE ACTIVE/INACTIVE ══
-function toggleStore(row,setActive,name){
-  if(!confirm((setActive?'Enable':'Disable')+' "'+name+'"?'))return;
-  if(REGISTRY_SCRIPT){
-    sendCmd('action=updateRegistry&row='+row+'&column=Active&value='+(setActive?'Yes':'No'),function(){
-      showToast((setActive?'✓ Enabled':'✕ Disabled')+': '+name);
-    });
-    allStores.forEach(function(s){if(s._row===row)s.active=setActive});
-    renderStores();updateStats();
-  }else{
-    alert('To '+(setActive?'enable':'disable')+' this store:\n\n1. Open the Master Registry Google Sheet\n2. Find row '+row+'\n3. Set the "Active" column to '+(setActive?'"Yes"':'"No"'));
-  }
+/* ──────── Slide-out (Add/Edit) ──────── */
+function switchTab(el){
+  document.querySelectorAll('.so-tab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  var panel=el.getAttribute('data-panel');
+  document.querySelectorAll('.so-panel').forEach(function(p){p.classList.remove('active')});
+  $('panel-'+panel).classList.add('active');
 }
-
-// ══ ADD/EDIT STORE ══
+function resetTabs(){var first=document.querySelector('.so-tab');if(first)switchTab(first)}
+function openSlideout(){$('slideout').classList.add('open');$('soBg').classList.add('open')}
+function closeSlideout(){$('slideout').classList.remove('open');$('soBg').classList.remove('open')}
+function clearModalFields(){
+  $('mShop').value='';$('mSlug').value='';$('mSheet').value='';$('mOwner').value='';$('mPhone').value='';
+  $('mType').value='Grocery';$('mCity').value='';$('mScript').value='';$('mUrl').value='';$('mDashUrl').value='';
+  $('mLogo').value='';$('mLogoPrev').style.backgroundImage='';
+  $('mBrandColor').value='#5e6ad2';$('mTagline').value='';
+  $('mVerified').checked=false;$('mFeatured').checked=false;
+  $('mAddress').value='';$('mHours').value='';$('mAcceptingOrders').checked=true;
+  $('mWhatsApp').value='';$('mEmail').value='';$('mLanguage').value='en';
+  $('mPlan').value='Free';$('mStatus').value='Trial';$('mExpiry').value='';$('mTrialEnds').value='';
+  $('mMonthlyFee').value='0';$('mActive').value='Yes';
+  $('mTemplate').value='';$('mMinOrder').value='199';
+  $('mCreatedAt').textContent='—';$('mLastOrderAt').textContent='—';
+  $('mTotalOrders').textContent='—';$('mTotalRevenue').textContent='—';
+  $('mRating').textContent='—';$('mReviewCount').textContent='—';
+}
 function openAddStore(){
-  editingRow=null;$('modalTitle').textContent='🏬 Add New Store';$('modalSaveBtn').textContent='Add Store';
-  $('mShop').value='';$('mSlug').value='';$('mSheet').value='';$('mOwner').value='';$('mPhone').value='';$('mType').value='Grocery';$('mCity').value='';$('mPlan').value='Free';$('mExpiry').value='';$('mActive').value='Yes';$('mScript').value='';$('mUrl').value='';$('mDashUrl').value='';
-  $('storeModal').classList.add('open');$('mShop').focus();
+  editingRow=null;
+  $('soTitle').textContent='Add Store';$('soSub').textContent='New tenant';
+  $('soAvatar').textContent='＋';$('modalSaveBtn').textContent='Add Store';
+  $('soActions').style.display='none';
+  clearModalFields();resetTabs();openSlideout();
+  setTimeout(function(){$('mShop').focus()},120);
   $('mShop').oninput=function(){
     var slug=this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,40);
     $('mSlug').value=slug;
@@ -550,211 +1154,532 @@ function openAddStore(){
     $('mDashUrl').value=SITE_URL+'/dashboard.html?store='+slug;
   };
 }
-function autoGenUrl(){var slug=$('mSlug').value.trim();if(slug)$('mUrl').value=SITE_URL+'/?store='+slug;else alert('Enter a slug first')}
-function autoGenDash(){var slug=$('mSlug').value.trim();if(slug)$('mDashUrl').value=SITE_URL+'/dashboard.html?store='+slug;else alert('Enter a slug first')}
-
+function onPlanChange(){
+  var p=$('mPlan').value;
+  if(p==='Starter')$('mMonthlyFee').value='499';
+  else if(p==='Pro')$('mMonthlyFee').value='999';
+  else if(p==='Free')$('mMonthlyFee').value='0';
+}
 function openEditStore(row){
   var s=allStores.find(function(x){return x._row===row});if(!s)return;
-  editingRow=row;$('modalTitle').textContent='✏️ Edit: '+s.shop;$('modalSaveBtn').textContent='Save Changes';
+  editingRow=row;
+  $('soTitle').textContent=s.shop||s.slug;
+  $('soSub').textContent=(s.city?s.city+' · ':'')+s.slug;
+  $('soAvatar').textContent=typeIcon(s.type);
+  $('modalSaveBtn').textContent='Save Changes';
+  $('soActions').style.display='flex';
+  resetTabs();
   $('mShop').value=s.shop;$('mSlug').value=s.slug;$('mSheet').value=s.sheetId;$('mOwner').value=s.owner;$('mPhone').value=s.phone;
   $('mType').value=s.type.charAt(0).toUpperCase()+s.type.slice(1);$('mCity').value=s.city;
-  $('mPlan').value=s.plan.charAt(0).toUpperCase()+s.plan.slice(1);
-  var exp=parseDate(s.planExpiry);$('mExpiry').value=exp?exp.toISOString().split('T')[0]:'';
-  $('mActive').value=s.active?'Yes':'No';$('mScript').value=s.scriptUrl;
+  $('mScript').value=s.scriptUrl;
   $('mUrl').value=s.url||SITE_URL+'/?store='+s.slug;
   $('mDashUrl').value=s.dashUrl||SITE_URL+'/dashboard.html?store='+s.slug;
+  $('mLogo').value=s.logo||'';$('mLogoPrev').style.backgroundImage=s.logo?'url('+s.logo+')':'';
+  $('mBrandColor').value=s.brandColor||'#5e6ad2';$('mTagline').value=s.tagline||'';
+  $('mVerified').checked=!!s.verified;$('mFeatured').checked=!!s.featured;
+  $('mAddress').value=s.address||'';$('mHours').value=s.businessHours||'';
+  $('mAcceptingOrders').checked=s.acceptingOrders!==false;
+  $('mWhatsApp').value=s.whatsapp||'';$('mEmail').value=s.email||'';
+  $('mLanguage').value=s.language||'en';
+  $('mPlan').value=s.plan.charAt(0).toUpperCase()+s.plan.slice(1);
+  $('mStatus').value=s.status?s.status.charAt(0).toUpperCase()+s.status.slice(1):(s.plan==='free'?'Trial':'Live');
+  var exp=parseDate(s.planExpiry);$('mExpiry').value=exp?exp.toISOString().split('T')[0]:'';
+  var tre=parseDate(s.trialEndsAt);$('mTrialEnds').value=tre?tre.toISOString().split('T')[0]:'';
+  $('mMonthlyFee').value=s.monthlyFee||0;
+  $('mActive').value=s.active?'Yes':'No';
+  $('mTemplate').value=s.template||'';$('mMinOrder').value=s.minOrderAmount||'';
+  $('mCreatedAt').textContent=s.createdAt||'—';
+  $('mLastOrderAt').textContent=s.lastOrderAt?lastOrderLabel(s.lastOrderAt):'—';
+  $('mTotalOrders').textContent=s.totalOrders||'0';
+  $('mTotalRevenue').textContent='₹'+(s.totalRevenue||0).toLocaleString('en-IN');
+  $('mRating').textContent=s.rating?s.rating.toFixed(1)+' ★':'—';
+  $('mReviewCount').textContent=s.reviewCount||'0';
   $('mShop').oninput=null;
-  $('storeModal').classList.add('open');
+  openSlideout();
 }
-
+function buildSaveParams(slug,sheet,storeUrl,dashUrl){
+  var params='action='+(editingRow?'updateStoreRow':'addStoreRow');
+  if(editingRow)params+='&row='+editingRow;
+  params+='&Slug='+encodeURIComponent(slug);
+  params+='&SheetID='+encodeURIComponent(sheet);
+  params+='&ShopName='+encodeURIComponent($('mShop').value.trim());
+  params+='&OwnerName='+encodeURIComponent($('mOwner').value.trim());
+  params+='&OwnerPhone='+encodeURIComponent($('mPhone').value.trim());
+  params+='&ShopType='+encodeURIComponent($('mType').value);
+  params+='&City='+encodeURIComponent($('mCity').value.trim());
+  params+='&ScriptURL='+encodeURIComponent($('mScript').value.trim());
+  params+='&URL='+encodeURIComponent(storeUrl);
+  params+='&DashBoardURL='+encodeURIComponent(dashUrl);
+  params+='&Logo='+encodeURIComponent($('mLogo').value.trim());
+  params+='&BrandColor='+encodeURIComponent($('mBrandColor').value);
+  params+='&Tagline='+encodeURIComponent($('mTagline').value.trim());
+  params+='&Verified='+($('mVerified').checked?'Yes':'No');
+  params+='&Featured='+($('mFeatured').checked?'Yes':'No');
+  params+='&Address='+encodeURIComponent($('mAddress').value.trim());
+  params+='&BusinessHours='+encodeURIComponent($('mHours').value.trim());
+  params+='&AcceptingOrders='+($('mAcceptingOrders').checked?'Yes':'No');
+  params+='&WhatsApp='+encodeURIComponent($('mWhatsApp').value.trim());
+  params+='&Email='+encodeURIComponent($('mEmail').value.trim());
+  params+='&Language='+encodeURIComponent($('mLanguage').value);
+  params+='&Plan='+encodeURIComponent($('mPlan').value);
+  params+='&Status='+encodeURIComponent($('mStatus').value);
+  params+='&PlanExpiry='+encodeURIComponent($('mExpiry').value);
+  params+='&TrialEndsAt='+encodeURIComponent($('mTrialEnds').value);
+  params+='&MonthlyFee='+encodeURIComponent($('mMonthlyFee').value);
+  params+='&Active='+encodeURIComponent($('mActive').value);
+  params+='&Template='+encodeURIComponent($('mTemplate').value);
+  params+='&MinOrderAmount='+encodeURIComponent($('mMinOrder').value);
+  if(!editingRow)params+='&CreatedAt='+encodeURIComponent(new Date().toISOString().split('T')[0]);
+  return params;
+}
 function saveStore(){
   var shop=$('mShop').value.trim(),slug=$('mSlug').value.trim(),sheet=$('mSheet').value.trim();
   if(!shop||!slug){alert('Shop name and slug are required');return}
   if(!editingRow&&!sheet){alert('Sheet ID is required for new stores');return}
-
   var storeUrl=$('mUrl').value.trim()||SITE_URL+'/?store='+slug;
   var dashUrl=$('mDashUrl').value.trim()||SITE_URL+'/dashboard.html?store='+slug;
-
   if(REGISTRY_SCRIPT){
-    var params='action='+(editingRow?'updateStoreRow':'addStoreRow');
-    if(editingRow)params+='&row='+editingRow;
-    params+='&Slug='+encodeURIComponent(slug);
-    params+='&SheetID='+encodeURIComponent(sheet);
-    params+='&ShopName='+encodeURIComponent(shop);
-    params+='&OwnerName='+encodeURIComponent($('mOwner').value.trim());
-    params+='&OwnerPhone='+encodeURIComponent($('mPhone').value.trim());
-    params+='&ShopType='+encodeURIComponent($('mType').value);
-    params+='&City='+encodeURIComponent($('mCity').value.trim());
-    params+='&Plan='+encodeURIComponent($('mPlan').value);
-    params+='&PlanExpiry='+encodeURIComponent($('mExpiry').value);
-    params+='&Active='+encodeURIComponent($('mActive').value);
-    params+='&ScriptURL='+encodeURIComponent($('mScript').value.trim());
-    params+='&URL='+encodeURIComponent(storeUrl);
-    params+='&DashBoardURL='+encodeURIComponent(dashUrl);
+    var params=buildSaveParams(slug,sheet,storeUrl,dashUrl);
     sendCmd(params,function(){
-      showToast('✓ '+(editingRow?'Updated':'Added')+': '+shop);
-      setTimeout(loadStores,2000);
+      showToast((editingRow?'Updated: ':'Added: ')+shop);
+      setTimeout(loadStores,1500);
     });
-    $('storeModal').classList.remove('open');
-  }else{
-    var info=(editingRow?'UPDATE':'ADD')+' this to Master Registry → Stores tab:\n\n';
-    info+='Slug: '+slug+'\n';
-    info+='SheetID: '+sheet+'\n';
-    info+='OwnerName: '+$('mOwner').value.trim()+'\n';
-    info+='OwnerPhone: '+$('mPhone').value.trim()+'\n';
-    info+='ShopName: '+shop+'\n';
-    info+='ShopType: '+$('mType').value+'\n';
-    info+='City: '+$('mCity').value.trim()+'\n';
-    info+='Plan: '+$('mPlan').value+'\n';
-    info+='PlanExpiry: '+$('mExpiry').value+'\n';
-    info+='Active: '+$('mActive').value+'\n';
-    info+='URL: '+storeUrl+'\n';
-    info+='DashBoardURL: '+dashUrl+'\n';
-    if(editingRow)info+='\n(Update row '+editingRow+')';
-    else info+='\n(Add as new row)';
-    // Copy to clipboard
-    try{navigator.clipboard.writeText(info);showToast('Copied to clipboard — paste into your sheet')}catch(e){showToast('See alert for details')}
-    alert(info);
-    $('storeModal').classList.remove('open');
-  }
+    closeSlideout();
+  }else{showToast('REGISTRY_SCRIPT not configured')}
 }
 
-// ══ INIT ══
-if(isSessionValid()){$('lockScreen').classList.add('hidden');loadStores()}else{$('adminPwd').focus()}
+/* ──────── Slide-out quick actions ──────── */
+function currentEditing(){return allStores.find(function(x){return x._row===editingRow})}
+function soOpenStore(){var s=currentEditing();if(!s)return;window.open(s.url||SITE_URL+'/?store='+s.slug,'_blank')}
+function soOpenDash(){var s=currentEditing();if(!s)return;window.open(s.dashUrl||SITE_URL+'/dashboard.html?store='+s.slug,'_blank')}
+function soOpenSheet(){var s=currentEditing();if(!s||!s.sheetId)return;window.open('https://docs.google.com/spreadsheets/d/'+s.sheetId+'/edit','_blank')}
+function soOpenWA(){var s=currentEditing();if(!s||!s.phone)return;window.open('https://wa.me/91'+s.phone.replace(/\D/g,''),'_blank')}
+function soResetPin(){
+  var s=currentEditing();if(!s)return;
+  if(!s.scriptUrl){showToast('No ScriptURL configured for this tenant');return}
+  var newPin=prompt('Reset PIN for "'+(s.shop||s.slug)+'"\n\nEnter new 4–8 digit PIN:');
+  if(newPin===null)return;
+  newPin=String(newPin||'').trim();
+  if(!/^\d{4,8}$/.test(newPin)){showToast('PIN must be 4–8 digits');return}
+  if(!confirm('Reset PIN to '+newPin+' for '+(s.shop||s.slug)+'?\n\nAny logged-in dashboards will be kicked out.'))return;
+  // Tenant Apps Script verifies the admin token by calling the registry's
+  // verifyAdmin. If the tenant doesn't have REGISTRY_SCRIPT_URL set in its
+  // Script Properties, the call returns "forbidden" — show that to the admin.
+  fetch(s.scriptUrl+'?action=adminResetPin&pin='+encodeURIComponent(newPin)+'&adminToken='+encodeURIComponent(ADMIN_TOKEN)+'&_t='+Date.now())
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data&&data.ok){showToast('✓ PIN reset to '+newPin)}
+      else if(data&&data.error==='forbidden'){showToast('✗ Tenant rejected: set REGISTRY_SCRIPT_URL in tenant Script Properties first')}
+      else{showToast('✗ '+(data&&data.message?data.message:(data&&data.error?data.error:'Reset failed')))}
+    })
+    .catch(function(){showToast('✗ Could not reach tenant — check ScriptURL')});
+}
 
-// ══════════════════════════════════
-// TOOLS
-// ══════════════════════════════════
+/* ──────── Danger Zone ──────── */
+function dangerSuspend(){
+  if(!editingRow){alert('Save the store first.');return}
+  if(!confirm('Suspend this tenant?'))return;
+  $('mStatus').value='Suspended';$('mActive').value='No';
+  showToast('Marked Suspended — click Save to commit');
+  switchTab(document.querySelector('.so-tab[data-panel="billing"]'));
+}
+function dangerChurn(){
+  if(!editingRow){alert('Save the store first.');return}
+  if(!confirm('Mark as Churned?'))return;
+  $('mStatus').value='Churned';$('mActive').value='No';
+  showToast('Marked Churned — click Save to commit');
+  switchTab(document.querySelector('.so-tab[data-panel="billing"]'));
+}
+function dangerResetPin(){
+  if(!editingRow){alert('Save the store first.');return}
+  var s=currentEditing();if(!s||!s.scriptUrl){alert('No ScriptURL set. Add it in Basics first.');return}
+  var newPin=String(Math.floor(1000+Math.random()*9000));
+  if(!confirm('Reset PIN to '+newPin+'?'))return;
+  var img=new Image();img.src=s.scriptUrl+'?action=updateConfig&key=DashboardPIN&value='+newPin+'&_t='+Date.now();
+  showToast('PIN reset to '+newPin+' — share with owner');
+}
+function recalcHealthForOne(){
+  if(!editingRow){alert('Save the store first.');return}
+  showToast('Triggering server-side recalc — refresh in a moment');
+  if(REGISTRY_SCRIPT)sendCmd('action=recalcHealth',function(){setTimeout(loadStores,3000)});
+}
+
+/* ──────── Tools ──────── */
 function openTools(){
-  $('toolsBg').classList.add('open');
-  // Populate store dropdown
-  var sel=$('svStore');
-  sel.innerHTML='<option value="">Select a store...</option>';
-  allStores.forEach(function(s){
-    sel.innerHTML+='<option value="'+esc(s.sheetId)+'" data-name="'+esc(s.shop)+'">'+esc(s.shop||s.slug)+' ('+esc(s.slug)+')</option>';
-  });
+  $('toolsBg').classList.add('open');closeSidebar();
+  var sel=$('svStore');sel.innerHTML='<option value="">Select a store...</option>';
+  allStores.forEach(function(s){sel.innerHTML+='<option value="'+esc(s.sheetId)+'">'+esc(s.shop||s.slug)+' ('+esc(s.slug)+')</option>'});
 }
-
-function sha256Admin(str){
-  var encoder=new TextEncoder();
-  return crypto.subtle.digest('SHA-256',encoder.encode(str)).then(function(buf){
-    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
-  });
-}
-
-// Tool 1: PIN Hash Generator
 function generatePinHash(){
   var pin=$('toolPin').value.trim();
   if(!pin){$('toolPinHash').textContent='Enter a PIN above...';return}
-  sha256Admin(pin).then(function(hash){
-    $('toolPinHash').textContent=hash;
+  sha256Admin(pin).then(function(hash){$('toolPinHash').textContent=hash});
+}
+function copyPinAndHashRow(){
+  var pin=$('toolPin').value.trim();
+  var hash=$('toolPinHash').textContent.trim();
+  if(!pin||!hash||hash.indexOf('Enter')===0){showToast('Enter a PIN first');return}
+  copyToClipboard('PIN: '+pin+'\nDASHBOARD_PIN_HASH: '+hash,'PIN + hash copied');
+}
+function generateRandomPin(){
+  var pin=String(Math.floor(1000+Math.random()*9000));
+  $('toolPin').value=pin;generatePinHash();showToast('Random PIN: '+pin);
+}
+
+/* ──────── Submit Onboarding Request ──────── */
+function onboardCreateStore(){
+  var out=$('obOut');
+  var shop =String($('obShop').value||'').trim();
+  var owner=String($('obOwner').value||'').trim();
+  var phone=String($('obPhone').value||'').replace(/\D/g,'');
+  var type =String($('obType').value||'store').trim();
+  var city =String($('obCity').value||'').trim();
+  var email=String($('obEmail').value||'').trim();
+  if(!shop ){out.innerHTML='<span style="color:var(--red)">Shop name is required.</span>';$('obShop').focus();return}
+  if(!owner){out.innerHTML='<span style="color:var(--red)">Owner name is required.</span>';$('obOwner').focus();return}
+  if(phone.length!==10){out.innerHTML='<span style="color:var(--red)">Phone must be 10 digits (got '+phone.length+').</span>';$('obPhone').focus();return}
+  if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){out.innerHTML='<span style="color:var(--red)">Email looks invalid.</span>';$('obEmail').focus();return}
+  if(!REGISTRY_SCRIPT){out.innerHTML='<span style="color:var(--red)">REGISTRY_SCRIPT not configured.</span>';return}
+  out.innerHTML='Submitting request... <span style="color:var(--ink-3)">(emailing dev team and customer)</span>';
+
+  // requestStoreOnboarding is a public action — logs the request, emails dev team
+  // + customer, but does NOT auto-provision. The dev team runs createStore() manually.
+  var body=new URLSearchParams({
+    action:'requestStoreOnboarding',
+    shopName:shop,
+    ownerName:owner,
+    phone:phone,
+    shopType:type,
+    city:city,
+    email:email,
+    token:ADMIN_TOKEN||''
+  });
+  fetch(REGISTRY_SCRIPT,{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:body.toString()
+  })
+  .then(function(r){return r.text()})
+  .then(function(txt){
+    var data;
+    try{data=JSON.parse(txt)}
+    catch(e){
+      out.innerHTML='<span style="color:var(--red)">Server returned non-JSON:</span>\n'+esc(txt.slice(0,400));
+      return;
+    }
+    if(!data||data.error){
+      out.innerHTML='<span style="color:var(--red)">Failed: '+esc((data&&data.error)||'Unknown error')+'</span>';
+      return;
+    }
+    var html='<div style="color:var(--green);font-weight:600;margin-bottom:8px">✓ Onboarding request submitted</div>'+
+      '<table style="font-size:12px;line-height:1.6;border-collapse:collapse">'+
+      '<tr><td style="padding:3px 10px 3px 0;color:var(--ink-3)">Request ID</td><td style="font-family:monospace;color:var(--green)">'+esc(data.requestId||'')+'</td></tr>'+
+      '<tr><td style="padding:3px 10px 3px 0;color:var(--ink-3)">Shop</td><td>'+esc(shop)+'</td></tr>'+
+      '<tr><td style="padding:3px 10px 3px 0;color:var(--ink-3)">Owner</td><td>'+esc(owner)+' ('+esc(phone)+')</td></tr>'+
+      '<tr><td style="padding:3px 10px 3px 0;color:var(--ink-3)">Type</td><td>'+esc(type)+'</td></tr>'+
+      (city?'<tr><td style="padding:3px 10px 3px 0;color:var(--ink-3)">City</td><td>'+esc(city)+'</td></tr>':'')+
+      (email?'<tr><td style="padding:3px 10px 3px 0;color:var(--ink-3)">Customer email</td><td>'+esc(email)+' <span style="color:var(--ink-3)">(acknowledgment sent)</span></td></tr>':'')+
+      '</table>'+
+      '<div style="margin-top:12px;padding:10px;background:var(--bg);border-left:3px solid var(--green);border-radius:4px;font-size:11px;line-height:1.6">'+
+      esc(data.message||'Request received. Our team will set up the store within 30 minutes.')+'<br><br>'+
+      '<strong>Next steps (dev team):</strong><br>'+
+      '1. Check inbox for the onboarding notification email<br>'+
+      '2. Open the master registry → <strong>Extensions → Apps Script</strong><br>'+
+      '3. Paste the provisioning snippet from the email → ▶ Run<br>'+
+      '4. Mark the request as <code>Provisioned</code> in the <code>Onboarding Requests</code> tab</div>'+
+      '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">'+
+      '<button class="btn" onclick="$(\'obShop\').value=\'\';$(\'obOwner\').value=\'\';$(\'obPhone\').value=\'\';$(\'obCity\').value=\'\';$(\'obEmail\').value=\'\';$(\'obOut\').textContent=\'Form cleared.\';$(\'obShop\').focus()">Submit another</button>'+
+      '</div>';
+    out.innerHTML=html;
+    showToast('✓ Request '+(data.requestId||'submitted'));
+  })
+  .catch(function(e){
+    out.innerHTML='<span style="color:var(--red)">Network error: '+esc(String(e&&e.message||e))+'</span>';
   });
 }
 
-function generateRandomPin(){
-  var pin=String(Math.floor(1000+Math.random()*9000));
-  $('toolPin').value=pin;
-  generatePinHash();
-  showToast('Random PIN: '+pin);
-}
-
-// Tool 2: Sheet Data Viewer
-var svCurrentSheetId='',svSheetTabs=['Config','Products','Orders','Offers'];
-
-function onStoreSelect(){
-  var sel=$('svStore');
-  if(sel.value){
-    $('svSheetId').value=sel.value;
+/* ──────── Telegram Chat ID Finder ──────── */
+function fetchTelegramChats(){
+  var token=String($('tgToken').value||'').trim();
+  var out=$('tgOut');
+  if(!token||!/^\d+:[A-Za-z0-9_-]{20,}$/.test(token)){
+    out.innerHTML='<span style="color:var(--red)">Invalid bot token. Format: <code>1234567890:AAH...</code></span>';
+    return;
   }
+  out.textContent='Fetching from Telegram...';
+  fetch('https://api.telegram.org/bot'+encodeURIComponent(token)+'/getUpdates',{method:'GET',cache:'no-store'})
+    .then(function(r){return r.json()})
+    .then(function(body){
+      if(!body||body.ok!==true){
+        var desc=(body&&body.description)||'Unknown error';
+        out.innerHTML='<span style="color:var(--red)">Telegram error: '+esc(desc)+'</span>'+
+          '<br><span style="color:var(--ink-3);font-size:11px">Check the token. 401 = wrong token; 404 = revoked or never created.</span>';
+        return;
+      }
+      var updates=body.result||[];
+      if(!updates.length){
+        out.innerHTML='<span style="color:var(--orange,#d97706)">No pending updates.</span>'+
+          '<br><span style="color:var(--ink-3);font-size:11px">Either polling already consumed them, or no one has messaged the bot yet. Have the shopkeeper send /start to the bot, then re-fetch within a few seconds. If the tenant is running <code>installTelegramPollingTrigger</code>, run <code>removeTelegramPollingTrigger</code> first.</span>';
+        return;
+      }
+      // Dedupe by chat id
+      var seen={},rows=[];
+      updates.forEach(function(u){
+        var chat=(u.message&&u.message.chat)||(u.callback_query&&u.callback_query.message&&u.callback_query.message.chat)||(u.edited_message&&u.edited_message.chat);
+        if(!chat||chat.id==null)return;
+        if(seen[chat.id])return;
+        seen[chat.id]=true;
+        var name=[chat.first_name,chat.last_name].filter(Boolean).join(' ').trim()||chat.title||chat.username||'(no name)';
+        rows.push({id:chat.id,name:name,type:chat.type||'private',username:chat.username||''});
+      });
+      if(!rows.length){
+        out.innerHTML='<span style="color:var(--orange,#d97706)">Updates received but no chat info parsed.</span> Raw payload had '+updates.length+' update(s) but none with chat data.';
+        return;
+      }
+      var html='<div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">Found '+rows.length+' chat'+(rows.length>1?'s':'')+'. Click a row to copy the chat ID and pre-fill it for testing.</div>';
+      html+='<table style="width:100%;border-collapse:collapse;font-size:12px">';
+      html+='<thead><tr style="background:var(--bg);text-align:left"><th style="padding:6px 8px;border-bottom:1px solid var(--line);font-weight:600">Chat ID</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);font-weight:600">Name</th><th style="padding:6px 8px;border-bottom:1px solid var(--line);font-weight:600">Type</th></tr></thead><tbody>';
+      rows.forEach(function(r){
+        html+='<tr style="cursor:pointer" onclick="pickTelegramChat(\''+esc(String(r.id))+'\')" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'">'+
+          '<td style="padding:6px 8px;border-bottom:1px solid var(--line);font-family:monospace;color:var(--green)">'+esc(String(r.id))+'</td>'+
+          '<td style="padding:6px 8px;border-bottom:1px solid var(--line)">'+esc(r.name)+(r.username?' <span style="color:var(--ink-3)">@'+esc(r.username)+'</span>':'')+'</td>'+
+          '<td style="padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-3)">'+esc(r.type)+'</td>'+
+        '</tr>';
+      });
+      html+='</tbody></table>';
+      if(rows.length>1){
+        html+='<div style="margin-top:8px"><button class="btn" onclick="copyToClipboard(\''+esc(rows.map(function(r){return r.id}).join(','))+'\',\'All IDs copied\')">Copy all '+rows.length+' as comma-separated</button></div>';
+      }
+      out.innerHTML=html;
+      // Auto-fill the test field with the first chat
+      $('tgChatId').value=String(rows[0].id);
+    })
+    .catch(function(e){
+      out.innerHTML='<span style="color:var(--red)">Network error: '+esc(String(e&&e.message||e))+'</span>'+
+        '<br><span style="color:var(--ink-3);font-size:11px">Telegram\'s API supports CORS — if this fails, your network is blocking api.telegram.org.</span>';
+    });
 }
 
+function pickTelegramChat(id){
+  $('tgChatId').value=id;
+  copyToClipboard(id,'Chat ID '+id+' copied');
+}
+
+function sendTelegramTest(){
+  var token=String($('tgToken').value||'').trim();
+  var chatId=String($('tgChatId').value||'').trim();
+  var out=$('tgOut');
+  if(!token){showToast('Enter a bot token first');return}
+  if(!chatId||!/^-?\d+$/.test(chatId)){showToast('Enter or pick a numeric chat ID first');return}
+  var msg='✅ StorePro test alert — admin tool. If you see this, Telegram is wired up correctly.';
+  fetch('https://api.telegram.org/bot'+encodeURIComponent(token)+'/sendMessage',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:chatId,text:msg})
+  })
+  .then(function(r){return r.json()})
+  .then(function(body){
+    if(body&&body.ok){
+      showToast('✓ Test message sent to '+chatId);
+      var prev=out.innerHTML;
+      out.innerHTML='<span style="color:var(--green)">✓ Sent to '+esc(chatId)+'. Check the recipient\'s Telegram.</span>'+(prev?'<hr style="border:none;border-top:1px solid var(--line);margin:8px 0">'+prev:'');
+    }else{
+      var desc=(body&&body.description)||'Unknown error';
+      out.innerHTML='<span style="color:var(--red)">Send failed: '+esc(desc)+'</span>'+
+        '<br><span style="color:var(--ink-3);font-size:11px">Common causes: 400 chat_not_found = recipient never messaged the bot; 403 bot_blocked = recipient blocked it.</span>';
+    }
+  })
+  .catch(function(e){
+    showToast('Network error');
+    out.innerHTML='<span style="color:var(--red)">Network error: '+esc(String(e&&e.message||e))+'</span>';
+  });
+}
+
+var svCurrentSheetId='',svSheetTabs=['Config','Products','Orders','Offers'];
+function onStoreSelect(){var sel=$('svStore');if(sel.value)$('svSheetId').value=sel.value}
 function loadSheetViewer(){
   svCurrentSheetId=$('svSheetId').value.trim()||$('svStore').value;
-  if(!svCurrentSheetId){showToast('Enter a Sheet ID or select a store');return}
-  // Show tab buttons
-  $('svTabs').innerHTML=svSheetTabs.map(function(t,i){
-    return '<button class="sv-tab'+(i===0?' active':'')+'" onclick="loadSheetTab(\''+t+'\',this)">'+t+'</button>';
-  }).join('');
+  if(!svCurrentSheetId){showToast('Enter a Sheet ID');return}
+  $('svTabs').innerHTML=svSheetTabs.map(function(t,i){return '<button class="sv-tab'+(i===0?' active':'')+'" onclick="loadSheetTab(\''+t+'\',this)">'+t+'</button>'}).join('');
   loadSheetTab('Config',document.querySelector('.sv-tab'));
 }
-
 function loadSheetTab(tabName,el){
-  // Highlight active tab
   document.querySelectorAll('.sv-tab').forEach(function(t){t.classList.remove('active')});
   if(el)el.classList.add('active');
-  
   $('svTableWrap').style.display='block';
   $('svTable').innerHTML='<tr><td class="sv-empty">Loading '+esc(tabName)+'...</td></tr>';
   $('svInfo').textContent='';
-
-  if(!window._svGoogle)window._svGoogle={};
-  if(!window._svGoogle.visualization)window._svGoogle.visualization={};
-  if(!window._svGoogle.visualization.Query)window._svGoogle.visualization.Query={};
-  
-  window._svGoogle.visualization.Query.setResponse=function(r){
+  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
     if(!r||!r.table||!r.table.rows||!r.table.rows.length){
-      $('svTable').innerHTML='<tr><td class="sv-empty">No data found in "'+esc(tabName)+'" tab.</td></tr>';
-      $('svInfo').textContent='';
-      return;
+      $('svTable').innerHTML='<tr><td class="sv-empty">No data in "'+esc(tabName)+'".</td></tr>';return;
     }
-    var cols=r.table.cols.map(function(c){return c.label||'Col '+(c.id||'')});
+    var cols=r.table.cols.map(function(c){return c.label||'Col'});
     var rows=r.table.rows;
-    
-    var html='<thead><tr>';
-    html+='<th>#</th>';
+    // Same merged-shape fix as loadStores: gviz sometimes ships all headers in cols[0].label
+    var labelsLookMerged=cols.length===1&&String(cols[0]).indexOf(',')>=0;
+    var labelsAreEmpty=cols.every(function(k){return !String(k).trim()||k==='Col'});
+    var rowOffset=2;
+    if((labelsLookMerged||labelsAreEmpty)&&rows.length){
+      cols=(rows[0].c||[]).map(function(c){return c&&c.v!=null?String(c.v):''});
+      rows=rows.slice(1);
+      rowOffset=3;
+    }
+    var html='<thead><tr><th>#</th>';
     cols.forEach(function(c){if(c.trim())html+='<th>'+esc(c)+'</th>'});
     html+='</tr></thead><tbody>';
-    
     rows.forEach(function(row,i){
-      html+='<tr><td style="color:var(--ink3)">'+(i+2)+'</td>';
+      html+='<tr><td style="color:var(--ink-3)">'+(i+rowOffset)+'</td>';
       cols.forEach(function(c,j){
         if(!c.trim())return;
-        var cell=row.c&&row.c[j];
-        var val=cell&&cell.v!=null?String(cell.v).trim():'';
+        var cell=row.c&&row.c[j];var val=cell&&cell.v!=null?String(cell.v).trim():'';
         if(val.length>50)val=val.substring(0,47)+'...';
         html+='<td title="'+esc(cell&&cell.v!=null?String(cell.v):'')+'">'+esc(val)+'</td>';
       });
       html+='</tr>';
     });
-    html+='</tbody>';
-    $('svTable').innerHTML=html;
-    $('svInfo').textContent=rows.length+' rows · '+cols.filter(function(c){return c.trim()}).length+' columns · Sheet: '+svCurrentSheetId.substring(0,15)+'...';
+    html+='</tbody>';$('svTable').innerHTML=html;
+    $('svInfo').textContent=rows.length+' rows · '+cols.filter(function(c){return c.trim()}).length+' columns';
   };
-  
-  // Use a separate callback to avoid conflicts with store loading
-  var origSetResponse=window.google&&window.google.visualization&&window.google.visualization.Query?window.google.visualization.Query.setResponse:null;
-  var prevSetResponse=window.google&&window.google.visualization?window.google.visualization.Query.setResponse:null;
-  
-  // Temporarily override
-  if(!window.google)window.google={};
-  if(!window.google.visualization)window.google.visualization={};
-  if(!window.google.visualization.Query)window.google.visualization.Query={};
-  window.google.visualization.Query.setResponse=window._svGoogle.visualization.Query.setResponse;
-  
-  var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+svCurrentSheetId+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(tabName)+'&_t='+Date.now();
-  s.onerror=function(){
-    $('svTable').innerHTML='<tr><td class="sv-empty">Failed to load. Check Sheet ID and tab name.</td></tr>';
-  };
+  var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+svCurrentSheetId+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(tabName)+'&_t='+Date.now();
+  s.onerror=function(){$('svTable').innerHTML='<tr><td class="sv-empty">Failed to load.</td></tr>'};
   document.body.appendChild(s);
 }
-
-// Tool 3: Password Hash Generator
 function generatePwdHash(){
   var pwd=$('toolPwd').value;
   if(!pwd){$('toolPwdHash').textContent='Enter a password above...';return}
-  sha256Admin(pwd).then(function(hash){
-    $('toolPwdHash').textContent=hash;
-  });
+  sha256Admin(pwd).then(function(hash){$('toolPwdHash').textContent=hash});
 }
-
-// Helper
 function copyToClipboard(text,msg){
   if(!text||text.indexOf('Enter')===0||text.indexOf('...')>0)return;
-  navigator.clipboard.writeText(text).then(function(){showToast(msg||'Copied!')}).catch(function(){
-    var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast(msg||'Copied!');
-  });
+  navigator.clipboard.writeText(text).then(function(){showToast(msg||'Copied')}).catch(function(){
+    var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast(msg||'Copied')});
 }
+function runMigrateSchema(){
+  var out=$('toolMigrateOut');out.style.color='var(--ink-3)';out.textContent='Migrating...';
+  fetch(REGISTRY_SCRIPT+'?action=migrateSchema&token='+encodeURIComponent(ADMIN_TOKEN)+'&_t='+Date.now())
+    .then(function(r){return r.json()}).then(function(data){
+      if(data.error){out.style.color='var(--red)';out.textContent='✗ '+data.error;return}
+      var added=data.added||[];out.style.color='var(--green)';
+      out.textContent=added.length?'✓ Added '+data.count+' columns: '+added.join(', '):'✓ Schema already up to date';
+      showToast('Schema check complete');
+      if(added.length)setTimeout(loadStores,1500);
+    }).catch(function(err){out.style.color='var(--red)';out.textContent='✗ '+err});
+}
+function runRecalcHealth(){
+  if(!confirm('Recalculate health metrics for all tenants? May take 30-60s.'))return;
+  var out=$('toolMigrateOut');out.style.color='var(--ink-3)';out.textContent='Recalculating...';
+  fetch(REGISTRY_SCRIPT+'?action=recalcHealth&token='+encodeURIComponent(ADMIN_TOKEN)+'&_t='+Date.now())
+    .then(function(r){return r.json()}).then(function(data){
+      if(data.error){out.style.color='var(--red)';out.textContent='✗ '+data.error;return}
+      out.style.color='var(--green)';
+      out.textContent='✓ Updated '+(data.updated||0)+' tenants'+(data.failed?' ('+data.failed+' failed)':'');
+      showToast('Health metrics refreshed');setTimeout(loadStores,1500);
+    }).catch(function(err){out.style.color='var(--red)';out.textContent='✗ '+err});
+}
+
+/* ──────── Command Palette (⌘K) ──────── */
+function openCmdk(){
+  closeSidebar();
+  $('cmdkBg').classList.add('open');
+  $('cmdkInput').value='';cmdkSelected=0;
+  setTimeout(function(){$('cmdkInput').focus()},50);
+  renderCmdk('');
+}
+function closeCmdk(){$('cmdkBg').classList.remove('open')}
+function cmdkActions(){return [
+  {id:'add',title:'Add Store',sub:'Create new tenant',icon:'+',run:function(){closeCmdk();openAddStore()}},
+  {id:'tools',title:'Open Tools',sub:'Hash generator, sheet viewer, schema',icon:'⚒',run:function(){closeCmdk();openTools()}},
+  {id:'migrate',title:'Migrate Schema',sub:'Add missing columns to registry',icon:'↗',run:function(){closeCmdk();openTools();runMigrateSchema()}},
+  {id:'recalc',title:'Recalc Health Metrics',sub:'Refresh LastOrderAt, TotalOrders, etc.',icon:'↻',run:function(){closeCmdk();openTools();runRecalcHealth()}},
+  {id:'refresh',title:'Refresh registry',sub:'Reload Stores tab',icon:'↻',run:function(){closeCmdk();loadStores()}},
+  {id:'lock',title:'Lock admin',sub:'Sign out',icon:'🔒',run:function(){closeCmdk();lockAdmin()}}
+]}
+function renderCmdk(q){
+  var query=(q||'').toLowerCase().trim();
+  var stores=allStores.filter(function(s){
+    if(!query)return true;
+    return (s.shop+' '+s.slug+' '+s.owner+' '+s.city+' '+s.phone).toLowerCase().indexOf(query)>=0;
+  }).slice(0,15);
+  var actions=cmdkActions().filter(function(a){return !query||a.title.toLowerCase().indexOf(query)>=0||a.sub.toLowerCase().indexOf(query)>=0});
+
+  var html='';var idx=0;var clickHandlers=[];
+  if(stores.length){
+    html+='<div class="cmdk-section"><div class="cmdk-section-h">Stores · '+stores.length+'</div>';
+    stores.forEach(function(s){
+      var thisIdx=idx++;
+      html+='<div class="cmdk-item" data-idx="'+thisIdx+'">'
+        +'<div class="cmdk-item-icon">'+typeIcon(s.type)+'</div>'
+        +'<div class="cmdk-item-text"><div class="cmdk-item-title">'+esc(s.shop||s.slug)+'</div><div class="cmdk-item-sub">'+esc(s.city||'—')+' · '+esc(s.slug)+'</div></div>'
+        +(s.verified?'<span class="verified-icon">✓</span>':'')
+        +'</div>';
+      clickHandlers.push((function(row){return function(){closeCmdk();openEditStore(row)}})(s._row));
+    });
+    html+='</div>';
+  }
+  if(actions.length){
+    html+='<div class="cmdk-section"><div class="cmdk-section-h">Actions</div>';
+    actions.forEach(function(a){
+      var thisIdx=idx++;
+      html+='<div class="cmdk-item" data-idx="'+thisIdx+'">'
+        +'<div class="cmdk-item-icon">'+a.icon+'</div>'
+        +'<div class="cmdk-item-text"><div class="cmdk-item-title">'+esc(a.title)+'</div><div class="cmdk-item-sub">'+esc(a.sub)+'</div></div>'
+        +'</div>';
+      clickHandlers.push(a.run);
+    });
+    html+='</div>';
+  }
+  if(!stores.length&&!actions.length){
+    html='<div class="cmdk-empty">No matches for "'+esc(q)+'"</div>';
+  }
+  $('cmdkList').innerHTML=html;
+  document.querySelectorAll('.cmdk-item').forEach(function(it,i){
+    it.onclick=clickHandlers[i];
+  });
+  cmdkSelected=0;updateCmdkSelection();
+}
+function updateCmdkSelection(){
+  var items=document.querySelectorAll('.cmdk-item');
+  items.forEach(function(it,i){if(i===cmdkSelected)it.classList.add('selected');else it.classList.remove('selected')});
+  if(items[cmdkSelected])items[cmdkSelected].scrollIntoView({block:'nearest'});
+}
+
+/* ──────── Keyboard ──────── */
+document.addEventListener('keydown',function(e){
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){
+    e.preventDefault();
+    if($('cmdkBg').classList.contains('open'))closeCmdk();
+    else if($('lockScreen').classList.contains('hidden'))openCmdk();
+    return;
+  }
+  if($('cmdkBg').classList.contains('open')){
+    var items=document.querySelectorAll('.cmdk-item');
+    if(e.key==='Escape'){e.preventDefault();closeCmdk();return}
+    if(e.key==='ArrowDown'){e.preventDefault();cmdkSelected=Math.min(items.length-1,cmdkSelected+1);updateCmdkSelection();return}
+    if(e.key==='ArrowUp'){e.preventDefault();cmdkSelected=Math.max(0,cmdkSelected-1);updateCmdkSelection();return}
+    if(e.key==='Enter'){e.preventDefault();if(items[cmdkSelected])items[cmdkSelected].click();return}
+  }
+  if($('slideout').classList.contains('open')&&e.key==='Escape'){closeSlideout();return}
+  if(e.key==='/'&&!$('lockScreen').classList.contains('hidden')&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){
+    e.preventDefault();openCmdk();
+  }
+});
+document.addEventListener('DOMContentLoaded',function(){
+  var ci=$('cmdkInput');
+  if(ci)ci.addEventListener('input',function(e){renderCmdk(e.target.value)});
+});
+
+/* ──────── Init ──────── */
+if(isSessionValid()){
+  $('lockScreen').classList.add('hidden');
+  $('app').style.display='grid';
+  loadStores();
+}else{
+  $('app').style.display='none';
+  $('adminPwd').focus();
+}
+// Bind cmdk input listener even if DOMContentLoaded already fired
+(function(){var ci=$('cmdkInput');if(ci)ci.addEventListener('input',function(e){renderCmdk(e.target.value)})})();
 </script>
 </body>
 </html>

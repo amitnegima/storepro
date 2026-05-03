@@ -22,7 +22,7 @@ There is no package manager, bundler, or test suite. Development is "edit HTML, 
 
 ### Multi-tenant routing via slug → SheetID lookup
 
-Every URL is `?store=<slug>`. The slug is resolved at runtime against the **Master Registry** Google Sheet (hardcoded ID `1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg`, tab `Stores`). The registry row supplies the per-store `SheetID` and `ScriptURL`. From there, the page reads `Config`, `Products`, `Orders`, `Offers` tabs from the tenant's own sheet.
+Every URL is `?store=<slug>`. The slug is resolved at runtime against the **Master Registry** Google Sheet (hardcoded ID `1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo`, tab `Stores`). The registry row supplies the per-store `SheetID` and `ScriptURL`. From there, the page reads `Config`, `Products`, `Orders`, `Offers` tabs from the tenant's own sheet.
 
 There is no auth between landing and store — the slug IS the store identifier. The `DashboardPIN` config key gates the dashboard.
 
@@ -57,7 +57,7 @@ Several places construct HTML strings inside JS (e.g. `printReceipt` opens a pop
 
 ## Critical pre-launch issues
 
-[docs/READINESS_AUDIT.md](docs/READINESS_AUDIT.md) lists production-blocking bugs that affect every tenant. Notable: the maintainer's personal phone `9760684971` is hardcoded as a fallback in 6 places (store/restaurant/dashboard/index), and the dashboard print-receipt was hardcoded to a specific store. Read this file before doing any "polish" work — those fixes have higher priority than new features.
+[docs/READINESS_AUDIT.md](docs/READINESS_AUDIT.md) lists pre-launch concerns. Note: the personal-phone fallback issue (item #2) has been resolved — `amitnegimca@gmail.com` is now the canonical support contact across all StorePro-owned pages, and storefronts hide phone/WhatsApp UI when the tenant hasn't configured a number. The print-receipt hardcode (item #1) and `kirana_cart` localStorage collision (item #4) may still need verification before scaling.
 
 ## Key conventions
 

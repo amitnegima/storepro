@@ -6,8 +6,12 @@
 // Set both before deploying. Leave blank to disable Web Push (falls back to in-page only).
 var PUSH_RELAY_URL="https://storepro-push.storepro.workers.dev";
 var VAPID_PUBLIC_KEY="BKvrqqbCp4z0dei-Uh57yv-Pzh7zH2I0mOgqPFLZR3SQ5IH4jJXeTEHQoFiOxDtBTOChW7jsFB3AtvSOsl7FfD8";
-var MASTER_SHEET_ID="1K6jYaOrnmMLw_0_N5EvrgE5jEOpbIsWZjyCM8Yf6OLg";
+var MASTER_SHEET_ID="1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
 var SHEET_ID="",SCRIPT_URL="";
+// Dashboard session token — issued by tenant Apps Script after verifyPin succeeds.
+// Auto-attached to every sendCmd() call so mutations (updateStatus, updateConfig,
+// add/update/deleteProduct) pass the server-side token check.
+var DASH_TOKEN="";
 var STORE_META={}; // from master registry: ShopName, OwnerName, Plan, etc.
 var configData=[],productData=[],productHeaders=[],allOrders=[];
 var _editProdIdx=-1; // -1 = adding new product
@@ -521,15 +525,15 @@ function injectTenantManifest(){
       name:shop+' — Dashboard',
       short_name:(shop.split(' ')[0]||'StorePro').slice(0,12),
       description:'Manage orders, menu and customers for '+shop,
-      start_url:location.pathname+(slug?'?store='+encodeURIComponent(slug):''),
-      scope:'/',
+      start_url:location.origin+location.pathname+(slug?'?store='+encodeURIComponent(slug):''),
+      scope:location.origin+'/',
       display:'standalone',
       background_color:'#0c831f',
       theme_color:'#0c831f',
       orientation:'portrait',
       icons:[
-        {src:'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
-        {src:'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
+        {src:location.origin+'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
+        {src:location.origin+'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
       ]
     };
     var blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
@@ -560,18 +564,23 @@ function pinBack(e,i){if(e.key==='Backspace'&&!$('p'+(i+1)).value&&i>0)$('p'+i).
 function checkPin(){
   var entered=$('p1').value+$('p2').value+$('p3').value+$('p4').value;
   if(entered.length<4){pinShake('Enter all 4 digits');return}
-  // Always resolve the store first — SHEET_ID must be set before unlock,
-  // otherwise loadOrdersSheet/loadProductsSheet skip with empty sheetId.
+  // Resolve the store first — SHEET_ID + SCRIPT_URL must be set so we know
+  // which tenant Apps Script to ask for verifyPin.
   var doCheck=function(){
     if(!SHEET_ID){pinShake('Store not found — check URL');return}
-    var pin=getCfg('DashboardPIN','1234');
-    var savedPin=localStorage.getItem('sl_pin_'+SHEET_ID);
-    if(entered===pin||(savedPin&&savedPin===entered)){
-      try{localStorage.setItem('sl_pin_'+SHEET_ID,entered)}catch(e){}
-      unlock();
-    }else{
-      pinShake('Incorrect PIN');
-    }
+    if(!SCRIPT_URL){pinShake('Store not configured — contact support');return}
+    fetch(SCRIPT_URL+'?action=verifyPin&pin='+encodeURIComponent(entered)+'&_t='+Date.now())
+      .then(function(r){return r.json()})
+      .then(function(data){
+        if(data&&data.ok&&data.token){
+          DASH_TOKEN=data.token;
+          try{localStorage.setItem('sl_dash_token_'+SHEET_ID,data.token)}catch(e){}
+          unlock();
+        }else{
+          pinShake('Incorrect PIN');
+        }
+      })
+      .catch(function(){pinShake('Connection error — try again')});
   };
   if(SHEET_ID&&configData.length){doCheck();return}
   initStore(doCheck);
@@ -610,7 +619,11 @@ function primeAudioVibrate(){
   try{if(navigator.vibrate)navigator.vibrate(1)}catch(e){}
 }
 function lockNow(){
-  try{localStorage.removeItem('sl_pin_'+SHEET_ID)}catch(e){}
+  try{
+    localStorage.removeItem('sl_pin_'+SHEET_ID);
+    localStorage.removeItem('sl_dash_token_'+SHEET_ID);
+  }catch(e){}
+  DASH_TOKEN='';
   location.reload();
 }
 
@@ -625,7 +638,7 @@ function loadSheet(sheetId,name,cb){
   var fired=false;
   window.google.visualization.Query.setResponse=function(r){if(fired)return;fired=true;cb(r)};
   var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&_t='+Date.now();
+  s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&headers=1&_t='+Date.now();
   s.onerror=function(){if(fired)return;fired=true;cb(null)};
   document.body.appendChild(s);
   setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s);if(!fired){fired=true;cb(null)}},8000);
@@ -666,6 +679,8 @@ function parseSheetRows(r){
 }
 function sendCmd(params,cb){
   if(!SCRIPT_URL){if(cb)cb();return}
+  // Auto-attach the dashboard session token so server-side gates pass.
+  if(DASH_TOKEN&&params.indexOf('token=')<0)params+='&token='+encodeURIComponent(DASH_TOKEN);
   var img=new Image(),done=false;
   img.onload=img.onerror=function(){if(!done){done=true;if(cb)cb()}};
   img.src=SCRIPT_URL+'?'+params;
@@ -688,8 +703,19 @@ function resolveStore(cb){
     var found=parsed.rows.find(function(o){return(o.slug||'').toLowerCase()===slug});
     if(found){
       STORE_META=found;
-      SHEET_ID=found.sheetid||'';
+      // Prefer sheetid; fall back to sheetid1 if the master sheet has a stale
+      // duplicate column from a past migration.
+      var resolvedSheet=found.sheetid||found.sheetid1||'';
+      // Real Google Sheet IDs are ~40-50 chars of [A-Za-z0-9_-]. A 64-char pure
+      // hex string is almost certainly a SHA-256 hash that ended up in the wrong
+      // column. Reject and try the fallback.
+      if(/^[0-9a-f]{64}$/.test(resolvedSheet)&&found.sheetid1)resolvedSheet=found.sheetid1;
+      SHEET_ID=resolvedSheet;
       SCRIPT_URL=found.scripturl||found.script||'';
+      // Restore dashboard session token from a previous successful PIN entry.
+      // If the server token has been rotated since, the next mutation will 403
+      // and the user gets pushed back to the lock screen.
+      try{DASH_TOKEN=localStorage.getItem('sl_dash_token_'+SHEET_ID)||''}catch(e){}
     }
     cb();
   });
@@ -734,6 +760,19 @@ function initStore(cb){
 function bootstrap(){
   // Theme
   try{var t=localStorage.getItem('sl_theme_v2');if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}
+  // Apply cached brand color immediately so the dashboard doesn't flash the default
+  // green before Config loads from the sheet. paintHeader() will overwrite once
+  // the authoritative value comes back.
+  try{
+    var slug=(new URLSearchParams(location.search)).get('store');
+    if(slug){
+      var cached=localStorage.getItem('sl_brand_'+slug.toLowerCase());
+      if(/^#[0-9a-f]{6}$/i.test(cached||'')){
+        document.documentElement.style.setProperty('--brand',cached);
+        var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',cached);
+      }
+    }
+  }catch(e){}
   injectTenantManifest();
   paintHeader();
   paintProfile();
@@ -744,7 +783,12 @@ function bootstrap(){
     paintHome();
     renderOrders();
     paintInsights();
-    loadProductsSheet(function(){renderProducts();buildCatFilters()});
+    loadProductsSheet(function(){
+      renderProducts();
+      buildCatFilters();
+      // Detect first-run / incomplete setup and surface the checklist
+      try{maybeAutoOpenSetup()}catch(e){console.warn('[setup-checklist]',e)}
+    });
   });
   // Auto-refresh orders every 25s while on Home/Orders
   pollInterval=setInterval(function(){
@@ -757,6 +801,13 @@ function paintHeader(){
   var owner=STORE_META.ownername||'';
   var plan=(STORE_META.plan||'Free').toUpperCase();
   var open=isStoreOpen();
+  // Apply BrandColor from Config so the theme picker's saved color persists
+  // across refresh (was: written to Config but never re-read on boot).
+  var brandColor=getCfg('BrandColor','');
+  if(/^#[0-9a-f]{6}$/i.test(brandColor)){
+    document.documentElement.style.setProperty('--brand',brandColor);
+    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brandColor);
+  }
   // Cache shop name + type + brand color + logo for instant personalization next visit
   // (splash screen and PWA manifest both read from these)
   try{
@@ -765,8 +816,7 @@ function paintHeader(){
       localStorage.setItem('sl_shopname_'+slug,name);
       var stype=STORE_META.shoptype||getCfg('ShopType','');
       if(stype)localStorage.setItem('sl_shoptype_'+slug,stype);
-      var bc=getCfg('BrandColor','');
-      if(/^#[0-9a-f]{6}$/i.test(bc))localStorage.setItem('sl_brand_'+slug,bc);
+      if(/^#[0-9a-f]{6}$/i.test(brandColor))localStorage.setItem('sl_brand_'+slug,brandColor);
       var logoUrl=getCfg('LogoURL','')||getCfg('Logo','')||getCfg('AppIcon','');
       if(logoUrl)localStorage.setItem('sl_logo_'+slug,logoUrl);
     }
@@ -852,6 +902,7 @@ function detailRow(ic,label,val,action){
   return '<div class="detail-row"><div class="detail-ic">'+ic+'</div><div class="detail-text"><div class="detail-label">'+esc(label)+'</div><div class="detail-value">'+esc(val)+'</div></div>'+(action||'')+'</div>';
 }
 function copyText(t){navigator.clipboard.writeText(t).then(function(){showToast('✓ Copied','success')}).catch(function(){showToast('Could not copy','error')})}
+function copyOrderId(id){copyText(id);showToast('✓ Order ID copied: '+id,'success')}
 function openSheet(){window.open('https://docs.google.com/spreadsheets/d/'+SHEET_ID,'_blank')}
 function openStorefront(){var u=STORE_META.url||(location.origin+'/?store='+(STORE_META.slug||''));window.open(u,'_blank')}
 function openShareStore(){
@@ -864,7 +915,7 @@ function openShareStore(){
     window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
   }
 }
-function contactSupport(){window.open('https://wa.me/919760684971?text='+encodeURIComponent('Hi, I want to renew my StorePro plan for '+(STORE_META.shopname||'my store')),'_blank')}
+function contactSupport(){window.open('mailto:amitnegimca@gmail.com?subject='+encodeURIComponent('Renew StorePro plan — '+(STORE_META.shopname||'my store'))+'&body='+encodeURIComponent('Hi, I want to renew my StorePro plan for '+(STORE_META.shopname||'my store')+'.'),'_blank')}
 
 // ════════════════════════════════════════════
 // ORDERS LOADING / RENDERING
@@ -903,7 +954,10 @@ function loadOrdersSheet(cb){
         status:(o.status||'new').toLowerCase().trim(),
         comment:o.shopkeepercomment||o.comment||'',
         notes:o.ordernotes||o.notes||'',
-        payment:o.payment||''
+        payment:o.payment||'',
+        reviewStars:parseInt(o.reviewstars||'0')||0,
+        reviewText:o.reviewtext||'',
+        reviewedAt:o.reviewedat||''
       };
     }).filter(function(o){return o.id});
     // Detect newly arrived NEW orders (today, status=new, not seen before)
@@ -1014,7 +1068,8 @@ function orderHTML(o){
   h+='<div class="o-left">'+modeIcon(o.mode)+statusPill(o.status)+'</div>';
   h+='<div class="o-info">';
   h+='<div class="o-row1"><span class="o-name">'+esc(o.name||'Customer')+'</span><span class="o-amt-n">'+fmt(o.total)+'</span></div>';
-  h+='<div class="o-row2"><span class="o-id">#'+safeId.slice(-6)+'</span><span class="o-dot">·</span><span>'+esc(modeLbl)+'</span><span class="o-dot">·</span><span>'+itemTxt+'</span><span class="o-ago">'+timeAgo(o.ts)+'</span></div>';
+  var reviewChip=o.reviewStars>0?'<span class="o-review-chip">⭐ '+o.reviewStars+'</span>':'';
+  h+='<div class="o-row2"><span class="o-id" title="Tap to copy full Order ID" onclick="event.stopPropagation();copyOrderId(\''+jss(o.id)+'\')">#'+safeId+'</span>'+reviewChip+'<span class="o-dot">·</span><span>'+esc(modeLbl)+'</span><span class="o-dot">·</span><span>'+itemTxt+'</span><span class="o-ago">'+timeAgo(o.ts)+'</span></div>';
   h+='<div class="o-row3"><span>📞 '+esc(o.phone||'—')+'</span>'+(o.payment?'<span class="o-dot">·</span><span>💳 '+esc((o.payment+'').toUpperCase())+'</span>':'')+'</div>';
   h+='</div></div>';
 
@@ -1029,6 +1084,10 @@ function orderHTML(o){
   if(o.address)h+='<div class="o-sec"><div class="o-sec-l">Delivery Address</div><div class="o-addr">📍 '+esc(o.address)+'</div></div>';
   if(o.notes)h+='<div class="bubble bubble-cust"><div class="bubble-l">📝 Customer Note</div>"'+esc(o.notes)+'"</div>';
   if(o.comment){o.comment.split(' | ').forEach(function(c){if(c.trim())h+='<div class="bubble bubble-shop"><div class="bubble-l">💬 You sent</div>'+esc(c.trim())+'</div>'})}
+  if(o.reviewStars>0){
+    var stars='';for(var i=0;i<5;i++)stars+=(i<o.reviewStars?'⭐':'☆');
+    h+='<div class="bubble bubble-review"><div class="bubble-l">⭐ Customer Review · '+o.reviewStars+'/5</div><div style="font-size:18px;letter-spacing:2px;margin-top:2px">'+stars+'</div>'+(o.reviewText?'<div style="margin-top:6px;font-style:italic">"'+esc(o.reviewText)+'"</div>':'')+(o.reviewedAt?'<div style="font-size:9px;font-weight:700;color:var(--ink4);margin-top:4px;text-transform:uppercase;letter-spacing:.06em">'+esc(o.reviewedAt)+'</div>':'')+'</div>';
+  }
 
   // Actions
   h+='<div class="o-actions">';
@@ -1073,19 +1132,72 @@ function updStatus(id,newStatus){
   renderOrders();updateBadges();
   showToast('✓ Status: '+newStatus,'success');
   sendCmd('action=updateStatus&orderId='+encodeURIComponent(id)+'&newStatus='+encodeURIComponent(newStatus));
-  // Auto-prompt to send WhatsApp update
-  if(o.phone&&newStatus!=='Cancelled'){
-    setTimeout(function(){
-      var msgs={'Confirmed':'Hi '+o.name+', your order *#'+id.slice(-6)+'* is *confirmed* ✅ Preparing it now!','Packed':'Hi '+o.name+', your order *#'+id.slice(-6)+'* is *packed* 📦 and ready!','Out for Delivery':'Hi '+o.name+', your order *#'+id.slice(-6)+'* is *out for delivery* 🛵','Delivered':'Hi '+o.name+', your order *#'+id.slice(-6)+'* has been *delivered* ✅ Thanks for choosing us!','Picked Up':'Thanks '+o.name+'! Your order *#'+id.slice(-6)+'* is picked up. Visit again! 🙏'};
-      var msg=msgs[newStatus];
-      if(msg&&confirm('Notify customer on WhatsApp?\n\n"'+msg+'"')){
-        var p=o.phone.replace(/\D/g,'');if(p.length===10)p='91'+p;
-        window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank');
-      }
-    },300);
+  // Now ask the shopkeeper if they want to message the customer about this status change
+  if(o.phone){
+    var shop=getCfg('ShopName','Our Store');
+    var msgs={
+      'Confirmed':'Hi '+o.name+', your order *#'+id.slice(-6)+'* is *confirmed* ✅ Preparing it now!\n\n— '+shop,
+      'Packed':'Hi '+o.name+', your order *#'+id.slice(-6)+'* is *packed* 📦 and ready!\n\n— '+shop,
+      'Out for Delivery':'Hi '+o.name+', your order *#'+id.slice(-6)+'* is *out for delivery* 🛵\n\n— '+shop,
+      'Delivered':'Hi '+o.name+', your order *#'+id.slice(-6)+'* has been *delivered* ✅ Thanks for choosing us!\n\n— '+shop,
+      'Picked Up':'Thanks '+o.name+'! Your order *#'+id.slice(-6)+'* is picked up. Visit again! 🙏\n\n— '+shop,
+      'Cancelled':'Hi '+o.name+', your order *#'+id.slice(-6)+'* has been *cancelled*. Sorry for the inconvenience — please reach out if you have any questions.\n\n— '+shop
+    };
+    var msg=msgs[newStatus];
+    if(msg)setTimeout(function(){openSendSheet(id,msg,{title:'Status: '+newStatus,sub:'Notify '+(o.name||'customer')+' · #'+id.slice(-6)+'?',icon:newStatus==='Cancelled'?'❌':'✅'})},250);
   }
   setTimeout(loadOrdersSheet,2500);
 }
+
+// ════════════════════════════════════════════════════════════
+// UNIFIED SEND-MESSAGE SHEET — used by status changes, ETA, quick replies, custom messages
+// Buttons: 💾 Save Only (saves comment to sheet, no WA) · 📱 Send via WhatsApp (saves + opens WA)
+// ════════════════════════════════════════════════════════════
+var _sendCtx=null;
+function openSendSheet(orderId,defaultMsg,opts){
+  opts=opts||{};
+  var o=allOrders.find(function(x){return x.id===orderId});if(!o)return;
+  _sendCtx={orderId:orderId,phone:o.phone,name:o.name};
+  $('swaTitle').textContent=opts.title||'Send Message';
+  $('swaSub').textContent=opts.sub||('Send to '+(o.name||'customer')+' · #'+orderId.slice(-6));
+  var iconEl=document.querySelector('#swaSheet .swa-status-icon');
+  if(iconEl)iconEl.textContent=opts.icon||'💬';
+  $('swaText').value=defaultMsg||'';
+  $('swaSheet').classList.add('open');
+  setTimeout(function(){$('swaText').focus();$('swaText').setSelectionRange($('swaText').value.length,$('swaText').value.length)},100);
+}
+function closeStatusWASheet(){$('swaSheet').classList.remove('open');_sendCtx=null}
+function sendStatusWA(){
+  if(!_sendCtx)return;
+  var msg=($('swaText').value||'').trim();if(!msg){showToast('Message is empty','error');return}
+  var o=_sendCtx;
+  // Save the message to the sheet as a shopkeeper comment so customer sees it on tracking
+  sendCmd('action=updateStatus&orderId='+encodeURIComponent(o.orderId)+'&comment='+encodeURIComponent(msg));
+  var ord=allOrders.find(function(x){return x.id===o.orderId});
+  if(ord)ord.comment=(ord.comment?ord.comment+' | ':'')+msg;
+  // Open WhatsApp
+  var p=String(o.phone||'').replace(/\D/g,'');if(p.length===10)p='91'+p;
+  if(p)window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank');
+  closeStatusWASheet();
+  renderOrders();
+  showToast('✓ Sent · WhatsApp opened','success');
+  setTimeout(loadOrdersSheet,2000);
+}
+// Send to Tracking — commits the message to the sheet so customer sees it on the tracking page
+function saveStatusWAOnly(){
+  if(!_sendCtx)return;
+  var msg=($('swaText').value||'').trim();
+  if(!msg){closeStatusWASheet();return}
+  var o=_sendCtx;
+  sendCmd('action=updateStatus&orderId='+encodeURIComponent(o.orderId)+'&comment='+encodeURIComponent(msg));
+  var ord=allOrders.find(function(x){return x.id===o.orderId});
+  if(ord)ord.comment=(ord.comment?ord.comment+' | ':'')+msg;
+  closeStatusWASheet();
+  renderOrders();
+  showToast('✓ Sent to tracking · customer will see it','success');
+  setTimeout(loadOrdersSheet,2000);
+}
+function skipStatusWA(){closeStatusWASheet();showToast('Skipped','success')}
 
 // ════════════════════════════════════════════
 // ETA / QUICK REPLY SHEET
@@ -1102,15 +1214,17 @@ function openETA(orderId,messageMode){
 function closeSheet(id){$(id).classList.remove('open')}
 function quickETA(mins,customMsg){
   var o=allOrders.find(function(x){return x.id===_etaOrderId});if(!o)return;
+  var shop=getCfg('ShopName','Our Store');
   var msg;
-  if(customMsg)msg=customMsg;
-  else if(mins===0)msg='Your order is *ready now*! Please collect at the counter ✅';
+  if(customMsg)msg=customMsg+'\n\n— '+shop;
+  else if(mins===0)msg='Hi '+o.name+', your order *#'+_etaOrderId.slice(-6)+'* is *ready now*! Please collect at the counter ✅\n\n— '+shop;
   else{
     var when=new Date(Date.now()+mins*60000).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',hour12:true});
-    msg='Hi '+o.name+', your order *#'+_etaOrderId.slice(-6)+'* will be ready in *'+mins+' minutes* (around '+when+') ⏱';
+    msg='Hi '+o.name+', your order *#'+_etaOrderId.slice(-6)+'* will be ready in *'+mins+' minutes* (around '+when+') ⏱\n\n— '+shop;
   }
-  $('etaText').value=msg;
-  sendETA(true);
+  // Open confirmation sheet — user picks Save Only or Send via WhatsApp
+  closeSheet('etaSheet');
+  openSendSheet(_etaOrderId,msg,{title:'Send ETA to '+(o.name||'customer'),sub:'Customer #'+_etaOrderId.slice(-6),icon:'⏱'});
 }
 function customETA(){
   var v=parseInt($('etaCustom').value);
@@ -1118,26 +1232,25 @@ function customETA(){
   quickETA(v);
 }
 function setReply(t){$('etaText').value=t;$('etaText').focus()}
-// Tap-to-send: chip immediately sends the reply via WhatsApp + saves to sheet (no Send-button step)
-function sendQuickReply(t){$('etaText').value=t;sendETA(true)}
+// Tap-to-send chip → opens confirmation sheet, doesn't fire WhatsApp directly
+function sendQuickReply(t){
+  var o=allOrders.find(function(x){return x.id===_etaOrderId});if(!o)return;
+  var shop=getCfg('ShopName','Our Store');
+  var msg=t+'\n\n— '+shop;
+  closeSheet('etaSheet');
+  openSendSheet(_etaOrderId,msg,{title:'Quick reply to '+(o.name||'customer'),sub:'Customer #'+_etaOrderId.slice(-6),icon:'💬'});
+}
 // Enable/disable the custom-message Send button based on whether textarea has content
 function updateCustomSendBtn(){var btn=$('customSendBtn');if(!btn)return;btn.disabled=!($('etaText').value||'').trim()}
+// Custom message Send → opens confirmation sheet
 function sendETA(sendWA){
   var msg=$('etaText').value.trim();
   if(!msg){showToast('Type a message','error');return}
   var o=allOrders.find(function(x){return x.id===_etaOrderId});if(!o)return;
-  o.comment=(o.comment?o.comment+' | ':'')+msg;
-  renderOrders();
+  var shop=getCfg('ShopName','Our Store');
+  var fullMsg=msg+'\n\n— '+shop;
   closeSheet('etaSheet');
-  showToast('✓ Sent to customer','success');
-  sendCmd('action=updateStatus&orderId='+encodeURIComponent(_etaOrderId)+'&comment='+encodeURIComponent(msg));
-  if(sendWA&&o.phone){
-    var p=o.phone.replace(/\D/g,'');if(p.length===10)p='91'+p;
-    var shop=getCfg('ShopName','Our Store');
-    var fullMsg=msg+'\n\n— '+shop;
-    window.open('https://wa.me/'+p+'?text='+encodeURIComponent(fullMsg),'_blank');
-  }
-  setTimeout(loadOrdersSheet,2500);
+  openSendSheet(_etaOrderId,fullMsg,{title:'Custom message to '+(o.name||'customer'),sub:'Customer #'+_etaOrderId.slice(-6),icon:'✏️'});
 }
 
 // ════════════════════════════════════════════
@@ -1227,6 +1340,34 @@ function paintInsights(){
   var multi=0,uniq=Object.keys(custMap).length;
   Object.values(custMap).forEach(function(c){if(c.orders>1)multi++});
   $('insRepeat').textContent=uniq?Math.round(multi/uniq*100)+'%':'0%';
+
+  // Customer satisfaction (reviews) — across ALL orders, not just last 7 days, since reviews are sparse
+  var reviewedOrders=allOrders.filter(function(o){return o.reviewStars>0});
+  var totalReviews=reviewedOrders.length;
+  var avgStars=totalReviews?(reviewedOrders.reduce(function(s,o){return s+o.reviewStars},0)/totalReviews):0;
+  var goodReviews=reviewedOrders.filter(function(o){return o.reviewStars>=4}).length;
+  var badReviews =reviewedOrders.filter(function(o){return o.reviewStars<=2}).length;
+  if($('insAvgStars'))$('insAvgStars').textContent=totalReviews?avgStars.toFixed(1)+' ⭐':'—';
+  if($('insReviewCount'))$('insReviewCount').textContent=totalReviews?(totalReviews+' review'+(totalReviews>1?'s':'')):'no reviews yet';
+  if($('insGoodPct'))$('insGoodPct').textContent=totalReviews?Math.round(goodReviews/totalReviews*100)+'%':'—';
+  if($('insBadCount'))$('insBadCount').textContent=badReviews>0?(badReviews+' need'+(badReviews>1?'':'s')+' attention'):'all good ✓';
+
+  // Recent reviews list (top 5 most recent reviewed orders)
+  if($('recentReviewsList')){
+    var recentReviews=reviewedOrders.slice().sort(function(a,b){return b.ts-a.ts}).slice(0,5);
+    if(recentReviews.length){
+      $('recentReviewsList').innerHTML=recentReviews.map(function(o){
+        var stars='';for(var i=0;i<5;i++)stars+=(i<o.reviewStars?'⭐':'☆');
+        return '<div class="top-row" style="cursor:pointer" onclick="setStatusFilter(\'all\');goPage(\'orders\')">'
+          +'<div class="top-rank '+(o.reviewStars>=4?'r1':o.reviewStars==3?'r2':'r3')+'">'+o.reviewStars+'</div>'
+          +'<div class="top-info"><div class="top-name">'+esc(o.name||'Customer')+(o.reviewText?' · "'+esc(o.reviewText.slice(0,40))+(o.reviewText.length>40?'…':'')+'"':'')+'</div>'
+          +'<div class="top-meta">'+stars+' · '+timeAgo(o.ts)+'</div></div>'
+          +'</div>';
+      }).join('');
+    }else{
+      $('recentReviewsList').innerHTML='<div class="empty" style="padding:20px">No reviews yet — customers can leave reviews after orders are delivered</div>';
+    }
+  }
 
   // Bar chart 7 days — chart area is 124px tall (160px container - 18px top - 22px bottom for label/baseline)
   var CHART_H=124;
@@ -1607,28 +1748,105 @@ function saveCfg(key,inputId,btn){
 // ════════════════════════════════════════════
 function printReceipt(id){
   var o=allOrders.find(function(x){return x.id===id});if(!o)return;
-  var shop=getCfg('ShopName','My Store');
-  var addr=getCfg('Address','');
-  var phone=getCfg('Phone','')||getCfg('WhatsApp','');
-  var rows=(o.items||'').split(/\n|,(?=\s*\d+x\s)/).filter(function(x){return x.trim()}).map(function(it){
-    var pp=it.split('=');
-    return '<tr><td>'+esc(pp[0]||it)+'</td><td class="r">'+esc(pp[1]||'')+'</td></tr>';
+  // ── Width target: 58mm or 80mm thermal (Config row "ReceiptWidth", default 80)
+  // Falls back gracefully on regular printers — @page size hints to thermal,
+  // but the inline max-width keeps it sane on A4 if user prints there.
+  var widthMm = parseInt(getCfg('ReceiptWidth','80'),10);
+  if(widthMm!==58 && widthMm!==80) widthMm = 80;
+  // Printable area is paper minus thermal printer margins (~3-4mm each side)
+  var printableMm = widthMm - 6;
+
+  var shop = getCfg('ShopName','My Store');
+  var addr = getCfg('Address','');
+  var phone = getCfg('Phone','') || getCfg('WhatsApp','');
+  var upi = getCfg('UPI','');
+  var slug = getCfg('Slug','') || (STORE_META && STORE_META.slug) || '';
+
+  // ── Parse items: each line is "N×name = ₹price" or "Nx name = price"
+  // Split on newlines OR commas-followed-by-quantity to handle both delimiters.
+  var itemLines = (o.items||'').split(/\n|,(?=\s*\d+\s*[x×])/).map(function(s){return s.trim()}).filter(Boolean);
+  var itemRows = itemLines.map(function(line){
+    // Split on "=" — left is qty+name, right is price
+    var eq = line.lastIndexOf('=');
+    var left = (eq>=0 ? line.slice(0,eq) : line).trim();
+    var price = (eq>=0 ? line.slice(eq+1) : '').replace(/[₹\s]/g,'').trim();
+    return '<tr><td class="it">'+esc(left)+'</td><td class="r">'+(price?'₹'+esc(price):'')+'</td></tr>';
   }).join('');
-  var css='body{font-family:monospace;font-size:12px;padding:14px;max-width:300px;margin:0 auto}h1{font-size:16px;text-align:center;margin-bottom:4px}.c{text-align:center}hr{border:none;border-top:1px dashed #000;margin:8px 0}table{width:100%}td{padding:2px 0}.r{text-align:right}.tot{font-size:14px;font-weight:bold}';
-  var parts=[
-    '<html><head><title>Receipt ',id,'</title><style>',css,'</style></head><body>',
-    '<h1>',esc(shop),'</h1>',
-    '<div class="c">',esc(addr),'<br>',esc(phone),'</div><hr>',
-    '<div>Order: ',esc(id),'<br>Date: ',esc(o.date),'<br>Customer: ',esc(o.name),'<br>Phone: ',esc(o.phone),'<br>Mode: ',esc(o.mode.toUpperCase()),'</div><hr>',
-    '<table>',rows,'</table><hr>',
-    '<table><tr class="tot"><td>TOTAL</td><td class="r">₹',o.total,'</td></tr></table><hr>',
-    '<div class="c">Thank you!<br>Powered by StorePro</div></body></html>'
-  ];
-  var w=window.open('','_blank','width=380,height=600');
-  if(!w){showToast('Popup blocked — allow popups to print','error');return}
-  w.document.write(parts.join(''));
+
+  // Format date: try to extract just time if possible
+  var dateStr = String(o.date||'');
+  var timeStr = '';
+  var dt = new Date(dateStr);
+  if (!isNaN(dt.getTime())) {
+    dateStr = dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    timeStr = dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  }
+
+  var modeLabel = (o.mode||'').toUpperCase()==='DELIVERY' ? 'DELIVERY' : 'PICKUP';
+  var paymentLabel = (o.payment||'COD').toUpperCase();
+
+  // CSS — monospace, narrow, dashed dividers. @page sets actual paper size
+  // so thermal printers don't pad. Body width matches paper minus margins.
+  // Smaller base font on 58mm so 24-char-wide content fits.
+  var fontBase = widthMm===58 ? 10 : 12;
+  var css =
+    '@page{size:'+widthMm+'mm auto;margin:3mm}'+
+    'html,body{margin:0;padding:0}'+
+    'body{font-family:"Courier New",ui-monospace,monospace;font-size:'+fontBase+'px;line-height:1.35;color:#000;width:'+printableMm+'mm;margin:0 auto;padding:0}'+
+    '.c{text-align:center}'+
+    '.r{text-align:right}'+
+    '.b{font-weight:700}'+
+    '.lg{font-size:'+(fontBase+3)+'px;font-weight:700}'+
+    '.sm{font-size:'+(fontBase-1)+'px}'+
+    'hr{border:0;border-top:1px dashed #000;margin:6px 0}'+
+    'hr.solid{border-top:1px solid #000}'+
+    'table{width:100%;border-collapse:collapse}'+
+    'td{padding:1px 0;vertical-align:top;word-break:break-word}'+
+    '.it{padding-right:6px}'+
+    '.kv td.k{width:34%;color:#000}'+
+    '.kv td.v{font-weight:700}'+
+    '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+
+  var html = ''
+    + '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt '+esc(id)+'</title><style>'+css+'</style></head><body>'
+    + '<div class="c lg">'+esc(shop)+'</div>'
+    + (addr ? '<div class="c sm">'+esc(addr)+'</div>' : '')
+    + (phone ? '<div class="c sm">📞 '+esc(phone)+'</div>' : '')
+    + '<hr class="solid">'
+    + '<table class="kv"><tbody>'
+    +   '<tr><td class="k">Order #</td><td class="v">'+esc(id)+'</td></tr>'
+    +   (dateStr ? '<tr><td class="k">Date</td><td class="v">'+esc(dateStr)+(timeStr?' · '+esc(timeStr):'')+'</td></tr>' : '')
+    +   '<tr><td class="k">Mode</td><td class="v">'+esc(modeLabel)+'</td></tr>'
+    + '</tbody></table>'
+    + '<hr>'
+    + '<table class="kv"><tbody>'
+    +   '<tr><td class="k">Customer</td><td class="v">'+esc(o.name||'-')+'</td></tr>'
+    +   (o.phone ? '<tr><td class="k">Phone</td><td class="v">'+esc(o.phone)+'</td></tr>' : '')
+    +   (o.address && modeLabel==='DELIVERY' ? '<tr><td class="k">Address</td><td class="v">'+esc(o.address)+'</td></tr>' : '')
+    + '</tbody></table>'
+    + '<hr>'
+    + (itemRows ? '<table>'+itemRows+'</table>' : '<div>(no items)</div>')
+    + '<hr>'
+    + '<table><tbody><tr class="lg"><td>TOTAL</td><td class="r">₹'+esc(o.total)+'</td></tr></tbody></table>'
+    + '<hr>'
+    + '<div class="sm"><b>Payment:</b> '+esc(paymentLabel)+(paymentLabel==='COD'?' (Pay on '+(modeLabel==='DELIVERY'?'delivery':'pickup')+')':'')+'</div>'
+    + (upi && paymentLabel!=='COD' ? '<div class="sm">UPI: '+esc(upi)+'</div>' : '')
+    + (o.notes ? '<hr><div class="sm"><b>Notes:</b> '+esc(o.notes)+'</div>' : '')
+    + '<hr class="solid">'
+    + '<div class="c sm">Thank you! 🙏</div>'
+    + (slug ? '<div class="c sm">storepro.in/?store='+esc(slug)+'</div>' : '')
+    + '<div class="c sm" style="margin-top:4px;color:#666">Powered by StorePro</div>'
+    + '<\/body><\/html>';
+
+  var w = window.open('','_blank','width=380,height=600');
+  if (!w) { showToast('Popup blocked — allow popups to print','error'); return; }
+  w.document.write(html);
   w.document.close();
-  setTimeout(function(){try{w.focus();w.print()}catch(e){}},250);
+  // Tiny delay so the doc parses + lays out before print() is called.
+  // We deliberately DON'T embed an inline <script>auto-print</script> in the
+  // doc string — browsers' HTML5 script-data tokenizer can choke on a <script>
+  // tag inside another <script>. Calling w.print() from the parent is safe.
+  setTimeout(function(){ try { w.focus(); w.print(); } catch(e){} }, 250);
 }
 
 // ════════════════════════════════════════════
@@ -1723,5 +1941,315 @@ try{localStorage.removeItem('sl_pin_')}catch(e){}
 // Dismiss splash once page is interactive (after the CSS animation has had ~1.6s to play)
 setTimeout(function(){var s=$('splash');if(s)s.classList.add('gone')},1700);
 $('p1').focus();
-// Pre-resolve store + load config so PIN check is instant and SHEET_ID is ready
-initStore(function(){if(!SHEET_ID)console.warn('[Dashboard2] Store not resolved — check ?store= param against master registry')});
+// Pre-resolve store, then auto-unlock if a saved session token is present so
+// the shopkeeper isn't prompted for the PIN on every reload. If the token has
+// been rotated server-side since (admin reset, lockNow elsewhere), the next
+// mutation will return forbidden and the dashboard pushes them back to lock.
+initStore(function(){
+  if(!SHEET_ID){console.warn('[Dashboard2] Store not resolved — check ?store= param against master registry');return}
+  if(!DASH_TOKEN||!SCRIPT_URL)return; // No saved session, leave the lock screen showing
+  // Validate the saved token against the server before auto-unlocking. If it
+  // was rotated (admin reset, lockNow on another device, PIN change), the
+  // server returns {ok:false} → we wipe the local copy and force re-login.
+  fetch(SCRIPT_URL+'?action=verifyToken&token='+encodeURIComponent(DASH_TOKEN)+'&_t='+Date.now())
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data&&data.ok){unlock();return}
+      // Stale token — wipe and stay on lock screen
+      DASH_TOKEN='';
+      try{localStorage.removeItem('sl_dash_token_'+SHEET_ID)}catch(e){}
+    })
+    .catch(function(){
+      // Network error — be optimistic and unlock anyway. If the token really
+      // is invalid, the next mutation will 403 and the user can manually lock.
+      // This avoids a hard offline-failure mode.
+      unlock();
+    });
+});
+
+/* ════════════════════════════════════════════════════════════════════
+   SETUP CHECKLIST — first-run wizard
+   Auto-detects what's done by reading Config + Products. Auto-opens once
+   on first login if any item is missing AND the user hasn't dismissed it.
+   Re-openable from More tab → Setup Checklist.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════
+   THEME PICKER — surfaces preset brand colors per shop type.
+   Changes are written to Config (BrandColor row) so storefronts pick them up
+   on next load. Live-applies to the dashboard immediately.
+   ════════════════════════════════════════════════════════════════════ */
+var THEME_PALETTE={
+  fastfood:[{name:'Brick Red',color:'#d4321f'},{name:'Forest Green',color:'#0c831f'},{name:'Royal Blue',color:'#1e40af'},{name:'Sunset',color:'#ea580c'},{name:'Cherry',color:'#dc2626'},{name:'Teal',color:'#0d9488'}],
+  restaurant:[{name:'Heritage Brown',color:'#7c2d12'},{name:'Royal Red',color:'#991b1b'},{name:'Forest Green',color:'#0c831f'},{name:'Gold',color:'#a16207'},{name:'Plum',color:'#86198f'},{name:'Indigo',color:'#3730a3'}],
+  meatshop:[{name:'Butcher Red',color:'#b91c1c'},{name:'Charcoal',color:'#1f2937'},{name:'Maroon',color:'#7f1d1d'},{name:'Forest',color:'#0c831f'}],
+  dhaba:[{name:'Sunset Orange',color:'#ea580c'},{name:'Mustard',color:'#ca8a04'},{name:'Earth Brown',color:'#78350f'},{name:'Brick',color:'#9a3412'}],
+  store:[{name:'Forest Green',color:'#0c831f'},{name:'Royal Blue',color:'#1e40af'},{name:'Sunset',color:'#ea580c'},{name:'Plum',color:'#86198f'},{name:'Teal',color:'#0d9488'},{name:'Charcoal',color:'#1f2937'}],
+  bakery:[{name:'Caramel',color:'#92400e'},{name:'Pink',color:'#be185d'},{name:'Cream',color:'#a16207'},{name:'Chocolate',color:'#451a03'}],
+  pharmacy:[{name:'Medical Cyan',color:'#0891b2'},{name:'Trust Blue',color:'#1e40af'},{name:'Health Green',color:'#0c831f'}],
+  hardware:[{name:'Steel Grey',color:'#475569'},{name:'Industrial Orange',color:'#ea580c'},{name:'Safety Yellow',color:'#ca8a04'}],
+  cafe:[{name:'Coffee Brown',color:'#a16207'},{name:'Caramel',color:'#92400e'},{name:'Sage',color:'#65a30d'},{name:'Espresso',color:'#451a03'}]
+};
+
+function getThemesForShop_(){
+  var t=String(getCfg('ShopType','')||STORE_META.shoptype||'store').toLowerCase().replace(/[\s_-]+/g,'');
+  // Match exact key, then fuzzy
+  if(THEME_PALETTE[t])return THEME_PALETTE[t];
+  for(var k in THEME_PALETTE){if(t.indexOf(k)>=0||k.indexOf(t)>=0)return THEME_PALETTE[k]}
+  return THEME_PALETTE.store;
+}
+
+function openThemePicker(){
+  var current=String(getCfg('BrandColor','')||'#0c831f').toLowerCase();
+  var themes=getThemesForShop_();
+  // Always include the current color even if not a preset, so user sees their state
+  var seen={};themes.forEach(function(t){seen[t.color.toLowerCase()]=true});
+  var allSwatches=themes.slice();
+  if(!seen[current])allSwatches.unshift({name:'Current',color:current});
+  var html='';
+  allSwatches.forEach(function(t){
+    var on=current===t.color.toLowerCase();
+    html+='<button onclick="applyTheme(\''+t.color+'\')" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card,#fff);border:'+(on?'2.5px solid var(--brand)':'1px solid var(--line)')+';border-radius:12px;padding:10px 6px;cursor:pointer;transition:.15s">'+
+      '<div style="width:44px;height:44px;border-radius:50%;background:'+t.color+';box-shadow:0 2px 8px '+t.color+'66;position:relative">'+(on?'<div style="position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px">✓</div>':'')+'</div>'+
+      '<div style="font:600 11px var(--f);color:var(--ink2);text-align:center;line-height:1.3">'+esc(t.name)+'</div>'+
+      '<div style="font:500 10px monospace;color:var(--ink3);text-transform:uppercase">'+esc(t.color)+'</div>'+
+      '</button>';
+  });
+  $('themeSwatches').innerHTML=html;
+  $('themeCustomHex').value=current;
+  $('themeCustomPicker').value=current;
+  // Keep the two custom inputs in sync
+  $('themeCustomPicker').oninput=function(){$('themeCustomHex').value=this.value};
+  $('themeSheet').classList.add('open');
+}
+
+function applyTheme(hex){
+  if(!/^#[0-9a-f]{6}$/i.test(hex)){showToast('Invalid hex color');return}
+  // Update local cache + Config row
+  configData.forEach(function(c){if(c.key.toLowerCase()==='brandcolor')c.value=hex});
+  var found=configData.some(function(c){return c.key.toLowerCase()==='brandcolor'});
+  if(!found)configData.push({key:'BrandColor',value:hex});
+  // Live-apply to dashboard CSS variable
+  document.documentElement.style.setProperty('--brand',hex);
+  var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',hex);
+  // Persist via Apps Script
+  if(SCRIPT_URL)sendCmd('action=updateConfig&key=BrandColor&value='+encodeURIComponent(hex),function(){
+    showToast('✓ Theme saved — storefront will pick it up on next refresh','success');
+  });
+  // Re-render swatches to show check on new selection
+  setTimeout(openThemePicker,200);
+  // Update the More-tab subtitle
+  var sub=$('themeCurrentSub');if(sub)sub.innerHTML='<span style="display:inline-block;width:10px;height:10px;background:'+hex+';border-radius:50%;margin-right:5px;vertical-align:1px"></span>Current: '+hex;
+}
+
+function applyCustomTheme(){
+  var v=String($('themeCustomHex').value||'').trim().toLowerCase();
+  if(!/^#[0-9a-f]{6}$/i.test(v)){showToast('Use #RRGGBB format (e.g. #0c831f)');return}
+  applyTheme(v);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   TEST ORDER — opens the storefront in test mode so the shopkeeper can
+   verify the full order flow without confusion. Storefronts watch for
+   `?test=1` in the URL and show a banner reminding the shopkeeper this
+   is a sandbox-style test (the order WILL show in their real Orders tab
+   and Telegram alert — that's intentional, it proves the wiring works).
+   ════════════════════════════════════════════════════════════════════ */
+function placeTestOrder(){
+  var slug=(new URLSearchParams(location.search)).get('store')||STORE_META.slug||'';
+  if(!slug){showToast('No store slug — can\'t open storefront');return}
+  var ok=confirm('🧪 Open your storefront in test mode?\n\n• A test banner will appear at the top of the page\n• Place a real order with your own name/phone\n• It WILL show up in your Orders tab and ping your Telegram (proves wiring works)\n• Delete the row from the Orders tab afterwards\n\nProceed?');
+  if(!ok)return;
+  window.open('/?store='+encodeURIComponent(slug)+'&test=1','_blank');
+}
+
+/* Support contacts — change once to update everywhere across dashboard.
+   WhatsApp uses 91 prefix (India). Strip non-digits if you change country. */
+var SUPPORT_WHATSAPP='919717732597'; // shopkeeper-facing support
+var SUPPORT_EMAIL='amitnegimca@gmail.com';
+
+function showForgotPin(){
+  var slug=(new URLSearchParams(location.search)).get('store')||'';
+  var msg='Hi! I forgot the dashboard PIN for my store '+(slug?'('+slug+')':'')+'. Please help me reset it.\n\nShop name: \nRegistered phone: ';
+  var waUrl='https://wa.me/'+SUPPORT_WHATSAPP+'?text='+encodeURIComponent(msg);
+  var mailUrl='mailto:'+SUPPORT_EMAIL+'?subject='+encodeURIComponent('Dashboard PIN reset request'+(slug?' — '+slug:''))+'&body='+encodeURIComponent(msg);
+  var waBtn=$('forgotWaBtn'),mailBtn=$('forgotMailBtn');
+  if(waBtn)waBtn.href=waUrl;
+  if(mailBtn)mailBtn.href=mailUrl;
+  $('forgotPinSheet').classList.add('open');
+}
+
+function setupChecklistKey_(){return 'sl_setup_dismissed_'+SHEET_ID}
+
+function getSetupItems_(){
+  var hasTelegram=false;
+  // Bot token + chat IDs live in Script Properties (post-migration). The dashboard
+  // can't read Script Properties directly, but the legacy fallback path means
+  // if either is in Config, we count it. After full migration the Config rows
+  // are gone — we treat this as "Set, but verify in Apps Script editor."
+  // Heuristic: look for a marker Config row TelegramConfigured=Yes that the
+  // shopkeeper sets after they finish the steps. Safe + explicit.
+  var marker=String(getCfg('TelegramConfigured','')||getCfg('TelegramReady','')).toLowerCase();
+  var legacyTok=getCfg('TelegramBotToken','')||getCfg('TelegramToken','');
+  var legacyId=getCfg('TelegramChatID','')||getCfg('TelegramChatId','');
+  if(marker==='yes'||marker==='true'||(legacyTok&&legacyId))hasTelegram=true;
+
+  var hasWa=!!String(getCfg('WhatsApp','')||getCfg('Whatsapp','')||getCfg('Phone','')).replace(/\D/g,'');
+  var hasHours=!!String(getCfg('BusinessHours','')).trim();
+  var hasUpi=!!String(getCfg('UPI','')||getCfg('UpiID','')).trim();
+  var hasProducts=(productData||[]).length>=3;
+  var hasOrder=(allOrders||[]).length>=1;
+  return [
+    {
+      id:'telegram', emoji:'🔔', done:hasTelegram,
+      title:'Set up Telegram order alerts',
+      desc:hasTelegram?'Done — your phone will buzz on every new order.':'Get instant order alerts on your phone, even when locked.',
+      action:'showTelegramHowTo'
+    },
+    {
+      id:'whatsapp', emoji:'💬', done:hasWa,
+      title:'Add your WhatsApp number',
+      desc:hasWa?'Done — customers can reach you on WhatsApp.':'So customers can confirm orders or ask questions.',
+      action:'openCfgFor:WhatsApp'
+    },
+    {
+      id:'hours', emoji:'🕒', done:hasHours,
+      title:'Set business hours',
+      desc:hasHours?'Done — '+esc(getCfg('BusinessHours','')):'Tell customers when you\'re open. Format: 9:00-22:00',
+      action:'openCfgFor:BusinessHours'
+    },
+    {
+      id:'upi', emoji:'💳', done:hasUpi,
+      title:'Add UPI ID for payments',
+      desc:hasUpi?'Done — customers see your UPI on checkout.':'So customers can pay you directly. Optional — skip if cash-only.',
+      action:'openCfgFor:UPI'
+    },
+    {
+      id:'products', emoji:'📦', done:hasProducts,
+      title:'Add at least 3 products',
+      desc:hasProducts?'Done — '+(productData.length)+' products in your catalog.':'You currently have '+((productData||[]).length)+'. Add more so customers have something to order.',
+      action:'goPage:products'
+    },
+    {
+      id:'testorder', emoji:'🧪', done:hasOrder,
+      title:'Place a test order',
+      desc:hasOrder?'Done — at least one order received.':'Try ordering from your own store to see the full flow.',
+      action:'openStorefront'
+    }
+  ];
+}
+
+function renderSetupChecklist_(){
+  var items=getSetupItems_();
+  var done=items.filter(function(i){return i.done}).length;
+  var pct=Math.round((done/items.length)*100);
+  $('setupProgressFill').style.width=pct+'%';
+  $('setupProgressText').textContent=done+' of '+items.length+' done · '+pct+'%';
+  if(done===items.length){
+    $('setupSheetSub').textContent='🎉 Everything\'s set up! You can dismiss this checklist.';
+  }else{
+    $('setupSheetSub').textContent='Finish '+(items.length-done)+' more step'+(items.length-done===1?'':'s')+' to get the most out of your store';
+  }
+  // Update the "More" tab badge: green dot if items remain
+  var sub=$('setupChecklistSub'),badge=$('setupChecklistBadge');
+  if(sub){sub.textContent=done===items.length?'All done':done+' of '+items.length+' steps done'}
+  if(badge){
+    if(done<items.length){
+      badge.innerHTML='<span style="display:inline-block;width:8px;height:8px;background:var(--orange,#ea580c);border-radius:50%;margin-right:4px;vertical-align:2px"></span>›';
+    }else{
+      badge.textContent='›';
+    }
+  }
+  var html='';
+  items.forEach(function(it){
+    html+='<div class="setup-item'+(it.done?' done':'')+'" id="setupItem_'+it.id+'" '+(it.done?'':('onclick="onSetupItemClick(\''+it.id+'\')"'))+'>';
+    html+='<div class="setup-check"></div>';
+    html+='<div class="setup-info">';
+    html+='<div class="setup-title">'+it.emoji+' '+esc(it.title)+'</div>';
+    html+='<div class="setup-desc">'+esc(it.desc)+'</div>';
+    if(it.id==='telegram'&&!it.done){
+      html+='<div class="setup-help" id="setupHelp_telegram">'+telegramHowToHtml_()+'</div>';
+    }
+    html+='</div>';
+    html+=it.done?'':'<div class="setup-arr">›</div>';
+    html+='</div>';
+  });
+  $('setupItems').innerHTML=html;
+}
+
+function telegramHowToHtml_(){
+  return ''+
+    '<div style="font-weight:700;margin-bottom:8px;font-size:13px">📲 5-step Telegram setup (~5 min):</div>'+
+    '<ol>'+
+    '<li><span class="step-num">1</span><strong>Create the bot:</strong> on Telegram, search <code>@BotFather</code> → send <code>/newbot</code> → pick a name (e.g. "My Shop Orders") → pick a username ending in <code>bot</code> → BotFather replies with a <strong>token</strong> like <code>1234567890:AA...</code> — copy it.</li>'+
+    '<li><span class="step-num">2</span><strong>Activate the bot:</strong> tap the <code>t.me/...</code> link BotFather gave you → press <strong>Start</strong> → send any message ("hi"). This unblocks the bot so it can message you.</li>'+
+    '<li><span class="step-num">3</span><strong>Get your chat ID:</strong> in Telegram, search <code>@getmyid_bot</code> → press Start → it replies with your numeric ID (e.g. <code>123456789</code>). Copy that number.</li>'+
+    '<li><span class="step-num">4</span><strong>Save the credentials:</strong> open your <a href="#" onclick="openSheet();return false">Google Sheet</a> → <strong>Extensions → Apps Script</strong> → ⚙ <strong>Project Settings</strong> → <strong>Script Properties</strong> → add two rows:<ul style="margin-top:4px"><li><code>TELEGRAM_BOT_TOKEN</code> = <em>token from step 1</em></li><li><code>TELEGRAM_CHAT_IDS</code> = <em>chat ID from step 3</em></li></ul></li>'+
+    '<li><span class="step-num">5</span><strong>Test + activate:</strong> in the Apps Script editor, function dropdown → <code>testTelegramNow</code> → ▶ Run. You should get a Telegram message. Then run <code>installTelegramPollingTrigger</code> once to enable button taps and slash commands.</li>'+
+    '</ol>'+
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #c7d2fe">After step 5 succeeds, mark this item done by adding a Config row <code>TelegramConfigured</code> = <code>Yes</code>. <a href="#" onclick="markTelegramConfigured();return false">Click here to do that automatically</a> once your test message arrives.</div>';
+}
+
+function onSetupItemClick(id){
+  var items=getSetupItems_();
+  var it=items.find(function(x){return x.id===id});
+  if(!it||it.done)return;
+  if(it.action==='showTelegramHowTo'){
+    var help=$('setupHelp_telegram');
+    if(help){help.classList.toggle('open');help.scrollIntoView({behavior:'smooth',block:'nearest'})}
+    return;
+  }
+  if(it.action==='goPage:products'){
+    closeSheet('setupSheet');goPage('products');return;
+  }
+  if(it.action==='openStorefront'){
+    placeTestOrder();
+    return;
+  }
+  if((it.action||'').indexOf('openCfgFor:')===0){
+    var key=it.action.split(':')[1];
+    closeSheet('setupSheet');
+    openSection('config');
+    setTimeout(function(){
+      var inp=document.querySelector('#cfgList .cfg-item .cfg-k');
+      // Filter the config search to surface the relevant key
+      var s=$('cfgSearch');if(s){s.value=key;renderConfig();setTimeout(function(){
+        var firstInp=$('cfgList').querySelector('input.cfg-input,textarea.cfg-input');
+        if(firstInp)firstInp.focus();
+      },200)}
+    },300);
+  }
+}
+
+function markTelegramConfigured(){
+  if(!SCRIPT_URL){showToast('No Apps Script URL configured');return}
+  configData.push({key:'TelegramConfigured',value:'Yes'});
+  sendCmd('action=updateConfig&key=TelegramConfigured&value=Yes',function(){
+    showToast('✓ Marked Telegram as configured','success');
+    renderSetupChecklist_();
+  });
+}
+
+function openSetupChecklist(){
+  $('setupSheet').classList.add('open');
+  renderSetupChecklist_();
+}
+
+function dismissSetupForever(){
+  try{localStorage.setItem(setupChecklistKey_(),'1')}catch(e){}
+  closeSheet('setupSheet');
+  showToast('Checklist dismissed — find it again in More → Setup Checklist');
+}
+
+// Auto-open the checklist on first login if anything's incomplete and the
+// user hasn't dismissed it. Called from bootstrap after products load.
+function maybeAutoOpenSetup(){
+  try{if(localStorage.getItem(setupChecklistKey_())==='1')return}catch(e){}
+  var items=getSetupItems_();
+  var done=items.filter(function(i){return i.done}).length;
+  // Always paint the More-tab badge so the checklist is discoverable
+  renderSetupChecklist_();
+  if(done<items.length){
+    setTimeout(function(){openSetupChecklist()},800);
+  }
+}
