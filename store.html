@@ -146,6 +146,11 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:16px}.mbg.open{display:flex;animation:fadeIn .2s}
 .mbox{background:var(--white);border-radius:var(--r3);max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--sh4);animation:slideUp .25s var(--ease)}
 .mimg{width:100%;aspect-ratio:4/3;object-fit:cover;background:#fafafa;display:block}.mbody{padding:20px}
+.mthumbs{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;background:#fafafa}
+.mthumbs:empty{display:none}
+.mthumb{width:54px;height:54px;border-radius:8px;background-size:cover;background-position:center;flex-shrink:0;cursor:pointer;border:2px solid transparent;opacity:.7;transition:.15s}
+.mthumb.on{border-color:var(--brand);opacity:1}
+.mthumb:hover{opacity:1}
 .mcat{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);font-weight:700}
 .mbody h2{font-size:20px;font-weight:700;margin:4px 0 6px;line-height:1.25}.munit{font-size:13px;color:var(--ink3);font-weight:500}
 .mdesc{color:var(--ink3);font-size:14px;line-height:1.65;margin:12px 0 16px}
@@ -333,7 +338,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 <section class="info" id="infoSec"><div class="info-grid" id="infoCard"></div></section>
 <section class="map-sec" id="mapSec"><div class="map-card"><iframe id="mapFrame" src="" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-footer"><div class="map-addr"><strong id="mapName"></strong><span id="mapAddr"></span></div><a class="map-dir" id="mapDirBtn" href="#" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>Get Directions</a></div></div></section>
 <div class="stickybar" id="stickyBar"><div class="stickybar-in"><div class="stickybar-card" onclick="toggleCart()"><div class="sb-left"><span class="sb-count" id="sbCount">0 items</span><span class="sb-total" id="sbTotal">₹0</span></div><div class="sb-btn"><span id="sbLabel">View Cart</span> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg></div></div></div></div>
-<div class="mbg" id="modal" onclick="if(event.target===this)this.classList.remove('open')"><div class="mbox"><img class="mimg" id="mImg" src="" alt=""><div class="mbody"><div class="mcat" id="mCat"></div><h2 id="mName"></h2><div class="munit" id="mUnit"></div><p class="mdesc" id="mDesc"></p><div class="mpr"><span class="mprice" id="mPrice"></span><span class="mmrp" id="mMrp"></span><span class="msave" id="mSave"></span></div><div class="mtags" id="mTags"></div><div class="mbtns"><button class="mb mb1" id="mAddBtn">Add to Cart</button><button class="mb mb2" id="mWaBtn">📤 Share</button><button class="mb mb3" onclick="document.getElementById('modal').classList.remove('open')">Close</button></div></div></div></div>
+<div class="mbg" id="modal" onclick="if(event.target===this)this.classList.remove('open')"><div class="mbox"><img class="mimg" id="mImg" src="" alt=""><div class="mthumbs" id="mThumbs"></div><div class="mbody"><div class="mcat" id="mCat"></div><h2 id="mName"></h2><div class="munit" id="mUnit"></div><p class="mdesc" id="mDesc"></p><div class="mpr"><span class="mprice" id="mPrice"></span><span class="mmrp" id="mMrp"></span><span class="msave" id="mSave"></span></div><div class="mtags" id="mTags"></div><div class="mbtns"><button class="mb mb1" id="mAddBtn">Add to Cart</button><button class="mb mb2" id="mWaBtn">📤 Share</button><button class="mb mb3" onclick="document.getElementById('modal').classList.remove('open')">Close</button></div></div></div></div>
 <div class="co" id="co" onclick="toggleCart()"><div class="cd" onclick="event.stopPropagation()">
   <div class="cd-h"><h2 id="cdTitle">Cart (0)</h2><button class="cd-x" onclick="toggleCart()">✕</button></div>
   <div class="cd-body" id="cdList"><div class="cd-empty">Your cart is empty</div></div>
@@ -691,6 +696,7 @@ function applyConfig(){var name=cfg('shopname','StorePro Store');document.title=
   setMeta('name','twitter:description',desc.substring(0,200));
   if(cfg('ogimage'))setMeta('property','og:image',cfg('ogimage'));
   if(cfg('ogimage'))setMeta('name','twitter:image',cfg('ogimage'));
+  applyTenantLogo();
   if(city){setMeta('name','geo.placename',city);document.querySelector('meta[name="keywords"]').setAttribute('content',name+', '+cfg('shoptype','grocery')+' '+city+', online order '+city+', '+cfg('tagline',''))}
   // Google Analytics GA4
   var gaId=cfg('analyticsid','');
@@ -725,7 +731,44 @@ function applyConfig(){var name=cfg('shopname','StorePro Store');document.title=
     r.setProperty('--sh','0 1px 4px rgba(0,0,0,.3)');r.setProperty('--sh2','0 4px 16px rgba(0,0,0,.4)');
   }
 }
-function renderOffers(){if(!offers.length)return;window._hasOffers=true;document.getElementById('offersSec').style.display='block';document.getElementById('offersRow').innerHTML=offers.map(function(o){if(isValidImg(o.image))return '<div class="ocard"><img class="ocard-img" src="'+esc(o.image)+'" alt="" loading="lazy"><div class="ocard-body"><div class="ocard-title">'+esc(o.title)+'</div>'+(o.description?'<div class="ocard-desc">'+esc(o.description)+'</div>':'')+'</div></div>';return '<div class="ocard-text"><div class="ot-tag">Offer</div><div class="ot-t">'+esc(o.title)+'</div>'+(o.description?'<div class="ot-d">'+esc(o.description)+'</div>':'')+'</div>'}).join('')}
+function cldThumb(url,w,mode){if(!url)return url;var s=String(url);var m=s.match(/^(https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\/)(.+)$/);if(!m)return s;if(/^[a-z]_[^,\/]+(,|\/)/i.test(m[2]))return s;return m[1]+'w_'+(w||400)+',c_'+(mode||'fill')+',q_auto,f_auto/'+m[2]}
+// Multi-image: split pipe-separated URLs. parseImages('a|b|c') = ['a','b','c']. Single URL still works.
+function parseImages(s){return String(s||'').split('|').map(function(u){return u.trim()}).filter(Boolean)}
+function primaryImage(s){return parseImages(s)[0]||''}
+// Inject tenant's uploaded logo into favicon, header, apple-touch-icon, and PWA manifest.
+// Called from applyConfig once cfg('logo') is available. Safe to call multiple times.
+function applyTenantLogo(){
+  var logoUrl=primaryImage(cfg('logo',''));if(!logoUrl)return;
+  var fav=cldThumb(logoUrl,192,'fill'),big=cldThumb(logoUrl,512,'fill'),hdr=cldThumb(logoUrl,96,'fill');
+  // Favicon + apple-touch-icon
+  document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"], link[rel="shortcut icon"]').forEach(function(l){
+    l.setAttribute('href',fav);l.removeAttribute('type');
+  });
+  // Header logo image (replaces emoji .logo-ic if present)
+  var ic=document.getElementById('logoMark');
+  if(ic){
+    ic.innerHTML='';ic.style.backgroundImage="url('"+hdr+"')";
+    ic.style.backgroundSize='cover';ic.style.backgroundPosition='center';
+  }
+  // OG/Twitter image fallback if no explicit ogimage
+  if(!cfg('ogimage','')){
+    var og=document.querySelector('meta[property="og:image"]'),tw=document.querySelector('meta[name="twitter:image"]');
+    if(og)og.setAttribute('content',big);if(tw)tw.setAttribute('content',big);
+  }
+  // PWA manifest blob — replaces static manifest.json with one using the tenant's logo
+  try{
+    var name=cfg('shopname','Store');
+    var m={name:name,short_name:(name||'Store').substring(0,15),description:cfg('tagline',''),
+      start_url:location.pathname+location.search,id:location.pathname+location.search,
+      display:'standalone',background_color:'#ffffff',theme_color:cfg('brandcolor','#0c831f'),orientation:'portrait',
+      icons:[{src:fav,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:big,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+    var blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+    var link=document.querySelector('link[rel="manifest"]');
+    if(link){link.href=URL.createObjectURL(blob)}
+    else{var l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(blob);document.head.appendChild(l)}
+  }catch(e){}
+}
+function renderOffers(){if(!offers.length)return;window._hasOffers=true;document.getElementById('offersSec').style.display='block';document.getElementById('offersRow').innerHTML=offers.map(function(o){var oimg=primaryImage(o.image);if(isValidImg(oimg))return '<div class="ocard"><img class="ocard-img" src="'+esc(cldThumb(oimg,800,'fit'))+'" alt="" loading="lazy"><div class="ocard-body"><div class="ocard-title">'+esc(o.title)+'</div>'+(o.description?'<div class="ocard-desc">'+esc(o.description)+'</div>':'')+'</div></div>';return '<div class="ocard-text"><div class="ot-tag">Offer</div><div class="ot-t">'+esc(o.title)+'</div>'+(o.description?'<div class="ot-d">'+esc(o.description)+'</div>':'')+'</div>'}).join('')}
 function buildCats(){var cats=["All",...new Set(allProducts.map(function(p){return p.category}).filter(Boolean))];document.getElementById('catRow').innerHTML=cats.map(function(c){return '<button class="cat'+(c===activeCat?' on':'')+'" onclick="selCat(\''+c.replace(/'/g,"\\'")+'\')">'+esc(c==='All'?t('all'):c)+'</button>'}).join('')}
 function selCat(c){activeCat=c;buildCats();applyFilter()}
 function handleSearch(v){
@@ -748,8 +791,8 @@ function renderGrid(){
     var stk=(p.stock||'').toLowerCase(),isOOS=stk==='out of stock'||stk==='out'||stk==='no';
     var qty=getCartQty(p.name,p.unit||'');
     var actionBtn=cardActionHtml_(i,qty,isOOS);
-    var hasImg=isValidImg(p.image);
-    var imgHtml=hasImg?'<img src="'+esc(p.image)+'" alt="'+esc(p.name)+'" loading="lazy" onerror="imgErr(this,\''+esc(p.category||'').replace(/'/g,'')+'\')">'
+    var primary=primaryImage(p.image);var hasImg=isValidImg(primary);
+    var imgHtml=hasImg?'<img src="'+esc(cldThumb(primary,400))+'" alt="'+esc(p.name)+'" loading="lazy" onerror="imgErr(this,\''+esc(p.category||'').replace(/'/g,'')+'\')">'
       :'<div class="pc-ph"><span class="pc-ph-icon">'+phIcon(p.category)+'</span><span class="pc-ph-text">'+esc(p.category||'Product')+'</span></div>';
     return '<div class="pc'+(isOOS?' oos':'')+'" data-pi="'+i+'" style="animation-delay:'+(i*.03)+'s" onclick="openModal('+i+')">'
       +(isOOS?'<div class="pc-oos-tag">'+t('oos')+'</div>':'')
@@ -779,7 +822,7 @@ function updateCardAction_(i){
   slot.innerHTML=cardActionHtml_(i,qty,isOOS);
 }
 
-function openModal(i){var p=filtered[i],m=document.getElementById('modal'),img=document.getElementById('mImg'),cur=cfg('currency','₹');if(isValidImg(p.image)){img.src=p.image;img.style.display='block';img.onerror=function(){img.style.display='none'}}else img.style.display='none';document.getElementById('mCat').textContent=p.category||'';document.getElementById('mName').textContent=p.name||'';document.getElementById('mUnit').textContent=p.unit||'';document.getElementById('mDesc').textContent=p.description||'';var price=Number(p.price||0),mrp=p.mrp?Number(p.mrp):0,hasMrp=mrp>price&&price>0;document.getElementById('mPrice').textContent=cur+price.toLocaleString('en-IN');var me=document.getElementById('mMrp'),se=document.getElementById('mSave');if(hasMrp){var pct=Math.round(((mrp-price)/mrp)*100);me.textContent=cur+mrp.toLocaleString('en-IN');me.style.display='inline';se.textContent=t('save')+' '+pct+'%';se.style.display='inline'}else{me.style.display='none';se.style.display='none'}var tags='',typ=(p.type||'').toLowerCase();if(typ==='veg')tags+='<span class="t t-veg">● '+t('veg')+'</span>';else if(typ.indexOf('non')>=0)tags+='<span class="t t-nv">● '+t('nonveg')+'</span>';if(p.badge)tags+='<span class="t t-offer">'+esc(p.badge)+'</span>';document.getElementById('mTags').innerHTML=tags;document.getElementById('mAddBtn').onclick=function(){addToCart(i);m.classList.remove('open')};document.getElementById('mWaBtn').onclick=function(){shareProduct(i)};m.classList.add('open')}
+function openModal(i){var p=filtered[i],m=document.getElementById('modal'),img=document.getElementById('mImg'),thumbs=document.getElementById('mThumbs'),cur=cfg('currency','₹');var imgs=parseImages(p.image);var primary=imgs[0]||'';if(isValidImg(primary)){img.src=cldThumb(primary,800,'limit');img.style.display='block';img.onerror=function(){img.style.display='none'}}else img.style.display='none';if(thumbs){thumbs.innerHTML='';if(imgs.length>1){imgs.forEach(function(u,ti){var t=document.createElement('div');t.className='mthumb'+(ti===0?' on':'');t.style.backgroundImage='url('+cldThumb(u,120,'fill')+')';t.onclick=function(){img.src=cldThumb(u,800,'limit');img.style.display='block';thumbs.querySelectorAll('.mthumb').forEach(function(x){x.classList.remove('on')});t.classList.add('on')};thumbs.appendChild(t)})}}document.getElementById('mCat').textContent=p.category||'';document.getElementById('mName').textContent=p.name||'';document.getElementById('mUnit').textContent=p.unit||'';document.getElementById('mDesc').textContent=p.description||'';var price=Number(p.price||0),mrp=p.mrp?Number(p.mrp):0,hasMrp=mrp>price&&price>0;document.getElementById('mPrice').textContent=cur+price.toLocaleString('en-IN');var me=document.getElementById('mMrp'),se=document.getElementById('mSave');if(hasMrp){var pct=Math.round(((mrp-price)/mrp)*100);me.textContent=cur+mrp.toLocaleString('en-IN');me.style.display='inline';se.textContent=t('save')+' '+pct+'%';se.style.display='inline'}else{me.style.display='none';se.style.display='none'}var tags='',typ=(p.type||'').toLowerCase();if(typ==='veg')tags+='<span class="t t-veg">● '+t('veg')+'</span>';else if(typ.indexOf('non')>=0)tags+='<span class="t t-nv">● '+t('nonveg')+'</span>';if(p.badge)tags+='<span class="t t-offer">'+esc(p.badge)+'</span>';document.getElementById('mTags').innerHTML=tags;document.getElementById('mAddBtn').onclick=function(){addToCart(i);m.classList.remove('open')};document.getElementById('mWaBtn').onclick=function(){shareProduct(i)};m.classList.add('open')}
 
 // ══════ SHARE PRODUCT ON WHATSAPP ══════
 function shareProduct(i){

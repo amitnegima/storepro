@@ -61,8 +61,10 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 
 /* Hero */
 .hero{position:relative;height:160px;overflow:hidden;background:linear-gradient(135deg,var(--brand-dk),var(--brand))}
-.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;mix-blend-mode:overlay}
-.hero-content{position:relative;max-width:var(--mw);margin:0 auto;padding:20px var(--px);height:100%;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
+.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;mix-blend-mode:overlay;transition:.3s}
+.hero.has-bg .hero-bg-img{opacity:1;mix-blend-mode:normal}
+.hero.has-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.45) 60%,rgba(0,0,0,.7) 100%);pointer-events:none}
+.hero-content{position:relative;z-index:1;max-width:var(--mw);margin:0 auto;padding:20px var(--px);height:100%;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
 .hero-tagline{font-size:13px;opacity:.9;margin-bottom:4px;font-weight:500}
 .hero-title{font-size:22px;font-weight:800;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.2)}
 .hero-info{display:flex;gap:12px;margin-top:8px;font-size:12px;font-weight:600;flex-wrap:wrap}
@@ -648,12 +650,17 @@ function applyConfig(){
   var name=cfg('shopname','Dhaba');
   document.title=name+' — Order Online';
   $('topName').textContent=name;
+  applyTenantLogo();
   $('heroTitle').textContent=name;
   if(cfg('herotagline'))$('heroTagline').textContent=cfg('herotagline');
   else if(cfg('tagline'))$('heroTagline').textContent=cfg('tagline');
   
   // Hero background
-  if(cfg('heroimage'))$('heroBgImg').style.backgroundImage='url('+cfg('heroimage')+')';
+  var heroImg=primaryImage(cfg('heroimage',''));
+  if(heroImg){
+    $('heroBgImg').style.backgroundImage='url("'+cldThumb(heroImg,1200,'fill')+'")';
+    var heroBox=$('heroBox');if(heroBox)heroBox.classList.add('has-bg');
+  }
   
   // Hero info chips
   var dt=cfg('estimateddeliverytime')||cfg('deliverytime')||'30-45 min';
@@ -747,7 +754,7 @@ function applyConfig(){
       dsImg='https://source.unsplash.com/600x300/?'+encodeURIComponent(dsName.toLowerCase()+',indian-food');
     }
     var html='<div class="daily-special-card" onclick="scrollToDish('+JSON.stringify(dsName)+')">';
-    html+='<div class="daily-special-img" style="background-image:url('+esc(dsImg)+')"></div>';
+    html+='<div class="daily-special-img" style="background-image:url('+esc(cldThumb(dsImg,1000,'fill'))+')"></div>';
     html+='<div class="daily-special-overlay"></div>';
     html+='<div class="daily-special-badge">⭐ Today\'s Special</div>';
     html+='<div class="daily-special-content">';
@@ -971,7 +978,7 @@ function renderDish(d){
   else if((d.category||'').toLowerCase().indexOf('rice')>=0||(d.category||'').toLowerCase().indexOf('biryani')>=0)fallbackEmoji='🍚';
   else if((d.category||'').toLowerCase().indexOf('starter')>=0)fallbackEmoji='🍢';
   else if(isCombo)fallbackEmoji='🍱';
-  html+='<img class="dish-img" src="'+esc(imgUrl)+'" alt="'+esc(d.name)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;dish-img-ph&quot;>'+fallbackEmoji+'</div>\'">';
+  html+='<img class="dish-img" src="'+esc(cldThumb(imgUrl,500))+'" alt="'+esc(d.name)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;dish-img-ph&quot;>'+fallbackEmoji+'</div>\'">';
   if(hasCustom&&!oos)html+='<div class="dish-customize">Customize</div>';
   
   html+='<span class="dish-action" data-di="'+i+'">'+dishActionHtml_(d,i,qty,oos,hasCustom)+'</span>';
@@ -1626,9 +1633,44 @@ function scrollToDish(name){
   },150);
 }
 
+// Cloudinary URL transformation — saves bandwidth on storefronts
+function cldThumb(url,w,mode){if(!url)return url;var s=String(url);var m=s.match(/^(https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\/)(.+)$/);if(!m)return s;if(/^[a-z]_[^,\/]+(,|\/)/i.test(m[2]))return s;return m[1]+'w_'+(w||400)+',c_'+(mode||'fill')+',q_auto,f_auto/'+m[2]}
+function parseImages(s){return String(s||'').split('|').map(function(u){return u.trim()}).filter(Boolean)}
+function primaryImage(s){return parseImages(s)[0]||''}
+function applyTenantLogo(){
+  var logoUrl=primaryImage(cfg('logo',''));if(!logoUrl)return;
+  var fav=cldThumb(logoUrl,192,'fill'),big=cldThumb(logoUrl,512,'fill'),hdr=cldThumb(logoUrl,96,'fill');
+  document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"], link[rel="shortcut icon"]').forEach(function(l){
+    l.setAttribute('href',fav);l.removeAttribute('type');
+  });
+  var nameEl=document.getElementById('topName');
+  if(nameEl){
+    var info=nameEl.closest('.top-info,.hdr-info');
+    var top=info?info.parentNode:nameEl.parentNode;
+    if(top){
+      var existing=top.querySelector(':scope > .tenant-logo');
+      if(!existing){
+        var img=document.createElement('img');img.className='tenant-logo';img.alt='';img.src=hdr;
+        img.style.cssText='width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#f3f4f6';
+        top.insertBefore(img,info||top.firstChild);
+      }else{existing.src=hdr}
+    }
+  }
+  try{
+    var name=cfg('shopname','Dhaba');
+    var m={name:name,short_name:(name||'Store').substring(0,15),description:cfg('tagline',''),
+      start_url:location.pathname+location.search,id:location.pathname+location.search,
+      display:'standalone',background_color:'#ffffff',theme_color:cfg('brandcolor','#ea580c'),orientation:'portrait',
+      icons:[{src:fav,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:big,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+    var blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+    var link=document.querySelector('link[rel="manifest"]');
+    if(link){link.href=URL.createObjectURL(blob)}
+    else{var l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(blob);document.head.appendChild(l)}
+  }catch(e){}
+}
 // Auto-generate image URL based on dish name and category — uses Unsplash for free relevant images
 function getAutoImage(dish){
-  if(dish.image)return dish.image;
+  if(dish.image)return primaryImage(dish.image);
   var name=(dish.name||'').toLowerCase();
   var cat=(dish.category||'').toLowerCase();
   // Map dish names to specific image keywords for better results

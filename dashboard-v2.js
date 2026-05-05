@@ -21,6 +21,187 @@ var _etaOrderId='';
 var _broadcastQueue=[];
 
 // ════════════════════════════════════════════
+// CLOUDINARY — image upload
+// ════════════════════════════════════════════
+// Public values only — safe to ship in browser code.
+// The unsigned preset (storepro_products) is locked down server-side
+// to image MIME types and auto-resizes everything to 1200px wide.
+var CLOUDINARY={cloud:'storepro',preset:'storepro_products'};
+// Client-side limits (defence in depth — preset enforces too)
+var IMG_MAX_BYTES=10*1024*1024; // 10 MB
+var IMG_ALLOWED=/^image\/(jpeg|jpg|png|webp|heic|heif)$/i;
+
+// Validate a File. Returns null if OK, else a user-friendly message.
+function validateImageFile(file){
+  if(!file)return 'No file selected';
+  if(!IMG_ALLOWED.test(file.type||''))return 'Please pick a JPG, PNG, WebP, or HEIC image';
+  if(file.size>IMG_MAX_BYTES)return 'Image too large ('+Math.round(file.size/1048576)+' MB). Max 10 MB.';
+  return null;
+}
+
+// Upload a File to Cloudinary, returns Promise<secure_url>.
+// onProgress(0..100) is called periodically.
+function uploadImageToCloud(file,onProgress){
+  return new Promise(function(resolve,reject){
+    var url='https://api.cloudinary.com/v1_1/'+CLOUDINARY.cloud+'/image/upload';
+    var fd=new FormData();
+    fd.append('file',file);
+    fd.append('upload_preset',CLOUDINARY.preset);
+    // Tag every upload with the tenant slug so we can audit/clean later
+    var slug=(new URLSearchParams(location.search).get('store')||'').toLowerCase();
+    if(slug)fd.append('folder','storepro/'+slug);
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',url);
+    xhr.upload.onprogress=function(e){
+      if(e.lengthComputable&&onProgress)onProgress(Math.round((e.loaded/e.total)*100));
+    };
+    xhr.onload=function(){
+      try{
+        var r=JSON.parse(xhr.responseText||'{}');
+        if(xhr.status>=200&&xhr.status<300&&r.secure_url)resolve(r.secure_url);
+        else reject(new Error((r.error&&r.error.message)||('Upload failed ('+xhr.status+')')));
+      }catch(e){reject(new Error('Upload failed: bad response'))}
+    };
+    xhr.onerror=function(){reject(new Error('Network error during upload'))};
+    xhr.send(fd);
+  });
+}
+
+// Drag-and-drop: process a dropped File against a (urlInput, preview) pair.
+// Used by both product form rows (.pf-field-row) and config image rows (.cfg-img-row).
+function handleDroppedImage(file,urlInput,preview,btn){
+  var err=validateImageFile(file);
+  if(err){alert(err);return}
+  var prevText=btn?btn.textContent:'',prevDisabled=btn?btn.disabled:false;
+  if(btn){btn.disabled=true;btn.textContent='0%'}
+  uploadImageToCloud(file,function(p){if(btn)btn.textContent=p+'%'}).then(function(secureUrl){
+    if(urlInput)urlInput.value=secureUrl;
+    if(preview){preview.style.backgroundImage='url('+secureUrl+')';preview.textContent=''}
+    if(btn){btn.textContent='✓';setTimeout(function(){btn.textContent=prevText;btn.disabled=prevDisabled},1200)}
+  }).catch(function(e){
+    if(btn){btn.textContent=prevText;btn.disabled=prevDisabled}
+    alert('Upload failed: '+(e&&e.message||'unknown error'));
+  });
+}
+// Wire drag-and-drop on a row element. Visually highlights on dragover.
+function wireImageDrop(row){
+  if(!row||row.__dropWired)return;row.__dropWired=true;
+  row.addEventListener('dragover',function(e){
+    if(!e.dataTransfer||!e.dataTransfer.types||e.dataTransfer.types.indexOf('Files')<0)return;
+    e.preventDefault();row.classList.add('img-drop-hover');
+  });
+  row.addEventListener('dragleave',function(){row.classList.remove('img-drop-hover')});
+  row.addEventListener('drop',function(e){
+    e.preventDefault();row.classList.remove('img-drop-hover');
+    var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(!f)return;
+    var urlInput=row.querySelector('input[type=url]')||row.querySelector('input.cfg-input')||row.querySelector('input.pf-input');
+    var preview=row.querySelector('.pf-img-preview')||row.querySelector('.cfg-img-prev');
+    var btn=row.querySelector('.pf-upload-btn')||row.querySelector('.cfg-upload-btn');
+    handleDroppedImage(f,urlInput,preview,btn);
+  });
+}
+// Auto-wire any new image row when it appears (delegated MutationObserver).
+function wireAllImageDropZones(){
+  document.querySelectorAll('.pf-field-row,.cfg-img-row').forEach(wireImageDrop);
+}
+
+// ──────── Multi-image gallery (product image field) ────────
+// Stored in the sheet as pipe-separated URLs in the existing 'image' column.
+// "url1|url2|url3" — first is the primary. Backward-compatible with single URL.
+var GAL_MAX=5;
+function renderGalleryField(val){
+  return '<div class="pf-gallery" data-pf-gallery>'
+    +'<input type="hidden" data-pf-input value="'+esc(val||'')+'">'
+    +'<div class="pf-gal-body">'+_galInner(val||'')+'</div>'
+    +'<input type="file" accept="image/*" style="display:none" data-pf-galfile>'
+    +'</div>';
+}
+function _galInner(val){
+  var urls=String(val||'').split('|').map(function(u){return u.trim()}).filter(Boolean);
+  var cells=urls.map(function(u,idx){
+    return '<div class="pf-gal-cell" style="background-image:url('+esc(u)+')">'
+      +'<button type="button" class="pf-gal-x" onclick="pfGalRemove(this)" title="Remove">×</button>'
+      +(idx===0?'<div class="pf-gal-primary">PRIMARY</div>':'')
+      +'</div>';
+  }).join('');
+  if(!urls.length)cells='<div class="pf-gal-empty">📷 No images yet — upload or paste URL below</div>';
+  var actions;
+  if(urls.length<GAL_MAX){
+    actions='<div class="pf-gal-add-row">'
+      +'<button type="button" class="pf-upload-btn" onclick="pfGalAdd(this)">📷 Upload</button>'
+      +'<input type="url" class="pf-input pf-gal-url" placeholder="or paste URL + press Enter" onkeydown="if(event.key===\'Enter\'){event.preventDefault();pfGalAddUrl(this)}">'
+      +'</div>';
+  }else{
+    actions='<div class="pf-gal-max">Max '+GAL_MAX+' images. Remove one to add another.</div>';
+  }
+  return '<div class="pf-gal-grid">'+cells+'</div>'+actions;
+}
+function _galField(el){return el.closest('[data-pf-gallery]')}
+function _galGetUrls(field){return String(field.querySelector('input[data-pf-input]').value||'').split('|').map(function(u){return u.trim()}).filter(Boolean)}
+function _galSet(field,urls){
+  field.querySelector('input[data-pf-input]').value=urls.join('|');
+  field.querySelector('.pf-gal-body').innerHTML=_galInner(urls.join('|'));
+}
+function pfGalRemove(xBtn){
+  var field=_galField(xBtn);if(!field)return;
+  var cell=xBtn.closest('.pf-gal-cell');
+  var idx=Array.prototype.indexOf.call(field.querySelectorAll('.pf-gal-cell'),cell);
+  if(idx<0)return;
+  var urls=_galGetUrls(field);urls.splice(idx,1);_galSet(field,urls);
+}
+function pfGalAdd(btn){
+  var field=_galField(btn);if(!field)return;
+  var fi=field.querySelector('input[data-pf-galfile]');fi.value='';
+  fi.onchange=function(){
+    var f=fi.files&&fi.files[0];if(!f)return;
+    var err=validateImageFile(f);if(err){alert(err);return}
+    var urls=_galGetUrls(field);
+    if(urls.length>=GAL_MAX){alert('Already at max '+GAL_MAX+' images');return}
+    var orig=btn.textContent;btn.disabled=true;btn.textContent='0%';
+    uploadImageToCloud(f,function(p){btn.textContent=p+'%'}).then(function(url){
+      var u=_galGetUrls(field);u.push(url);_galSet(field,u);
+    }).catch(function(e){btn.textContent=orig;btn.disabled=false;alert('Upload failed: '+e.message)});
+  };
+  fi.click();
+}
+function pfGalAddUrl(input){
+  var url=(input.value||'').trim();if(!url)return;
+  if(!/^https?:\/\//i.test(url)){alert('URL must start with http:// or https://');return}
+  var field=_galField(input);var urls=_galGetUrls(field);
+  if(urls.length>=GAL_MAX){alert('Already at max '+GAL_MAX+' images');return}
+  urls.push(url);_galSet(field,urls);input.value='';
+}
+
+// Click handler for the 📷 button next to a URL input.
+// Triggers the hidden file input, then on selection: validates, uploads,
+// fills the URL field, refreshes the preview.
+function pfPickImage(btn){
+  var row=btn.closest('.pf-field-row');if(!row)return;
+  var fileInput=row.querySelector('input[type=file]');
+  var urlInput=row.querySelector('input[type=url]');
+  var preview=row.querySelector('.pf-img-preview');
+  if(!fileInput||!urlInput)return;
+  fileInput.value='';
+  fileInput.onchange=function(){
+    var f=fileInput.files&&fileInput.files[0];if(!f)return;
+    var err=validateImageFile(f);
+    if(err){alert(err);return}
+    var prevText=btn.textContent,prevDisabled=btn.disabled;
+    btn.disabled=true;btn.textContent='0%';
+    uploadImageToCloud(f,function(p){btn.textContent=p+'%'}).then(function(secureUrl){
+      urlInput.value=secureUrl;
+      if(preview){preview.style.backgroundImage='url('+secureUrl+')';preview.textContent=''}
+      btn.textContent='✓';
+      setTimeout(function(){btn.textContent=prevText;btn.disabled=prevDisabled},1200);
+    }).catch(function(e){
+      btn.textContent=prevText;btn.disabled=prevDisabled;
+      alert('Upload failed: '+(e&&e.message||'unknown error'));
+    });
+  };
+  fileInput.click();
+}
+
+// ════════════════════════════════════════════
 // NOTIFICATIONS — zero-infra: in-page only
 // ════════════════════════════════════════════
 var NPREF={sound:true,vibrate:true,browserNotif:true,wakeLock:true,repeat:true,
@@ -1547,6 +1728,194 @@ function renderProducts(){
   }).join('');
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   PRODUCTS SHEET VIEW — spreadsheet-like inline editor
+   Shows every Products column. Edit cells inline; click Save (or blur) to
+   persist via existing addProduct/updateProduct Apps Script actions. New rows
+   are local until first save (then become real sheet rows).
+   ════════════════════════════════════════════════════════════════════ */
+var _prodView='cards'; // 'cards' | 'sheet'
+var _newProductRows=[]; // local-only rows not yet saved
+
+function setProdView(v){
+  _prodView=v;
+  var cards=document.getElementById('productsList');
+  var sheet=document.getElementById('productsSheet');
+  var btnC=document.getElementById('vtCards'),btnS=document.getElementById('vtSheet');
+  if(v==='sheet'){
+    cards.style.display='none';
+    sheet.style.display='block';
+    btnC.style.background='var(--card,#fff)';btnC.style.color='var(--ink2)';btnC.style.borderColor='var(--line)';btnC.classList.remove('vt-on');
+    btnS.style.background='var(--brand)';btnS.style.color='#fff';btnS.style.borderColor='var(--brand)';btnS.classList.add('vt-on');
+    renderProductsSheet();
+  }else{
+    cards.style.display='';
+    sheet.style.display='none';
+    btnS.style.background='var(--card,#fff)';btnS.style.color='var(--ink2)';btnS.style.borderColor='var(--line)';btnS.classList.remove('vt-on');
+    btnC.style.background='var(--brand)';btnC.style.color='#fff';btnC.style.borderColor='var(--brand)';btnC.classList.add('vt-on');
+  }
+}
+
+function renderProductsSheet(){
+  if(_prodView!=='sheet')return;
+  var hdrs=productHeaders.length?productHeaders:['name','hindiname','category','price','mrp','unit','description','image','veg','bestseller','combo','quickqty','rating','prepTime','serves','sizes','addons','stock'];
+  // Skip internal columns
+  var displayHdrs=hdrs.filter(function(h){return h&&!/^_|^row$/i.test(h)});
+  var q=($('prodSearch').value||'').toLowerCase();
+  var existing=productData.slice();
+  if(activeCat!=='all')existing=existing.filter(function(p){return(p.category||'Other')===activeCat});
+  if(q)existing=existing.filter(function(p){return((p.name||'')+(p.category||'')+(p.hindiname||'')+(p.description||'')).toLowerCase().indexOf(q)>=0});
+
+  var html='<div class="ps-tip">📊 Sheet view — edit any cell, click <code>Save</code> to persist. Tap <code>+ Add row</code> below to add a new product.</div>';
+  html+='<div class="ps-wrap"><table class="ps-table"><thead><tr>';
+  displayHdrs.forEach(function(h){html+='<th>'+esc(h)+'</th>'});
+  html+='<th class="ps-actions">Actions</th></tr></thead><tbody id="psBody">';
+
+  existing.forEach(function(p){
+    var idx=productData.indexOf(p);
+    html+=psRowHtml_(p,displayHdrs,'p'+idx,false);
+  });
+  _newProductRows.forEach(function(p,i){
+    html+=psRowHtml_(p,displayHdrs,'n'+i,true);
+  });
+
+  html+='</tbody></table></div>';
+  html+='<div class="ps-add-row" onclick="psAddRow()">+ Add row</div>';
+  $('productsSheet').innerHTML=html;
+}
+
+function psRowHtml_(prod,headers,rowId,isNew){
+  var html='<tr id="psRow_'+rowId+'" class="'+(isNew?'ps-new':'')+'">';
+  headers.forEach(function(h){
+    var k=pKey(h),val=prod[k]||'';
+    var t=detectFieldType(h,val);
+    var cellClass='ps-cell';
+    if(t==='number')cellClass+=' ps-num';
+    if(t==='url')cellClass+=' ps-img';
+    if(t==='textarea')cellClass+=' ps-desc';
+    var input;
+    if(t==='textarea'){
+      input='<textarea class="'+cellClass+'" data-h="'+esc(h)+'" rows="2" oninput="psMarkDirty(\''+rowId+'\')">'+esc(val)+'</textarea>';
+    }else if(t==='vegnonveg'){
+      var vlow=String(val).toLowerCase();
+      input='<select class="'+cellClass+'" data-h="'+esc(h)+'" onchange="psMarkDirty(\''+rowId+'\')"><option value=""'+(!vlow?' selected':'')+'>—</option><option value="yes"'+(vlow==='yes'?' selected':'')+'>Veg</option><option value="no"'+(vlow==='no'?' selected':'')+'>Non-veg</option></select>';
+    }else if(t==='yesno'){
+      var ylow=String(val).toLowerCase();
+      input='<select class="'+cellClass+'" data-h="'+esc(h)+'" onchange="psMarkDirty(\''+rowId+'\')"><option value=""'+(!ylow?' selected':'')+'>—</option><option value="yes"'+(ylow==='yes'?' selected':'')+'>Yes</option><option value="no"'+(ylow==='no'?' selected':'')+'>No</option></select>';
+    }else if(t==='stock'){
+      var slow=String(val).toLowerCase();
+      var isOos=/out|sold/.test(slow);
+      input='<select class="'+cellClass+'" data-h="'+esc(h)+'" onchange="psMarkDirty(\''+rowId+'\')"><option value="in stock"'+(!isOos?' selected':'')+'>In stock</option><option value="out of stock"'+(isOos?' selected':'')+'>Out of stock</option></select>';
+    }else if(t==='number'){
+      input='<input type="number" class="'+cellClass+'" data-h="'+esc(h)+'" value="'+esc(val)+'" oninput="psMarkDirty(\''+rowId+'\')">';
+    }else{
+      input='<input type="text" class="'+cellClass+'" data-h="'+esc(h)+'" value="'+esc(val)+'" oninput="psMarkDirty(\''+rowId+'\')">';
+    }
+    html+='<td>'+input+'</td>';
+  });
+  html+='<td class="ps-row-actions">';
+  html+='<button onclick="psSaveRow(\''+rowId+'\')" id="psSave_'+rowId+'">Save</button>';
+  if(!isNew)html+='<button class="ps-del" onclick="psDeleteRow(\''+rowId+'\')">✕</button>';
+  else html+='<button class="ps-del" onclick="psDiscardNew(\''+rowId+'\')">✕</button>';
+  html+='</td></tr>';
+  return html;
+}
+
+function psMarkDirty(rowId){
+  var tr=document.getElementById('psRow_'+rowId);if(!tr)return;
+  if(rowId.charAt(0)==='n')return; // new rows are always "dirty" until saved
+  tr.classList.add('ps-dirty');
+  var btn=document.getElementById('psSave_'+rowId);
+  if(btn){btn.classList.remove('ps-saved');btn.textContent='Save'}
+}
+
+function psCollect_(rowId){
+  var tr=document.getElementById('psRow_'+rowId);if(!tr)return null;
+  var data={};
+  var inputs=tr.querySelectorAll('[data-h]');
+  for(var i=0;i<inputs.length;i++){
+    var h=inputs[i].getAttribute('data-h');
+    data[h]=inputs[i].value;
+    data[pKey(h)]=inputs[i].value;
+  }
+  return data;
+}
+
+function psSaveRow(rowId){
+  var data=psCollect_(rowId);if(!data)return;
+  if(!data.name||!String(data.name).trim()){showToast('Name is required');return}
+  if(!SCRIPT_URL){showToast('No script URL configured — cannot save');return}
+  var btn=document.getElementById('psSave_'+rowId);
+  if(btn){btn.textContent='Saving…';btn.disabled=true}
+
+  if(rowId.charAt(0)==='n'){
+    // New row → addProduct
+    var params='action=addProduct';
+    Object.keys(data).forEach(function(k){
+      if(/^_|^row$/i.test(k))return;
+      params+='&'+encodeURIComponent(k)+'='+encodeURIComponent(data[k]);
+    });
+    sendCmd(params,function(){
+      showToast('✓ Product added','success');
+      // Remove from new-rows array, refresh from sheet
+      var nIdx=parseInt(rowId.slice(1),10);
+      _newProductRows.splice(nIdx,1);
+      setTimeout(function(){loadProductsSheet(function(){renderProducts();buildCatFilters();renderProductsSheet()})},1500);
+    });
+  }else{
+    // Existing row → updateProduct
+    var pIdx=parseInt(rowId.slice(1),10);
+    var p=productData[pIdx];if(!p)return;
+    var rowNum=p._row||(pIdx+2);
+    var params='action=updateProduct&row='+rowNum;
+    Object.keys(data).forEach(function(k){
+      if(/^_|^row$/i.test(k))return;
+      params+='&'+encodeURIComponent(k)+'='+encodeURIComponent(data[k]);
+    });
+    sendCmd(params,function(){
+      // Update local data so the user sees their change persist visually
+      Object.keys(data).forEach(function(k){p[k]=data[k]});
+      var tr=document.getElementById('psRow_'+rowId);if(tr)tr.classList.remove('ps-dirty');
+      if(btn){btn.textContent='✓ Saved';btn.classList.add('ps-saved');btn.disabled=false}
+      showToast('✓ Saved','success');
+    });
+  }
+}
+
+function psDeleteRow(rowId){
+  if(rowId.charAt(0)==='n'){psDiscardNew(rowId);return}
+  var pIdx=parseInt(rowId.slice(1),10);
+  var p=productData[pIdx];if(!p)return;
+  if(!confirm('Delete "'+(p.name||'this product')+'"? This removes the row from the Products sheet.'))return;
+  var rowNum=p._row||(pIdx+2);
+  if(!SCRIPT_URL){showToast('No script URL configured');return}
+  sendCmd('action=deleteProduct&row='+rowNum,function(){
+    showToast('Deleted','success');
+    setTimeout(function(){loadProductsSheet(function(){renderProducts();buildCatFilters();renderProductsSheet()})},1500);
+  });
+}
+
+function psDiscardNew(rowId){
+  var nIdx=parseInt(rowId.slice(1),10);
+  _newProductRows.splice(nIdx,1);
+  renderProductsSheet();
+}
+
+function psAddRow(){
+  _newProductRows.push({});
+  renderProductsSheet();
+  // Scroll the new row into view + focus the first cell
+  setTimeout(function(){
+    var rows=document.querySelectorAll('.ps-new');
+    if(rows.length){
+      var last=rows[rows.length-1];
+      last.scrollIntoView({behavior:'smooth',block:'center'});
+      var firstInput=last.querySelector('.ps-cell');
+      if(firstInput)firstInput.focus();
+    }
+  },50);
+}
+
 // ════════════════════════════════════════════
 // PRODUCT EDITOR — dynamic fields per industry
 // ════════════════════════════════════════════
@@ -1587,7 +1956,17 @@ function buildProductForm(prod,headers){
     }else if(type==='number'){
       html+='<div class="pf-input-prefix" data-prefix="'+(/(price|cost|mrp|fee|amount|rate|tax|gst|discount)/.test(k)?'₹':'#')+'"><input class="pf-input" data-pf-input type="number" step="any" value="'+esc(val)+'" inputmode="decimal"></div>';
     }else if(type==='url'){
-      html+='<div class="pf-field-row"><input class="pf-input" data-pf-input type="url" value="'+esc(val)+'" placeholder="https://...">'+(val?'<div class="pf-img-preview" style="background-image:url('+esc(val)+')"></div>':'<div class="pf-img-preview">📷</div>')+'</div>';
+      // Multi-image gallery for product image fields; single-URL UI for everything else (logo, link, etc.)
+      if(/^(image|images|photo|photos|picture|pictures)$/i.test(k)){
+        html+=renderGalleryField(val);
+      }else{
+        html+='<div class="pf-field-row">'
+          +'<input class="pf-input" data-pf-input type="url" value="'+esc(val)+'" placeholder="https://... or upload" oninput="var p=this.closest(\'.pf-field-row\').querySelector(\'.pf-img-preview\');if(p){p.style.backgroundImage=this.value?\'url(\'+this.value+\')\':\'\';p.textContent=this.value?\'\':\'📷\'}">'
+          +'<input type="file" accept="image/*" style="display:none">'
+          +'<button type="button" class="pf-upload-btn" onclick="pfPickImage(this)" title="Upload from device">📷</button>'
+          +(val?'<div class="pf-img-preview" style="background-image:url('+esc(val)+')"></div>':'<div class="pf-img-preview">📷</div>')
+          +'</div>';
+      }
     }else if(type==='vegnonveg'){
       var v=(val||'').toLowerCase();
       html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div class="pf-toggle '+(v==='yes'?'active':'')+'" data-pf-input data-pf-val="yes" onclick="pfPickVeg(this,\'yes\')"><span class="veg-d veg"></span><div class="pf-tog-info">Veg</div></div><div class="pf-toggle '+(v==='no'?'active':'')+'" data-pf-input2 data-pf-val="no" onclick="pfPickVeg(this,\'no\')"><span class="veg-d nonveg"></span><div class="pf-tog-info">Non-Veg</div></div></div>';
@@ -1614,6 +1993,7 @@ function buildProductForm(prod,headers){
   html+='<div class="pf-add-field" onclick="pfAddCustom()">+ Add custom field (e.g. weight, expiry, dosage)</div>';
   html+='<div id="pfCustomRows"></div>';
   $('prodEditBody').innerHTML=html;
+  wireAllImageDropZones();
 }
 function pfHint(type,k){
   if(type==='number')return 'number';
@@ -1723,15 +2103,46 @@ function openSection(sec){
     $('helpSheet').classList.add('open');
   }
 }
+function isImageConfigKey(key){
+  return /image|logo|photo|picture|banner|avatar|icon$/i.test((key||'').replace(/\s+/g,''));
+}
 function renderConfig(){
   var q=($('cfgSearch').value||'').toLowerCase();
   var list=configData.filter(function(c){return!q||(c.key+' '+c.value).toLowerCase().indexOf(q)>=0});
   if(!list.length){$('cfgList').innerHTML='<div class="empty">No matching settings</div>';return}
   $('cfgList').innerHTML=list.map(function(c,i){
     var k=esc(c.key),v=esc(c.value),id='cfg_'+i;
+    var isImg=isImageConfigKey(c.key);
     var isLong=(c.value||'').length>50;
+    if(isImg){
+      var prevStyle=c.value?'background-image:url('+esc(c.value)+')':'';
+      return '<div class="cfg-item"><div class="cfg-k">'+k+' <span style="font-size:9px;color:var(--ink4);font-weight:600;margin-left:6px;text-transform:none">image</span></div><div class="cfg-row cfg-img-row">'
+        +'<div class="cfg-img-prev" id="'+id+'_prev" style="'+prevStyle+'">'+(c.value?'':'📷')+'</div>'
+        +'<input class="cfg-input" id="'+id+'" value="'+v+'" placeholder="https://... or upload" oninput="var p=document.getElementById(\''+id+'_prev\');if(p){p.style.backgroundImage=this.value?\'url(\'+this.value+\')\':\'\';p.textContent=this.value?\'\':\'📷\'}">'
+        +'<input type="file" id="'+id+'_file" accept="image/*" style="display:none">'
+        +'<button class="cfg-upload-btn" onclick="cfgPickImage(\''+id+'\',this)" title="Upload from device">📷</button>'
+        +'<button class="cfg-save" onclick="saveCfg(\''+jss(c.key)+'\',\''+id+'\',this)">Save</button>'
+        +'</div></div>';
+    }
     return '<div class="cfg-item"><div class="cfg-k">'+k+'</div><div class="cfg-row">'+(isLong?'<textarea class="cfg-input" id="'+id+'" rows="2" style="height:auto;padding:8px 12px">'+v+'</textarea>':'<input class="cfg-input" id="'+id+'" value="'+v+'">')+'<button class="cfg-save" onclick="saveCfg(\''+jss(c.key)+'\',\''+id+'\',this)">Save</button></div></div>';
   }).join('');
+  wireAllImageDropZones();
+}
+function cfgPickImage(inputId,btn){
+  var fi=$(inputId+'_file'),urlEl=$(inputId),prev=$(inputId+'_prev');
+  if(!fi||!urlEl)return;fi.value='';
+  fi.onchange=function(){
+    var f=fi.files&&fi.files[0];if(!f)return;
+    var err=validateImageFile(f);
+    if(err){alert(err);return}
+    var orig=btn.textContent;btn.disabled=true;btn.textContent='0%';
+    uploadImageToCloud(f,function(p){btn.textContent=p+'%'}).then(function(url){
+      urlEl.value=url;
+      if(prev){prev.style.backgroundImage='url('+url+')';prev.textContent=''}
+      btn.textContent='✓';setTimeout(function(){btn.textContent=orig;btn.disabled=false},1200);
+    }).catch(function(e){btn.textContent=orig;btn.disabled=false;alert('Upload failed: '+e.message)});
+  };
+  fi.click();
 }
 function saveCfg(key,inputId,btn){
   var val=$(inputId).value;

@@ -63,8 +63,10 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 
 /* Hero */
 .hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--brand-dk),var(--brand))}
-.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;mix-blend-mode:overlay}
-.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,transparent 50%,rgba(0,0,0,.18) 100%);pointer-events:none}
+.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;mix-blend-mode:overlay;transition:.3s}
+.hero.has-bg .hero-bg-img{opacity:1;mix-blend-mode:normal}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,transparent 50%,rgba(0,0,0,.18) 100%);pointer-events:none;transition:.3s}
+.hero.has-bg::after{background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.45) 60%,rgba(0,0,0,.7) 100%)}
 .hero-content{position:relative;max-width:var(--mw);margin:0 auto;padding:14px var(--px) 16px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;gap:5px;z-index:1}
 .hero-tagline{font-size:11px;opacity:.88;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
 .hero-blessing{font-size:11px;opacity:.95;font-weight:600;letter-spacing:.1em;text-shadow:0 1px 4px rgba(0,0,0,.3);padding:3px 14px;background:rgba(255,255,255,.15);backdrop-filter:blur(4px);border-radius:20px;display:inline-block;align-self:flex-start;border:1px solid rgba(255,255,255,.2);color:#fbbf24}
@@ -989,6 +991,7 @@ function applyConfig(){
   $('topName').innerHTML=esc(name);
   var topMeta=$('topName').parentElement.querySelector('.top-meta');
   if(topMeta)topMeta.innerHTML='<span class="top-status" id="topStatus">●</span><span id="topTime">--</span>';
+  applyTenantLogo();
   
   // Show real hero, hide loading
   var loadingHero=$('loadingHero');
@@ -1010,7 +1013,11 @@ function applyConfig(){
   else $('heroTagline').textContent='Quick bites, big flavors';
   
   // Hero background
-  if(cfg('heroimage'))$('heroBgImg').style.backgroundImage='url('+cfg('heroimage')+')';
+  var heroImg=primaryImage(cfg('heroimage',''));
+  if(heroImg){
+    $('heroBgImg').style.backgroundImage='url("'+cldThumb(heroImg,1200,'fill')+'")';
+    var heroBox=$('heroBox');if(heroBox)heroBox.classList.add('has-bg');
+  }
   
   // Hero info chips
   var dt=cfg('estimateddeliverytime')||cfg('deliverytime')||'30-45 min';
@@ -1424,7 +1431,7 @@ function renderDish(d){
   else if(isCombo)fallbackEmoji='🍱';
   // Only show img tag if real image URL exists
   if(imgUrl){
-    html+='<img class="dish-img" src="'+esc(imgUrl)+'" alt="'+esc(d.name)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;dish-img-ph&quot;>'+fallbackEmoji+'</div>\'">';
+    html+='<img class="dish-img" src="'+esc(cldThumb(imgUrl,500))+'" alt="'+esc(d.name)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;dish-img-ph&quot;>'+fallbackEmoji+'</div>\'">';
   }else{
     html+='<div class="dish-img-ph">'+fallbackEmoji+'</div>';
   }
@@ -2748,7 +2755,7 @@ function renderDailySpecial(){
   }
   
   var html='<div class="daily-special-card" id="dsCard">';
-  html+='<img class="daily-special-img-el" src="'+esc(dsImg)+'" alt="" onerror="this.style.display=&quot;none&quot;">';
+  html+='<img class="daily-special-img-el" src="'+esc(cldThumb(dsImg,1000,'fill'))+'" alt="" onerror="this.style.display=&quot;none&quot;">';
   html+='<div class="daily-special-overlay"></div>';
   html+='<div class="daily-special-badge">⭐ Today\'s Special</div>';
   html+='<div class="daily-special-content">';
@@ -2856,9 +2863,47 @@ function scrollToDish(name){
 
 // Auto-generate image URL based on dish name and category — uses Unsplash for free relevant images
 function getAutoImage(dish){
-  // Only use real images — no random Unsplash
-  if(dish.image)return dish.image;
+  // Only use real images — no random Unsplash. For multi-image, use first.
+  if(dish.image)return primaryImage(dish.image);
   return ''; // Will trigger emoji fallback in onerror
+}
+// Cloudinary URL transformation — saves bandwidth on storefronts
+function cldThumb(url,w,mode){if(!url)return url;var s=String(url);var m=s.match(/^(https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\/)(.+)$/);if(!m)return s;if(/^[a-z]_[^,\/]+(,|\/)/i.test(m[2]))return s;return m[1]+'w_'+(w||400)+',c_'+(mode||'fill')+',q_auto,f_auto/'+m[2]}
+// Multi-image: pipe-separated URLs in image column. Single URL still works.
+function parseImages(s){return String(s||'').split('|').map(function(u){return u.trim()}).filter(Boolean)}
+function primaryImage(s){return parseImages(s)[0]||''}
+// Inject tenant's uploaded logo into favicon, header, apple-touch-icon, and PWA manifest.
+function applyTenantLogo(){
+  var logoUrl=primaryImage(cfg('logo',''));if(!logoUrl)return;
+  var fav=cldThumb(logoUrl,192,'fill'),big=cldThumb(logoUrl,512,'fill'),hdr=cldThumb(logoUrl,96,'fill');
+  document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"], link[rel="shortcut icon"]').forEach(function(l){
+    l.setAttribute('href',fav);l.removeAttribute('type');
+  });
+  // Header logo — inject as flex sibling of .top-info (the .top is the flex container)
+  var nameEl=document.getElementById('topName');
+  if(nameEl){
+    var info=nameEl.closest('.top-info,.hdr-info');
+    var top=info?info.parentNode:nameEl.parentNode;
+    if(top){
+      var existing=top.querySelector(':scope > .tenant-logo');
+      if(!existing){
+        var img=document.createElement('img');img.className='tenant-logo';img.alt='';img.src=hdr;
+        img.style.cssText='width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#f3f4f6';
+        top.insertBefore(img,info||top.firstChild);
+      }else{existing.src=hdr}
+    }
+  }
+  try{
+    var name=cfg('shopname','Store');
+    var m={name:name,short_name:(name||'Store').substring(0,15),description:cfg('tagline',''),
+      start_url:location.pathname+location.search,id:location.pathname+location.search,
+      display:'standalone',background_color:'#ffffff',theme_color:cfg('brandcolor','#d4321f'),orientation:'portrait',
+      icons:[{src:fav,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:big,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+    var blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+    var link=document.querySelector('link[rel="manifest"]');
+    if(link){link.href=URL.createObjectURL(blob)}
+    else{var l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(blob);document.head.appendChild(l)}
+  }catch(e){}
 }
 
 // Re-render on window resize (handles desktop/mobile transitions)

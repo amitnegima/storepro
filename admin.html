@@ -220,7 +220,8 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:13px;l
 .fs{height:32px;padding:0 26px 0 10px;border:1px solid var(--line-2);border-radius:5px;font:500 13px var(--f);color:var(--ink);background:var(--bg);outline:none;-webkit-appearance:none;cursor:pointer;transition:.15s;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'><path fill='%236b6b6e' d='M8 11L3 6h10z'/></svg>");background-repeat:no-repeat;background-position:right 8px center}
 .fs:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
 .fhelp{font-size:11px;color:var(--ink-3);margin-top:1px;line-height:1.4}
-.fimg-prev{width:48px;height:48px;border-radius:6px;background:var(--surface-3);background-size:cover;background-position:center;border:1px solid var(--line);flex-shrink:0}
+.fimg-prev{width:72px;height:72px;border-radius:8px;background:var(--surface-3);background-size:cover;background-position:center;border:1.5px dashed var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:20px;transition:.2s}
+.fimg-prev:not([style*="background-image"])::before{content:'📷';font-size:22px;opacity:.4}
 .fimg-row{display:flex;gap:8px;align-items:center}
 .ftog{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--line-2);border-radius:5px;cursor:pointer;font-size:12px;font-weight:500;color:var(--ink);transition:.15s;user-select:none}
 .ftog:hover{background:var(--surface-2);border-color:var(--line-3)}
@@ -445,6 +446,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:13px;l
           <div class="kpi" onclick="setFilter('expiring')"><div class="kpi-label">Expiring</div><div class="kpi-val" id="sExpiring">—</div><div class="kpi-sub">need renewal</div></div>
           <div class="kpi" onclick="setFilter('stale')"><div class="kpi-label">Stale</div><div class="kpi-val" id="sStale">—</div><div class="kpi-sub">no orders 14d+</div></div>
           <div class="kpi" onclick="setFilter('inactive')"><div class="kpi-label">Inactive</div><div class="kpi-val" id="sInactive">—</div><div class="kpi-sub">stores off</div></div>
+          <div class="kpi" onclick="loadCloudinaryUsage()" title="Click to refresh — Cloudinary storage/bandwidth usage"><div class="kpi-label">📷 Cloudinary</div><div class="kpi-val" id="sCldCredits">—</div><div class="kpi-sub" id="sCldDetail">click to load</div></div>
         </div>
         <div class="filter-bar">
           <button class="pill active" onclick="setFilter('all',this)">All</button>
@@ -549,12 +551,14 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:13px;l
     <div class="so-panel" id="panel-branding">
       <div class="fg">
         <div class="ff full">
-          <div class="fl">Logo URL</div>
+          <div class="fl">Logo</div>
           <div class="fimg-row">
             <div class="fimg-prev" id="mLogoPrev"></div>
-            <input class="fi" id="mLogo" placeholder="https://..." style="flex:1" oninput="document.getElementById('mLogoPrev').style.backgroundImage=this.value?'url('+this.value+')':''">
+            <input class="fi" id="mLogo" placeholder="https://... or upload" style="flex:1" oninput="document.getElementById('mLogoPrev').style.backgroundImage=this.value?&quot;url('&quot;+this.value+&quot;')&quot;:''">
+            <input type="file" id="mLogoFile" accept="image/*" style="display:none">
+            <button type="button" class="fi" style="cursor:pointer;background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;padding:0 12px" onclick="pickLogoFile(this)" title="Upload from device">📷 Upload</button>
           </div>
-          <div class="fhelp">Square image, 192×192 or larger</div>
+          <div class="fhelp">Square image, 192×192 or larger. Paste a URL or click 📷 Upload.</div>
         </div>
         <div class="ff"><div class="fl">Brand Color</div><input class="fi" id="mBrandColor" type="color" value="#5e6ad2"></div>
         <div class="ff"><div class="fl">Tagline</div><input class="fi" id="mTagline" placeholder="Fresh meat. Free delivery."></div>
@@ -797,6 +801,67 @@ var REGISTRY_SCRIPT="https://script.google.com/macros/s/AKfycbydLrd3U3K-uFU11rU3
 var SITE_URL="https://storepro.in";
 var ADMIN_TOKEN="";
 
+// Cloudinary — public values only (preset is locked down server-side)
+var CLOUDINARY={cloud:'storepro',preset:'storepro_products'};
+var IMG_MAX_BYTES=10*1024*1024;
+var IMG_ALLOWED=/^image\/(jpeg|jpg|png|webp|heic|heif)$/i;
+function uploadImageToCloud(file,onProgress){
+  return new Promise(function(resolve,reject){
+    if(!file)return reject(new Error('No file'));
+    if(!IMG_ALLOWED.test(file.type||''))return reject(new Error('Pick a JPG/PNG/WebP/HEIC image'));
+    if(file.size>IMG_MAX_BYTES)return reject(new Error('Image too large (max 10 MB)'));
+    var fd=new FormData();
+    fd.append('file',file);fd.append('upload_preset',CLOUDINARY.preset);
+    var slug=(($('mSlug')&&$('mSlug').value)||'').toLowerCase();
+    if(slug)fd.append('folder','storepro/'+slug);
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST','https://api.cloudinary.com/v1_1/'+CLOUDINARY.cloud+'/image/upload');
+    xhr.upload.onprogress=function(e){if(e.lengthComputable&&onProgress)onProgress(Math.round(e.loaded/e.total*100))};
+    xhr.onload=function(){
+      try{var r=JSON.parse(xhr.responseText||'{}');
+        if(xhr.status>=200&&xhr.status<300&&r.secure_url)resolve(r.secure_url);
+        else reject(new Error((r.error&&r.error.message)||'Upload failed'));
+      }catch(e){reject(new Error('Bad response'))}
+    };
+    xhr.onerror=function(){reject(new Error('Network error'))};
+    xhr.send(fd);
+  });
+}
+function _doLogoUpload(f,btn){
+  var urlEl=$('mLogo'),prev=$('mLogoPrev');
+  var orig=btn.textContent;btn.disabled=true;btn.textContent='0%';
+  uploadImageToCloud(f,function(p){btn.textContent=p+'%'}).then(function(url){
+    urlEl.value=url;
+    if(prev){prev.style.backgroundImage="url('"+url+"')";prev.style.borderStyle='solid'}
+    btn.textContent='✓';setTimeout(function(){btn.textContent=orig;btn.disabled=false},1200);
+    showToast('Logo uploaded — click Save Changes to persist');
+  }).catch(function(e){btn.textContent=orig;btn.disabled=false;alert('Upload failed: '+e.message)});
+}
+function pickLogoFile(btn){
+  var fi=$('mLogoFile');if(!fi)return;fi.value='';
+  fi.onchange=function(){var f=fi.files&&fi.files[0];if(f)_doLogoUpload(f,btn)};
+  fi.click();
+}
+// Wire drag-and-drop on the logo row (called once after DOMContentLoaded).
+function wireAdminLogoDrop(){
+  var rows=document.querySelectorAll('.fimg-row');
+  rows.forEach(function(row){
+    if(row.__dropWired)return;row.__dropWired=true;
+    row.addEventListener('dragover',function(e){
+      if(!e.dataTransfer||!e.dataTransfer.types||e.dataTransfer.types.indexOf('Files')<0)return;
+      e.preventDefault();row.style.outline='2px dashed var(--accent)';row.style.outlineOffset='4px';
+    });
+    row.addEventListener('dragleave',function(){row.style.outline='';row.style.outlineOffset=''});
+    row.addEventListener('drop',function(e){
+      e.preventDefault();row.style.outline='';row.style.outlineOffset='';
+      var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+      var btn=row.querySelector('button');
+      if(f&&btn)_doLogoUpload(f,btn);
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded',wireAdminLogoDrop);
+
 var allStores=[],activeFilter='all',editingRow=null,cmdkSelected=0;
 var loginAttempts=0,lockUntil=0;
 try{loginAttempts=parseInt(sessionStorage.getItem('admin_attempts')||'0');lockUntil=parseInt(sessionStorage.getItem('admin_lockuntil')||'0')}catch(e){}
@@ -850,6 +915,7 @@ function onLoginSuccess(token){
   $('lockScreen').classList.add('hidden');
   $('app').style.display='grid';
   loadStores();
+  loadCloudinaryUsage();
 }
 function onLoginFail(msg){
   loginAttempts++;sessionStorage.setItem('admin_attempts',String(loginAttempts));
@@ -1174,7 +1240,7 @@ function openEditStore(row){
   $('mScript').value=s.scriptUrl;
   $('mUrl').value=s.url||SITE_URL+'/?store='+s.slug;
   $('mDashUrl').value=s.dashUrl||SITE_URL+'/dashboard.html?store='+s.slug;
-  $('mLogo').value=s.logo||'';$('mLogoPrev').style.backgroundImage=s.logo?'url('+s.logo+')':'';
+  $('mLogo').value=s.logo||'';$('mLogoPrev').style.backgroundImage=s.logo?"url('"+s.logo+"')":'';
   $('mBrandColor').value=s.brandColor||'#5e6ad2';$('mTagline').value=s.tagline||'';
   $('mVerified').checked=!!s.verified;$('mFeatured').checked=!!s.featured;
   $('mAddress').value=s.address||'';$('mHours').value=s.businessHours||'';
@@ -1555,6 +1621,31 @@ function copyToClipboard(text,msg){
   navigator.clipboard.writeText(text).then(function(){showToast(msg||'Copied')}).catch(function(){
     var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast(msg||'Copied')});
 }
+function loadCloudinaryUsage(){
+  var v=$('sCldCredits'),d=$('sCldDetail');
+  if(!v||!d)return;
+  v.textContent='…';d.textContent='loading';
+  fetch(REGISTRY_SCRIPT+'?action=cloudinaryUsage&token='+encodeURIComponent(ADMIN_TOKEN)+'&_t='+Date.now())
+    .then(function(r){return r.json()}).then(function(data){
+      if(data.error==='not_configured'){v.textContent='⚠️';d.textContent='setup needed';d.title=data.hint||'';return}
+      if(data.error){v.textContent='✗';d.textContent=data.error;return}
+      var used=data.credits&&typeof data.credits.usage!=='undefined'?Number(data.credits.usage):null;
+      var limit=data.credits&&typeof data.credits.limit!=='undefined'?Number(data.credits.limit):null;
+      if(used!==null&&limit!==null){
+        var pct=Math.round((used/limit)*100);
+        v.textContent=used.toFixed(1)+'/'+limit;
+        var bw=data.bandwidth&&data.bandwidth.usage?(data.bandwidth.usage/1073741824).toFixed(1)+'GB BW':'';
+        var st=data.storage&&data.storage.usage?(data.storage.usage/1073741824).toFixed(1)+'GB storage':'';
+        d.textContent=pct+'% used'+(bw||st?' · '+(bw||st):'');
+        d.title=(data.plan?'Plan: '+data.plan+'\n':'')+'Credits: '+used+'/'+limit+'\n'+
+          'Storage: '+(data.storage&&data.storage.usage||0)+' bytes\n'+
+          'Bandwidth: '+(data.bandwidth&&data.bandwidth.usage||0)+' bytes\n'+
+          'Resources: '+(data.resources||0);
+      }else{
+        v.textContent='?';d.textContent='no data';
+      }
+    }).catch(function(err){v.textContent='✗';d.textContent='fetch failed';d.title=String(err)});
+}
 function runMigrateSchema(){
   var out=$('toolMigrateOut');out.style.color='var(--ink-3)';out.textContent='Migrating...';
   fetch(REGISTRY_SCRIPT+'?action=migrateSchema&token='+encodeURIComponent(ADMIN_TOKEN)+'&_t='+Date.now())
@@ -1674,6 +1765,7 @@ if(isSessionValid()){
   $('lockScreen').classList.add('hidden');
   $('app').style.display='grid';
   loadStores();
+  loadCloudinaryUsage();
 }else{
   $('app').style.display='none';
   $('adminPwd').focus();

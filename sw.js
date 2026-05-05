@@ -1,4 +1,4 @@
-var CACHE_NAME = 'storepro-v41';
+var CACHE_NAME = 'storepro-v45';
 var SHELL_FILES = [
   '/',
   '/index.html',
@@ -51,6 +51,11 @@ self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
 
   var url = e.request.url;
+
+  // Cache API only supports http(s) requests. Browser-extension URLs
+  // (chrome-extension://, moz-extension://) and data:/blob: throw on cache.put.
+  // Pass these through untouched — they're injected by extensions, not our code.
+  if (!url.startsWith('http://') && !url.startsWith('https://')) return;
 
   // NEVER cache: Google Sheets API, Apps Script, WhatsApp, Nominatim, push relay
   if (url.indexOf('docs.google.com') >= 0 ||

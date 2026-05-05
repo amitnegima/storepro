@@ -422,6 +422,32 @@ input,textarea,select{font-family:inherit}
 .top-meta{font-size:10px;color:var(--ink3)}
 .top-amt{font-size:13px;font-weight:800;color:var(--brand)}
 
+/* ───── PRODUCTS — SHEET VIEW ───── */
+.ps-wrap{padding:0 14px 100px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ps-table{border-collapse:separate;border-spacing:0;background:var(--card,#fff);border:1px solid var(--line);border-radius:10px;overflow:hidden;font:500 12px var(--f);min-width:100%;width:max-content}
+.ps-table thead th{position:sticky;top:0;z-index:5;background:var(--bg);color:var(--ink3);font:800 10px var(--f);text-transform:uppercase;letter-spacing:.06em;padding:9px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.ps-table thead th.ps-actions{position:sticky;right:0;z-index:6;background:var(--bg);box-shadow:-2px 0 6px rgba(0,0,0,.04)}
+.ps-table tbody td{padding:0;border-bottom:1px solid var(--line);vertical-align:top}
+.ps-table tbody tr.ps-new td{background:var(--brand-bg,#e8faed)}
+.ps-table tbody tr:hover td{background:var(--bg)}
+.ps-table tbody tr.ps-dirty td{background:#fef3c7}
+.ps-cell{display:block;width:100%;border:none;padding:8px 10px;background:transparent;font:500 13px var(--f);color:var(--ink);outline:none;min-width:90px;resize:none;font-family:inherit}
+.ps-cell:focus{background:var(--white,#fff);box-shadow:inset 0 0 0 2px var(--brand)}
+.ps-cell.ps-num{text-align:right;font-variant-numeric:tabular-nums}
+.ps-cell.ps-img{font-family:monospace;font-size:11px;color:var(--brand)}
+.ps-cell.ps-desc{min-width:200px;min-height:36px;line-height:1.4}
+.ps-row-actions{position:sticky;right:0;background:var(--card,#fff);box-shadow:-2px 0 6px rgba(0,0,0,.04);padding:6px 8px;display:flex;gap:4px;white-space:nowrap}
+.ps-row-actions button{height:28px;padding:0 8px;border:1px solid var(--line);background:var(--bg);color:var(--ink2);font:700 11px var(--f);border-radius:6px;cursor:pointer;transition:.1s}
+.ps-row-actions button:hover{background:var(--brand-bg,#e8faed);border-color:var(--brand);color:var(--brand)}
+.ps-row-actions .ps-del{color:var(--red);border-color:#fecaca}
+.ps-row-actions .ps-del:hover{background:#fef2f2;border-color:var(--red)}
+.ps-row-actions .ps-saved{color:var(--green);border-color:#bbf7d0;background:#dcfce7}
+.ps-add-row{padding:14px;border-top:1px dashed var(--line);background:var(--bg);text-align:center;cursor:pointer;font:700 12px var(--f);color:var(--brand);transition:.15s}
+.ps-add-row:hover{background:var(--brand-bg,#e8faed)}
+.ps-tip{padding:10px 14px 4px;font:500 11px var(--f);color:var(--ink3);line-height:1.5}
+.ps-tip code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:10px}
+.vt-btn:active{transform:scale(.96)}
+
 /* ───── PRODUCTS ───── */
 .prod-add-btn{height:40px;padding:0 16px;background:var(--brand);color:#fff;border-radius:12px;font:800 13px var(--f);flex-shrink:0;display:flex;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(12,131,31,.3);transition:.15s}
 .prod-add-btn:active{transform:scale(.95)}
@@ -450,6 +476,10 @@ input,textarea,select{font-family:inherit}
 .pf-tog-state{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ink4);margin-right:6px}
 .pf-toggle.active .pf-tog-state{color:var(--brand)}
 .pf-img-preview{width:80px;height:80px;border-radius:12px;background:var(--bg);background-size:cover;background-position:center;border:1.5px dashed var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--ink4);font-size:24px}
+.pf-upload-btn{height:44px;min-width:44px;padding:0 12px;background:var(--brand);color:#fff;border:none;border-radius:12px;font:700 13px var(--f);cursor:pointer;flex-shrink:0;transition:.15s;display:flex;align-items:center;justify-content:center}
+.pf-upload-btn:hover{filter:brightness(1.1)}
+.pf-upload-btn:active{transform:scale(.97)}
+.pf-upload-btn:disabled{opacity:.6;cursor:wait}
 .pf-add-field{margin-top:8px;padding:14px;background:var(--bg);border:1.5px dashed var(--line);border-radius:12px;text-align:center;color:var(--ink3);font:700 12px var(--f);cursor:pointer;transition:.15s}
 .pf-add-field:active{border-color:var(--brand);color:var(--brand)}
 .pf-add-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:8px}
@@ -480,6 +510,23 @@ input,textarea,select{font-family:inherit}
 .cfg-input:focus{border-color:var(--brand);background:var(--card)}
 .cfg-save{height:38px;padding:0 14px;background:var(--brand);color:#fff;border-radius:10px;font:700 11px var(--f);flex-shrink:0}
 .cfg-save.saved{background:var(--brand-bg);color:var(--brand)}
+.cfg-img-row{flex-wrap:wrap}
+.cfg-img-prev{width:48px;height:48px;border-radius:10px;background:var(--bg);background-size:cover;background-position:center;border:1.5px dashed var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--ink4);font-size:18px}
+.cfg-upload-btn{height:38px;min-width:38px;padding:0 10px;background:var(--brand);color:#fff;border:none;border-radius:10px;font:700 12px var(--f);cursor:pointer;flex-shrink:0;transition:.15s}
+.cfg-upload-btn:hover{filter:brightness(1.1)}
+.cfg-upload-btn:disabled{opacity:.6;cursor:wait}
+.img-drop-hover{outline:2px dashed var(--brand);outline-offset:2px;background:var(--brand-bg)!important;border-radius:12px;transition:.1s}
+/* Multi-image gallery */
+.pf-gallery{display:flex;flex-direction:column;gap:10px}
+.pf-gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
+.pf-gal-cell{position:relative;aspect-ratio:1/1;border-radius:12px;background:var(--bg);background-size:cover;background-position:center;border:1.5px solid var(--line);overflow:hidden}
+.pf-gal-x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:none;font:800 16px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.pf-gal-x:hover{background:#ef4444}
+.pf-gal-primary{position:absolute;bottom:4px;left:4px;background:var(--brand);color:#fff;font:800 8px var(--f);letter-spacing:.05em;padding:3px 6px;border-radius:6px}
+.pf-gal-empty{grid-column:1/-1;padding:20px;border:1.5px dashed var(--line);border-radius:12px;text-align:center;color:var(--ink4);font:600 12px var(--f)}
+.pf-gal-add-row{display:flex;gap:8px;align-items:center}
+.pf-gal-url{flex:1;height:38px;font-size:13px}
+.pf-gal-max{padding:8px;background:var(--bg);border-radius:10px;text-align:center;color:var(--ink3);font:600 11px var(--f)}
 
 /* ───── EMPTY / LOADING ───── */
 .empty{text-align:center;padding:60px 16px;color:var(--ink4);font-size:13px}
@@ -785,11 +832,17 @@ input,textarea,select{font-family:inherit}
   <!-- ─── PRODUCTS PAGE ─── -->
   <div class="page" id="pgProducts">
     <div class="search-row">
-      <input type="text" class="search-input" id="prodSearch" placeholder="Search products..." oninput="renderProducts()">
+      <input type="text" class="search-input" id="prodSearch" placeholder="Search products..." oninput="renderProducts();renderProductsSheet()">
       <button class="prod-add-btn" onclick="openProductAdd()">+ Add</button>
+    </div>
+    <div class="view-toggle" style="display:flex;gap:6px;padding:0 14px 8px;align-items:center">
+      <span style="font:600 11px var(--f);color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-right:auto">View</span>
+      <button class="vt-btn vt-on" id="vtCards" onclick="setProdView('cards')" style="padding:6px 12px;border:1.5px solid var(--brand);background:var(--brand);color:#fff;border-radius:8px;font:700 11px var(--f);cursor:pointer">📦 Cards</button>
+      <button class="vt-btn" id="vtSheet" onclick="setProdView('sheet')" style="padding:6px 12px;border:1.5px solid var(--line);background:var(--card,#fff);color:var(--ink2);border-radius:8px;font:700 11px var(--f);cursor:pointer">📊 Sheet</button>
     </div>
     <div class="filter-bar" id="catFilters"></div>
     <div id="productsList"><div class="spinner"></div></div>
+    <div id="productsSheet" style="display:none"></div>
   </div>
 
   <!-- ─── MORE PAGE (Profile + Config + Marketing + Customers) ─── -->
@@ -1067,6 +1120,6 @@ input,textarea,select{font-family:inherit}
 
 <div class="toast" id="toast"></div>
 
-<script src="dashboard-v2.js?v=39"></script>
+<script src="dashboard-v2.js?v=40"></script>
 </body>
 </html>
