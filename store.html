@@ -252,6 +252,15 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .track-step.done .track-step-label,.track-step.active .track-step-label{color:var(--ink2)}
 .track-line{position:absolute;top:14px;left:25%;right:25%;height:2.5px;background:var(--line);z-index:0}
 .track-line-fill{height:100%;background:var(--brand);transition:width .5s var(--ease);width:0}
+/* ETA banner shown above the timeline when shopkeeper has set one */
+.track-eta{display:flex;align-items:center;gap:10px;background:linear-gradient(160deg,#fef9c3,#fde68a);border:1.5px solid #fbbf24;padding:14px 16px;border-radius:14px;margin-bottom:16px;box-shadow:0 2px 6px rgba(251,191,36,.18)}
+.track-eta-ic{font-size:24px;line-height:1;flex-shrink:0}
+.track-eta-info{flex:1;min-width:0}
+.track-eta-label{font:800 10px var(--f);color:#92400e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.track-eta-value{font:900 16px var(--f);color:#78350f;line-height:1.2}
+/* Shopkeeper comment callout */
+.track-comment{background:linear-gradient(160deg,#eff6ff,#dbeafe);border-left:4px solid var(--brand);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;margin-bottom:16px;font:600 13px var(--f);color:#1e3a8a;line-height:1.55;box-shadow:0 1px 3px rgba(30,58,138,.06)}
+.track-comment-label{font:800 10px var(--f);color:var(--brand);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
 .track-details{background:var(--bg);border-radius:var(--r);padding:14px 16px;font-size:13px;line-height:1.7;color:var(--ink2)}
 .track-details .td-row{display:flex;justify-content:space-between;padding:3px 0}.td-row .td-label{color:var(--ink4);font-weight:600;font-size:11px;text-transform:uppercase}.td-row .td-val{font-weight:600;text-align:right}
 .track-items{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);white-space:pre-wrap;font-size:12px;color:var(--ink3);line-height:1.8}
@@ -381,6 +390,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
     <div class="track-loading" id="trackLoading"><div class="spin"></div><div style="font-size:13px;color:var(--ink4)">Looking up your order...</div></div>
     <div class="track-err" id="trackErr">Order not found. Please check your Order ID.</div>
     <div class="track-result" id="trackResult">
+      <!-- ETA banner + shopkeeper comment slots; populated by showTrackResult() -->
+      <div id="trackEtaSlot"></div>
+      <div id="trackCommentSlot"></div>
       <div class="track-status-bar">
         <div class="track-line"><div class="track-line-fill" id="trackLineFill"></div></div>
         <div class="track-step" id="ts0"><div class="track-dot">1</div><div class="track-step-label">Placed</div></div>
@@ -617,7 +629,7 @@ function finish(){
   buildCats();applyFilter();buildInfo();
   // Sync cart prices with latest data and restore cart UI
   if(cart.length){syncCartPrices();try{localStorage.setItem('sl_cart_'+SHEET_ID,JSON.stringify(cart))}catch(e){}renderCart();updateStickyBar()}
-  // Start periodic price refresh — reload products every 60s in background
+  // Start periodic price refresh — reload products every 5 min in background
   if(!window._priceRefreshStarted){
     window._priceRefreshStarted=true;
     setInterval(function(){
@@ -632,7 +644,7 @@ function finish(){
           document.getElementById('tbTime').textContent='Updated '+new Date().toLocaleTimeString();
         }
       });
-    },60000);
+    },300000);
   }
 }
 
@@ -1243,11 +1255,15 @@ function showTrackResult(o){
   var isCancelled=status==='cancelled';
   var currentIdx=isCancelled?-1:steps.indexOf(status);
   if(currentIdx===-1&&!isCancelled){
-    // Handle "picked up", "done", "completed" as step 3 (delivered)
-    if(status==='picked up'||status==='done'||status==='completed')currentIdx=3;
+    // Map alternative status spellings into the 4-step grid:
+    //   - "Out for Delivery" → step 2 (Packed) stays active; the "On the way"
+    //     label change makes the new state visible without adding a 5th DOM step
+    //   - "picked up" / "done" / "completed" → step 3 (final)
+    if(status==='out for delivery'||status==='outfordelivery')currentIdx=2;
+    else if(status==='picked up'||status==='done'||status==='completed')currentIdx=3;
     else currentIdx=0;
   }
-  
+
   // Update timeline dots
   for(var i=0;i<4;i++){
     var el=document.getElementById('ts'+i);
@@ -1259,10 +1275,43 @@ function showTrackResult(o){
   // Update progress line
   var pct=isCancelled?0:Math.min(100,Math.round((currentIdx/3)*100));
   document.getElementById('trackLineFill').style.width=pct+'%';
-  
-  // Status label for step 4
+
+  // Status labels — step 3 changes by mode, step 2 swaps to "On the way"
+  // when the order is actually out for delivery (so the visible state matches
+  // what the shopkeeper just set in Telegram or the dashboard).
   var mode=(o.mode||'').toLowerCase();
   document.getElementById('ts3').querySelector('.track-step-label').textContent=mode==='delivery'?'Delivered':'Picked Up';
+  var step2El=document.getElementById('ts2').querySelector('.track-step-label');
+  step2El.textContent=(status==='out for delivery'||status==='outfordelivery')?'On the way':'Packed';
+
+  // ETA banner — populate above the timeline if shopkeeper has set one
+  var eta=o.eta||o.estimatedtime||'';
+  var etaSlot=document.getElementById('trackEtaSlot');
+  if(etaSlot){
+    if(eta&&!isCancelled&&currentIdx>=1&&currentIdx<3){
+      etaSlot.innerHTML='<div class="track-eta">'
+        +'<div class="track-eta-ic">⏱</div>'
+        +'<div class="track-eta-info">'
+        +'<div class="track-eta-label">Estimated Time</div>'
+        +'<div class="track-eta-value">'+esc(eta)+'</div>'
+        +'</div>'
+        +'</div>';
+    }else{
+      etaSlot.innerHTML='';
+    }
+  }
+
+  // Shopkeeper comment — show prominently above the timeline so the customer
+  // notices the message even before scrolling to order details.
+  var comment=o.shopkeepercomment||o['shopkeepercomment']||o.comment||'';
+  var commentSlot=document.getElementById('trackCommentSlot');
+  if(commentSlot){
+    if(comment){
+      commentSlot.innerHTML='<div class="track-comment"><div class="track-comment-label">💬 Message from Shop</div>'+esc(comment)+'</div>';
+    }else{
+      commentSlot.innerHTML='';
+    }
+  }
   
   // Build details
   var id=o['order id']||o.orderid||'';

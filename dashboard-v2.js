@@ -813,16 +813,19 @@ function lockNow(){
 // ════════════════════════════════════════════
 function loadSheet(sheetId,name,cb){
   if(!sheetId){console.warn('[Dashboard2] loadSheet skipped: empty sheetId for',name);cb(null);return}
-  if(!window.google)window.google={};
-  if(!window.google.visualization)window.google.visualization={};
-  if(!window.google.visualization.Query)window.google.visualization.Query={};
-  var fired=false;
-  window.google.visualization.Query.setResponse=function(r){if(fired)return;fired=true;cb(r)};
+  // Unique responseHandler per call so concurrent loadSheet() invocations
+  // (e.g. opening DailyMenu while the order auto-refresh is in flight) don't
+  // race on the single global setResponse slot. Without this, one of the two
+  // callbacks ends up running with the OTHER call's data.
+  var handlerName='__sproDashSheetCb_'+(loadSheet._n=(loadSheet._n||0)+1);
   var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&headers=1&_t='+Date.now();
-  s.onerror=function(){if(fired)return;fired=true;cb(null)};
+  var fired=false;
+  function done(r){if(fired)return;fired=true;try{delete window[handlerName]}catch(e){window[handlerName]=null}if(s.parentNode)s.parentNode.removeChild(s);cb(r)}
+  window[handlerName]=function(r){done(r)};
+  s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+handlerName+'&sheet='+encodeURIComponent(name)+'&headers=1&_t='+Date.now();
+  s.onerror=function(){done(null)};
   document.body.appendChild(s);
-  setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s);if(!fired){fired=true;cb(null)}},8000);
+  setTimeout(function(){done(null)},8000);
 }
 function parseSheetRows(r){
   if(!r||!r.table)return{headers:[],rows:[]};
@@ -1395,17 +1398,26 @@ function openETA(orderId,messageMode){
 function closeSheet(id){$(id).classList.remove('open')}
 function quickETA(mins,customMsg){
   var o=allOrders.find(function(x){return x.id===_etaOrderId});if(!o)return;
-  var shop=getCfg('ShopName','Our Store');
-  var msg;
-  if(customMsg)msg=customMsg+'\n\n— '+shop;
-  else if(mins===0)msg='Hi '+o.name+', your order *#'+_etaOrderId.slice(-6)+'* is *ready now*! Please collect at the counter ✅\n\n— '+shop;
-  else{
-    var when=new Date(Date.now()+mins*60000).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',hour12:true});
-    msg='Hi '+o.name+', your order *#'+_etaOrderId.slice(-6)+'* will be ready in *'+mins+' minutes* (around '+when+') ⏱\n\n— '+shop;
-  }
-  // Open confirmation sheet — user picks Save Only or Send via WhatsApp
+  // ETA picker semantics changed by request: tapping a minute button now
+  // ONLY persists the ETA to the Orders sheet (the customer's tracking page
+  // surfaces it as "Estimated Time"). We deliberately skip the old "Save
+  // Only / Send via WhatsApp" confirmation sheet — it added a tap and the
+  // customer already sees the ETA on their tracking page without a WhatsApp
+  // ping. Shopkeepers who DO want to message the customer can still use
+  // the Quick Reply chips or the Custom Message textarea below.
+  //
+  // The `customMsg` argument is now ignored for these paths — it was only
+  // meaningful when we still routed to openSendSheet. Kept in the signature
+  // for callsite compatibility (the "Ready now" button passes a string).
+  if(!SCRIPT_URL){showToast('No script URL configured — cannot save ETA','error');return}
+  if(typeof mins!=='number'||isNaN(mins)){showToast('Invalid ETA value','error');return}
   closeSheet('etaSheet');
-  openSendSheet(_etaOrderId,msg,{title:'Send ETA to '+(o.name||'customer'),sub:'Customer #'+_etaOrderId.slice(-6),icon:'⏱'});
+  var humanEta=mins===0?'Ready now':(mins+' min');
+  // Optimistic toast — sendCmd is fire-and-forget so we don't actually wait
+  // for the round trip. If the action fails, the customer just won't see the
+  // ETA on their tracking page; the dashboard side has nothing to roll back.
+  showToast('✓ ETA saved: '+humanEta+' — customer sees it in tracking','success');
+  sendCmd('action=setEta&orderId='+encodeURIComponent(_etaOrderId)+'&minutes='+encodeURIComponent(mins));
 }
 function customETA(){
   var v=parseInt($('etaCustom').value);
@@ -1741,18 +1753,33 @@ function setProdView(v){
   _prodView=v;
   var cards=document.getElementById('productsList');
   var sheet=document.getElementById('productsSheet');
-  var btnC=document.getElementById('vtCards'),btnS=document.getElementById('vtSheet');
+  var imp=document.getElementById('productsImport');
+  var btnC=document.getElementById('vtCards'),btnS=document.getElementById('vtSheet'),btnI=document.getElementById('vtImport');
+  // Reset all three buttons to off-state, then activate the chosen one below
+  [btnC,btnS,btnI].forEach(function(b){if(!b)return;b.style.background='var(--card,#fff)';b.style.color='var(--ink2)';b.style.borderColor='var(--line)';b.classList.remove('vt-on')});
+  // Hide all three containers, then unhide the chosen one
+  if(cards)cards.style.display='none';
+  if(sheet)sheet.style.display='none';
+  if(imp)imp.style.display='none';
+
+  var activeBtn=null;
   if(v==='sheet'){
-    cards.style.display='none';
-    sheet.style.display='block';
-    btnC.style.background='var(--card,#fff)';btnC.style.color='var(--ink2)';btnC.style.borderColor='var(--line)';btnC.classList.remove('vt-on');
-    btnS.style.background='var(--brand)';btnS.style.color='#fff';btnS.style.borderColor='var(--brand)';btnS.classList.add('vt-on');
+    if(sheet)sheet.style.display='block';
+    activeBtn=btnS;
     renderProductsSheet();
+  }else if(v==='import'){
+    if(imp)imp.style.display='block';
+    activeBtn=btnI;
+    renderImportView();
   }else{
-    cards.style.display='';
-    sheet.style.display='none';
-    btnS.style.background='var(--card,#fff)';btnS.style.color='var(--ink2)';btnS.style.borderColor='var(--line)';btnS.classList.remove('vt-on');
-    btnC.style.background='var(--brand)';btnC.style.color='#fff';btnC.style.borderColor='var(--brand)';btnC.classList.add('vt-on');
+    if(cards)cards.style.display='';
+    activeBtn=btnC;
+  }
+  if(activeBtn){
+    activeBtn.style.background='var(--brand)';
+    activeBtn.style.color='#fff';
+    activeBtn.style.borderColor='var(--brand)';
+    activeBtn.classList.add('vt-on');
   }
 }
 
@@ -1914,6 +1941,428 @@ function psAddRow(){
       if(firstInput)firstInput.focus();
     }
   },50);
+}
+
+// ════════════════════════════════════════════
+// MENU IMPORT — paste text, parse heuristically, preview, bulk-write
+// ════════════════════════════════════════════
+// Lets a shopkeeper (or admin onboarding a tenant) paste their menu in any
+// common format and get a Products sheet populated in one click. The parser
+// is intentionally conservative: ambiguous lines fall through to a "needs
+// review" list rather than misparsing aggressively. Preview table is fully
+// editable so the shopkeeper fixes any miscategorized item before saving.
+//
+// Supported input shapes (mix and match in the same paste):
+//   [Category]                   ← bracketed category header
+//   CATEGORY NAME                ← all-caps standalone line
+//   Category:                    ← title-case + trailing colon
+//   Steam Veg Momos    120       ← name + price (last number wins)
+//   Aloo Roll - Rs 80            ← currency words/symbols stripped
+//   Saap Combo: 110 / 130        ← two prices → Veg=Both
+//   Item | Veg | Paneer | Chicken    ← pipe-table header
+//   Steam | 120 | 140 | 150          ← table row → expand to 3 products
+//
+// Auto-flags items as non-veg when their name contains: chicken, mutton,
+// fish, prawn, egg, keema, etc. Everything else defaults to veg (the
+// shopkeeper can flip individual rows in the preview).
+var _importRows=[];     // parsed product rows
+var _importWarnings=[]; // unparseable / suspicious lines, with original text
+var _importLastText=''; // dedup parse-on-input
+
+function renderImportView(){
+  var el=$('productsImport');if(!el)return;
+  if(el.dataset.built==='1'){
+    // Just re-render the preview in case productData changed (e.g. user added rows elsewhere)
+    renderImportPreview();
+    return;
+  }
+  el.dataset.built='1';
+  el.innerHTML=''
+    +'<div class="imp-tip">'
+    +'📥 <b>Paste your menu below.</b> One item per line, last number on the line is the price. Bracketed <code>[Category]</code> or ALL-CAPS lines become category headers. Two prices like <code>110 / 130</code> become a Veg/Non-Veg pair.<br>'
+    +'<span style="font-weight:500">Edit any row in the preview before saving — auto-detection isn\'t perfect.</span>'
+    +'</div>'
+    +'<div class="imp-wrap">'
+    +'<textarea class="imp-textarea" id="impText" placeholder="[MOMOS]&#10;Steam Veg Momos    120&#10;Steam Paneer Momos  140&#10;Steam Chicken Momos 150&#10;&#10;[ROLLS]&#10;Aloo Roll          80&#10;Paneer Roll       120&#10;&#10;[COMBOS]&#10;Saap Masala Combo: 110 / 130"></textarea>'
+    +'<div class="imp-actions">'
+    +'<button class="btn-sample" onclick="impLoadSample()">📋 Load sample</button>'
+    +'<button class="btn-ghost" onclick="impClear()">Clear</button>'
+    +'<button class="btn-parse" id="impParseBtn" onclick="impParse()">Parse menu →</button>'
+    +'</div>'
+    +'<div id="impStats"></div>'
+    +'<div id="impPreview"></div>'
+    +'<div id="impSaveBar"></div>'
+    +'</div>';
+  // Live re-parse on input (debounced) so the preview updates as the user pastes
+  var ta=$('impText');
+  if(ta){
+    var t;
+    ta.addEventListener('input',function(){clearTimeout(t);t=setTimeout(impParse,300)});
+  }
+  renderImportPreview();
+}
+
+function impLoadSample(){
+  var sample=
+    '[MOMOS]\n'+
+    'Steam Veg Momos    120\n'+
+    'Steam Paneer Momos  140\n'+
+    'Steam Chicken Momos 150\n'+
+    'Fried Veg Momos     140\n'+
+    'Fried Chicken Momos 160\n'+
+    '\n'+
+    '[ROLLS]\n'+
+    'Aloo Roll           80\n'+
+    'Paneer Roll        120\n'+
+    'Chicken Roll       150\n'+
+    '\n'+
+    '[COMBOS]\n'+
+    'Dal + Roti or Rice: 100\n'+
+    'Chicken + Roti or Rice: 130\n'+
+    'Saap Masala Combo: 110 / 130\n'+
+    '\n'+
+    '[BEVERAGES]\n'+
+    'Tea           10\n'+
+    'Masala Tea    30\n'+
+    'Cold Coffee   60\n'+
+    'Mango Shake   80';
+  $('impText').value=sample;
+  impParse();
+}
+function impClear(){
+  $('impText').value='';
+  _importRows=[];_importWarnings=[];_importLastText='';
+  renderImportPreview();
+}
+
+function impParse(){
+  var text=$('impText').value||'';
+  if(text===_importLastText)return;
+  _importLastText=text;
+  var result=parseMenuText(text);
+  _importRows=result.rows;
+  _importWarnings=result.warnings;
+  renderImportPreview();
+}
+
+// ─── The parser ───────────────────────────────────────────────────────
+// Returns { rows: [{name, category, price, priceNonVeg, veg, description}], warnings: [string] }
+function parseMenuText(text){
+  var rows=[],warnings=[];
+  if(!text)return{rows:rows,warnings:warnings};
+  var lines=text.split(/\r?\n/);
+  var currentCategory='';
+  var tableHeaders=null; // when set, lines with matching column count are table data rows
+  var lastRowIdx=-1;
+
+  // Unicode-aware so Devanagari names (e.g. आलू रोल) don't get rejected
+  var NON_VEG_RE=/\b(chicken|mutton|fish|prawn|prawns|lamb|egg|eggs|beef|pork|keema|kheema|anda|murgh|murg|seekh|tikka|shawarma|kebab|fry|mughlai|tandoori chicken|drumstick|wings|liver)\b/i;
+
+  // Currency-stripping regex — strips Rs/Rs./₹/INR/रु prefix and /- suffix from a price chunk
+  function stripCurrency(s){
+    return String(s||'').replace(/(?:rs\.?|inr|₹|रु\.?)\s*/gi,'').replace(/\s*\/-\s*$/,'').trim();
+  }
+  function priceFromCell(s){
+    var stripped=stripCurrency(s);
+    var m=stripped.match(/(\d{1,5})/);
+    return m?parseInt(m[1],10):0;
+  }
+
+  // Looks like a category header? Bracketed, all-caps, or trailing colon — and short, no real prices.
+  function isCategoryHeader(line){
+    if(!line||line.length>50)return false;
+    if(/\d{2,}/.test(line))return false; // has a 2+ digit number → probably a priced item
+    // [Category] or [Category Name]
+    if(/^\[[^\]]+\]\s*$/.test(line))return true;
+    // Trailing colon — "Lunch:" "Combos:"
+    if(/[:：]\s*$/.test(line)&&line.length<35)return true;
+    // All caps (allow a few non-letter chars)
+    var letters=line.replace(/[^A-Za-z]/g,'');
+    if(letters.length>=3){
+      var upper=letters.replace(/[^A-Z]/g,'');
+      if(upper.length/letters.length>0.7)return true;
+    }
+    return false;
+  }
+  function cleanCategory(line){
+    return String(line||'').replace(/^\[|\]$/g,'').replace(/[:：]\s*$/,'').replace(/\s+/g,' ').trim()
+      .toLowerCase().split(/\s+/).map(function(w){return w.charAt(0).toUpperCase()+w.slice(1)}).join(' ');
+  }
+
+  // Pipe-separated table row helper. Returns the trimmed cells, or null if not a table row.
+  function pipeCells(line){
+    if(line.indexOf('|')<0)return null;
+    var parts=line.split('|').map(function(p){return p.trim()}).filter(function(p,i,a){
+      // Drop fully empty leading/trailing cells but keep interior empties to preserve column alignment
+      return !(p===''&&(i===0||i===a.length-1));
+    });
+    return parts.length>=2?parts:null;
+  }
+
+  function vegFromName(name,colHint){
+    var blob=(name||'')+' '+(colHint||'');
+    if(NON_VEG_RE.test(blob))return 'no';
+    return 'yes';
+  }
+
+  for(var i=0;i<lines.length;i++){
+    var raw=lines[i];
+    var line=raw.replace(/[​-‍﻿]/g,'').trim();
+    if(!line)continue;
+    // Separators
+    if(/^[=#\-_\*~]{3,}\s*$/.test(line))continue;
+
+    // Lines that look like phone numbers / GSTIN / boilerplate — skip silently
+    if(/^(call|phone|gstin|fssai|tel|mob|mobile|address|website|catering|menu\s*directory)/i.test(line))continue;
+    if(/^[\d\-\+\s,/]{6,}$/.test(line))continue; // pure phone-ish
+
+    // Category header
+    if(isCategoryHeader(line)){
+      currentCategory=cleanCategory(line);
+      tableHeaders=null;
+      continue;
+    }
+
+    // Pipe-separated table?
+    var pc=pipeCells(line);
+    if(pc){
+      // Header row detection: first cell is a label (no digits or contains
+      // non-numeric words), and the OTHER cells don't look like prices —
+      // i.e. no Rs/₹/INR currency markers AND not a bare number. Column
+      // labels can themselves contain digits (e.g. "250 ml", "500 ml") which
+      // is why a naive "no big numbers" check was rejecting valid headers.
+      var firstHasNum=/\d/.test(pc[0]);
+      var laterAllLabels=pc.slice(1).every(function(c){
+        return !/(rs\.?|₹|inr|रु)/i.test(c) && !/^\s*\d+(\.\d+)?\s*$/.test(c);
+      });
+      if(!firstHasNum&&laterAllLabels&&pc.length>=2){
+        tableHeaders=pc.slice(1).map(function(h){
+          // Keep digits + ml/g/oz/cm so size-based headers like "250 ml" survive
+          return h.replace(/[^A-Za-z0-9\s]/g,'').replace(/\s+/g,' ').trim();
+        });
+        // Reject if the "headers" don't look like meaningful column labels
+        if(!tableHeaders.length||tableHeaders.some(function(h){return !h})){
+          tableHeaders=null;
+        }
+        continue;
+      }
+      // Data row aligned to current table headers
+      if(tableHeaders&&pc.length===tableHeaders.length+1){
+        var baseName=pc[0];
+        for(var h=0;h<tableHeaders.length;h++){
+          var cellPrice=priceFromCell(pc[h+1]);
+          if(!cellPrice)continue;
+          var fullName=(baseName+' '+tableHeaders[h]).replace(/\s+/g,' ').trim();
+          // Avoid stuttery names like "Veg Veg Momos" if the base already has the variant word
+          if(new RegExp('\\b'+tableHeaders[h]+'\\b','i').test(baseName))fullName=baseName;
+          rows.push({
+            name:fullName,
+            category:currentCategory||'Menu',
+            price:cellPrice,
+            priceNonVeg:'',
+            veg:vegFromName(fullName,tableHeaders[h]),
+            description:''
+          });
+        }
+        lastRowIdx=rows.length-1;
+        continue;
+      }
+      // Pipe row that doesn't fit — fall through to single-line price detection
+    }
+
+    // Strip leading bullets / list markers
+    var working=line.replace(/^[\-•*+>·●○■□▪▫]+\s*/,'');
+    // Two-price line: "Name: 110 / 130", "Name 80/100", "Name - Rs 70 / Rs 100"
+    var twoP=working.match(/^(.+?)[:\-–]?\s+(?:rs\.?|₹|inr)?\s*(\d{1,5})\s*(?:rs\.?|₹|\/\-)?\s*\/\s*(?:rs\.?|₹|inr)?\s*(\d{1,5})\s*(?:rs\.?|₹|\/\-)?\s*$/i);
+    if(twoP){
+      var twoName=twoP[1].replace(/[:\-–\s]+$/,'').trim();
+      twoName=twoName.replace(/\s*(rs\.?|₹|inr)\s*$/i,'').trim();
+      if(twoName){
+        var p1=parseInt(twoP[2],10),p2=parseInt(twoP[3],10);
+        rows.push({
+          name:twoName,
+          category:currentCategory||'Menu',
+          price:p1,
+          priceNonVeg:p2,
+          veg:'both',
+          description:''
+        });
+        lastRowIdx=rows.length-1;
+        continue;
+      }
+    }
+
+    // Single-price line — find LAST number in the line and use as price
+    var nums=working.match(/\d{1,5}/g);
+    if(!nums||!nums.length){
+      // No number — probably a description for the previous row, or noise
+      if(lastRowIdx>=0&&line.length<120){
+        var prev=rows[lastRowIdx];
+        prev.description=(prev.description?prev.description+' ':'')+line;
+      }else{
+        warnings.push(line);
+      }
+      continue;
+    }
+    var lastNum=nums[nums.length-1];
+    var price=parseInt(lastNum,10);
+    if(price<5||price>50000){warnings.push(line);continue}
+    // Find the last occurrence of that number string and split the name there
+    var lastIdx=working.lastIndexOf(lastNum);
+    // Strip in this order: trailing whitespace+punctuation → trailing currency
+    // word → trailing punctuation again. The double-punctuation pass is what
+    // catches names like "Aloo Roll: Rs 80" — after we strip the last "80"
+    // the substring is "Aloo Roll: Rs ", currency-strip leaves "Aloo Roll:",
+    // and we need a second punctuation pass to drop the trailing colon.
+    var name=working.substring(0,lastIdx)
+      .replace(/[:\-–,;.\s]+$/,'')
+      .replace(/\s*(rs\.?|₹|inr|रु\.?)\s*$/i,'')
+      .replace(/[:\-–,;.\s]+$/,'')
+      .trim();
+    if(!name){warnings.push(line);continue}
+    // Strip any trailing standalone parenthetical that looks like a unit or qty annotation
+    // e.g. "Tea (250 ml) — but keep stuff like "(after 4 PM)" since that's useful info
+    rows.push({
+      name:name,
+      category:currentCategory||'Menu',
+      price:price,
+      priceNonVeg:'',
+      veg:vegFromName(name,''),
+      description:''
+    });
+    lastRowIdx=rows.length-1;
+  }
+  return{rows:rows,warnings:warnings};
+}
+
+function renderImportPreview(){
+  var stats=$('impStats'),prev=$('impPreview'),bar=$('impSaveBar');
+  if(!stats||!prev||!bar)return;
+  var rowCount=_importRows.length;
+  var catCount={};
+  _importRows.forEach(function(r){if(r.category)catCount[r.category]=(catCount[r.category]||0)+1});
+  var nonVegCount=_importRows.filter(function(r){return r.veg==='no'||r.veg==='both'}).length;
+
+  if(!rowCount){
+    stats.innerHTML='';
+    prev.innerHTML='<div class="imp-empty-prev"><div class="e">📋</div><div>Paste your menu above and tap <b>Parse menu →</b></div><div style="font-size:11px;color:var(--ink4);margin-top:6px">Or tap <b>Load sample</b> to see what the parser handles</div></div>';
+    bar.innerHTML='';
+    return;
+  }
+  var catList=Object.keys(catCount).map(function(c){return c+' ('+catCount[c]+')'}).join(', ');
+  var statsHtml='<div class="imp-stats">'
+    +'<div class="imp-stat"><b>'+rowCount+'</b> items parsed</div>'
+    +'<div class="imp-stat"><b>'+Object.keys(catCount).length+'</b> categories</div>'
+    +(nonVegCount?'<div class="imp-stat"><b>'+nonVegCount+'</b> non-veg / both</div>':'')
+    +(_importWarnings.length?'<div class="imp-stat warn"><b>'+_importWarnings.length+'</b> needs review</div>':'')
+    +'</div>'
+    +(catList?'<div style="font:600 11px var(--f);color:var(--ink3);margin-bottom:6px"><b style="color:var(--ink2)">Categories:</b> '+esc(catList)+'</div>':'');
+  if(_importWarnings.length){
+    statsHtml+='<div class="imp-warn-list"><b>Lines we couldn\'t parse</b> — fix these in the textarea above:'
+      +_importWarnings.slice(0,8).map(function(w){return '<div class="ww">• '+esc(w)+'</div>'}).join('')
+      +(_importWarnings.length>8?'<div class="ww">…and '+(_importWarnings.length-8)+' more</div>':'')
+      +'</div>';
+  }
+  stats.innerHTML=statsHtml;
+
+  var html='<div class="imp-preview-wrap"><table class="imp-preview"><thead><tr>'
+    +'<th>Name</th><th>Category</th><th style="text-align:right">Price</th><th style="text-align:right">NV ₹</th><th style="text-align:center">Veg</th><th>Description</th><th></th>'
+    +'</tr></thead><tbody>';
+  _importRows.forEach(function(r,i){
+    html+='<tr id="impR_'+i+'">'
+      +'<td><input class="imp-cell imp-name" data-imp="name" data-i="'+i+'" value="'+esc(r.name||'')+'" oninput="impEdit('+i+',\'name\',this.value)"></td>'
+      +'<td><input class="imp-cell imp-cat" data-imp="category" data-i="'+i+'" value="'+esc(r.category||'')+'" list="impCatList" oninput="impEdit('+i+',\'category\',this.value)"></td>'
+      +'<td><input type="number" class="imp-cell imp-num" data-imp="price" data-i="'+i+'" value="'+esc(r.price||'')+'" oninput="impEdit('+i+',\'price\',this.value)"></td>'
+      +'<td><input type="number" class="imp-cell imp-num" data-imp="priceNonVeg" data-i="'+i+'" value="'+esc(r.priceNonVeg||'')+'" placeholder="—" oninput="impEdit('+i+',\'priceNonVeg\',this.value)"></td>'
+      +'<td class="imp-veg"><select onchange="impEdit('+i+',\'veg\',this.value)">'
+      +  '<option value="yes"'+(r.veg==='yes'?' selected':'')+'>Veg</option>'
+      +  '<option value="no"'+(r.veg==='no'?' selected':'')+'>Non-Veg</option>'
+      +  '<option value="both"'+(r.veg==='both'?' selected':'')+'>Both</option>'
+      +'</select></td>'
+      +'<td><input class="imp-cell imp-desc" data-imp="description" data-i="'+i+'" value="'+esc(r.description||'')+'" oninput="impEdit('+i+',\'description\',this.value)"></td>'
+      +'<td class="imp-row-del"><button onclick="impDeleteRow('+i+')" title="Remove this row">✕</button></td>'
+      +'</tr>';
+  });
+  html+='</tbody></table></div>';
+  // Datalist of unique categories so the autocomplete in the cat cells works
+  var uniqCats={};_importRows.forEach(function(r){if(r.category)uniqCats[r.category]=1});
+  productData.forEach(function(p){if(p.category)uniqCats[p.category]=1});
+  html+='<datalist id="impCatList">'+Object.keys(uniqCats).map(function(c){return '<option value="'+esc(c)+'">'}).join('')+'</datalist>';
+  prev.innerHTML=html;
+
+  bar.innerHTML='<div class="imp-save-bar">'
+    +'<div class="imp-save-bar-info">Ready to add <b>'+rowCount+'</b> items to your Products sheet</div>'
+    +'<button class="imp-save-bar-btn" id="impSaveBtn" onclick="saveImportedProducts()">💾 Save all</button>'
+    +'</div>';
+}
+
+function impEdit(i,field,val){
+  if(i<0||i>=_importRows.length)return;
+  var r=_importRows[i];
+  if(field==='price'||field==='priceNonVeg'){
+    r[field]=val===''?'':(parseFloat(val)||0);
+  }else{
+    r[field]=val;
+  }
+}
+function impDeleteRow(i){
+  if(i<0||i>=_importRows.length)return;
+  _importRows.splice(i,1);
+  renderImportPreview();
+}
+
+function saveImportedProducts(){
+  var rows=_importRows.filter(function(r){return r.name&&String(r.name).trim()&&(parseFloat(r.price)>0||parseFloat(r.priceNonVeg)>0)});
+  if(!rows.length){showToast('Nothing to save — fill in name + price for at least one row','error');return}
+  if(!SCRIPT_URL){showToast('No script URL configured — cannot save','error');return}
+  var btn=$('impSaveBtn');if(btn){btn.disabled=true;btn.textContent='Saving 0/'+rows.length+'…'}
+
+  // Sheet schema uses lowercase headers (name, category, price, mrp, ...).
+  // For Veg=Both we store the veg price in `price` and the non-veg in `mrp`-
+  // adjacent columns isn't right — there's no PriceNonVeg column on Products.
+  // So flatten Both rows into a `sizes` field the storefront's customization
+  // modal already understands ("Veg:110, Chicken:130"), the same shape the
+  // DailyMenu importer uses for its Both-priced rows.
+  var sheetRows=rows.map(function(r){
+    var out={
+      name:String(r.name||'').trim(),
+      category:String(r.category||'').trim()||'Menu',
+      price:parseFloat(r.price)||'',
+      veg:r.veg==='no'?'no':(r.veg==='both'?'yes':'yes'),
+      description:String(r.description||'').trim(),
+      stock:'in stock'
+    };
+    if(r.veg==='both'&&r.priceNonVeg){
+      out.sizes='Veg:'+(r.price||0)+', Chicken:'+r.priceNonVeg;
+      // Keep `price` as the veg price so cards still show a number
+    }
+    return out;
+  });
+
+  // Chunk to keep each URL under ~6KB. Sequential so Apps Script can serialize
+  // its sheet writes cleanly.
+  var CHUNK=25;
+  var saved=0,total=sheetRows.length,batch=0;
+  function sendNext(){
+    if(saved>=total){
+      if(btn){btn.disabled=false;btn.textContent='💾 Save all'}
+      showToast('✓ Added '+total+' products','success');
+      _importRows=[];_importWarnings=[];_importLastText='';
+      $('impText').value='';
+      renderImportPreview();
+      // Refresh products list + the cards/sheet views
+      setTimeout(function(){loadProductsSheet(function(){renderProducts();buildCatFilters();if(_prodView==='sheet')renderProductsSheet()})},800);
+      return;
+    }
+    var slice=sheetRows.slice(saved,saved+CHUNK);
+    var params='action=addProductsBulk&items='+encodeURIComponent(JSON.stringify(slice));
+    sendCmd(params,function(){
+      saved+=slice.length;batch++;
+      if(btn)btn.textContent='Saving '+Math.min(saved,total)+'/'+total+'…';
+      sendNext();
+    });
+  }
+  sendNext();
 }
 
 // ════════════════════════════════════════════
@@ -2089,6 +2538,267 @@ function deleteProductFromEditor(){
   sendCmd('action=deleteProduct&row='+rowNum,function(){
     showToast('✓ Product deleted','success');
     setTimeout(function(){loadProductsSheet(function(){renderProducts();buildCatFilters()})},1500);
+  });
+}
+
+// ════════════════════════════════════════════
+// DAILY MENU (canteen-style daily list)
+// ════════════════════════════════════════════
+// Manages rows on the optional `DailyMenu` tab. Storefront templates
+// (currently fastfood.html, dhaba.html) render these as a pinned panel
+// above the regular menu when DailyMenuEnabled=Y. Schema:
+//   Name | Section | Veg | Price | PriceNonVeg | Description | Available | TimeWindow
+var dailyMenuItems=[];
+var _dmEditIdx=-1;
+
+function _dmNorm(k){return String(k||'').toLowerCase().replace(/\s+/g,'')}
+function _dmGet(o,k){return o[_dmNorm(k)]||''}
+function _dmEnabled(){var v=(getCfg('DailyMenuEnabled','')||'').toString().toLowerCase();return v==='y'||v==='yes'||v==='true'||v==='1'}
+
+function loadDailyMenuItems(cb){
+  loadSheet(SHEET_ID,'DailyMenu',function(r){
+    if(!r){dailyMenuItems=[];if(cb)cb();return}
+    var parsed=parseSheetRows(r);
+    var rows=parsed.rows.map(function(o,i){o._row=i+2;return o}).filter(function(o){return _dmGet(o,'name')});
+    // Reuse the same gviz-fallback guard the storefront uses: gviz returns the
+    // first tab when DailyMenu doesn't exist, so reject rows shaped like
+    // Products to avoid leaking the menu in here.
+    if(rows.length){
+      var keys=Object.keys(rows[0]);
+      var prodCols=0;['category','unit','bestseller','preptime','stock'].forEach(function(k){if(keys.indexOf(k)>=0)prodCols++});
+      var dmCols=0;['section','timewindow','available','pricenonveg','pricenv','nonvegprice'].forEach(function(k){if(keys.indexOf(k)>=0)dmCols++});
+      if(prodCols>=3&&dmCols===0)rows=[];
+    }
+    dailyMenuItems=rows;
+    if(cb)cb();
+  });
+}
+
+function openDailyMenu(){
+  $('dmSheet').classList.add('open');
+  paintDailyMenuToggle_();
+  paintDailyMenuTemplateWarn_();
+  $('dmList').innerHTML='<div class="spinner"></div>';
+  loadDailyMenuItems(function(){renderDailyMenu()});
+}
+
+function paintDailyMenuToggle_(){
+  var on=_dmEnabled();
+  var sw=$('dmSwitch');
+  if(sw)sw.classList.toggle('on',on);
+  var sub=$('dmToggleSub');
+  if(sub)sub.textContent=on?'On — panel visible above the menu':'Off — daily menu panel hidden';
+  var menuSub=$('dmMenuSub');
+  if(menuSub)menuSub.textContent=on?'On · '+(dailyMenuItems.length?dailyMenuItems.length+' items':'no items yet'):'Off — tap to enable';
+}
+
+function paintDailyMenuTemplateWarn_(){
+  // Surface a warning if the storefront URL doesn't end in fastfood.html or
+  // dhaba.html, since other templates don't render the panel yet.
+  var w=$('dmTemplateWarn');if(!w)return;
+  var url=(STORE_META&&STORE_META.url||'').toLowerCase();
+  var supported=/fastfood\.html|dhaba\.html/.test(url);
+  // If we can't tell (no STORE_META), be silent rather than nag.
+  if(!url){w.style.display='none';return}
+  w.style.display=supported?'none':'block';
+}
+
+function toggleDailyMenuEnabled(){
+  if(!SCRIPT_URL){showToast('No script URL configured');return}
+  var newVal=_dmEnabled()?'':'Y';
+  // Update local config state so getCfg returns the new value immediately
+  var found=false;
+  configData.forEach(function(c){if(_dmNorm(c.key)==='dailymenuenabled'){c.value=newVal;found=true}});
+  if(!found)configData.push({key:'DailyMenuEnabled',value:newVal});
+  paintDailyMenuToggle_();
+  sendCmd('action=updateConfig&key=DailyMenuEnabled&value='+encodeURIComponent(newVal),function(){
+    showToast(newVal?'✓ Daily menu panel ON':'Daily menu panel OFF','success');
+  });
+}
+
+function renderDailyMenu(){
+  var el=$('dmList');if(!el)return;
+  if(!dailyMenuItems.length){
+    el.innerHTML='<div class="dm-empty"><div class="dm-empty-emoji">🍱</div>No daily items yet<div style="font-size:11px;color:var(--ink4);margin-top:4px">Tap <b>+ Add</b> above to write today\'s lunch combos, evening snacks, or specials.</div></div>';
+    paintDailyMenuToggle_();
+    return;
+  }
+  // Group by Section preserving sheet order
+  var grouped={},sections=[];
+  dailyMenuItems.forEach(function(it){
+    var s=(_dmGet(it,'section')||'Today').trim()||'Today';
+    if(!grouped[s]){grouped[s]=[];sections.push(s)}
+    grouped[s].push(it);
+  });
+  var html='';
+  sections.forEach(function(sec){
+    html+='<div style="font:800 10px var(--f);color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin:14px 4px 6px">'+esc(sec)+'</div>';
+    grouped[sec].forEach(function(it){html+=_dmCardHtml(it)});
+  });
+  el.innerHTML=html;
+  paintDailyMenuToggle_();
+}
+
+function _dmCardHtml(it){
+  var idx=dailyMenuItems.indexOf(it);
+  var name=_dmGet(it,'name');
+  var veg=(_dmGet(it,'veg')||'').toLowerCase();
+  var pVeg=parseFloat(_dmGet(it,'price')||0)||0;
+  var pNv=parseFloat(_dmGet(it,'pricenonveg')||_dmGet(it,'pricenv')||_dmGet(it,'nonvegprice')||0)||0;
+  var isBoth=veg==='both'||veg==='b'||(pVeg>0&&pNv>0&&pVeg!==pNv);
+  var isVeg=!isBoth&&(veg==='y'||veg==='yes'||veg==='veg'||veg==='true'||veg==='');
+  var avail=(_dmGet(it,'available')||'Y').toString().toLowerCase();
+  var hidden=(avail==='n'||avail==='no'||avail==='false'||avail==='0');
+  var soldOut=(avail==='soldout'||avail==='sold-out'||avail==='sold');
+  var cls='dm-card'+(soldOut?' oos':'')+(hidden?' hidden-row':'');
+  var cur=getCfg('Currency','₹')||'₹';
+  var dot=isBoth?'<span class="veg-d veg"></span><span class="veg-d nonveg" style="margin-left:2px"></span>':'<span class="veg-d '+(isVeg?'veg':'nonveg')+'"></span>';
+  var priceHtml='';
+  if(isBoth&&pNv>0&&pVeg>0)priceHtml=cur+pVeg+'<small>/</small>'+cur+pNv;
+  else if(pVeg>0||pNv>0)priceHtml=cur+(pVeg||pNv);
+  var status='';
+  if(hidden)status='<span class="dm-card-status hd">Hidden</span>';
+  else if(soldOut)status='<span class="dm-card-status so">Sold Out</span>';
+  else status='<span class="dm-card-status av">Available</span>';
+  var tw=_dmGet(it,'timewindow');
+  var meta='<div class="dm-card-meta">'+dot+status+(tw?'<span class="dm-card-time">⏰ '+esc(tw)+'</span>':'')+'</div>';
+  return '<div class="'+cls+'" onclick="openDailyMenuEdit('+idx+')"><div class="dm-card-h"><div class="dm-card-info"><div class="dm-card-title">'+esc(name)+'</div>'+meta+'</div>'+(priceHtml?'<div class="dm-card-price">'+priceHtml+'</div>':'')+'<div class="dm-card-edit">✎</div></div></div>';
+}
+
+function openDailyMenuAdd(){
+  _dmEditIdx=-1;
+  $('dmEditTitle').textContent='Add Daily Item';
+  $('dmDelBtn').style.display='none';
+  _dmFillEditor({});
+  $('dmEditSheet').classList.add('open');
+  setTimeout(function(){var n=$('dmName');if(n)n.focus()},150);
+}
+
+function openDailyMenuEdit(idx){
+  if(idx<0||idx>=dailyMenuItems.length)return;
+  _dmEditIdx=idx;
+  var it=dailyMenuItems[idx];
+  $('dmEditTitle').textContent=_dmGet(it,'name')||'Edit Daily Item';
+  $('dmDelBtn').style.display='flex';
+  _dmFillEditor(it);
+  $('dmEditSheet').classList.add('open');
+}
+
+function _dmFillEditor(it){
+  $('dmName').value=_dmGet(it,'name')||'';
+  $('dmSection').value=_dmGet(it,'section')||'';
+  var veg=(_dmGet(it,'veg')||'').toLowerCase();
+  var pVeg=_dmGet(it,'price')||'';
+  var pNv=_dmGet(it,'pricenonveg')||_dmGet(it,'pricenv')||_dmGet(it,'nonvegprice')||'';
+  var resolvedVeg=veg==='both'||veg==='b'||(pVeg&&pNv&&pVeg!==pNv)?'both':(veg==='n'||veg==='no'||veg==='nv'?'no':(veg==='y'||veg==='yes'||veg==='veg'||veg==='true'?'yes':''));
+  dmPickVeg(resolvedVeg||'yes');
+  $('dmPrice').value=pVeg||'';
+  $('dmPriceNv').value=pNv||'';
+  $('dmDesc').value=_dmGet(it,'description')||'';
+  var avail=(_dmGet(it,'available')||'Y').toString();
+  var availNorm=avail.toLowerCase()==='soldout'||avail.toLowerCase()==='sold-out'||avail.toLowerCase()==='sold'?'SoldOut'
+    :(avail.toLowerCase()==='n'||avail.toLowerCase()==='no'||avail.toLowerCase()==='false'||avail.toLowerCase()==='0')?'N':'Y';
+  dmPickAvail(availNorm);
+  // Parse TimeWindow into the two time inputs (accept "11:00-15:00" / "11-15" / etc.)
+  var tw=_dmGet(it,'timewindow');
+  $('dmTimeStart').value='';$('dmTimeEnd').value='';
+  if(tw){
+    var m=String(tw).match(/(\d{1,2}):?(\d{2})?\s*[-–to]+\s*(\d{1,2}):?(\d{2})?/i);
+    if(m){
+      var pad=function(n){n=parseInt(n||0,10);return(n<10?'0':'')+n};
+      $('dmTimeStart').value=pad(m[1])+':'+pad(m[2]||0);
+      $('dmTimeEnd').value=pad(m[3])+':'+pad(m[4]||0);
+    }
+  }
+}
+
+function dmPickVeg(val){
+  ['Yes','No','Both'].forEach(function(s){var el=$('dmVeg'+s);if(el)el.classList.remove('active')});
+  var pick=val==='no'?'No':val==='both'?'Both':'Yes';
+  var el=$('dmVeg'+pick);if(el)el.classList.add('active');
+  // Show/hide the non-veg price field based on choice
+  $('dmPriceNvWrap').style.display=pick==='Both'?'block':'none';
+  var lbl=$('dmPriceLabel');
+  if(lbl)lbl.innerHTML='Price <span class="pf-hint">'+(pick==='Both'?'veg price':pick==='No'?'non-veg price':'price')+'</span>';
+  $('dmEditTitle').dataset.dmVeg=val;
+}
+
+function dmPickAvail(val){
+  ['Y','SoldOut','N'].forEach(function(s){var el=$('dmAvail'+(s==='SoldOut'?'Sold':s));if(el)el.classList.remove('active')});
+  var k=val==='SoldOut'?'Sold':val==='N'?'N':'Y';
+  var el=$('dmAvail'+k);if(el)el.classList.add('active');
+  $('dmEditTitle').dataset.dmAvail=val;
+}
+
+function dmSetTime(start,end){$('dmTimeStart').value=start;$('dmTimeEnd').value=end}
+function dmClearTime(){$('dmTimeStart').value='';$('dmTimeEnd').value=''}
+
+function _dmCollectEditor(){
+  var name=($('dmName').value||'').trim();
+  var section=($('dmSection').value||'').trim();
+  var veg=$('dmEditTitle').dataset.dmVeg||'yes';
+  var price=($('dmPrice').value||'').trim();
+  var priceNv=($('dmPriceNv').value||'').trim();
+  var desc=($('dmDesc').value||'').trim();
+  var avail=$('dmEditTitle').dataset.dmAvail||'Y';
+  var ts=$('dmTimeStart').value,te=$('dmTimeEnd').value;
+  var tw=(ts&&te)?(ts+'-'+te):'';
+  return{
+    Name:name,
+    Section:section,
+    Veg:veg==='yes'?'Y':veg==='no'?'N':veg==='both'?'Both':'',
+    Price:price,
+    PriceNonVeg:veg==='both'?priceNv:'',
+    Description:desc,
+    Available:avail,
+    TimeWindow:tw
+  };
+}
+
+function saveDailyMenuFromEditor(){
+  var data=_dmCollectEditor();
+  if(!data.Name){showToast('Name is required','error');return}
+  if(!SCRIPT_URL){showToast('No script URL configured — cannot save','error');return}
+  var isAdd=_dmEditIdx<0;
+  var params=(isAdd?'action=addDailyMenu':'action=updateDailyMenu&row='+(dailyMenuItems[_dmEditIdx]._row||0));
+  // Send a `_clear_` marker for cells the user emptied — without it the
+  // partial-update on the server-side leaves the previous value alone.
+  Object.keys(data).forEach(function(k){
+    var v=data[k]||'';
+    params+='&'+encodeURIComponent(k)+'='+encodeURIComponent(v);
+    if(!isAdd&&!v)params+='&'+encodeURIComponent('_clear_'+k.toLowerCase())+'=1';
+  });
+  // Optimistic local update so the list reflects the change immediately
+  if(isAdd){
+    var fresh={};
+    Object.keys(data).forEach(function(k){fresh[_dmNorm(k)]=data[k]});
+    fresh._row=(dailyMenuItems.length?Math.max.apply(Math,dailyMenuItems.map(function(d){return d._row||0})):1)+1;
+    dailyMenuItems.push(fresh);
+  }else{
+    var it=dailyMenuItems[_dmEditIdx];
+    Object.keys(data).forEach(function(k){it[_dmNorm(k)]=data[k]});
+  }
+  renderDailyMenu();
+  closeSheet('dmEditSheet');
+  sendCmd(params,function(){
+    showToast(isAdd?'✓ Daily item added':'✓ Daily item saved','success');
+    setTimeout(function(){loadDailyMenuItems(renderDailyMenu)},1500);
+  });
+}
+
+function deleteDailyMenuFromEditor(){
+  if(_dmEditIdx<0)return;
+  var it=dailyMenuItems[_dmEditIdx];
+  var name=_dmGet(it,'name')||'this item';
+  if(!confirm('Delete "'+name+'" from today\'s menu? You can also tap "Hide" to keep it for later.'))return;
+  var rowNum=it._row||0;
+  if(!rowNum||!SCRIPT_URL){showToast('Cannot delete this row','error');return}
+  dailyMenuItems.splice(_dmEditIdx,1);
+  renderDailyMenu();
+  closeSheet('dmEditSheet');
+  sendCmd('action=deleteDailyMenu&row='+rowNum,function(){
+    showToast('✓ Item deleted','success');
+    setTimeout(function(){loadDailyMenuItems(renderDailyMenu)},1500);
   });
 }
 

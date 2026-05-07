@@ -1,0 +1,13 @@
+Name,Section,Veg,Price,PriceNonVeg,Description,Available,TimeWindow
+Saap Masala Combo,Lunch,Both,110,130,Saap masala + roti/rice,Y,11:00-15:00
+Bhindi + Lachha Paratha,Lunch,Y,130,,Bhindi + 2 lachha paratha,Y,11:00-15:00
+Rajma Masala Combo,Lunch,Both,110,130,Rajma + roti/rice,Y,11:00-15:00
+Choley Masala Combo,Lunch,Both,110,130,Choley + roti/rice,Y,11:00-15:00
+Chicken Home Style Combo,Lunch,N,,150,Home-style chicken curry + roti/rice,Y,11:00-15:00
+Choley Kulcha,Lunch,Y,80,,Choley + 2 kulcha + pickle,Y,11:00-15:00
+Chinese Combo,Lunch,Both,110,130,Noodles or fried rice + chilli paneer/chicken,Y,11:00-15:00
+Veg Thali,Thali,Y,150,,Dal + sabji + 2 roti + rice + salad,Y,11:00-21:00
+Non-Veg Thali,Thali,N,,170,Chicken curry + 2 roti + rice + salad,Y,11:00-21:00
+Honey Chilli Potato,Snacks,Y,140,,Crispy potato tossed in honey chilli,Y,16:00-21:00
+Bread Roll,Snacks,Y,50,,Stuffed bread roll,Y,16:00-21:00
+Vada Pav,Snacks,Y,50,,Maharashtrian street snack,Y,16:00-21:00

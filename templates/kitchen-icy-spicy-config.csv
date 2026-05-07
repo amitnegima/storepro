@@ -1,0 +1,35 @@
+Key,Value
+ShopName,Kitchen Icy Spicy
+ShopType,Cafe
+Phone,919311901902
+Phone2,917119898050
+WhatsApp,919311901902
+Address,
+City,
+UPI,
+Currency,₹
+DashboardPIN,1234
+BrandColor,#d62828
+HeroTagline,North Indian · Chinese · Momos · Rolls — fresh & spicy
+HeroTitle2,
+EstimatedDeliveryTime,20-30 min
+DeliveryFee,0
+FreeDelivery,200
+PackingFee,0
+MinOrder,150
+Rating,4.5
+Timing,9:00-22:00
+StoreOpen,yes
+NotificationLanguage,en
+OrderScript,
+PushRelayURL,https://storepro-push.storepro.workers.dev
+PushSecret,REPLACE_WITH_PUSH_SECRET_FROM_SCRIPT_PROPERTIES
+Slug,kitchen-icy-spicy
+GSTIN,06ALJPB6842Q1ZG
+DailySpecial,Veg Thali
+DailySpecialPrice,140
+DailySpecialDesc,Dal + sabji + 4 roti + rice + salad + papad — full meal value
+DailySpecialImage,
+SearchHint,Search momos noodles roll thali maggie...
+Website,
+Email,

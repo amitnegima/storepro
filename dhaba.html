@@ -318,6 +318,36 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
   .daily-special-price{font-size:22px;padding:10px 18px}
 }
 
+/* Today's Menu — canteen-style daily list (calmer than the hero card) */
+.todays-menu{max-width:var(--mw);margin:8px auto 4px;padding:0 var(--px)}
+.todays-menu-card{background:linear-gradient(180deg,#fffbeb,#fff7d6);border:1.5px solid #fbbf24;border-radius:var(--r3);padding:12px 14px 6px;box-shadow:0 4px 14px rgba(251,191,36,.14)}
+.todays-menu-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.todays-menu-title{font:900 14px var(--f);color:#78350f;letter-spacing:.02em;display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.todays-menu-date{font:700 10px var(--f);color:#92400e;background:rgba(251,191,36,.3);padding:3px 9px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;white-space:nowrap}
+.todays-menu-section{margin-top:8px}
+.todays-menu-section-h{font:800 10px var(--f);color:#78350f;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;opacity:.85}
+.todays-menu-row{display:flex;align-items:center;gap:10px;background:#fff;padding:9px 11px;border-radius:var(--r2);margin-bottom:5px;border:1px solid rgba(251,191,36,.4)}
+.todays-menu-row.oos{opacity:.55}
+.todays-menu-row-tag{flex-shrink:0;display:flex;flex-direction:column;gap:2px}
+.todays-menu-row-tag .dish-tag{margin:0;width:11px;height:11px}
+.todays-menu-row-info{flex:1;min-width:0}
+.todays-menu-row-name{font:700 13px var(--f);color:var(--ink);line-height:1.25;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.todays-menu-row-time{font:700 9px var(--f);color:#78350f;background:rgba(251,191,36,.25);padding:1px 6px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.04em}
+.todays-menu-row-desc{font:500 11px var(--f);color:var(--ink3);margin-top:2px;line-height:1.4}
+.todays-menu-row-price{font:800 13px var(--f);color:var(--brand);white-space:nowrap;flex-shrink:0}
+.todays-menu-row-price .tm-veg{color:var(--green)}
+.todays-menu-row-price .tm-nv{color:var(--red)}
+.todays-menu-row-price .tm-sep{color:var(--ink4);margin:0 4px;font-weight:600}
+.todays-menu-add{flex-shrink:0;height:30px;padding:0 12px;border:1.5px solid var(--brand);border-radius:var(--r);background:#fff;color:var(--brand);font:800 11px var(--f);cursor:pointer;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;transition:.15s}
+.todays-menu-add:hover{background:var(--brand);color:#fff}
+.todays-menu-add.in-cart{background:var(--brand);color:#fff}
+.todays-menu-add:disabled{background:var(--line2);color:var(--ink4);border-color:var(--line2);cursor:not-allowed}
+.todays-menu-stepper{display:flex;align-items:center;border:1.5px solid var(--brand);border-radius:var(--r);overflow:hidden;background:var(--brand);flex-shrink:0}
+.todays-menu-stepper button{width:28px;height:28px;border:none;background:var(--brand);color:#fff;font:700 14px var(--f);cursor:pointer;padding:0}
+.todays-menu-stepper button:hover{filter:brightness(1.12)}
+.todays-menu-stepper span{width:24px;text-align:center;color:#fff;font:800 12px var(--f)}
+@media(max-width:640px){.todays-menu-row-name{font-size:12px}.todays-menu-row-price{font-size:12px}.todays-menu-row-desc{font-size:10px}}
+
 /* Mobile-specific tweaks */
 @media(max-width:640px){
   .dish-img-area{width:100px;height:100px}
@@ -382,6 +412,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 
 <!-- Daily Special -->
 <div id="dailySpecial" style="display:none"></div>
+
+<!-- Today's Menu (canteen-style daily-changing items, optional) -->
+<div id="todaysMenu" style="display:none"></div>
 
 <!-- Call to Order banner -->
 <div class="call-banner" id="callBanner" style="display:none">
@@ -487,10 +520,23 @@ var DEFAULT_PHONE="",DEFAULT_WA="";
 var config={},allDishes=[],dishes=[],cart=[],filtered=[],activeCat="All",searchTerm="",vegOnly=false;
 var activeMode='delivery',activePayment='cod';
 var currentCustomDish=null,custQtySelected=1,custSelections={};
+var dailyMenuItems=[];
 
 // Restore cart and customer
 // Cart and customer loaded after SHEET_ID is resolved in init()
 var savedCustomer={};
+
+// ── GPS capture for accurate delivery ──
+// When the customer taps "Use my current location", we keep the raw lat/lng
+// here so addrWithMap_() can append a tappable Google Maps link to the
+// address that goes to the dashboard + WhatsApp. That gives the rider an
+// exact pin to navigate to instead of a fuzzy text address.
+var _gpsLat='',_gpsLng='';
+function addrWithMap_(addr){
+  if(!_gpsLat||!_gpsLng)return addr||'';
+  if((addr||'').indexOf('maps.google.com')>=0||(addr||'').indexOf('🗺️')>=0)return addr;
+  return (addr||'')+'\n🗺️ Map: https://maps.google.com/?q='+_gpsLat+','+_gpsLng;
+}
 
 function $(id){return document.getElementById(id)}
 function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML}
@@ -500,13 +546,21 @@ function fnum(n){return parseFloat(n||0)}
 
 // ══ DATA LOADING ══
 function loadSheet(name,cb){
-  if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};
-  window.google.visualization.Query.setResponse=cb;
+  // Use a UNIQUE responseHandler per call. The default JSONP entrypoint is
+  // window.google.visualization.Query.setResponse, which is a single global
+  // slot — concurrent loadSheet() calls (e.g. refreshMenu firing Products and
+  // loadDailyMenu in the same tick) would race: both responses end up calling
+  // whichever cb was assigned LAST. With wrong-shaped data landing in the
+  // DailyMenu slot, the schema-guard then nukes the panel. Unique handlers
+  // per call eliminate the race entirely.
+  var handlerName='__sproSheetCb_'+(loadSheet._n=(loadSheet._n||0)+1);
   var s=document.createElement('script');
-  // headers=0: don't auto-detect headers
-  // tq=select * format A 'string' B 'string': force columns to string type so text values aren't dropped
-  s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&headers=0&_t='+Date.now();
-  s.onerror=function(){cb(null)};
+  var done=false;
+  function cleanup(){if(done)return;done=true;try{delete window[handlerName]}catch(e){window[handlerName]=null}if(s.parentNode)s.parentNode.removeChild(s)}
+  window[handlerName]=function(r){cleanup();cb(r)};
+  // headers=0: don't auto-detect headers (row 0 IS the header)
+  s.src='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json;responseHandler:'+handlerName+'&sheet='+encodeURIComponent(name)+'&headers=0&_t='+Date.now();
+  s.onerror=function(){cleanup();cb(null)};
   document.body.appendChild(s);
 }
 function parseRows(r){
@@ -624,7 +678,9 @@ function finishLoad(){
   renderMenu();
   buildCatNav();
   updateCartBar();
-  setInterval(refreshMenu,60000);
+  loadDailyMenu();
+  setInterval(refreshMenu,300000);
+  setInterval(renderTodaysMenu,300000);
 }
 
 function refreshMenu(){
@@ -637,6 +693,177 @@ function refreshMenu(){
       renderMenu();updateCartBar();
     }
   });
+  loadDailyMenu();
+}
+
+// ══ TODAY'S MENU (canteen-style daily list) ══
+// Backed by the optional `DailyMenu` tab on the tenant sheet. Rows are
+// rendered as a pinned yellow panel above the regular menu when the
+// `DailyMenuEnabled` config key is set. Each row supports two prices in
+// one row (Price / PriceNonVeg) so the shop can express "110 / 130" the
+// way they'd write it on the whiteboard, and an optional TimeWindow that
+// hides the row outside e.g. lunch hours.
+
+function dmEnabled_(){
+  var v=(cfg('dailymenuenabled','')||'').toLowerCase();
+  return v==='y'||v==='yes'||v==='true'||v==='1';
+}
+function dmCurrentMinutes_(){var d=new Date();return d.getHours()*60+d.getMinutes()}
+function dmParseTimeWindow_(tw){
+  if(!tw)return null;
+  var m=String(tw).match(/(\d{1,2}):?(\d{2})?\s*[-–to]+\s*(\d{1,2}):?(\d{2})?/i);
+  if(!m)return null;
+  var s=parseInt(m[1],10)*60+parseInt(m[2]||'0',10);
+  var e=parseInt(m[3],10)*60+parseInt(m[4]||'0',10);
+  return {start:s,end:e};
+}
+function dmCartQty_(name){
+  var q=0;for(var i=0;i<cart.length;i++)if(cart[i].name===name)q+=cart[i].qty;
+  return q;
+}
+
+function loadDailyMenu(){
+  if(!dmEnabled_()){dailyMenuItems=[];renderTodaysMenu();return}
+  loadSheet('DailyMenu',function(r){
+    var rows=r?parseRows(r).filter(function(p){return p.name}):[];
+    // gviz silently falls back to the first tab when a sheet name doesn't
+    // exist, so reject rows that look like the Products schema rather than
+    // the DailyMenu schema (otherwise every product appears in the panel).
+    if(rows.length){
+      var keys=Object.keys(rows[0]);
+      var productCols=0;['category','unit','bestseller','preptime','stock'].forEach(function(k){if(keys.indexOf(k)>=0)productCols++});
+      var dailyCols=0;['section','timewindow','available','pricenonveg','pricenv','nonvegprice'].forEach(function(k){if(keys.indexOf(k)>=0)dailyCols++});
+      if(productCols>=3&&dailyCols===0)rows=[];
+    }
+    dailyMenuItems=rows;
+    renderTodaysMenu();
+  });
+}
+
+function renderTodaysMenu(){
+  var el=$('todaysMenu');
+  if(!el)return;
+  if(!dmEnabled_()||!dailyMenuItems.length){el.style.display='none';return}
+
+  var nowM=dmCurrentMinutes_();
+  var visible=dailyMenuItems.filter(function(it){
+    var avail=(it.available||'Y').toLowerCase();
+    if(avail==='n'||avail==='no'||avail==='false'||avail==='0')return false;
+    if(it.timewindow){
+      var w=dmParseTimeWindow_(it.timewindow);
+      if(w&&(nowM<w.start||nowM>w.end))return false;
+    }
+    if(vegOnly){
+      var v=(it.veg||'').toLowerCase();
+      if(v==='n'||v==='no'||v==='nv')return false;
+    }
+    return true;
+  });
+  if(!visible.length){el.style.display='none';return}
+
+  var grouped={},order=[];
+  visible.forEach(function(it){
+    var s=(it.section||'Today').trim()||'Today';
+    if(!grouped[s]){grouped[s]=[];order.push(s)}
+    grouped[s].push(it);
+  });
+
+  var label=cfg('dailymenulabel','')||'🍱 Today\'s Menu';
+  var dateStr;try{dateStr=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})}catch(e){dateStr=''}
+
+  var html='<div class="todays-menu"><div class="todays-menu-card">';
+  html+='<div class="todays-menu-hdr">';
+  html+='<div class="todays-menu-title">'+esc(label)+'</div>';
+  if(dateStr)html+='<div class="todays-menu-date">'+esc(dateStr)+'</div>';
+  html+='</div>';
+  order.forEach(function(secName){
+    html+='<div class="todays-menu-section">';
+    html+='<div class="todays-menu-section-h">'+esc(secName)+'</div>';
+    grouped[secName].forEach(function(it){html+=renderDailyRow_(it)});
+    html+='</div>';
+  });
+  html+='</div></div>';
+  el.innerHTML=html;
+  el.style.display='block';
+}
+
+function renderDailyRow_(it){
+  var idx=dailyMenuItems.indexOf(it);
+  var veg=(it.veg||'').toLowerCase();
+  var priceVeg=fnum(it.price);
+  var priceNonVeg=fnum(it.pricenonveg||it.pricenv||it.nonvegprice);
+  var isBoth=veg==='both'||veg==='b'||(priceNonVeg>0&&priceVeg>0&&priceNonVeg!==priceVeg);
+  var isVeg=!isBoth&&(veg==='y'||veg==='yes'||veg==='veg'||veg==='true'||veg==='');
+  var oos=((it.available||'').toLowerCase()==='soldout')||((it.stock||'').toLowerCase().indexOf('out')>=0);
+  var qty=dmCartQty_(it.name);
+  var cur=cfg('currency','₹');
+
+  var html='<div class="todays-menu-row'+(oos?' oos':'')+'">';
+  html+='<div class="todays-menu-row-tag">';
+  if(isBoth){html+='<span class="dish-tag veg"></span><span class="dish-tag nv"></span>'}
+  else{html+='<span class="dish-tag '+(isVeg?'veg':'nv')+'"></span>'}
+  html+='</div>';
+  html+='<div class="todays-menu-row-info">';
+  html+='<div class="todays-menu-row-name">'+esc(it.name);
+  if(it.timewindow)html+=' <span class="todays-menu-row-time">'+esc(it.timewindow)+'</span>';
+  html+='</div>';
+  if(it.description)html+='<div class="todays-menu-row-desc">'+esc(it.description)+'</div>';
+  html+='</div>';
+  html+='<div class="todays-menu-row-price">';
+  if(isBoth&&priceNonVeg>0){
+    html+='<span class="tm-veg">'+cur+priceVeg+'</span><span class="tm-sep">/</span><span class="tm-nv">'+cur+priceNonVeg+'</span>';
+  }else{
+    html+=cur+(priceVeg||priceNonVeg||0);
+  }
+  html+='</div>';
+  if(oos){html+='<button class="todays-menu-add" disabled>Sold Out</button>'}
+  else if(qty>0&&!isBoth){
+    html+='<div class="todays-menu-stepper">'
+       +'<button onclick="changeDailyQty('+idx+',-1)">−</button>'
+       +'<span>'+qty+'</span>'
+       +'<button onclick="changeDailyQty('+idx+',1)">+</button>'
+       +'</div>';
+  }else{
+    html+='<button class="todays-menu-add'+(qty>0?' in-cart':'')+'" onclick="addDaily('+idx+')">'+(qty>0?'ADD MORE':(isBoth?'CHOOSE':'ADD'))+'</button>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function addDaily(idx){
+  var it=dailyMenuItems[idx];
+  if(!it)return;
+  var veg=(it.veg||'').toLowerCase();
+  var priceVeg=fnum(it.price);
+  var priceNonVeg=fnum(it.pricenonveg||it.pricenv||it.nonvegprice);
+  var isBoth=veg==='both'||veg==='b'||(priceNonVeg>0&&priceVeg>0&&priceNonVeg!==priceVeg);
+  var sectionCat='Today\'s '+((it.section||'Menu').trim()||'Menu');
+  if(isBoth&&priceNonVeg>0&&priceVeg>0){
+    openCustomization({
+      name:it.name,category:sectionCat,description:it.description||'',
+      veg:'both',sizes:'Veg:'+priceVeg+', Chicken:'+priceNonVeg,price:priceVeg
+    });
+    return;
+  }
+  var dish={
+    name:it.name,category:sectionCat,description:it.description||'',
+    veg:(veg==='y'||veg==='yes'||veg==='veg'||veg==='true')?'yes':(priceNonVeg>0&&!priceVeg?'no':(veg||'')),
+    price:(priceVeg||priceNonVeg)
+  };
+  addToCart(dish,1,null,priceVeg||priceNonVeg);
+  showAddedFeedback(dish.name);
+  renderTodaysMenu();
+}
+
+function changeDailyQty(idx,delta){
+  var it=dailyMenuItems[idx];
+  if(!it)return;
+  var found=cart.findIndex(function(c){return c.name===it.name&&!c.customization});
+  if(found>=0){
+    cart[found].qty+=delta;
+    if(cart[found].qty<=0)cart.splice(found,1);
+    saveCart();renderTodaysMenu();updateCartBar();
+  }else if(delta>0){addDaily(idx)}
 }
 
 // ══ APPLY CONFIG ══
@@ -789,15 +1016,27 @@ function checkOpen(timing){
 }
 
 // ══ CART SYNC ══
+// Reconcile each cart row against the live Products list. Three guards baked in:
+//   1. Name matching is whitespace + case insensitive — a customer's stale
+//      "Non-Veg Thali" cart entry still matches "non veg thali" / "Non Veg Thali"
+//      from the current sheet without a jarring force-remove.
+//   2. Genuinely-missing items are dropped silently with a quiet toast — never
+//      a blocking alert(), which on a storefront feels like a crash.
+//   3. Out-of-stock items stay in the cart but get an `_oos=true` flag so the
+//      cart UI can grey them out — the customer keeps their selection ready
+//      for when stock returns.
+function _normalizeName_(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,' ')}
 function syncCartPrices(){
   if(!allDishes||!allDishes.length)return;
-  var changed=false,removed=[];
+  var nameIndex={};
+  allDishes.forEach(function(p){nameIndex[_normalizeName_(p.name)]=p});
+  var changed=false,gone=[],oos=[];
   cart.forEach(function(item){
-    var match=allDishes.find(function(p){return p.name===item.name});
-    if(!match){removed.push(item.name);item._oos=true;return}
+    var match=nameIndex[_normalizeName_(item.name)];
+    if(!match){gone.push(item.name);item._gone=true;return}
+    item._gone=false;
     var newPrice=fnum(match.price);
     if(item.basePrice!==undefined){
-      // Has customizations — only update if base changed proportionally
       var oldBase=item.basePrice;
       if(oldBase!==newPrice){
         var customAdd=item.price-oldBase;
@@ -808,11 +1047,14 @@ function syncCartPrices(){
     }else{
       if(newPrice!==fnum(item.price)){item.price=match.price;changed=true}
     }
-    var stock=(match.stock||'').toLowerCase();
-    if(stock.indexOf('out')>=0){removed.push(item.name);item._oos=true}
+    var stock=(match.stock||'').toString().toLowerCase();
+    item._oos=stock.indexOf('out')>=0||stock.indexOf('sold')>=0;
+    if(item._oos)oos.push(item.name);
   });
-  cart=cart.filter(function(c){return!c._oos});
-  if(removed.length)alert(removed.join(', ')+' is no longer available — removed from cart.');
+  cart=cart.filter(function(c){return!c._gone});
+  if(gone.length){
+    try{showToast('Removed: '+gone.slice(0,2).join(', ')+(gone.length>2?' +'+(gone.length-2):''))}catch(e){}
+  }
 }
 
 // ══ MENU RENDER ══
@@ -875,6 +1117,7 @@ function toggleVegOnly(){
   vegOnly=!vegOnly;
   $('vegToggle').classList.toggle('active',vegOnly);
   renderMenu();
+  renderTodaysMenu();
   buildCatNav();
 }
 
@@ -1306,9 +1549,9 @@ function renderCart(){
 function cartQty(i,delta){
   cart[i].qty+=delta;
   if(cart[i].qty<=0)cart.splice(i,1);
-  saveCart();renderCart();renderMenu();updateCartBar();
+  saveCart();renderCart();renderMenu();renderTodaysMenu();updateCartBar();
 }
-function removeCart(i){cart.splice(i,1);saveCart();renderCart();renderMenu();updateCartBar()}
+function removeCart(i){cart.splice(i,1);saveCart();renderCart();renderMenu();renderTodaysMenu();updateCartBar()}
 
 // ══ CHECKOUT ══
 function goToCheckout(){
@@ -1395,21 +1638,20 @@ function getCurrentLocation(){
   navigator.geolocation.getCurrentPosition(
     function(pos){
       var lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
-      // Reverse geocode using free Nominatim API
+      _gpsLat=lat;_gpsLng=lng;
       fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lng+'&zoom=18&addressdetails=1')
         .then(function(r){return r.json()})
         .then(function(data){
           btn.disabled=false;btn.innerHTML='📍 Use my current location';
           var addr=data.display_name||(lat+', '+lng);
           $('coAddress').value=addr;
-          showLocStatus('✓ Location found: '+addr.split(',').slice(0,3).join(','),'ok');
-          // Check delivery radius
+          showLocStatus('✓ Location captured · accurate map pin will be sent','ok');
           checkDeliveryRadius(parseFloat(lat),parseFloat(lng));
         })
         .catch(function(){
           btn.disabled=false;btn.innerHTML='📍 Use my current location';
           $('coAddress').value='Lat: '+lat+', Lng: '+lng;
-          showLocStatus('✓ GPS location captured (please add details)','ok');
+          showLocStatus('✓ GPS captured · please add details · map pin will be sent','ok');
           checkDeliveryRadius(parseFloat(lat),parseFloat(lng));
         });
     },
@@ -1503,6 +1745,11 @@ function placeOrder(){
     return s;
   }).join('\n');
   
+  // Stitch a Google Maps pin onto the address (no-op when GPS wasn't captured).
+  // Same enriched string flows to both the sheet write and the WhatsApp
+  // message so the shopkeeper has a tappable pin in either channel.
+  var addressForOrder=addrWithMap_(address);
+
   // Send to Apps Script
   if(SCRIPT_URL){
     var params='action=newOrder';
@@ -1510,22 +1757,23 @@ function placeOrder(){
     params+='&orderId='+encodeURIComponent(oid);
     params+='&name='+encodeURIComponent(name);
     params+='&phone='+encodeURIComponent(phone);
-    params+='&address='+encodeURIComponent(address);
+    params+='&address='+encodeURIComponent(addressForOrder);
     params+='&items='+encodeURIComponent(itemsStr);
     params+='&total='+encodeURIComponent(grand);
     params+='&mode='+encodeURIComponent(activeMode);
     params+='&payment='+encodeURIComponent(activePayment);
     params+='&notes='+encodeURIComponent(notes);
     params+='&date='+encodeURIComponent(new Date().toLocaleString('en-IN'));
+    if(_gpsLat&&_gpsLng){params+='&lat='+encodeURIComponent(_gpsLat)+'&lng='+encodeURIComponent(_gpsLng)}
     var img=new Image();img.src=SCRIPT_URL+'?'+params+'&_t='+Date.now();
   }else{
     console.error('[StorePro] Order NOT saved: no ScriptURL configured. Set it in master registry or Config tab.');
   }
-  
+
   // Build WhatsApp message + cache shop phone (do NOT auto-open — customer chooses from success modal)
   var phoneCfg=cfg('whatsapp',DEFAULT_WA);
   var waMsg='Hi! New order:\n\n*Order #'+oid+'*\n\n👤 '+name+'\n📞 '+phone+'\n'+
-    (activeMode==='delivery'?'📍 '+address:'🏪 Pickup')+'\n\n*Items:*\n'+itemsStr+
+    (activeMode==='delivery'?'📍 '+addressForOrder:'🏪 Pickup')+'\n\n*Items:*\n'+itemsStr+
     '\n\n💰 Subtotal: ₹'+subtotal+
     (deliveryFee>0?'\n🛵 Delivery: ₹'+deliveryFee:deliveryFee===0&&activeMode==='delivery'?'\n🛵 FREE delivery':'')+
     (packingFee>0?'\n📦 Packing: ₹'+packingFee:'')+
@@ -1539,7 +1787,7 @@ function placeOrder(){
   window._lastOrderTotal=grand;
 
   // Clear cart
-  cart=[];saveCart();updateCartBar();
+  cart=[];saveCart();updateCartBar();renderTodaysMenu();
 
   // Restore Place Order button
   if(placeBtn){

@@ -108,6 +108,92 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 .qu-btn.on{background:var(--R);color:#fff}
 .qu-btn:first-child{border-right:1px solid var(--LINE)}
 
+/* === LIVE PRICE LINE shown under the qty selector === */
+.estimate{font:500 11.5px var(--F);color:var(--T2);text-align:center;padding:7px 10px;background:var(--BG);border-radius:8px;line-height:1.4;border:1px dashed var(--LINE)}
+.estimate b{color:var(--R);font-weight:800}
+.estimate.muted{color:var(--T3);font-style:italic;border-style:solid;border-color:var(--LINE)}
+.estimate.with-offer{color:var(--T1);background:#fffbeb;border-color:#fbbf24;border-style:solid}
+.estimate.with-offer b{color:#b45309}
+.estimate del{color:var(--T4);font-weight:500;margin-left:4px}
+
+/* === CUSTOMER-PRICE FIELD (optional, between qty selector and Add) === */
+/* Indian shop pattern: customer can OPTIONALLY tell the shop what they\'d
+   like to pay for the selected quantity. Empty = shop quotes the price.
+   The strip is intentionally subtle so it doesn\'t compete with the Add
+   button visually — customers who want to use it find it, customers who
+   don\'t can ignore it. */
+.neg-row{
+  display:flex;gap:10px;align-items:center;
+  padding:10px 12px;background:#fffbeb;border:1px dashed #fbbf24;border-radius:12px;
+}
+.neg-label{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.neg-label-t{font:700 12px var(--F);color:#92400e;line-height:1.2}
+.neg-label-s{font:500 10.5px var(--F);color:#a16207;margin-top:3px;line-height:1.3}
+/* Unified ₹ + input pill so the prefix and field read as a single control. */
+.neg-input-wrap{
+  display:flex;align-items:stretch;flex-shrink:0;
+  height:40px;background:#fff;border:1.5px solid #fbbf24;border-radius:9px;overflow:hidden;
+  transition:box-shadow .15s,border-color .15s;
+}
+.neg-input-wrap:focus-within{border-color:#d97706;box-shadow:0 0 0 3px rgba(251,191,36,.2)}
+.neg-prefix{
+  display:flex;align-items:center;justify-content:center;
+  width:28px;font:800 14px var(--F);color:#b45309;background:#fef3c7;flex-shrink:0;
+}
+.neg-input{
+  width:84px;height:100%;border:none;
+  font:700 15px var(--F);text-align:center;outline:none;background:#fff;color:#92400e;
+  padding:0 6px;min-width:0;
+}
+.neg-input::placeholder{font-weight:500;color:#d97706;opacity:.55}
+/* Clear chip — only visible when the field has a value. */
+.neg-clear{
+  width:30px;height:30px;border:none;border-radius:50%;
+  background:rgba(146,64,14,.1);color:#92400e;font:800 12px var(--F);cursor:pointer;
+  display:none;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .15s;
+}
+.neg-clear.show{display:flex}
+.neg-clear:active{background:rgba(146,64,14,.22);transform:scale(.92)}
+
+/* === ORDER-DETAIL: customer-price callout in the tracking sheet === */
+/* Renders above the raw items list when one or more lines carry a
+   [💬 CUSTOMER PRICE...] tag. Surfaces the price the customer asked for
+   alongside the listed price, with a "waiting for shop" hint at the bottom. */
+.trk-neg-card{
+  margin-top:14px;padding:14px 14px 12px;
+  background:linear-gradient(160deg,#fffbeb,#fef3c7);
+  border:1.5px solid #fbbf24;border-radius:14px;
+}
+.trk-neg-l{font:800 10px var(--F);color:#92400e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.trk-neg-h{font:800 14px var(--F);color:#7c2d12;margin-bottom:10px;line-height:1.3}
+.trk-neg-list{display:flex;flex-direction:column;gap:8px}
+.trk-neg-item{
+  background:rgba(255,255,255,.78);border-radius:10px;padding:10px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+}
+.trk-neg-item-info{flex:1;min-width:0}
+.trk-neg-item-name{font:700 13px var(--F);color:var(--T1);line-height:1.3;word-break:break-word}
+.trk-neg-item-meta{font:500 10.5px var(--F);color:#9ca3af;margin-top:2px;text-decoration:line-through}
+.trk-neg-item-price{font:800 16px var(--F);color:#9a3412;flex-shrink:0;white-space:nowrap}
+.trk-neg-foot{
+  margin-top:10px;padding-top:10px;border-top:1px dashed rgba(180,83,9,.25);
+  font:600 11px var(--F);color:#92400e;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.trk-neg-foot.confirmed{color:#15803d;border-top-color:rgba(21,128,61,.25)}
+
+/* === ORDER-DETAIL: items list line-by-line styling === */
+/* Replaces the raw <pre>-style dump so each item gets its own row + the
+   metadata footer (delivery date, banner) renders distinctly. */
+.trk-items-list{padding:0;background:transparent;border:none;font:500 12.5px var(--F);color:var(--T2)}
+.trk-items-row{padding:9px 12px;background:#fff;border:1px solid var(--LINE);border-radius:10px;margin-bottom:6px;line-height:1.45;display:flex;align-items:flex-start;gap:8px}
+.trk-items-row:last-child{margin-bottom:0}
+.trk-items-row.neg{background:#fffbeb;border-color:#fcd34d}
+.trk-items-row.meta{background:transparent;border:none;color:var(--T3);font-style:italic;padding:4px 4px 0;margin-bottom:0}
+.trk-items-bullet{flex-shrink:0;font-size:14px;line-height:1.2;width:18px;text-align:center}
+.trk-items-text{flex:1;min-width:0;word-break:break-word;white-space:pre-wrap}
+.trk-items-text small{display:block;font:600 10.5px var(--F);color:#b45309;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+
 /* ADD BUTTON */
 .add-btn{width:100%;height:52px;border:none;border-radius:12px;font:700 15px var(--F);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s var(--EASE);color:var(--R);background:var(--Rbg);border:2px solid var(--Rlt)}
 .add-btn:active{transform:scale(.96)}
@@ -201,11 +287,26 @@ body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoo
 .co-dt-custom-item{flex:1;display:flex;flex-direction:column;gap:4px}
 
 /* Items summary in checkout */
-.co-items{background:var(--BG);border-radius:12px;padding:12px;margin-bottom:16px}
-.co-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font:500 13px var(--F);color:var(--T2)}
+.co-items{background:var(--BG);border-radius:12px;padding:6px 12px;margin-bottom:16px}
+.co-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 0;font:500 13px var(--F);color:var(--T2)}
 .co-item:not(:last-child){border-bottom:1px solid var(--LINE)}
-.co-item-name{flex:1}
-.co-item-qty{color:var(--T3);flex-shrink:0;margin-left:8px}
+.co-item-info{flex:1;min-width:0}
+.co-item-name{font:600 13.5px var(--F);color:var(--T1);line-height:1.3;word-break:break-word}
+.co-item-meta{font:500 11.5px var(--F);color:var(--T3);margin-top:2px}
+.co-item-meta del{color:#9ca3af;font-weight:500;margin-left:4px}
+.co-item-price{flex-shrink:0;text-align:right;white-space:nowrap}
+.co-item-price-v{font:800 14px var(--F);color:var(--T1);line-height:1.2}
+.co-item-price-v.quoted{color:#b45309}
+.co-item-price-tag{font:700 9px var(--F);color:#b45309;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;display:flex;align-items:center;justify-content:flex-end;gap:3px}
+/* Negotiated row: subtle yellow background so the customer sees their quote
+   highlighted at the order-confirmation step. */
+.co-item.neg{background:linear-gradient(90deg,transparent,rgba(251,191,36,.08));margin:0 -12px;padding-left:12px;padding-right:12px;border-radius:8px}
+.co-item.neg+.co-item:not(.neg){border-top:1px solid var(--LINE)}
+/* Total row at bottom of summary — strong visual close on the order */
+.co-total{display:flex;justify-content:space-between;align-items:center;padding:12px 0 6px;margin-top:6px;border-top:2px solid var(--T4);font:700 13px var(--F);color:var(--T1)}
+.co-total-v{font:800 17px var(--F);color:var(--R)}
+.co-total-note{font:500 10.5px var(--F);color:var(--T3);text-align:center;margin-top:6px;padding-top:4px}
+.co-total-note.warn{color:#b45309;font-weight:600}
 
 .co-error{font:600 12px var(--F);color:var(--R2);background:var(--Rbg);padding:10px 14px;border-radius:10px;margin-bottom:10px;display:none;align-items:center;gap:6px}
 
@@ -548,6 +649,18 @@ var SID='',SU='',MID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
 var C={},SP=false,items=[],cart=[];
 var QL={kg:100,g:1000};
 
+// ── GPS capture for accurate delivery ──
+// When the customer taps "Use Current Location", we keep the raw lat/lng
+// here so addrWithMap_() can append a tappable Google Maps link to the
+// address that goes to the dashboard + WhatsApp. That gives the rider an
+// exact pin to navigate to instead of a fuzzy text address.
+var _gpsLat='',_gpsLng='';
+function addrWithMap_(addr){
+  if(!_gpsLat||!_gpsLng)return addr||'';
+  if((addr||'').indexOf('maps.google.com')>=0||(addr||'').indexOf('🗺️')>=0)return addr;
+  return (addr||'')+'\n🗺️ Map: https://maps.google.com/?q='+_gpsLat+','+_gpsLng;
+}
+
 function LS(name,cb){if(!SID){cb(null);return}if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};window.google.visualization.Query.setResponse=function(r){cb(r)};var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&_t='+Date.now();s.onerror=function(){cb(null)};document.body.appendChild(s)}
 function G(k,d){var n=k.toLowerCase().replace(/\s+/g,'');for(var c in C){if(c.toLowerCase().replace(/\s+/g,'')===n)return C[c]||d}return d||''}
 
@@ -660,17 +773,21 @@ function render(){
       var id=x.name.replace(/[^a-zA-Z0-9]/g,'-');
       var ic=cart.find(function(c){return c.name===x.name});
       var tg=(x.tags||'').split('|').filter(function(t){return t.trim()});
-      h+='<div class="item"><div class="item-main"><div class="item-left">';
+      var hasPrice=SP&&x.price>0;
+      // Stash the per-kg price on the card so the live estimate + negotiate
+      // hints can read it without juggling globals across renders.
+      h+='<div class="item" data-price="'+(x.price||0)+'"><div class="item-main"><div class="item-left">';
       h+='<div class="item-emoji">'+x.em+'</div>';
       h+='<div class="item-name">'+E(x.name)+'</div>';
       if(x.hi)h+='<div class="item-hindi">'+E(x.hi)+'</div>';
       if(x.desc)h+='<div class="item-desc">'+E(x.desc)+'</div>';
       if(tg.length){h+='<div class="item-tags">';tg.forEach(function(t){t=t.trim();var c='tag tag-def';if('Fresh Daily Healthy'.indexOf(t)>=0)c='tag tag-fresh';if('Popular Bestseller Premium Party'.indexOf(t)>=0)c='tag tag-pop';h+='<span class="'+c+'">'+E(t)+'</span>'});h+='</div>'}
       h+='</div><div class="item-right">';
-      if(SP&&x.price>0)h+='<div class="item-price">₹'+x.price+'</div><div class="item-unit">'+E(x.unit)+'</div>';
+      if(hasPrice)h+='<div class="item-price">₹'+x.price+'</div><div class="item-unit">'+E(x.unit)+'</div>';
       else h+='<div class="item-askprice">📞 Ask<br>price</div>';
       h+='</div></div>';
-      // Footer
+
+      // ─── Footer: qty selector + live estimate + negotiate field + add ───
       h+='<div class="item-footer"><div class="qty-wrap">';
       h+='<div class="qty-presets">';
       h+='<div class="qp" onclick="qp(this,\''+id+'\',250,\'g\')">250g</div>';
@@ -679,11 +796,36 @@ function render(){
       h+='<div class="qp" onclick="qp(this,\''+id+'\',2,\'kg\')">2 kg</div>';
       h+='</div>';
       h+='<div class="qty-custom">';
-      h+='<div class="qty-custom-label">or enter:</div>';
-      h+='<input id="q-'+id+'" type="number" value="1" step="0.1" min="0.1" max="100" onchange="el(\''+id+'\')" onfocus="clearPresets(\''+id+'\')">';
-      h+='<div class="qty-unit-toggle"><button class="qu-btn" id="ug-'+id+'" onclick="setU(\''+id+'\',\'g\',this)">gram</button><button class="qu-btn on" id="uk-'+id+'" onclick="setU(\''+id+'\',\'kg\',this)">kg</button></div>';
+      h+='<div class="qty-custom-label">Custom:</div>';
+      h+='<input id="q-'+id+'" type="number" value="1" step="0.1" min="0.1" max="100" onchange="el(\''+id+'\');updEst(\''+id+'\')" oninput="updEst(\''+id+'\')" onfocus="clearPresets(\''+id+'\')">';
+      h+='<div class="qty-unit-toggle"><button class="qu-btn" id="ug-'+id+'" onclick="setU(\''+id+'\',\'g\',this);updEst(\''+id+'\')">g</button><button class="qu-btn on" id="uk-'+id+'" onclick="setU(\''+id+'\',\'kg\',this);updEst(\''+id+'\')">kg</button></div>';
       h+='<input type="hidden" id="u-'+id+'" value="kg">';
-      h+='</div></div>';
+      h+='</div>';
+      // Live total — shows listed total for the selected quantity, gets
+      // overridden the moment the customer types into the negotiate field.
+      if(hasPrice)h+='<div class="estimate" id="est-'+id+'">Listed: <b>₹'+x.price+'</b> for 1 kg</div>';
+      else h+='<div class="estimate muted" id="est-'+id+'">Shop will confirm price at packing</div>';
+      h+='</div>';
+
+      // ─── Customer price field (optional) ───
+      // Indian shop pattern: customer places the order, shopkeeper confirms
+      // the price (`bhav bataenge`). This field lets the customer OPTIONALLY
+      // mention what they\'d like to pay FOR THE SELECTED QUANTITY. Empty =
+      // shop quotes the price. Filled = customer\'s suggested price travels
+      // with the cart row to the dashboard + WhatsApp so the shopkeeper can
+      // confirm / counter / decline.
+      h+='<div class="neg-row">';
+      h+='<div class="neg-label">';
+      h+='<div class="neg-label-t">💬 Your price (optional)</div>';
+      h+='<div class="neg-label-s">Skip → shop will quote the price · Or enter what you\'d like to pay</div>';
+      h+='</div>';
+      h+='<div class="neg-input-wrap">';
+      h+='<div class="neg-prefix">₹</div>';
+      h+='<input class="neg-input" id="neg-'+id+'" type="number" min="1" max="100000" step="10" placeholder="your ₹" inputmode="numeric" oninput="updEst(\''+id+'\')" onchange="updEst(\''+id+'\')">';
+      h+='</div>';
+      h+='<button class="neg-clear" id="negx-'+id+'" onclick="clearNeg(\''+id+'\')" title="Clear">✕</button>';
+      h+='</div>';
+
       h+='<button class="add-btn'+(ic?' done':'')+'" id="b-'+id+'" onclick="add(\''+E(x.name).replace(/'/g,"\\'")+'\',\''+x.em+'\','+x.price+',\''+id+'\')">'+(ic?'✓ Added':'🛒 Add to Cart')+'</button>';
       h+='</div></div>';
     });
@@ -714,12 +856,87 @@ function clearPresets(id){
 }
 function el(id){var inp=$('q-'+id),u=$('u-'+id).value,mx=QL[u]||1000,v=parseFloat(inp.value);if(v>mx)inp.value=mx;if(v<=0)inp.value=inp.min||1}
 
+// ═══════════════════════════════════════════════════════════════════
+// LIVE ESTIMATE + NEGOTIATE-PRICE HELPERS
+// ═══════════════════════════════════════════════════════════════════
+// updEst() shows the listed total for the current quantity, and swaps
+// to a negotiated total (with the listed price struck through) the
+// moment the customer types a ₹ value into the offer field.
+// clearNeg() empties the offer and reverts the estimate text.
+// Both run on every input event so the strip is always fresh.
+// ═══════════════════════════════════════════════════════════════════
+function updEst(id){
+  var est=$('est-'+id);if(!est)return;
+  var card=est.closest('.item');var price=card?parseFloat(card.dataset.price||'0'):0;
+  var qInp=$('q-'+id),uInp=$('u-'+id);if(!qInp||!uInp)return;
+  var v=parseFloat(qInp.value)||0,u=uInp.value;
+  var negInp=$('neg-'+id),negX=$('negx-'+id);
+  var offer=negInp?parseFloat(negInp.value):0;
+  // Show / hide the small ✕ clear-offer chip when there\'s a value.
+  if(negX)negX.classList.toggle('show',!!(offer&&offer>0));
+
+  // Quantity label, always shown so the customer knows what the price is for.
+  var qLabel=v>0?(u==='g'?(v+' g'):(v+' kg')):'1 kg';
+
+  // Case 1: customer entered their price — highlight it, strike the listed total.
+  if(offer&&offer>0){
+    est.classList.remove('muted');est.classList.add('with-offer');
+    var listedTxt='';
+    if(price>0){
+      var kg=u==='kg'?v:u==='g'?v/1000:1;
+      listedTxt='<del>listed ₹'+Math.round(price*kg)+'</del>';
+    }
+    est.innerHTML='💬 Your price: <b>₹'+offer+'</b> for '+qLabel+(listedTxt?' '+listedTxt:'');
+    return;
+  }
+  est.classList.remove('with-offer');
+
+  // Case 2: no offer, no listed price — neutral hint.
+  if(!price){
+    est.classList.add('muted');
+    est.innerHTML='Shop will confirm price at packing';
+    return;
+  }
+
+  // Case 3: no offer, listed price known — show the listed total.
+  est.classList.remove('muted');
+  if(v<=0){est.innerHTML='Listed: <b>₹'+price+'</b> for 1 kg';return}
+  var kg2=u==='kg'?v:u==='g'?v/1000:0;
+  est.innerHTML='Listed: <b>₹'+Math.round(price*kg2)+'</b> for '+qLabel;
+}
+function clearNeg(id){
+  var inp=$('neg-'+id);if(inp){inp.value=''}
+  updEst(id);
+  if(inp)inp.focus();
+}
+
 function add(name,em,price,id){
   var v=parseFloat($('q-'+id).value),u=$('u-'+id).value;if(!v||v<=0){v=1;u='kg'}
   var mx=QL[u]||1000;if(v>mx){$('q-'+id).value=mx;alert('Max '+mx+' '+u);return}
-  var ql=v+' '+u,ex=cart.find(function(c){return c.name===name&&c.ql===ql});
-  if(ex)ex.n++;else cart.push({name:name,em:em,price:price,qv:v,qu:u,ql:ql,n:1});
+  var ql=v+' '+u;
+
+  // Optional negotiated price the customer is willing to pay FOR THIS
+  // QUANTITY. Empty/zero/non-numeric → no negotiation, listed price applies.
+  var negInp=$('neg-'+id);
+  var offer=negInp?parseFloat(negInp.value):0;
+  if(!offer||isNaN(offer)||offer<=0)offer=0;
+  if(offer>100000){alert('Offer too high — please enter a realistic ₹ amount');return}
+
+  // Two cart rows for the same item are merged ONLY when the offer state
+  // matches too. Otherwise the shopkeeper would lose visibility into a
+  // customer\'s second tap with a different offer.
+  var ex=cart.find(function(c){return c.name===name&&c.ql===ql&&((c.offer||0)===offer)});
+  if(ex){ex.n++}
+  else{
+    var entry={name:name,em:em,price:price,qv:v,qu:u,ql:ql,n:1};
+    if(offer>0)entry.offer=offer;
+    cart.push(entry);
+  }
+
   var b=$('b-'+id);if(b){b.classList.remove('tick');void b.offsetWidth;b.classList.add('tick','done');b.textContent='✓ Added';setTimeout(function(){b.classList.remove('done');b.textContent='🛒 Add to Cart'},1200)}
+  // Reset the offer field so the next tap starts fresh — prevents accidental
+  // double-negotiation on quick re-adds.
+  if(negInp){negInp.value='';updEst(id)}
   updBar();
   var bg=$('badge');if(bg){bg.classList.remove('bump');void bg.offsetWidth;bg.classList.add('bump')}
 }
@@ -740,13 +957,43 @@ function renDr(){
   if(drStep==='checkout'){renCheckout();return}
   $('drawer-title2').textContent='Your Order';
   if(!cart.length){$('db').innerHTML='<div style="text-align:center;padding:48px 20px"><div style="font-size:64px;margin-bottom:14px">🛒</div><div style="font:700 17px var(--F);color:var(--T1);margin-bottom:6px">Your cart is empty</div><div style="font:400 13px var(--F);color:var(--T3);line-height:1.5">Browse the menu and add items<br>to start your order</div><button onclick="closeDr()" style="margin-top:20px;height:46px;padding:0 28px;border:none;border-radius:12px;background:var(--R);color:#fff;font:700 14px var(--F);cursor:pointer">🥩 Browse Menu</button></div>';$('dft').innerHTML='';return}
-  var h='';cart.forEach(function(c,i){h+='<div class="ci"><div class="ci-em">'+c.em+'</div><div class="ci-info"><div class="ci-name">'+E(c.name)+'</div><div class="ci-meta">'+E(c.ql)+(c.n>1?' × '+c.n:'')+'</div>'+(SP&&c.price>0?'<div class="ci-price">₹'+c.price+'/kg</div>':'')+'</div><button class="ci-del" onclick="rem('+i+')">✕</button></div>'});
+  // Render each cart row. Negotiated entries show a yellow "💬 offer" line
+  // alongside the listed price (struck through). Plain entries show the
+  // calculated total when shop prices are visible, or nothing otherwise.
+  var h='';cart.forEach(function(c,i){
+    var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;
+    var listed=c.price>0?Math.round(c.price*kg*c.n):0;
+    var hasOffer=c.offer&&c.offer>0;
+    var priceLine='';
+    if(hasOffer){
+      var offerTotal=c.offer*c.n;
+      var listedStr=listed>0?' <del style="color:#9ca3af;font-weight:500">listed ₹'+listed+'</del>':'';
+      priceLine='<div class="ci-price" style="color:#b45309">💬 Your price: ₹'+offerTotal+listedStr+'</div>';
+    }else if(SP&&c.price>0){
+      priceLine='<div class="ci-price">₹'+c.price+'/kg · ≈ ₹'+listed+'</div>';
+    }
+    h+='<div class="ci"><div class="ci-em">'+c.em+'</div><div class="ci-info"><div class="ci-name">'+E(c.name)+'</div><div class="ci-meta">'+E(c.ql)+(c.n>1?' × '+c.n:'')+'</div>'+priceLine+'</div><button class="ci-del" onclick="rem('+i+')">✕</button></div>';
+  });
   $('db').innerHTML=h;
+
+  // Footer total — sum offers (definite) + listed price×weight (estimated).
+  // Mark "+" if any item lacks a price AND no offer to indicate the total
+  // isn\'t final.
   var f='',n=cart.reduce(function(s,c){return s+c.n},0);
+  var est=0,hasUnknownPrice=false,hasNeg=false;
+  cart.forEach(function(c){
+    if(c.offer&&c.offer>0){est+=c.offer*c.n;hasNeg=true}
+    else if(c.price>0){
+      var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;
+      est+=c.price*kg*c.n;
+    }else{hasUnknownPrice=true}
+  });
   f+='<div class="df-row"><span class="df-count">'+n+' item'+(n>1?'s':'')+'</span>';
-  if(SP){var est=0;cart.forEach(function(c){var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;est+=c.price*kg*c.n});f+='<span class="df-price">~₹'+Math.round(est)+'</span>'}
+  if(est>0)f+='<span class="df-price">~₹'+Math.round(est)+(hasUnknownPrice?'+':'')+'</span>';
   else f+='<span class="df-price" style="color:var(--T3);font-size:13px">Price on call</span>';
   f+='</div>';
+  if(hasNeg)f+='<div class="df-note" style="color:#b45309">💬 Your suggested price(s) included — shop will confirm</div>';
+  else if(hasUnknownPrice)f+='<div class="df-note">Shop will confirm price after the order</div>';
   f+='<div class="df-btns"><button class="df-btn df-wa" onclick="goCheckout()" style="background:var(--R)"><span class="df-icon">📋</span> Proceed to Order</button></div>';
   $('dft').innerHTML=f;
 }
@@ -773,11 +1020,51 @@ function renCheckout(){
     h+='<div style="background:var(--Gbg);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px"><span style="font-size:24px">👋</span><div><div style="font:700 13px var(--F);color:var(--G)">Welcome back, '+E(savedCust.name)+'!</div><div style="font:400 11px var(--F);color:var(--T3);margin-top:2px">Your details are pre-filled from last order</div></div></div>';
   }
   
-  // Items summary
+  // Items summary — shows the customer EXACTLY what the shop will see, with
+  // their suggested prices highlighted (and the listed price struck through
+  // for context). This is the customer\'s last chance to review the quote
+  // before it lands in the shopkeeper\'s dashboard + WhatsApp.
   h+='<div class="co-items">';
+  var coTotal=0,coHasQuote=false,coHasUnknown=false;
   cart.forEach(function(c){
-    h+='<div class="co-item"><span class="co-item-name">'+c.em+' '+E(c.name)+'</span><span class="co-item-qty">'+E(c.ql)+(c.n>1?' ×'+c.n:'')+'</span></div>';
+    var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;
+    var listed=c.price>0?Math.round(c.price*kg*c.n):0;
+    var hasQuote=c.offer&&c.offer>0;
+    var lineTotal=hasQuote?(c.offer*c.n):(c.price>0?listed:0);
+    if(hasQuote)coHasQuote=true;
+    if(!hasQuote&&c.price<=0)coHasUnknown=true;
+    coTotal+=lineTotal;
+
+    var priceHtml='';
+    if(hasQuote){
+      priceHtml='<div class="co-item-price">'
+        +'<div class="co-item-price-v quoted">₹'+(c.offer*c.n)+'</div>'
+        +'<div class="co-item-price-tag">💬 your quote</div>'
+        +'</div>';
+    }else if(c.price>0){
+      priceHtml='<div class="co-item-price"><div class="co-item-price-v">₹'+listed+'</div></div>';
+    }else{
+      priceHtml='<div class="co-item-price"><div class="co-item-price-v" style="color:var(--T3);font-size:12px;font-weight:600">on call</div></div>';
+    }
+
+    var meta=E(c.ql)+(c.n>1?' × '+c.n:'');
+    if(hasQuote&&listed>0)meta+=' <del>listed ₹'+listed+'</del>';
+
+    h+='<div class="co-item'+(hasQuote?' neg':'')+'">'
+      +'<div class="co-item-info">'
+      +'<div class="co-item-name">'+c.em+' '+E(c.name)+'</div>'
+      +'<div class="co-item-meta">'+meta+'</div>'
+      +'</div>'
+      +priceHtml
+      +'</div>';
   });
+  // Sticky total row at the bottom of the summary.
+  h+='<div class="co-total"><span>Order total</span>';
+  if(coTotal>0)h+='<span class="co-total-v">~₹'+Math.round(coTotal)+(coHasUnknown?'+':'')+'</span>';
+  else h+='<span class="co-total-v" style="color:var(--T3);font-size:13px">on call</span>';
+  h+='</div>';
+  if(coHasQuote)h+='<div class="co-total-note warn">💬 Includes your quoted price(s) — shop will confirm before processing</div>';
+  else if(coHasUnknown)h+='<div class="co-total-note">Some prices will be confirmed by the shop</div>';
   h+='</div>';
   
   // Error message (hidden)
@@ -869,7 +1156,10 @@ function getGPS(){
   if(!navigator.geolocation){btn.textContent='📍 Location not available';return}
   btn.classList.add('loading');btn.textContent='📍 Getting location...';
   navigator.geolocation.getCurrentPosition(function(pos){
-    var lat=pos.coords.latitude,lng=pos.coords.longitude;
+    var lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
+    // Stash the raw coordinates — addrWithMap_() will glue a Maps link onto
+    // the address when the order is finalized so the rider gets a precise pin.
+    _gpsLat=lat;_gpsLng=lng;
     btn.textContent='📍 Location found! Getting address...';
     // Reverse geocode
     fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json')
@@ -877,10 +1167,10 @@ function getGPS(){
     .then(function(d){
       var addr=d.display_name||('Lat: '+lat+', Lng: '+lng);
       $('coAddr').value=addr;
-      btn.textContent='✓ Location set';btn.classList.remove('loading');
+      btn.textContent='✓ Location captured · map pin will be sent';btn.classList.remove('loading');
     }).catch(function(){
       $('coAddr').value='Lat: '+lat+', Lng: '+lng;
-      btn.textContent='✓ Coordinates set';btn.classList.remove('loading');
+      btn.textContent='✓ Coordinates captured · map pin will be sent';btn.classList.remove('loading');
     });
   },function(){
     btn.textContent='📍 Location denied — enter manually';btn.classList.remove('loading');
@@ -956,20 +1246,35 @@ function submitOrder(method){
   var shopPhone=G('whatsapp','')||G('phone','');
 
   // ─── Build structured items string (one per line, in dashboard's expected format) ───
+  // Negotiated lines win: the customer\'s offer becomes the line cost and we
+  // append a [NEGOTIATED, listed ₹X] marker so the shopkeeper sees both
+  // numbers at a glance. Plain lines use the listed price × weight when
+  // shop prices are visible to customers (SP).
   var itemsLines=[];
   var totalEst=0;
+  var hasNegotiation=false;
   cart.forEach(function(c){
     var qtyLabel=c.ql+(c.n>1?' ×'+c.n:'');
     var line=qtyLabel+' '+c.name;
-    if(SP&&c.price>0){
-      var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;
-      var lineCost=Math.round(c.price*kg*c.n);
-      totalEst+=lineCost;
-      line+=' = ₹'+lineCost;
+    var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;
+    var listedTotal=c.price>0?Math.round(c.price*kg*c.n):0;
+    if(c.offer&&c.offer>0){
+      hasNegotiation=true;
+      var offerTotal=c.offer*c.n;
+      totalEst+=offerTotal;
+      line+=' = ₹'+offerTotal+' [💬 CUSTOMER QUOTED'+(listedTotal>0?', your rate ₹'+listedTotal:'')+']';
+    }else if(SP&&c.price>0){
+      totalEst+=listedTotal;
+      line+=' = ₹'+listedTotal;
     }
     itemsLines.push(line);
   });
   var itemsStr=itemsLines.join('\n');
+  if(hasNegotiation){
+    // Surface a banner on the items column so the shopkeeper can\'t miss
+    // that this order has at least one customer quote to confirm/counter.
+    itemsStr+='\n\n💬 CUSTOMER PRICE QUOTE — please confirm or counter the [CUSTOMER QUOTED] line(s) above';
+  }
   if(dateLabel||timeVal){
     itemsStr+='\n\n📅 Delivery: '+(dateLabel||'')+(timeVal?' | '+timeVal:'');
   }
@@ -977,19 +1282,45 @@ function submitOrder(method){
   // ─── Generate order ID ───
   var orderId='ORD-'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).substr(2,3).toUpperCase();
 
+  // Stitch a Google Maps pin onto the address (no-op when GPS wasn't captured).
+  // Same enriched string flows to both the sheet write and the WhatsApp
+  // message so the shopkeeper has a tappable pin in either channel.
+  var addressForOrder=addrWithMap_(addr);
+
   // ─── Build WhatsApp message ───
   var msg='🥩 *New Order — '+shopName+'*\n\n';
   msg+='*#'+orderId+'*\n\n';
   msg+='👤 *'+name+'*\n';
   msg+='📞 '+phone+'\n';
-  if(orderMode==='delivery'&&addr)msg+='📍 '+addr+'\n';
+  if(orderMode==='delivery'&&addressForOrder)msg+='📍 '+addressForOrder+'\n';
   else msg+='🏪 Pickup\n';
   msg+='\n*Order:*\n';
+  // Count negotiations so we can lead with a clear summary line.
+  var quoteCount=0;
+  cart.forEach(function(c){if(c.offer&&c.offer>0)quoteCount++});
   cart.forEach(function(c){
     msg+='• '+c.name+' — '+c.ql+(c.n>1?' ×'+c.n:'');
-    if(SP&&c.price>0)msg+=' (₹'+c.price+'/kg)';
+    var kg=c.qu==='kg'?c.qv:c.qu==='g'?c.qv/1000:1;
+    var listedTotal=c.price>0?Math.round(c.price*kg*c.n):0;
+    if(c.offer&&c.offer>0){
+      // Customer quoted their own price — surface both numbers so the
+      // shopkeeper can quickly accept, counter (`bhav badha do`), or decline.
+      msg+='\n   💬 *Customer quoted: ₹'+(c.offer*c.n)+'*';
+      if(listedTotal>0)msg+=' (your rate: ₹'+listedTotal+(SP?' @ ₹'+c.price+'/kg':'')+')';
+    }else if(SP&&c.price>0){
+      msg+=' (₹'+c.price+'/kg = ₹'+listedTotal+')';
+    }
     msg+='\n';
   });
+  if(hasNegotiation){
+    // Big, hard-to-miss footer when a negotiation is in play. The shopkeeper
+    // is busy — make the action item obvious.
+    msg+='\n━━━━━━━━━━━━━━━━━━\n';
+    msg+='💬 *PRICE QUOTE'+(quoteCount>1?'S':'')+' BY CUSTOMER*\n';
+    msg+='Customer has quoted their preferred price for '+quoteCount+' item'+(quoteCount>1?'s':'')+' above.\n';
+    msg+='Please reply: 1) accept the quote, 2) counter with your rate, or 3) decline.\n';
+    msg+='Customer is waiting for your confirmation 🙏\n';
+  }
   if(SP&&totalEst>0)msg+='\n💰 Estimated: ~₹'+totalEst;
   if(notes)msg+='\n📝 '+notes;
   if(dateLabel||timeVal)msg+='\n\n📅 *Delivery:* '+(dateLabel||'')+(timeVal?' | '+timeVal:'');
@@ -1003,7 +1334,7 @@ function submitOrder(method){
       +'&orderId='+encodeURIComponent(orderId)
       +'&name='+encodeURIComponent(name)
       +'&phone='+encodeURIComponent(phone)
-      +'&address='+encodeURIComponent(addr)
+      +'&address='+encodeURIComponent(addressForOrder)
       +'&items='+encodeURIComponent(itemsStr)
       +'&total='+encodeURIComponent(totalEst||0)
       +'&mode='+encodeURIComponent(orderMode||'delivery')
@@ -1011,6 +1342,10 @@ function submitOrder(method){
       +'&status=New'
       +'&notes='+encodeURIComponent(notes)
       +'&date='+encodeURIComponent(new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}));
+    // Forward-safe: pass raw lat/lng for tenants whose Apps Script wants
+    // them in dedicated columns. Current store-apps-script.js ignores
+    // unknown params so this doesn't break existing setups.
+    if(_gpsLat&&_gpsLng){params+='&lat='+encodeURIComponent(_gpsLat)+'&lng='+encodeURIComponent(_gpsLng)}
     var img=new Image();
     img.onload=img.onerror=function(){};
     img.src=SU+'?'+params;
@@ -1033,7 +1368,9 @@ function submitOrder(method){
   cart=[];updBar();closeDr();
 
   // ─── Show success confirmation — customer can now choose to send to WhatsApp / call ───
-  showOrderSuccess(orderId,totalEst,orderMode);
+  // Pass the negotiation flag through so the success modal can mention that
+  // the shop will be confirming the customer\'s quoted price(s).
+  showOrderSuccess(orderId,totalEst,orderMode,hasNegotiation);
 }
 
 // Manual triggers from the success modal (replace the old auto-fire)
@@ -1048,11 +1385,23 @@ function callOrderShop(){
   location.href='tel:+'+p;
 }
 
-function showOrderSuccess(orderId,total,mode){
+function showOrderSuccess(orderId,total,mode,hasQuote){
   var existing=$('mShopSuccess');if(existing)existing.remove();
   var box=document.createElement('div');box.id='mShopSuccess';
   box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .25s';
-  var totLine=total>0?'<div style="font-size:13px;color:#666;margin-top:8px">Estimated: ₹'+total+'</div>':'<div style="font-size:13px;color:#666;margin-top:8px">Shop will confirm price & availability</div>';
+  // Total line — when the customer has quoted a price, surface it gently so
+  // they know the displayed total reflects their quote (not the listed rate).
+  var totLine;
+  if(total>0){
+    totLine='<div style="font-size:13px;color:#666;margin-top:8px">'+(hasQuote?'Your quote total':'Estimated')+': <b style="color:#0b1220">₹'+total+'</b></div>';
+  }else{
+    totLine='<div style="font-size:13px;color:#666;margin-top:8px">Shop will confirm price & availability</div>';
+  }
+  // Negotiation callout — explicit reminder to the customer that the shop
+  // still needs to accept/counter their quote.
+  var quoteCallout=hasQuote
+    ?'<div style="margin-top:14px;padding:12px 14px;background:linear-gradient(160deg,#fffbeb,#fef3c7);border:1.5px solid #fbbf24;border-radius:12px;text-align:left;font-family:\'DM Sans\',system-ui,sans-serif"><div style="font:800 10px DM Sans,sans-serif;color:#92400e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">💬 Your Price Quote</div><div style="font:600 12px DM Sans,sans-serif;color:#7c2d12;line-height:1.4">Shop will review your quoted price(s) and reply via WhatsApp or status updates.</div></div>'
+    :'';
   box.innerHTML='<div style="background:#fff;border-radius:24px;max-width:380px;width:100%;padding:28px 22px 18px;text-align:center;font-family:\'DM Sans\',system-ui,sans-serif">'
     +'<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 20px rgba(34,197,94,.35)">✓</div>'
     +'<div style="font-size:22px;font-weight:800;color:#0b1220">Order Placed Successfully!</div>'
@@ -1060,6 +1409,7 @@ function showOrderSuccess(orderId,total,mode){
     +'<div style="margin-top:16px;font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em">Your Order ID</div>'
     +'<div style="display:flex;align-items:center;gap:6px;margin-top:6px;background:#fff5f4;border:1.5px dashed #a82414;border-radius:12px;padding:8px 12px"><div style="flex:1;font-family:\'SF Mono\',Menlo,monospace;font-size:13px;font-weight:700;color:#a82414;text-align:left;word-break:break-all">#'+orderId+'</div><button style="height:32px;padding:0 12px;background:#a82414;color:#fff;border:none;border-radius:8px;font:800 11px \'DM Sans\',sans-serif;cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:4px" onclick="copyOrderIdFromSuccess(\''+orderId+'\',this)">📋 Copy</button></div>'
     +totLine
+    +quoteCallout
     +(window._lastOrderShopPhone?(
       '<div style="margin-top:18px;padding:14px 12px;background:linear-gradient(160deg,#f0fdf4,#dcfce7);border-radius:14px;border:1px solid rgba(34,197,94,.25)">'
       +'<div style="font-size:11px;font-weight:800;color:#15803d;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">📬 Notify the shop directly?</div>'
@@ -1473,8 +1823,93 @@ function renderTrackResult(o,id){
   if(o.phone)html+='<div class="trk-meta"><div class="trk-meta-l">Phone</div><div class="trk-meta-v">'+E(o.phone)+'</div></div>';
   if(o.address)html+='<div class="trk-meta" style="grid-column:1/-1"><div class="trk-meta-l">Address</div><div class="trk-meta-v">'+E(o.address)+'</div></div>';
   html+='</div>';
-  // Items
-  if(o.items){html+='<div class="trk-items"><div class="trk-items-l">📦 Items</div><div class="trk-items-list">'+E(o.items)+'</div></div>'}
+  // Items — parsed line-by-line so we can:
+  //   1. Pull out [💬 CUSTOMER PRICE] lines into a dedicated callout card
+  //      (so the customer sees their price request status at a glance)
+  //   2. Render delivery date / banner lines in a distinct meta style
+  //   3. Strip the now-redundant tag from the body of each negotiated line
+  //      (it lives in the callout card now)
+  if(o.items){
+    var rawLines=String(o.items).split('\n');
+    var negParsed=[]; // {qtyName, price, listed}
+    var bodyLines=[]; // {kind:'item'|'meta', text, isNeg, listedTotal}
+
+    rawLines.forEach(function(raw){
+      var line=String(raw||'').trim();
+      if(!line)return;
+      // Detect a customer-quote line. New tag is "CUSTOMER QUOTED, your rate
+      // ₹X"; old orders may carry "CUSTOMER PRICE, listed ₹X" — match both
+      // so historical tracking pages don\'t lose the price-quote callout.
+      var negM=line.match(/^(.+?)\s*=\s*₹\s*(\d+)\s*\[💬\s*CUSTOMER\s+(?:QUOTED|PRICE)(?:,\s*(?:your rate|listed)\s*₹\s*(\d+))?\s*\]\s*$/i);
+      if(negM){
+        var qtyName=negM[1].trim();
+        var price=parseInt(negM[2],10);
+        var listed=negM[3]?parseInt(negM[3],10):0;
+        negParsed.push({qtyName:qtyName,price:price,listed:listed});
+        // Body shows the line WITHOUT the [💬 CUSTOMER PRICE] tag — we already
+        // surface that info in the callout above.
+        bodyLines.push({kind:'item',text:qtyName+' = ₹'+price,isNeg:true,listed:listed});
+        return;
+      }
+      // Detect a metadata line (delivery, banners, etc) — render distinctly.
+      // Includes both the new "CUSTOMER PRICE QUOTE" banner and the older
+      // "CUSTOMER PRICE REQUEST" wording so legacy orders still parse.
+      if(/^📅\s*Delivery/i.test(line)||/CUSTOMER PRICE (QUOTE|REQUEST)/i.test(line)){
+        bodyLines.push({kind:'meta',text:line});
+        return;
+      }
+      bodyLines.push({kind:'item',text:line,isNeg:false});
+    });
+
+    // ─── Customer-price callout (only when negotiations exist) ───
+    // Telegram-driven shop reply lands in shopkeepercomment column and is
+    // already rendered above as "💬 Message from the shop". So this card
+    // only carries the request itself + a "waiting" hint. If shop has
+    // confirmed/cancelled the order, soften the hint accordingly.
+    if(negParsed.length){
+      var foot;
+      if(cancelled){
+        foot='<div class="trk-neg-foot" style="color:#b91c1c">❌ Order cancelled — see shop\'s message above</div>';
+      }else if(done){
+        foot='<div class="trk-neg-foot confirmed">✓ Completed at the price(s) above</div>';
+      }else if(shopComment){
+        foot='<div class="trk-neg-foot confirmed">💬 See shop\'s reply above</div>';
+      }else{
+        foot='<div class="trk-neg-foot">⏳ Waiting for shop to confirm or update the price</div>';
+      }
+      html+='<div class="trk-neg-card">';
+      html+='<div class="trk-neg-l">💬 Your price quote'+(negParsed.length>1?'s':'')+'</div>';
+      html+='<div class="trk-neg-h">You quoted a price for '+negParsed.length+' item'+(negParsed.length>1?'s':'')+'</div>';
+      html+='<div class="trk-neg-list">';
+      negParsed.forEach(function(p){
+        html+='<div class="trk-neg-item">'
+          +'<div class="trk-neg-item-info">'
+          +'<div class="trk-neg-item-name">'+E(p.qtyName)+'</div>'
+          +(p.listed>0?'<div class="trk-neg-item-meta">listed ₹'+p.listed+'</div>':'')
+          +'</div>'
+          +'<div class="trk-neg-item-price">₹'+p.price+'</div>'
+          +'</div>';
+      });
+      html+='</div>';
+      html+=foot;
+      html+='</div>';
+    }
+
+    // ─── Items list (line-by-line) ───
+    html+='<div class="trk-items"><div class="trk-items-l">📦 Items</div><div class="trk-items-list">';
+    bodyLines.forEach(function(b){
+      if(b.kind==='meta'){
+        html+='<div class="trk-items-row meta">'+E(b.text)+'</div>';
+      }else{
+        var bullet=b.isNeg?'💬':'•';
+        html+='<div class="trk-items-row'+(b.isNeg?' neg':'')+'">'
+          +'<div class="trk-items-bullet">'+bullet+'</div>'
+          +'<div class="trk-items-text">'+E(b.text)+(b.isNeg?'<small>your quoted price</small>':'')+'</div>'
+          +'</div>';
+      }
+    });
+    html+='</div></div>';
+  }
 
   // ─── REVIEW: prompt if delivered & not yet reviewed; show if already reviewed ───
   var rStars=parseInt(o.reviewstars||'0')||0;

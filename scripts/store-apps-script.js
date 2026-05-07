@@ -71,6 +71,31 @@ function doGet(e) {
     deleteProduct(parseInt(p.row));
     return ok('Product deleted');
   }
+  if (action === 'addProductsBulk' && p.items) {
+    if (!verifyDashboardToken_(p.token)) return dashboardForbidden_();
+    var added = addProductsBulk(p.items);
+    return ok('Bulk added ' + added);
+  }
+  if (action === 'setEta' && p.orderId && p.minutes !== undefined) {
+    if (!verifyDashboardToken_(p.token)) return dashboardForbidden_();
+    saveOrderEta_(p.orderId, parseInt(p.minutes, 10) || 0);
+    return ok('ETA saved');
+  }
+  if (action === 'addDailyMenu' && p.name) {
+    if (!verifyDashboardToken_(p.token)) return dashboardForbidden_();
+    addDailyMenuItem(p);
+    return ok('Daily menu item added');
+  }
+  if (action === 'updateDailyMenu' && p.row) {
+    if (!verifyDashboardToken_(p.token)) return dashboardForbidden_();
+    updateDailyMenuItem(p);
+    return ok('Daily menu item updated');
+  }
+  if (action === 'deleteDailyMenu' && p.row) {
+    if (!verifyDashboardToken_(p.token)) return dashboardForbidden_();
+    deleteDailyMenuItem(parseInt(p.row));
+    return ok('Daily menu item deleted');
+  }
 
   return ok('StorePro API active');
 }
@@ -105,6 +130,11 @@ function doPost(e) {
     if (data.action === 'addProduct')     { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); addProduct(data); return ok('Product added'); }
     if (data.action === 'updateProduct')  { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); updateProduct(data); return ok('Product updated'); }
     if (data.action === 'deleteProduct') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); deleteProduct(parseInt(data.row)); return ok('Product deleted'); }
+    if (data.action === 'addProductsBulk') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); var added = addProductsBulk(data.items); return ok('Bulk added ' + added); }
+    if (data.action === 'setEta')          { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); saveOrderEta_(data.orderId, parseInt(data.minutes, 10) || 0); return ok('ETA saved'); }
+    if (data.action === 'addDailyMenu')    { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); addDailyMenuItem(data); return ok('Daily menu item added'); }
+    if (data.action === 'updateDailyMenu') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); updateDailyMenuItem(data); return ok('Daily menu item updated'); }
+    if (data.action === 'deleteDailyMenu') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); deleteDailyMenuItem(parseInt(data.row)); return ok('Daily menu item deleted'); }
 
     saveOrder(data);
     return ok('OK');
@@ -292,6 +322,19 @@ function onOpen() {
       .addItem('Set Telegram chat IDs…', 'setTelegramChatIdsPrompt_')
       .addItem('Migrate Telegram credentials from Config', 'migrateTelegramCredentials')
       .addSeparator()
+      .addItem('Set Push secret…', 'setPushSecretPrompt_')
+      .addItem('Set Push relay URL…', 'setPushRelayURLPrompt_')
+      .addItem('Migrate Push credentials from Config', 'migratePushCredentials')
+      .addSeparator()
+      .addItem('Set Apps Script URL…', 'setScriptURLPrompt_')
+      .addItem('Migrate ScriptURL from Config', 'migrateScriptURL')
+      .addSeparator()
+      .addItem('Set Store slug…', 'setSlugPrompt_')
+      .addItem('Migrate Slug from Config', 'migrateSlug')
+      .addSeparator()
+      .addItem('📅 Install daily briefings + nag', 'installProactiveBriefings')
+      .addItem('🚫 Uninstall daily briefings + nag', 'uninstallProactiveBriefings')
+      .addSeparator()
       .addItem('Show diagnostic info', 'showDashboardDiagnostic_')
       .addToUi();
   } catch (e) { /* getUi() fails in some contexts — ignore */ }
@@ -404,6 +447,184 @@ function setTelegramChatIdsPrompt_() {
   ui.alert('✅ Chat IDs saved', 'Stored in Script Properties. You can now delete the TelegramChatID row from your Config tab.', ui.ButtonSet.OK);
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// PUSH CREDENTIALS — moved from public Config tab to Script Properties.
+// ═══════════════════════════════════════════════════════════════════
+// Old: PushSecret + PushRelayURL lived in the Config tab.
+// PushSecret in particular was a real liability — anyone with the SheetID
+// could read it via gviz and forge push notifications to subscribed devices.
+//
+// New: stored as PUSH_SECRET + PUSH_RELAY_URL in Script Properties.
+// Auto-migration: first read pulls from Config, copies to Properties, and
+// from then on Properties wins. Once migrated you can delete the Config rows.
+//
+// Set via the Sheet's "🔒 Admin → Set Push credentials" menu, or directly
+// in the Apps Script editor → ⚙ Project Settings → Script Properties.
+// ═══════════════════════════════════════════════════════════════════
+function getPushSecret_() {
+  var props = PropertiesService.getScriptProperties();
+  var v = props.getProperty('PUSH_SECRET') || '';
+  if (v) return v;
+  var legacy = getCfgValue('PushSecret') || '';
+  if (legacy) {
+    try { props.setProperty('PUSH_SECRET', legacy); } catch (e) {}
+  }
+  return legacy;
+}
+
+function getPushRelayURL_() {
+  var props = PropertiesService.getScriptProperties();
+  var v = props.getProperty('PUSH_RELAY_URL') || '';
+  if (v) return v;
+  var legacy = getCfgValue('PushRelayURL') || getCfgValue('PushURL') || '';
+  if (legacy) {
+    try { props.setProperty('PUSH_RELAY_URL', legacy); } catch (e) {}
+  }
+  return legacy;
+}
+
+// Run from editor or Sheet menu — proactively copies Config rows to Script
+// Properties. Idempotent. Safe to run any number of times.
+function migratePushCredentials() {
+  var s = getPushSecret_();
+  var r = getPushRelayURL_();
+  Logger.log('PushSecret:    ' + (s ? '✅ stored (' + s.length + ' chars)' : '❌ neither Properties nor Config has one'));
+  Logger.log('PushRelayURL:  ' + (r ? '✅ stored (' + r + ')' : '❌ none set'));
+  Logger.log('');
+  Logger.log('After verifying push notifications still work, you can DELETE these rows from the Config tab:');
+  Logger.log('  - PushSecret');
+  Logger.log('  - PushRelayURL (and any PushURL legacy spelling)');
+  Logger.log('They will no longer be read once Script Properties is populated.');
+}
+
+// Sheet-menu helpers
+function setPushSecretPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var resp = ui.prompt('Set Push secret', 'Paste the PushSecret for this store (HMAC hex from master registry):', ui.ButtonSet.OK_CANCEL);
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var v = String(resp.getResponseText() || '').trim();
+  if (!v || !/^[a-f0-9]{32,128}$/i.test(v)) {
+    ui.alert('Invalid secret', 'Push secret should be a hex string (32-128 chars). Get it from the master registry: 🏬 StorePro Onboarding → Show push secret for selected row.', ui.ButtonSet.OK);
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty('PUSH_SECRET', v.toLowerCase());
+  ui.alert('✅ PushSecret saved', 'Stored in Script Properties. You can now delete the PushSecret row from your Config tab.', ui.ButtonSet.OK);
+}
+
+function setPushRelayURLPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var resp = ui.prompt('Set Push relay URL', 'Cloudflare Worker base URL (e.g. https://storepro-push.storepro.workers.dev):', ui.ButtonSet.OK_CANCEL);
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var v = String(resp.getResponseText() || '').trim().replace(/\/+$/, '');
+  if (!v || !/^https?:\/\//i.test(v)) {
+    ui.alert('Invalid URL', 'Must start with https:// (or http://). Example: https://storepro-push.storepro.workers.dev', ui.ButtonSet.OK);
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty('PUSH_RELAY_URL', v);
+  ui.alert('✅ PushRelayURL saved', 'Stored in Script Properties. You can now delete the PushRelayURL row from your Config tab.', ui.ButtonSet.OK);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SCRIPT URL — moved from Config to Script Properties so the Config tab
+// is 100% shopkeeper-facing (no infrastructure leaks).
+// ═══════════════════════════════════════════════════════════════════
+// The Apps Script /exec URL is the only "internal" thing left in Config.
+// Storefronts already prefer the master-registry's ScriptURL column over the
+// tenant's Config row — but having it here as a fallback meant shopkeepers
+// could accidentally edit/delete it.
+//
+// Migrated to Script Properties as SCRIPT_URL. Old Config rows still work
+// during transition (auto-migrate on first read).
+// ═══════════════════════════════════════════════════════════════════
+function getScriptURL_() {
+  var props = PropertiesService.getScriptProperties();
+  var v = props.getProperty('SCRIPT_URL') || '';
+  if (v) return v;
+  var legacy = getCfgValue('ScriptURL') || getCfgValue('OrderScript') || getCfgValue('Script') || '';
+  if (legacy) {
+    try { props.setProperty('SCRIPT_URL', legacy); } catch (e) {}
+  }
+  return legacy;
+}
+
+function setScriptURLPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var resp = ui.prompt('Set Apps Script URL', 'Paste this Apps Script\'s /exec URL (Deploy → Manage deployments → copy the URL ending in /exec):', ui.ButtonSet.OK_CANCEL);
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var v = String(resp.getResponseText() || '').trim();
+  if (!v || !/^https:\/\/script\.google\.com\/.*\/exec/i.test(v)) {
+    ui.alert('Invalid URL', 'Must be a https://script.google.com/.../exec URL.', ui.ButtonSet.OK);
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty('SCRIPT_URL', v);
+  ui.alert('✅ ScriptURL saved', 'Stored in Script Properties. You can now delete the ScriptURL row from your Config tab. (Storefronts will continue reading from the master registry first; this is the local fallback.)', ui.ButtonSet.OK);
+}
+
+// Run from editor or Sheet menu — proactively copies Config rows to Script
+// Properties for ScriptURL. Idempotent.
+function migrateScriptURL() {
+  var u = getScriptURL_();
+  Logger.log('ScriptURL: ' + (u ? '✅ stored (' + u + ')' : '❌ neither Properties nor Config has one'));
+  if (u) {
+    Logger.log('');
+    Logger.log('After verifying the storefront / dashboard / Telegram still work, you can DELETE these rows from the Config tab:');
+    Logger.log('  - ScriptURL  (and any OrderScript / Script legacy spellings)');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SLUG — moved from Config to Script Properties.
+// ═══════════════════════════════════════════════════════════════════
+// The slug is this tenant's stable identifier (matches the master registry).
+// It's used internally for push HMAC and dashboard URL building, but never
+// edited by the shopkeeper. Moving it out of Config keeps that tab clean.
+//
+// Resolution order:
+//   1. Script Property STORE_SLUG
+//   2. Config row Slug / StoreSlug (auto-migrates on first read)
+//   3. Fallback: derived from the Sheet's filename (e.g. "Shri Balaji ... — StorePro Store" → "shri-balaji-...")
+// ═══════════════════════════════════════════════════════════════════
+function getSlug_() {
+  var props = PropertiesService.getScriptProperties();
+  var v = props.getProperty('STORE_SLUG') || '';
+  if (v) return v;
+  var legacy = String(getCfgValue('Slug') || getCfgValue('StoreSlug') || '').toLowerCase().trim();
+  if (legacy) {
+    try { props.setProperty('STORE_SLUG', legacy); } catch (e) {}
+    return legacy;
+  }
+  // Last-resort: derive from filename
+  var fb = String(getStoreSlugFallback() || '').toLowerCase().trim();
+  if (fb) {
+    try { props.setProperty('STORE_SLUG', fb); } catch (e) {}
+  }
+  return fb;
+}
+
+function setSlugPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var current = getSlug_();
+  var resp = ui.prompt('Set Store Slug', 'The store slug — must match the master registry. Currently: "' + (current || '(not set)') + '"\n\nEnter slug (lowercase, hyphens only, e.g. shri-balaji-fast-food-corner):', ui.ButtonSet.OK_CANCEL);
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var v = String(resp.getResponseText() || '').trim().toLowerCase();
+  if (!v || !/^[a-z0-9-]+$/.test(v)) {
+    ui.alert('Invalid slug', 'Use only lowercase letters, digits and hyphens. No spaces.', ui.ButtonSet.OK);
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty('STORE_SLUG', v);
+  ui.alert('✅ Slug saved', 'Stored in Script Properties. You can now delete the Slug row from your Config tab.', ui.ButtonSet.OK);
+}
+
+function migrateSlug() {
+  var s = getSlug_();
+  Logger.log('Slug: ' + (s ? '✅ stored (' + s + ')' : '❌ neither Properties, Config, nor filename gave a slug'));
+  if (s) {
+    Logger.log('');
+    Logger.log('After verifying the storefront / dashboard / Telegram still work, you can DELETE these rows from the Config tab:');
+    Logger.log('  - Slug  (and any StoreSlug legacy spelling)');
+  }
+}
+
 // ═══════════════════════════════════
 // ORDERS
 // ═══════════════════════════════════
@@ -496,19 +717,25 @@ function saveOrder(p) {
   } catch(err) { console.log('Push error: ' + err); }
 
   // ─── PRIORITY 2: inline burst poll — catches the FIRST tap in ~1-2s ───
-  // Apps Script's one-time trigger floor (10-30s in practice) means trigger-based
-  // polling can't catch the very first Confirm/Reject tap. This synchronous
-  // long-poll loop runs RIGHT NOW so polling is LIVE the moment the shopkeeper
-  // sees the alert. Storefront fires saveOrder via fire-and-forget <img> GET,
-  // so blocking doGet here is harmless.
+  // Polling-mode tenants need this: Apps Script's one-time trigger floor
+  // (10-30s) means trigger-based polling can't catch the first Confirm/Reject
+  // tap, so we long-poll synchronously here instead.
+  //
+  // Webhook-mode tenants DON'T — the Cloudflare worker forwards taps to
+  // Apps Script in ~1-2s already. Burst-polling would waste ~50 sec of
+  // execution time per order on top, with no UX benefit. We skip it whenever
+  // TELEGRAM_MODE is 'webhook' (set by setTelegramWebhook).
   try {
-    var listenSec = parseInt(getCfgValue('TelegramOrderListenSeconds') || '50', 10);
-    if (isNaN(listenSec) || listenSec < 5) listenSec = 50;
-    // 55s cap: covers the worst-case 60s gap between minute-trigger fires, so
-    // taps within the first minute always land during a live poll and avoid
-    // Telegram's 15s answerCallbackQuery expiry. Apps Script execution cap is
-    // 6 min, so this leaves plenty of headroom.
-    inlineBurstPoll_(Math.min(55, listenSec));
+    var mode = (PropertiesService.getScriptProperties().getProperty('TELEGRAM_MODE') || '').toLowerCase();
+    if (mode !== 'webhook') {
+      var listenSec = parseInt(getCfgValue('TelegramOrderListenSeconds') || '50', 10);
+      if (isNaN(listenSec) || listenSec < 5) listenSec = 50;
+      // 55s cap: covers the worst-case 60s gap between minute-trigger fires, so
+      // taps within the first minute always land during a live poll and avoid
+      // Telegram's 15s answerCallbackQuery expiry. Apps Script execution cap is
+      // 6 min, so this leaves plenty of headroom.
+      inlineBurstPoll_(Math.min(55, listenSec));
+    }
   } catch(e) { Logger.log('inlineBurstPoll_ err: ' + e); }
 }
 
@@ -541,8 +768,25 @@ function sendTelegramAlert(orderId, customerName, customerPhone, items, total, m
   var safeItems = String(items || '').slice(0, 600);
   var phoneDigits = String(customerPhone || '').replace(/\D/g, '');
 
+  // VIP / regular-customer recognition. We count this customer's PRIOR
+  // non-cancelled orders (the new row hasn't been written yet at this point —
+  // saveOrder writes the alert before the sheet — so the count we get is
+  // strictly "before this one"). 3+ prior orders = a regular; 1-2 = a returning
+  // customer; 0 = first-timer. Decorating the alert turns abstract metrics into
+  // an emotional cue: "be extra warm, this is your 5th-time customer".
+  var custStats = phoneDigits ? getCustomerStats_(phoneDigits) : { count: 0, lifetime: 0 };
+  var custTag = '';
+  if (custStats.count >= 3) {
+    custTag = '🌟 <b>Regular — ' + (custStats.count + 1) + 'th order</b> · lifetime ₹' + Math.round(custStats.lifetime) + '\n';
+  } else if (custStats.count >= 1) {
+    custTag = '🔁 <b>Returning customer</b> (' + (custStats.count + 1) + 'th order)\n';
+  } else {
+    custTag = '👋 <b>New customer</b>\n';
+  }
+
   var msg = ''
     + '🔔 <b>New order — ' + he(shopName || 'Your store') + '</b>\n'
+    + custTag
     + '\n'
     + '<b>Order:</b> <code>' + he(orderId) + '</code>\n'
     + '<b>Customer:</b> ' + he(customerName || 'Customer') + '\n'
@@ -586,18 +830,98 @@ function sendTelegramAlert(orderId, customerName, customerPhone, items, total, m
 }
 
 // ═══════════════════════════════════
+// TELEGRAM STATUS-CHANGE ALERT — fires on milestone transitions
+// ═══════════════════════════════════
+// Posts a NEW Telegram message (not just an edit of the original new-order
+// alert) for these transitions:
+//   📦 Packed           — kitchen done, awaiting handoff
+//   🛵 Out for Delivery — driver picked up, en route
+//   🎉 Delivered        — done (delivery)
+//   🏪 Picked Up        — done (pickup)
+//
+// Why a fresh message instead of just editing the existing one:
+//   • Older order alerts scroll out of view as new orders arrive — the edit
+//     is invisible to the shopkeeper unless they scroll back
+//   • Multiple chat IDs (owner + manager + audit channel) all see every
+//     milestone in real time, not just whoever tapped the button
+//   • Clean timeline in chat history: 🔔 New → 📦 Packed → 🛵 OFD → 🎉 Delivered
+//
+// Skipped transitions: 'Confirmed' (every order goes through it; redundant
+// with the original alert) and 'Cancelled' (already handled by the spike
+// detector + cancellation email path).
+function sendTelegramStatusAlert_(orderId, newStatus, comment, opts) {
+  var token = getTelegramToken_();
+  var chatIds = getTelegramChatIds_();
+  if (!token || !chatIds) return;
+  // When the change came from a Telegram button tap, the tapper's chat
+  // already shows the keyboard-edit instantly. Posting a SECOND message in
+  // their chat is redundant noise AND adds ~400ms to the visible response
+  // before they get back to a clean state. Skip just their chat — every
+  // other configured chat ID (manager, audit channel) still gets the fresh
+  // alert because they didn't see the edit.
+  var excludeChat = opts && opts.excludeChatId != null ? String(opts.excludeChatId) : null;
+
+  // Recover customer/order context from the sheet so the alert is self-
+  // contained — recipient doesn't need to scroll back to the original.
+  var info = getOrderInfo_(orderId) || {};
+  var name = info.name || 'Customer';
+  var phoneDigits = String(info.phone || '').replace(/\D/g, '').slice(-10);
+  var mode = info.mode || '';
+  var isDelivery = String(mode).toLowerCase() === 'delivery';
+  var modeLabel = isDelivery ? '🛵 Delivery' : '🏪 Pickup';
+
+  // Status-specific heading so the shopkeeper sees the milestone instantly
+  // without reading the body. Falls back to a generic heading for any
+  // custom status the shopkeeper might write into the sheet.
+  var heading;
+  if (newStatus === 'Packed')             heading = '📦 <b>Packed & Ready</b>';
+  else if (newStatus === 'Out for Delivery') heading = '🛵 <b>Out for Delivery</b>';
+  else if (newStatus === 'Delivered')     heading = '🎉 <b>Delivered</b>';
+  else if (newStatus === 'Picked Up')     heading = '🏪 <b>Picked Up</b>';
+  else heading = statusEmoji_(newStatus) + ' <b>' + esc_(newStatus) + '</b>';
+
+  var lines = [heading, ''];
+  lines.push('Order <code>' + esc_(orderId) + '</code> · ' + esc_(name));
+  if (phoneDigits) lines.push('📞 <a href="tel:+91' + phoneDigits + '">+91 ' + phoneDigits + '</a>');
+  lines.push(modeLabel);
+  if (comment) lines.push('💬 <i>' + esc_(comment) + '</i>');
+
+  // Next-step keyboard so the shopkeeper can drive the order forward without
+  // hunting for the original alert in the chat history.
+  var keyboard = buildOrderKeyboard_(newStatus, orderId, mode, phoneDigits, name);
+
+  String(chatIds).split(/[,;\s]+/).filter(Boolean).forEach(function(chatId) {
+    if (excludeChat && String(chatId) === excludeChat) return;
+    try {
+      UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+        method: 'post',
+        contentType: 'application/json',
+        payload: JSON.stringify({
+          chat_id: chatId,
+          text: lines.join('\n'),
+          parse_mode: 'HTML',
+          disable_web_page_preview: true,
+          reply_markup: keyboard
+        }),
+        muteHttpExceptions: true
+      });
+    } catch (e) { Logger.log('[statusAlert] chat ' + chatId + ': ' + e); }
+  });
+}
+
+// ═══════════════════════════════════
 // WEB PUSH (locked-phone alerts via Cloudflare relay)
 // ═══════════════════════════════════
 function sendPushToShopkeeper(orderId, customerName, total, shopName) {
-  var relay = getCfgValue('PushRelayURL') || getCfgValue('PushURL');
+  var relay = getPushRelayURL_();
   if (!relay) {
-    Logger.log('[Push] Skipped — no PushRelayURL in Config tab');
+    Logger.log('[Push] Skipped — no PushRelayURL set (Script Properties or Config)');
     return;
   }
-  var slug   = getCfgValue('Slug') || getCfgValue('StoreSlug') || getStoreSlugFallback();
-  var secret = getCfgValue('PushSecret') || '';
+  var slug   = getSlug_();
+  var secret = getPushSecret_();
   if (!slug) {
-    Logger.log('[Push] Skipped — no Slug found. Add a row "Slug" with the store slug to the Config tab.');
+    Logger.log('[Push] Skipped — no Slug found. Run "🔒 Admin → Set Store slug…" or add a Slug row to Config.');
     return;
   }
   if (!secret) {
@@ -815,6 +1139,42 @@ function handleTelegramCallback(cb) {
     return;
   }
 
+  // ─── ETA picker / Quick-reply gallery / Back ────────────────────────
+  // All three swap the keyboard on the same message. The minute / template
+  // buttons themselves are URL buttons (wa.me deep links), so they never come
+  // back here.
+  //   eta:<id>:<status>:<mode>  → ETA time picker
+  //   qr:<id>:<status>:<mode>   → quick-reply WhatsApp template gallery
+  //   bk:<id>:<status>:<mode>   → restore main order keyboard
+  if ((parts[0] === 'eta' || parts[0] === 'bk' || parts[0] === 'qr') && parts[1] && parts[2]) {
+    handleEtaPickerCallback_(cb, parts, token);
+    return;
+  }
+
+  // ─── Stock toggle ───────────────────────────────────────────────────
+  // "stk:<row>:<state>" — flip the Stock cell on the Products sheet.
+  if (parts[0] === 'stk' && parts[1] && parts[2]) {
+    handleStockToggleCallback_(cb, parts, token);
+    return;
+  }
+
+  // ─── ETA save ───────────────────────────────────────────────────────
+  // "seteta:<orderId>:<minutes>:<mode>" — write the chosen ETA to the
+  // Orders sheet (customer sees it on tracking).
+  if (parts[0] === 'seteta' && parts[1] && parts[2] !== undefined) {
+    handleSetEtaCallback_(cb, parts, token);
+    return;
+  }
+
+  // ─── Quick-reply save ───────────────────────────────────────────────
+  // "qrsend:<orderId>:<replyKey>:<mode>" — write the chosen quick-reply
+  // template into the order's Shopkeeper Comment column. Customer sees it
+  // on their tracking page in the "💬 Message from Restaurant" callout.
+  if (parts[0] === 'qrsend' && parts[1] && parts[2]) {
+    handleQuickReplySendCallback_(cb, parts, token);
+    return;
+  }
+
   // callback_data format: "st:<orderId>:<newStatus>:<mode?>"
   if (parts[0] !== 'st' || !parts[1] || !parts[2]) return;
 
@@ -845,11 +1205,12 @@ function handleTelegramCallback(cb) {
     if (info) customerName = info.name;
   }
 
-  var toastVerb = newStatus === 'Cancelled'  ? 'rejected/cancelled'
-                : newStatus === 'Confirmed'  ? 'confirmed'
-                : newStatus === 'Packed'     ? 'marked as packed'
-                : newStatus === 'Delivered'  ? 'marked as delivered'
-                : newStatus === 'Picked Up'  ? 'marked as picked up'
+  var toastVerb = newStatus === 'Cancelled'         ? 'rejected/cancelled'
+                : newStatus === 'Confirmed'         ? 'confirmed'
+                : newStatus === 'Packed'            ? 'marked as packed & ready'
+                : newStatus === 'Out for Delivery'  ? 'marked as out for delivery'
+                : newStatus === 'Delivered'         ? 'marked as delivered'
+                : newStatus === 'Picked Up'         ? 'marked as picked up'
                 : 'marked as ' + newStatus;
 
   // ──────── STEP 1: dismiss the loading spinner with a toast (FAST) ────────
@@ -912,8 +1273,12 @@ function handleTelegramCallback(cb) {
   // ──────── STEP 3+4: slow ops in background (Sheet + email) ────────
   // Wrapped in try/catch so a failure in either doesn't crash the polling cycle
   // — the visible UI work above already succeeded.
+  // Pass the tapper's chat id so the milestone alert skips their chat
+  // (they already saw the keyboard edit a moment ago — duplicate message
+  // would just delay the perceived response).
+  var tapperChatId = (cb.message && cb.message.chat && cb.message.chat.id) || null;
   try {
-    updateOrderStatus(orderId, newStatus, '');
+    updateOrderStatus(orderId, newStatus, '', { excludeChatId: tapperChatId });
   } catch (e) {
     Logger.log('[Telegram] updateOrderStatus failed for ' + orderId + ': ' + e);
   }
@@ -1012,49 +1377,743 @@ function buildCancelConfirmKeyboard_(orderId, origStatus, mode, phoneDigits, cus
   return { inline_keyboard: rows };
 }
 
-// Slash command — /today, /help, /orders
+// ETA picker / quick-reply gallery / back swap. Same pattern as
+// handleCancelTwoStep_:
+//   eta:<orderId>:<status>:<mode>  → time-picker (URL buttons → wa.me)
+//   qr:<orderId>:<status>:<mode>   → quick-reply gallery (URL buttons → wa.me)
+//   bk:<orderId>:<status>:<mode>   → revert to the main order keyboard
+// We extract phone/name from the existing message's WhatsApp button so the
+// minute buttons can build a wa.me link with the customer's number embedded.
+function handleEtaPickerCallback_(cb, parts, token) {
+  var kind = parts[0]; // 'eta' / 'qr' / 'bk'
+  var orderId = parts[1];
+  var status = parts[2];
+  var mode = parts[3] || '';
+
+  var phoneDigits = '';
+  var customerName = '';
+  if (cb.message && cb.message.reply_markup && cb.message.reply_markup.inline_keyboard) {
+    cb.message.reply_markup.inline_keyboard.forEach(function(row) {
+      row.forEach(function(btn) {
+        if (btn.url && btn.url.indexOf('wa.me/91') >= 0) {
+          var m = btn.url.match(/wa\.me\/91(\d+)/);
+          if (m && !phoneDigits) phoneDigits = m[1];
+        }
+      });
+    });
+  }
+  // Fall back to the sheet for name/phone if the buttons didn't carry them.
+  if (!phoneDigits) {
+    var info = getOrderInfo_(orderId);
+    if (info) {
+      phoneDigits = String(info.phone || '').replace(/\D/g, '').slice(-10);
+      customerName = info.name;
+    }
+  }
+
+  // Toast — fast feedback while the keyboard swaps.
+  var toastByKind = {
+    eta: 'Pick a time — opens WhatsApp ready to send',
+    qr:  'Pick a reply — opens WhatsApp ready to send',
+    bk:  'Back to order controls'
+  };
+  try {
+    UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/answerCallbackQuery', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        callback_query_id: cb.id,
+        text: toastByKind[kind] || '',
+        show_alert: false
+      }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { Logger.log('[picker] ack: ' + e); }
+
+  if (!cb.message || !cb.message.chat || !cb.message.message_id) return;
+
+  if ((kind === 'eta' || kind === 'qr') && !phoneDigits) {
+    // Defensive — shouldn't happen because these buttons are only shown when
+    // a phone is known, but stay safe in case the message buttons changed.
+    return;
+  }
+
+  var keyboard;
+  if (kind === 'eta') {
+    keyboard = buildEtaPickerKeyboard_(orderId, status, mode, phoneDigits, customerName);
+  } else if (kind === 'qr') {
+    keyboard = buildQuickReplyKeyboard_(orderId, status, mode, phoneDigits, customerName);
+  } else {
+    keyboard = buildOrderKeyboard_(status, orderId, mode, phoneDigits, customerName);
+  }
+
+  try {
+    var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/editMessageReplyMarkup', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        chat_id: cb.message.chat.id,
+        message_id: cb.message.message_id,
+        reply_markup: keyboard
+      }),
+      muteHttpExceptions: true
+    });
+    if (res.getResponseCode() !== 200) {
+      Logger.log('[picker] editMarkup HTTP ' + res.getResponseCode() + ': ' + res.getContentText().slice(0, 300));
+    }
+  } catch (e) { Logger.log('[picker] edit: ' + e); }
+}
+
+// ETA save handler. Called when the shopkeeper taps a minute button on the
+// ETA picker keyboard (callback prefix "seteta"). Writes the ETA to the
+// Orders sheet so the customer's tracking page in fastfood.html can show it,
+// edits the Telegram message to confirm, and surfaces a single "📲 Notify
+// customer on WhatsApp" follow-up button (URL → wa.me with the ETA message
+// pre-typed).
+//
+// callback_data format: "seteta:<orderId>:<minutes>:<mode>"  where minutes=0
+// means "Ready now".
+function handleSetEtaCallback_(cb, parts, token) {
+  var orderId = parts[1];
+  var minutes = parseInt(parts[2], 10) || 0;
+  var modeTag = String(parts[3] || '').toLowerCase() === 'pickup' ? 'pickup' : 'delivery';
+
+  // Persist the ETA. Auto-creates the column if missing — see saveOrderEta_.
+  var stored = saveOrderEta_(orderId, minutes);
+
+  var humanEta = minutes === 0 ? 'Ready now' : (minutes + ' min');
+  var toastText = stored
+    ? '✓ ETA saved: ' + humanEta + ' (customer sees in tracking)'
+    : '⚠️ ETA not saved — order row not found';
+
+  // 1) Toast (fast)
+  try {
+    UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/answerCallbackQuery', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        callback_query_id: cb.id,
+        text: toastText,
+        show_alert: false
+      }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { Logger.log('[seteta] ack: ' + e); }
+
+  if (!cb.message || !cb.message.chat || !cb.message.message_id) return;
+
+  // 2) Recover phone/name/status from the existing message + sheet so we can
+  //    rebuild the right keyboard (matching the order's current status).
+  var phoneDigits = '';
+  var customerName = '';
+  if (cb.message.reply_markup && cb.message.reply_markup.inline_keyboard) {
+    cb.message.reply_markup.inline_keyboard.forEach(function(row) {
+      row.forEach(function(btn) {
+        if (btn.url && btn.url.indexOf('wa.me/91') >= 0) {
+          var m = btn.url.match(/wa\.me\/91(\d+)/);
+          if (m && !phoneDigits) phoneDigits = m[1];
+        }
+      });
+    });
+  }
+  var info = getOrderInfo_(orderId) || {};
+  if (!phoneDigits) phoneDigits = String(info.phone || '').replace(/\D/g, '').slice(-10);
+  if (!customerName) customerName = info.name || '';
+  var currentStatus = info.status || 'Confirmed';
+
+  // 3) Edit the message: append an ETA footer line, restore the order keyboard
+  //    for the order's current status, and prepend a one-tap "Notify on
+  //    WhatsApp" URL button.
+  var clockNow = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' });
+  var footer = '\n\n⏱ ETA set: <b>' + humanEta + '</b> (you, ' + clockNow + ')';
+  var baseText = (cb.message.text || cb.message.caption || '');
+  // Avoid stacking multiple ETA footers if the shopkeeper picks again.
+  baseText = baseText.replace(/\n\n⏱ ETA set:[^\n]*$/, '');
+  var newText = (baseText + footer).slice(0, 4000);
+
+  // Just restore the order keyboard for the current status. No more
+  // "Notify on WhatsApp" follow-up button — the ETA is already saved to the
+  // sheet and the customer sees it on their tracking page automatically.
+  // omitWhatsApp:true so the standard "💬 WhatsApp customer" button doesn't
+  // re-appear here either — user explicitly asked for the WhatsApp option to
+  // be gone from the ETA flow.
+  var keyboard = buildOrderKeyboard_(currentStatus, orderId, modeTag, phoneDigits, customerName, true) || { inline_keyboard: [] };
+
+  try {
+    UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/editMessageText', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        chat_id: cb.message.chat.id,
+        message_id: cb.message.message_id,
+        text: newText,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+        disable_notification: true,
+        reply_markup: keyboard
+      }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { Logger.log('[seteta] edit: ' + e); }
+}
+
+// Persist an ETA value on the order row. Auto-creates an "ETA" column on
+// first call so legacy sheets don't need a manual schema migration. Format
+// stored: "30 min (~3:45 PM)" — both relative and absolute, since the
+// customer's tracking page reads this raw string and the absolute clock time
+// helps when the customer opens the page much later than the ETA was set.
+function saveOrderEta_(orderId, minutes) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Orders');
+    if (!sheet) return false;
+
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+      .map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+    var etaCol = headers.indexOf('eta');
+    if (etaCol < 0) {
+      var newColIdx = sheet.getLastColumn() + 1;
+      sheet.getRange(1, newColIdx).setValue('ETA').setFontWeight('bold').setBackground('#0c831f').setFontColor('#ffffff');
+      etaCol = newColIdx - 1;
+    }
+
+    var data = sheet.getDataRange().getValues();
+    var idCol = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')}).indexOf('orderid');
+    if (idCol < 0) idCol = 0;
+
+    var etaText;
+    if (minutes <= 0) {
+      etaText = 'Ready now';
+    } else {
+      var ready = new Date(Date.now() + minutes * 60 * 1000);
+      var hh = ready.getHours(), mm = ready.getMinutes();
+      var ampm = hh >= 12 ? 'PM' : 'AM';
+      hh = hh % 12; if (hh === 0) hh = 12;
+      var clock = hh + ':' + (mm < 10 ? '0' : '') + mm + ' ' + ampm;
+      etaText = minutes + ' min (~' + clock + ')';
+    }
+
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][idCol]).trim() === String(orderId).trim()) {
+        var cell = sheet.getRange(i + 1, etaCol + 1);
+        try { cell.setNumberFormat('@'); } catch(e) {}
+        cell.setValue(etaText).setBackground('#fef9c3').setFontWeight('bold');
+        return true;
+      }
+    }
+  } catch (e) { Logger.log('[saveOrderEta_] ' + e); }
+  return false;
+}
+
+// Quick-reply save handler. Triggered when the shopkeeper taps one of the
+// six gallery buttons. Writes the chosen template message into the order's
+// Shopkeeper Comment column so the customer sees it as "💬 Message from
+// Restaurant" on their tracking page. No WhatsApp opens — this matches the
+// "save to sheet, customer reads it on the tracking page" pattern the user
+// asked for.
+//
+// callback_data format: "qrsend:<orderId>:<replyKey>:<mode>"
+function handleQuickReplySendCallback_(cb, parts, token) {
+  var orderId = parts[1];
+  var replyKey = parts[2];
+  var modeTag = String(parts[3] || '').toLowerCase() === 'pickup' ? 'pickup' : 'delivery';
+  var msg = _quickReplyText_(replyKey, orderId);
+
+  // 1) Persist as Shopkeeper Comment (appends to existing). updateOrderStatus
+  //    with empty newStatus skips the status write but still writes the
+  //    comment — see the if(newStatus) / if(comment) guards inside it.
+  if (msg) {
+    try { updateOrderStatus(orderId, '', msg, { excludeChatId: cb.message && cb.message.chat && cb.message.chat.id }); } catch (e) { Logger.log('[qrsend] save: ' + e); }
+  }
+
+  var shortMsg = msg.length > 50 ? msg.slice(0, 47) + '…' : msg;
+  // 2) Toast (fast feedback)
+  try {
+    UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/answerCallbackQuery', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        callback_query_id: cb.id,
+        text: msg ? ('✓ Sent to customer\'s tracking page') : '⚠️ Unknown reply',
+        show_alert: false
+      }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { Logger.log('[qrsend] ack: ' + e); }
+
+  if (!cb.message || !cb.message.chat || !cb.message.message_id) return;
+
+  // 3) Recover order context for the keyboard rebuild + restore the order
+  //    keyboard for the order's current status. Append a small footer line
+  //    confirming the comment for visibility in chat history.
+  var phoneDigits = '';
+  var customerName = '';
+  if (cb.message.reply_markup && cb.message.reply_markup.inline_keyboard) {
+    cb.message.reply_markup.inline_keyboard.forEach(function(row) {
+      row.forEach(function(btn) {
+        if (btn.url && btn.url.indexOf('wa.me/91') >= 0) {
+          var m = btn.url.match(/wa\.me\/91(\d+)/);
+          if (m && !phoneDigits) phoneDigits = m[1];
+        }
+      });
+    });
+  }
+  var info = getOrderInfo_(orderId) || {};
+  if (!phoneDigits) phoneDigits = String(info.phone || '').replace(/\D/g, '').slice(-10);
+  if (!customerName) customerName = info.name || '';
+  var currentStatus = info.status || 'Confirmed';
+
+  var clockNow = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' });
+  var footer = '\n\n💬 Sent to customer (' + clockNow + '): <i>' + esc_(shortMsg) + '</i>';
+  var baseText = (cb.message.text || cb.message.caption || '');
+  // Avoid stacking multiple comment footers — drop the previous one if the
+  // shopkeeper sends another quick reply on the same message.
+  baseText = baseText.replace(/\n\n💬 Sent to customer[^\n]*$/, '');
+  var newText = (baseText + footer).slice(0, 4000);
+
+  // omitWhatsApp:true — the message just got delivered to the customer via
+  // the storefront tracking page; we don't want to immediately offer the
+  // shopkeeper a WhatsApp shortcut and tempt a duplicate channel.
+  var keyboard = buildOrderKeyboard_(currentStatus, orderId, modeTag, phoneDigits, customerName, true);
+
+  try {
+    UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/editMessageText', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        chat_id: cb.message.chat.id,
+        message_id: cb.message.message_id,
+        text: newText,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+        disable_notification: true,
+        reply_markup: keyboard
+      }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { Logger.log('[qrsend] edit: ' + e); }
+}
+
+// Stock toggle handler — flips the Stock cell on the Products sheet for one row.
+// Callback format: "stk:<rowNumber>:<newState>" where newState is "in" or "out".
+// rowNumber is the 1-indexed sheet row; we don't trust the client to send a
+// pre-resolved value, but we DO trust the row number we sent in the message
+// because each row has a unique product (no race).
+function handleStockToggleCallback_(cb, parts, token) {
+  var rowNum = parseInt(parts[1], 10);
+  var newState = parts[2] === 'out' ? 'out of stock' : 'in stock';
+  var success = false;
+  var prodName = '';
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Products') || ss.getSheetByName('Menu') || ss.getSheetByName('Sheet1');
+    if (sheet && rowNum >= 2 && rowNum <= sheet.getLastRow()) {
+      var headers = getProductHeaders(sheet);
+      var stockCol = headers.indexOf('stock');
+      var nameCol = headers.indexOf('name');
+      if (stockCol >= 0) {
+        sheet.getRange(rowNum, stockCol + 1).setValue(newState);
+        if (nameCol >= 0) prodName = String(sheet.getRange(rowNum, nameCol + 1).getValue() || '');
+        success = true;
+      }
+    }
+  } catch (e) { Logger.log('[stock] write err: ' + e); }
+
+  try {
+    UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/answerCallbackQuery', {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify({
+        callback_query_id: cb.id,
+        text: success
+          ? '✓ ' + (prodName || 'Product') + ' marked ' + newState
+          : '❌ Could not update — product not found',
+        show_alert: false
+      }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { /* swallow */ }
+
+  if (success && cb.message && cb.message.chat && cb.message.message_id) {
+    var icon = newState === 'out of stock' ? '❌' : '✅';
+    try {
+      var newText = (cb.message.text || cb.message.caption || '') +
+        '\n\n' + icon + ' Now: <b>' + newState + '</b>';
+      UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/editMessageText', {
+        method: 'post',
+        contentType: 'application/json',
+        payload: JSON.stringify({
+          chat_id: cb.message.chat.id,
+          message_id: cb.message.message_id,
+          text: newText.slice(0, 4000),
+          parse_mode: 'HTML',
+          disable_web_page_preview: true,
+          disable_notification: true,
+          reply_markup: { inline_keyboard: [[
+            { text: newState === 'out of stock' ? '✅ Mark in stock' : '❌ Mark out of stock',
+              callback_data: 'stk:' + rowNum + ':' + (newState === 'out of stock' ? 'in' : 'out') }
+          ]] }
+        }),
+        muteHttpExceptions: true
+      });
+    } catch (e) { /* keep going */ }
+  }
+}
+
+// Slash command dispatch — handles all Telegram text messages from the
+// shopkeeper. Supports both /commands and casual phrases (English + Hindi +
+// Hinglish) via hindiAlias_, so messages like "kitne orders aaj" or "खोलो"
+// get routed to the right command.
 function handleTelegramCommand(msg) {
   var token = getTelegramToken_();
   if (!token) return;
   var text = String(msg.text || '').trim();
   var chatId = msg.chat && msg.chat.id;
   if (!chatId) return;
+
+  // If the text isn't already a /command, try to interpret it as natural
+  // language. This unlocks the bot for owners who type Hindi/Hinglish or
+  // who don't know slash commands exist.
+  if (text && text.charAt(0) !== '/') {
+    var aliased = hindiAlias_(text);
+    if (aliased) text = aliased;
+  }
+
   var cmd = text.split(/\s+/)[0].toLowerCase().replace(/@.*/, '');
   var reply = '';
+
+  // Argument string (everything after the command, trimmed). Used by
+  // /stock, /order, /find — empty for argless commands.
+  var argStr = text.replace(/^\S+\s*/, '').trim();
 
   if (cmd === '/start') {
     reply = '👋 <b>Welcome to ' + getShopName() + ' bot</b>\n\n' +
             'You\'ll get a notification here whenever a new order arrives. Tap the buttons on the alert to update status.\n\n' +
-            'Available commands:\n' +
-            '/today — today\'s order summary\n' +
-            '/orders — list pending orders\n' +
-            '/help — show this list';
+            'Try /help to see everything this bot can do.';
   } else if (cmd === '/help') {
     reply = '<b>Bot commands</b>\n\n' +
-            '/today — total orders + revenue today\n' +
-            '/orders — list orders awaiting action\n' +
-            '/help — this message\n\n' +
-            'On every new-order alert, tap a button to update status:\n' +
-            '✅ Confirm · 📦 Packed · 🛵 Delivered · ❌ Cancel';
+            '<b>📊 Reports</b>\n' +
+            '/today — today\'s revenue + order count\n' +
+            '/week — last 7 days vs previous 7 days\n' +
+            '/orders — orders waiting for action\n' +
+            '/order &lt;id&gt; — full details for one order\n' +
+            '/best — best-selling products (30 days)\n' +
+            '/reviews — recent customer ratings\n' +
+            '/vip — top 5 customers + WhatsApp them\n\n' +
+            '<b>🎛 Store control</b>\n' +
+            '/open — accept new orders\n' +
+            '/close — pause new orders\n' +
+            '/status — current open/closed state\n' +
+            '/stock &lt;name&gt; — toggle a product in/out of stock\n\n' +
+            '<b>🩺 Diagnostics</b>\n' +
+            '/diag — bot + sheet + connection health\n\n' +
+            '<b>💬 Hinglish / Hindi</b>\n' +
+            'You can also type plain phrases:\n' +
+            '"<i>khol do</i>" / "<i>खोलो</i>" → /open\n' +
+            '"<i>band karo</i>" / "<i>बंद</i>" → /close\n' +
+            '"<i>aaj kitne orders</i>" → /today\n' +
+            '"<i>top item</i>" / "<i>best seller</i>" → /best\n\n' +
+            '<b>On every order alert</b>\n' +
+            '✅ Confirm · ❌ Cancel · 📲 Send ETA · 🗨 Quick reply · 💬 WhatsApp · 📊 Dashboard';
   } else if (cmd === '/today') {
     reply = telegramTodaySummary_();
+  } else if (cmd === '/week') {
+    reply = telegramWeekSummary_();
   } else if (cmd === '/orders') {
     reply = telegramPendingOrders_();
+  } else if (cmd === '/order') {
+    reply = telegramOrderDetail_(argStr);
+  } else if (cmd === '/best') {
+    reply = telegramBestProducts_();
+  } else if (cmd === '/reviews') {
+    reply = telegramRecentReviews_();
+  } else if (cmd === '/vip') {
+    // /vip sends multiple messages (one per top customer with WA button) so
+    // it bypasses the normal reply path.
+    handleVipCommand_(token, chatId);
+    return;
+  } else if (cmd === '/diag') {
+    reply = telegramDiagnostic_();
+  } else if (cmd === '/open') {
+    reply = telegramSetStoreOpen_(true);
+  } else if (cmd === '/close') {
+    reply = telegramSetStoreOpen_(false);
+  } else if (cmd === '/status') {
+    var opn = String(getCfgValue('StoreOpen') || 'yes').toLowerCase();
+    reply = opn === 'no'
+      ? '🔴 <b>Store is CLOSED.</b>\nCustomers see a closed banner on the storefront. Use /open to resume.'
+      : '🟢 <b>Store is OPEN.</b>\nNew orders are being accepted. Use /close to pause.';
+  } else if (cmd === '/stock') {
+    // /stock returns multiple messages (one per matching product) so it
+    // bypasses the normal reply path and handles its own send.
+    handleStockCommand_(token, chatId, argStr);
+    return;
   } else {
     return; // ignore unknown messages — don't spam reply
   }
 
+  sendTelegramReply_(token, chatId, reply);
+}
+
+// Reusable plain-text reply send. HTML parse mode + no link previews —
+// matches the rest of the bot's message style.
+function sendTelegramReply_(token, chatId, text, replyMarkup) {
+  var payload = {
+    chat_id: chatId,
+    text: text,
+    parse_mode: 'HTML',
+    disable_web_page_preview: true
+  };
+  if (replyMarkup) payload.reply_markup = replyMarkup;
   UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
     method: 'post',
     contentType: 'application/json',
-    payload: JSON.stringify({
-      chat_id: chatId,
-      text: reply,
-      parse_mode: 'HTML',
-      disable_web_page_preview: true
-    }),
+    payload: JSON.stringify(payload),
     muteHttpExceptions: true
   });
+}
+
+// Toggle the StoreOpen config row. Storefronts read this and show a
+// "closed" banner when set to "no", which also disables the cart/checkout.
+function telegramSetStoreOpen_(open) {
+  try {
+    updateConfig('StoreOpen', open ? 'yes' : 'no');
+    return open
+      ? '🟢 <b>Store opened.</b>\nCustomers can place orders again.'
+      : '🔴 <b>Store closed.</b>\nNew orders are paused. Use /open when you\'re ready.';
+  } catch (e) {
+    Logger.log('[/open|/close] ' + e);
+    return '❌ Could not update StoreOpen — try again or open the dashboard.';
+  }
+}
+
+// /order <id> — full details for one order. Helpful when the original
+// message has scrolled out of the chat history.
+function telegramOrderDetail_(arg) {
+  var orderId = String(arg || '').trim();
+  if (!orderId) return 'Usage: /order &lt;orderId&gt;\nExample: /order ORD-LX9K2';
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) return '❌ No orders found yet.';
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  function col(name, fallback) { var i = headers.indexOf(name); return i >= 0 ? i : fallback; }
+  var idCol     = col('orderid', 0);
+  var dateCol   = col('date&time', 1);
+  var modeCol   = col('mode', 2);
+  var nameCol   = col('customername', col('name', 3));
+  var phoneCol  = col('phone', 4);
+  var addrCol   = col('address', 6);
+  var itemsCol  = col('items', 7);
+  var totalCol  = col('total', 8);
+  var statusCol = col('status', 9);
+  var paymentCol= col('payment', 10);
+  var commentCol= col('shopkeepercomment', col('comment', 12));
+
+  var match = null;
+  // Tolerant match — exact, then case-insensitive, then suffix (last 6 chars)
+  // so the shopkeeper can paste without worrying about case or the ORD- prefix.
+  var qLower = orderId.toLowerCase();
+  for (var i = 1; i < data.length; i++) {
+    var rowId = String(data[i][idCol]).trim();
+    if (rowId === orderId) { match = data[i]; break; }
+    if (!match && rowId.toLowerCase() === qLower) match = data[i];
+  }
+  if (!match) {
+    var sfx = qLower.replace(/^ord-?/, '');
+    for (var j = 1; j < data.length && !match; j++) {
+      var id2 = String(data[j][idCol]).toLowerCase();
+      if (id2.indexOf(sfx) >= 0) match = data[j];
+    }
+  }
+  if (!match) return '❌ No order matching <code>' + esc_(orderId) + '</code>.';
+
+  function he(s){return esc_(s);}
+  var lines = [];
+  lines.push('🧾 <b>Order ' + he(match[idCol]) + '</b>');
+  lines.push(statusEmoji_(match[statusCol]) + ' Status: <b>' + he(match[statusCol] || '—') + '</b>');
+  lines.push('📅 ' + he(formatCellDate_(match[dateCol])));
+  var modeLbl = String(match[modeCol] || '').toUpperCase() === 'DELIVERY' ? '🛵 Delivery' : '🏪 Pickup';
+  lines.push(modeLbl);
+  lines.push('');
+  lines.push('👤 <b>' + he(match[nameCol] || 'Customer') + '</b>');
+  if (match[phoneCol]) lines.push('📞 ' + he(match[phoneCol]));
+  if (match[addrCol] && /^delivery$/i.test(match[modeCol])) lines.push('📍 ' + he(match[addrCol]));
+  lines.push('');
+  if (match[itemsCol]) lines.push('<b>Items</b>\n' + he(String(match[itemsCol]).slice(0, 800)));
+  lines.push('');
+  lines.push('💰 Total: <b>₹' + Math.round(parseFloat(match[totalCol]) || 0) + '</b>');
+  if (match[paymentCol]) lines.push('💳 ' + he(match[paymentCol]));
+  if (match[commentCol]) lines.push('💬 <i>' + he(match[commentCol]) + '</i>');
+  return lines.join('\n');
+}
+
+// /stock <name> — find products by name and present each with a toggle button.
+// Limits to 5 matches so a vague query doesn't flood the chat. Empty arg
+// returns a usage hint.
+function handleStockCommand_(token, chatId, arg) {
+  var query = String(arg || '').trim().toLowerCase();
+  if (!query) {
+    sendTelegramReply_(token, chatId,
+      'Usage: /stock &lt;name&gt;\nExample: /stock paneer\n\n' +
+      'Searches your Products tab and lets you toggle in/out of stock with one tap.');
+    return;
+  }
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Products')
+           || SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Menu')
+           || SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
+  if (!sheet || sheet.getLastRow() < 2) {
+    sendTelegramReply_(token, chatId, '❌ No Products tab found in this sheet.');
+    return;
+  }
+  var headers = getProductHeaders(sheet);
+  var nameCol = headers.indexOf('name');
+  var hindiCol = headers.indexOf('hindiname');
+  var catCol = headers.indexOf('category');
+  var priceCol = headers.indexOf('price');
+  var stockCol = headers.indexOf('stock');
+  if (nameCol < 0) {
+    sendTelegramReply_(token, chatId, '❌ Products tab is missing a "name" column.');
+    return;
+  }
+  var data = sheet.getDataRange().getValues();
+  var matches = [];
+  for (var i = 1; i < data.length && matches.length < 5; i++) {
+    var name = String(data[i][nameCol] || '');
+    if (!name) continue;
+    var hindi = hindiCol >= 0 ? String(data[i][hindiCol] || '') : '';
+    var hay = (name + ' ' + hindi).toLowerCase();
+    if (hay.indexOf(query) >= 0) {
+      matches.push({
+        row: i + 1,
+        name: name,
+        hindi: hindi,
+        category: catCol >= 0 ? String(data[i][catCol] || '') : '',
+        price: priceCol >= 0 ? data[i][priceCol] : '',
+        stock: stockCol >= 0 ? String(data[i][stockCol] || 'in stock').toLowerCase() : 'in stock'
+      });
+    }
+  }
+  if (!matches.length) {
+    sendTelegramReply_(token, chatId, '❌ No products matching <code>' + esc_(query) + '</code>.');
+    return;
+  }
+  if (stockCol < 0) {
+    sendTelegramReply_(token, chatId,
+      '⚠️ Found ' + matches.length + ' product(s), but your Products tab has no <b>Stock</b> column.\n' +
+      'Add a column named "stock" to enable toggling.');
+    return;
+  }
+  matches.forEach(function(m) {
+    var oos = /out\s*of\s*stock|sold\s*out|0|false|no/i.test(m.stock);
+    var lines = [];
+    lines.push('🛒 <b>' + esc_(m.name) + '</b>' + (m.hindi ? ' · ' + esc_(m.hindi) : ''));
+    if (m.category) lines.push(esc_(m.category));
+    if (m.price !== '' && m.price != null) lines.push('₹' + Math.round(parseFloat(m.price) || 0));
+    lines.push((oos ? '❌' : '✅') + ' Currently: <b>' + (oos ? 'out of stock' : 'in stock') + '</b>');
+    var btnText = oos ? '✅ Mark in stock' : '❌ Mark out of stock';
+    var btnState = oos ? 'in' : 'out';
+    sendTelegramReply_(token, chatId, lines.join('\n'), {
+      inline_keyboard: [[
+        { text: btnText, callback_data: 'stk:' + m.row + ':' + btnState }
+      ]]
+    });
+  });
+}
+
+// HTML escaper — used for all telegram message text now that multiple
+// commands echo back user-supplied data.
+function esc_(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Hindi / Hinglish natural-language alias.
+// Lightweight keyword matcher (no NLP, no API call) that maps casual phrases
+// to /commands. Three reasons to keep it dumb-but-effective:
+//   1. It runs inside Telegram's <60s webhook deadline → must be sync + fast.
+//   2. False positives are cheap (the bot just does the wrong /command and
+//      shopkeeper retries) so we lean toward MORE matches, not fewer.
+//   3. Hindi shopkeepers usually type Hinglish, not Devanagari, so we cover
+//      both scripts and skip diacritics.
+//
+// Returns "/cmd [arg]" if the phrase resolves; "" if it doesn't (fall through
+// to the existing slash-command dispatcher, which will silently ignore).
+function hindiAlias_(text) {
+  if (!text) return '';
+  var t = ' ' + String(text).toLowerCase().trim() + ' ';
+  // Helper: does the text contain ANY of these phrases (with word-ish boundaries)?
+  function has(arr) {
+    for (var i = 0; i < arr.length; i++) {
+      // Use simple substring after wrapping in spaces — good enough for casual chat.
+      if (t.indexOf(' ' + arr[i] + ' ') >= 0 || t.indexOf(' ' + arr[i]) >= 0) return true;
+    }
+    return false;
+  }
+  // Order matters — check the most-specific phrases first.
+
+  // Open / close (most likely intent — check before 'orders')
+  if (has(['खोलो', 'खोल दो', 'दुकान खोलो', 'khol do', 'khol', 'kholo', 'open kar', 'open karo', 'open shop', 'shop open'])) {
+    return '/open';
+  }
+  if (has(['बंद', 'बंद करो', 'दुकान बंद', 'band karo', 'band kar', 'close shop', 'shop close', 'shop band'])) {
+    return '/close';
+  }
+
+  // Today (look for "aaj" / "today" first so we route to /today not /orders)
+  if (has(['आज', 'aaj ke', 'aaj kitne', 'aaj kitna', 'aaj sales', 'aaj revenue', 'today sales', 'today revenue', "today's"])) {
+    return '/today';
+  }
+
+  // Week
+  if (has(['हफ्ता', 'हफ्ते', 'haftah', 'hafte', 'this week', 'past week', 'last 7 days', '7 days', 'weekly'])) {
+    return '/week';
+  }
+
+  // Best sellers
+  if (has(['सबसे ज्यादा', 'top item', 'best seller', 'best item', 'sabse zyada', 'top selling', 'top product'])) {
+    return '/best';
+  }
+
+  // VIP / regulars
+  if (has(['regular customer', 'top customer', 'best customer', 'vip', 'regulars', 'puraane customer', 'purane'])) {
+    return '/vip';
+  }
+
+  // Reviews / ratings
+  if (has(['रेटिंग', 'reviews', 'rating', 'feedback'])) {
+    return '/reviews';
+  }
+
+  // Pending / orders
+  if (has(['ऑर्डर', 'pending order', 'pending', 'orders', 'kitne orders', 'kitna order'])) {
+    return '/orders';
+  }
+
+  // Stock
+  // "Stock <name>" — needs to capture the rest of the phrase as the argument
+  var stockMatch = String(text).match(/^\s*(?:stock|stk|स्टॉक)\s+(.+)$/i);
+  if (stockMatch) return '/stock ' + stockMatch[1].trim();
+
+  // Status
+  if (has(['shop status', 'open hai', 'band hai', 'kya status', 'is shop open'])) {
+    return '/status';
+  }
+
+  // Help
+  if (has(['मदद', 'madad', 'help me', 'kaise', 'how to', 'commands'])) {
+    return '/help';
+  }
+
+  return '';
+}
+
+// Format a date cell uniformly. Cells can be Date objects (when written from
+// the script) or pre-formatted strings (legacy rows). Both look reasonable
+// to the shopkeeper.
+function formatCellDate_(v) {
+  if (v instanceof Date) {
+    return v.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  }
+  return String(v || '');
 }
 
 function telegramTodaySummary_() {
@@ -1106,12 +2165,267 @@ function telegramPendingOrders_() {
   return '<b>📋 Pending orders</b>\n\n' + lines.join('\n');
 }
 
+// /week — 7-day rolling summary with day-of-week breakdown + week-over-week
+// delta. Companion to /today, mirrors the dashboard's Insights tab.
+function telegramWeekSummary_() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) return '<b>No orders yet.</b>';
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  var dateCol = headers.indexOf('date&time'); if (dateCol < 0) dateCol = 1;
+  var totalCol = headers.indexOf('total'); if (totalCol < 0) totalCol = 8;
+  var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+  var phoneCol = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
+
+  var now = new Date();
+  var nowMs = now.getTime();
+  var DAY = 24 * 60 * 60 * 1000;
+  var thisWeekMs  = nowMs - 7 * DAY;
+  var prevWeekMs  = nowMs - 14 * DAY;
+
+  var thisCount = 0, thisRev = 0, prevCount = 0, prevRev = 0;
+  var phones = {};
+  for (var i = 1; i < data.length; i++) {
+    var d = data[i][dateCol];
+    var dMs = d instanceof Date ? d.getTime() : Date.parse(String(d));
+    if (isNaN(dMs)) continue;
+    var status = String(data[i][statusCol] || '').toLowerCase();
+    if (status === 'cancelled') continue;
+    var t = parseFloat(data[i][totalCol]) || 0;
+    if (dMs >= thisWeekMs) {
+      thisCount++;
+      thisRev += t;
+      var p = String(data[i][phoneCol] || '').replace(/\D/g, '').slice(-10);
+      if (p) phones[p] = true;
+    } else if (dMs >= prevWeekMs) {
+      prevCount++;
+      prevRev += t;
+    }
+  }
+  if (thisCount === 0 && prevCount === 0) return '<b>📊 7-day summary</b>\n\nNo orders in the last two weeks.';
+
+  var aov = thisCount > 0 ? Math.round(thisRev / thisCount) : 0;
+  var revDelta = prevRev > 0 ? Math.round(((thisRev - prevRev) / prevRev) * 100) : null;
+  var countDelta = prevCount > 0 ? Math.round(((thisCount - prevCount) / prevCount) * 100) : null;
+  function deltaTag(pct) {
+    if (pct === null) return '';
+    if (pct > 0) return ' (▲ ' + pct + '%)';
+    if (pct < 0) return ' (▼ ' + Math.abs(pct) + '%)';
+    return ' (= flat)';
+  }
+  var uniqueCustomers = Object.keys(phones).length;
+
+  return '<b>📊 ' + getShopName() + ' — last 7 days</b>\n\n' +
+         '✅ Orders: <b>' + thisCount + '</b>' + deltaTag(countDelta) + '\n' +
+         '💰 Revenue: <b>₹' + Math.round(thisRev) + '</b>' + deltaTag(revDelta) + '\n' +
+         '🧾 Avg order value: <b>₹' + aov + '</b>\n' +
+         '👥 Unique customers: <b>' + uniqueCustomers + '</b>\n\n' +
+         '<i>vs previous 7 days: ₹' + Math.round(prevRev) + ' / ' + prevCount + ' orders</i>';
+}
+
+// /best — top 10 products by order frequency over the last 30 days.
+// Reads the Items column and tallies product names. Items in storefront orders
+// are formatted "2x Paneer Roll = ₹100\n1x Mutton Boneless = ₹950" — we strip
+// the qty prefix and price suffix to get the bare name.
+function telegramBestProducts_() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) return '<b>No orders yet to analyse.</b>';
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  var dateCol = headers.indexOf('date&time'); if (dateCol < 0) dateCol = 1;
+  var itemsCol = headers.indexOf('items'); if (itemsCol < 0) itemsCol = 7;
+  var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+  var thirtyAgoMs = Date.now() - 30 * 24 * 60 * 60 * 1000;
+
+  var counts = {};
+  var revenue = {};
+  for (var i = 1; i < data.length; i++) {
+    var d = data[i][dateCol];
+    var dMs = d instanceof Date ? d.getTime() : Date.parse(String(d));
+    if (isNaN(dMs) || dMs < thirtyAgoMs) continue;
+    if (String(data[i][statusCol] || '').toLowerCase() === 'cancelled') continue;
+    var raw = String(data[i][itemsCol] || '');
+    if (!raw) continue;
+    raw.split(/\n|,/).forEach(function(line) {
+      var s = String(line || '').trim();
+      if (!s) return;
+      // Strip "2x " prefix and " = ₹100" suffix
+      s = s.replace(/^\s*\d+\s*x\s*/i, '').replace(/\s*=\s*₹?\s*\d+(\.\d+)?\s*$/, '').trim();
+      if (!s) return;
+      var name = s.length > 60 ? s.slice(0, 60) : s;
+      counts[name] = (counts[name] || 0) + 1;
+      var pr = parseFloat((line.match(/₹\s*(\d+)/) || [])[1]) || 0;
+      revenue[name] = (revenue[name] || 0) + pr;
+    });
+  }
+  var rows = Object.keys(counts).map(function(k) {
+    return { name: k, count: counts[k], rev: revenue[k] };
+  }).sort(function(a, b) { return b.count - a.count; });
+  if (!rows.length) return '<b>📦 Best sellers (30 days)</b>\n\nNo items found yet.';
+
+  var lines = ['<b>📦 Best sellers — last 30 days</b>\n'];
+  rows.slice(0, 10).forEach(function(r, i) {
+    lines.push((i + 1) + '. <b>' + esc_(r.name) + '</b> — ' + r.count + 'x' + (r.rev > 0 ? ' · ₹' + Math.round(r.rev) : ''));
+  });
+  return lines.join('\n');
+}
+
+// /reviews — most recent 5 reviews with stars + text. Reviews live in the
+// columns added by ensureReviewColumns_; if none exist yet, return a hint.
+function telegramRecentReviews_() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) return '<b>No orders yet — no reviews either.</b>';
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  var starsCol = headers.indexOf('reviewstars');
+  var textCol  = headers.indexOf('reviewtext');
+  var atCol    = headers.indexOf('reviewedat');
+  var nameCol  = headers.indexOf('customername'); if (nameCol < 0) nameCol = 3;
+  if (starsCol < 0) return '<b>No reviews yet.</b>\n\nWhen customers rate their delivered orders, they\'ll appear here.';
+
+  var reviews = [];
+  for (var i = data.length - 1; i >= 1 && reviews.length < 5; i--) {
+    var s = parseInt(data[i][starsCol]) || 0;
+    if (s < 1) continue;
+    reviews.push({
+      stars: s,
+      text:  String(data[i][textCol] || '').slice(0, 200),
+      at:    formatCellDate_(data[i][atCol]),
+      name:  String(data[i][nameCol] || 'Customer')
+    });
+  }
+  if (!reviews.length) return '<b>No reviews yet.</b>\n\nWhen customers rate their delivered orders, they\'ll appear here.';
+
+  var lines = ['<b>⭐ Recent reviews</b>\n'];
+  reviews.forEach(function(r) {
+    var stars = '⭐'.repeat(Math.min(5, r.stars)) + (r.stars < 5 ? '·'.repeat(5 - r.stars) : '');
+    lines.push(stars + ' <b>' + esc_(r.name) + '</b>' + (r.at ? ' · <i>' + esc_(r.at) + '</i>' : ''));
+    if (r.text) lines.push('   "' + esc_(r.text) + '"');
+    lines.push('');
+  });
+  return lines.join('\n').trim();
+}
+
+// /vip — top 5 customers by lifetime spend, each as a separate message with a
+// one-tap WhatsApp button. Used to ping regulars about new offers / restocks.
+function handleVipCommand_(token, chatId) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) {
+    sendTelegramReply_(token, chatId, '<b>No orders yet — no VIPs to show.</b>');
+    return;
+  }
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  var nameCol = headers.indexOf('customername'); if (nameCol < 0) nameCol = 3;
+  var phoneCol = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
+  var totalCol = headers.indexOf('total'); if (totalCol < 0) totalCol = 8;
+  var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+
+  var byPhone = {};
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][statusCol] || '').toLowerCase() === 'cancelled') continue;
+    var p = String(data[i][phoneCol] || '').replace(/\D/g, '').slice(-10);
+    if (!p) continue;
+    if (!byPhone[p]) byPhone[p] = { phone: p, name: String(data[i][nameCol] || 'Customer'), count: 0, lifetime: 0 };
+    byPhone[p].count += 1;
+    byPhone[p].lifetime += parseFloat(data[i][totalCol]) || 0;
+  }
+  var vips = Object.keys(byPhone).map(function(k){ return byPhone[k]; })
+    .sort(function(a, b){ return b.lifetime - a.lifetime; })
+    .slice(0, 5);
+  if (!vips.length) {
+    sendTelegramReply_(token, chatId, '<b>No phone numbers in your orders yet — can\'t identify VIPs.</b>');
+    return;
+  }
+  sendTelegramReply_(token, chatId, '<b>👑 Top 5 customers by lifetime spend</b>\nTap "WhatsApp" on any to message them.');
+  vips.forEach(function(v, i) {
+    var lines = [
+      (i + 1) + '. <b>' + esc_(v.name) + '</b>',
+      '📞 ' + v.phone,
+      '🧾 ' + v.count + ' order(s) · ₹' + Math.round(v.lifetime) + ' lifetime'
+    ];
+    sendTelegramReply_(token, chatId, lines.join('\n'), {
+      inline_keyboard: [[
+        { text: '💬 WhatsApp ' + v.name.split(/\s+/)[0],
+          url: 'https://wa.me/91' + v.phone + '?text=' + encodeURIComponent('Hi ' + v.name + ', this is ' + getShopName() + '. ') }
+      ]]
+    });
+  });
+}
+
+// /diag — health check from inside the bot. Mirrors the editor's
+// testTelegramNow / testPushNow / showDashboardDiagnostic_ in one place,
+// without needing to open Apps Script.
+function telegramDiagnostic_() {
+  var props = PropertiesService.getScriptProperties();
+  var lines = ['<b>🩺 Bot diagnostic — ' + getShopName() + '</b>\n'];
+
+  // Telegram credentials + delivery mode
+  lines.push('<b>Telegram</b>');
+  lines.push('  Token: ' + (getTelegramToken_() ? '✓ set' : '❌ missing'));
+  var ids = getTelegramChatIds_();
+  lines.push('  Chat IDs: ' + (ids ? ('✓ ' + ids) : '❌ missing'));
+  var tgMode = (props.getProperty('TELEGRAM_MODE') || '').toLowerCase();
+  var modeLabel = tgMode === 'webhook'
+    ? '🟢 webhook (Cloudflare worker — fast, no polling quota)'
+    : tgMode === 'polling'
+    ? '🟡 polling (~50 min/day Apps Script quota)'
+    : '⚪ unknown — run setTelegramWebhook or installTelegramPollingTrigger';
+  lines.push('  Mode: ' + modeLabel);
+
+  // Push
+  lines.push('\n<b>Push notifications</b>');
+  lines.push('  Relay URL: ' + (getPushRelayURL_() ? '✓ set' : '— not set (optional)'));
+  lines.push('  Secret: ' + (getPushSecret_() ? '✓ set' : '— not set (optional)'));
+
+  // Identity
+  lines.push('\n<b>Identity</b>');
+  lines.push('  Slug: ' + (getSlug_() || '❌ not resolved'));
+  lines.push('  Script URL: ' + (getScriptURL_() ? '✓ set' : '— not set'));
+
+  // Storefront
+  lines.push('\n<b>Storefront</b>');
+  var opn = String(getCfgValue('StoreOpen') || 'yes').toLowerCase();
+  lines.push('  StoreOpen: ' + (opn === 'no' ? '🔴 closed' : '🟢 open'));
+  var hours = getCfgValue('BusinessHours');
+  lines.push('  Business hours: ' + (hours || '— not set (always open)'));
+
+  // Last activity
+  lines.push('\n<b>Last activity</b>');
+  var lastUid = props.getProperty('TG_LAST_UPDATE_ID') || '—';
+  var lastAct = props.getProperty('TG_LAST_ACTIVE');
+  var ago = lastAct ? Math.round((Date.now() - parseInt(lastAct)) / 60000) + ' min ago' : '—';
+  lines.push('  Last Telegram update id: ' + lastUid);
+  lines.push('  Last bot activity: ' + ago);
+
+  // Polling triggers
+  var pollTriggers = 0;
+  try {
+    ScriptApp.getProjectTriggers().forEach(function(t) {
+      if (t.getHandlerFunction() === 'pollTelegramUpdates') pollTriggers++;
+    });
+  } catch (e) {}
+  lines.push('  Polling triggers: ' + (pollTriggers ? ('✓ ' + pollTriggers) : '— webhook only / none'));
+
+  // Sheet shape
+  lines.push('\n<b>Sheets</b>');
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  ['Orders', 'Products', 'Config'].forEach(function(name) {
+    var sh = ss.getSheetByName(name);
+    lines.push('  ' + name + ': ' + (sh ? ('✓ ' + (sh.getLastRow() - 1) + ' rows') : '❌ missing'));
+  });
+
+  return lines.join('\n');
+}
+
 function statusEmoji_(status) {
-  var s = String(status || '').toLowerCase();
+  var s = String(status || '').toLowerCase().trim();
   if (s === 'new') return '🆕';
   if (s === 'confirmed') return '✅';
   if (s === 'packed') return '📦';
-  if (s === 'delivered' || s === 'picked up' || s === 'pickedup' || s === 'done' || s === 'completed') return '🛵';
+  if (s === 'out for delivery' || s === 'outfordelivery') return '🛵';
+  if (s === 'delivered' || s === 'done' || s === 'completed') return '🎉';
+  if (s === 'picked up' || s === 'pickedup') return '🏪';
   if (s === 'cancelled') return '❌';
   return '•';
 }
@@ -1125,37 +2439,101 @@ function keepWhatsAppOnlyKeyboard_(replyMarkup) {
   return rows.length ? { inline_keyboard: rows } : undefined;
 }
 
-// Keyboard built from order status. Cancel button stays available on every
-// non-terminal state so the shopkeeper can reverse course at any time:
-//   New        →  ✅ Confirm   ❌ Cancel
-//   Confirmed  →  ❌ Cancel
-//   Packed     →  ❌ Cancel
-//   Delivered / Picked Up / Cancelled → no action buttons (terminal)
-// Dashboard + WhatsApp links are always appended when available.
+// Keyboard built from order status. Shows ALL valid forward transitions for
+// the current state (not just the single next step), so the shopkeeper can
+// jump straight to Delivered when handing over a small pickup order without
+// tapping through Packed → Picked Up first. Cancel stays visible at every
+// non-terminal state.
+//
+// Delivery flow:
+//   New              →  ✅ Confirm
+//                       ❌ Cancel
+//   Confirmed        →  📦 Packed       🛵 Out for Delivery
+//                       🎉 Delivered    ❌ Cancel
+//   Packed           →  🛵 Out for Delivery   🎉 Delivered
+//                       ❌ Cancel
+//   Out for Delivery →  🎉 Delivered    ❌ Cancel
+//
+// Pickup flow:
+//   New        →  ✅ Confirm
+//                 ❌ Cancel
+//   Confirmed  →  📦 Packed       🏪 Picked Up
+//                 ❌ Cancel
+//   Packed     →  🏪 Picked Up    ❌ Cancel
+//
+// Terminal (Delivered / Picked Up / Cancelled) → no action buttons.
 //
 // callback_data format: "st:<orderId>:<newStatus>:<mode>"
-function buildOrderKeyboard_(currentStatus, orderId, mode, phoneDigits, customerName) {
+//
+// `omitWhatsApp` (optional): pass `true` from the post-ETA-save and
+// post-QuickReply-save rebuilds. The shopkeeper just told the customer
+// something via the storefront tracking page (Shopkeeper Comment column),
+// so re-surfacing a WhatsApp button immediately afterwards encourages a
+// duplicate channel. The main initial alert + cancel-confirm + every other
+// path leaves it `false` so WhatsApp stays available for free-form follow-ups.
+function buildOrderKeyboard_(currentStatus, orderId, mode, phoneDigits, customerName, omitWhatsApp) {
   var statusOriginal = String(currentStatus || 'New');
-  var status = statusOriginal.toLowerCase();
+  var status = statusOriginal.toLowerCase().trim();
   var modeTag = String(mode || '').toLowerCase() === 'pickup' ? 'pickup' : 'delivery';
+  var isPickup = modeTag === 'pickup';
   var isTerminal = (status === 'delivered' || status === 'picked up' || status === 'pickedup' ||
                     status === 'cancelled'  || status === 'done'      || status === 'completed');
   // Cancel button always uses cp: prefix — first tap shows a confirm prompt,
   // only the second tap (Yes, cancel) actually cancels. Guards against stray
   // taps now that Cancel is visible at every non-terminal stage.
   var cancelCb = 'cp:' + orderId + ':' + statusOriginal + ':' + modeTag;
+  // Shorthand for the three forward-action buttons.
+  function btn(text, newStatus){
+    return { text: text, callback_data: 'st:' + orderId + ':' + newStatus + ':' + modeTag };
+  }
+  var bConfirm  = btn('✅ Confirm',          'Confirmed');
+  var bPacked   = btn('📦 Packed',           'Packed');
+  var bOFD      = btn('🛵 Out for Delivery', 'Out for Delivery');
+  var bDelivered= btn('🎉 Delivered',        'Delivered');
+  var bPickedUp = btn('🏪 Picked Up',        'Picked Up');
+  var bCancel   = { text: '❌ Cancel', callback_data: cancelCb };
   var rows = [];
 
   if (status === 'new' || status === '') {
-    rows.push([
-      { text: '✅ Confirm', callback_data: 'st:' + orderId + ':Confirmed:' + modeTag },
-      { text: '❌ Cancel',  callback_data: cancelCb }
-    ]);
+    rows.push([bConfirm]);
+    rows.push([bCancel]);
+  } else if (status === 'confirmed') {
+    if (isPickup) {
+      rows.push([bPacked, bPickedUp]);
+      rows.push([bCancel]);
+    } else {
+      rows.push([bPacked, bOFD]);
+      rows.push([bDelivered, bCancel]);
+    }
+  } else if (status === 'packed') {
+    if (isPickup) {
+      rows.push([bPickedUp, bCancel]);
+    } else {
+      rows.push([bOFD, bDelivered]);
+      rows.push([bCancel]);
+    }
+  } else if (status === 'out for delivery' || status === 'outfordelivery') {
+    rows.push([bDelivered, bCancel]);
   } else if (!isTerminal) {
-    // Confirmed / Packed / any in-progress state — Cancel only.
-    // Other status transitions (Packed, Delivered) are managed from the dashboard.
+    // Unknown non-terminal status (custom typed in the sheet) — show all
+    // forward options so the shopkeeper can recover from any state.
+    if (isPickup) {
+      rows.push([bPacked, bPickedUp]);
+    } else {
+      rows.push([bPacked, bOFD]);
+      rows.push([bDelivered]);
+    }
+    rows.push([bCancel]);
+  }
+
+  // ETA quick-reply — only meaningful while the order is still in progress
+  // and we have a customer phone to message. Tap → keyboard swaps to a time
+  // picker; each time button is a wa.me link with the ETA message pre-typed,
+  // so the shopkeeper taps once more and just hits Send in WhatsApp.
+  if (!isTerminal && phoneDigits) {
     rows.push([
-      { text: '❌ Cancel order', callback_data: cancelCb }
+      { text: '📲 Send ETA',     callback_data: 'eta:' + orderId + ':' + statusOriginal + ':' + modeTag },
+      { text: '🗨 Quick reply',  callback_data: 'qr:'  + orderId + ':' + statusOriginal + ':' + modeTag }
     ]);
   }
 
@@ -1165,14 +2543,87 @@ function buildOrderKeyboard_(currentStatus, orderId, mode, phoneDigits, customer
     rows.push([{ text: '📊 Open dashboard', url: dashUrl }]);
   }
 
-  // WhatsApp link if phone is known
-  if (phoneDigits) {
+  // WhatsApp customer — direct one-tap deep link to the customer's WhatsApp
+  // chat with a pre-typed greeting. Used for free-form follow-ups outside the
+  // ETA / Quick Reply flows (those write to the Shopkeeper Comment column on
+  // the sheet so the customer sees them in the storefront tracking page).
+  // Suppressed when `omitWhatsApp` is true so the shopkeeper isn't tempted
+  // to message the customer twice (once via comment, once via WhatsApp)
+  // immediately after they've just used Send ETA or Quick reply.
+  if (phoneDigits && !omitWhatsApp) {
     rows.push([
-      { text: '💬 WhatsApp customer', url: 'https://wa.me/91' + phoneDigits + '?text=' + encodeURIComponent('Hi ' + (customerName || 'there') + ', regarding your order ' + orderId) }
+      { text: '💬 WhatsApp customer',
+        url: 'https://wa.me/91' + phoneDigits + '?text=' + encodeURIComponent('Hi ' + (customerName || 'there') + ', regarding your order ' + orderId) }
     ]);
   }
 
   return rows.length ? { inline_keyboard: rows } : undefined;
+}
+
+// Quick-reply gallery — six common micro-messages the shopkeeper can send to
+// the customer with one tap. Each button is now a callback (not a wa.me URL):
+// tapping saves the message into the order's Shopkeeper Comment column on
+// the sheet, and the customer sees it on their tracking page in the
+// "💬 Message from Restaurant" callout. This matches the ETA flow — the
+// shopkeeper drives status from inside Telegram and the customer-facing
+// surface is the storefront tracking page, not WhatsApp.
+//
+// Templates were chosen by frequency in the dashboard's quick-reply tab.
+// Keyed by short codes ('otw', 'oos', etc.) so the callback_data stays
+// short — Telegram caps callback_data at 64 bytes including the prefix.
+//
+// Callback format: "qrsend:<orderId>:<replyKey>:<mode>"
+function buildQuickReplyKeyboard_(orderId, status, mode, phoneDigits, customerName) {
+  var modeTag = String(mode || '').toLowerCase() === 'pickup' ? 'pickup' : 'delivery';
+  function qr(text, key) {
+    return { text: text, callback_data: 'qrsend:' + orderId + ':' + key + ':' + modeTag };
+  }
+  var rows = [
+    [ qr('🛵 On the way',     'otw'),  qr('😕 Out of stock', 'oos') ],
+    [ qr('📍 Need address',   'addr'), qr('📸 Payment proof', 'pay') ],
+    [ qr('⏰ Delayed 10 min', 'late'), qr('🙏 Thank you',    'thx') ],
+    [ { text: '↩️ Back', callback_data: 'bk:' + orderId + ':' + (status || 'New') + ':' + modeTag } ]
+  ];
+  return { inline_keyboard: rows };
+}
+
+// Lookup table for the actual message text saved per replyKey. Defined once
+// so the gallery and the save handler agree on what each button means.
+// The text is what the CUSTOMER will read on their tracking page — friendly,
+// reassuring, no shop-internal jargon. Order ID is interpolated at save time
+// so the customer can match the comment to the right order if multiple are
+// open.
+function _quickReplyText_(key, orderId) {
+  var oid = orderId || '';
+  switch (key) {
+    case 'otw':  return '🛵 Your order ' + oid + ' is on the way. Please be available to receive it.';
+    case 'oos':  return '😕 Sorry — one item from your order ' + oid + ' is out of stock right now. We\'ll adjust the bill / refund the difference.';
+    case 'addr': return '📍 Could you share your full address (with a landmark) for order ' + oid + '?';
+    case 'pay':  return '📸 For order ' + oid + ', please share a screenshot of the payment to confirm.';
+    case 'late': return '⏰ Your order ' + oid + ' is running about 10 minutes late. Sorry for the wait — coming soon!';
+    case 'thx':  return '🙏 Thank you for your order ' + oid + '! Hope you enjoyed it.';
+    default:     return '';
+  }
+}
+
+// ETA picker — replaces the order keyboard when the shopkeeper taps "Send ETA".
+// Each minute button is a callback (NOT a wa.me URL anymore) so we can:
+//   1. Persist the ETA on the Orders sheet → customer's tracking page sees it
+//   2. Edit the message footer to confirm "ETA set: 30 min"
+//   3. Surface a follow-up "📲 Notify on WhatsApp" button so the shopkeeper
+//      can still ping the customer with one more tap if they want
+// "Back" restores the original order keyboard.
+function buildEtaPickerKeyboard_(orderId, status, mode, phoneDigits, customerName) {
+  var modeTag = String(mode || '').toLowerCase() === 'pickup' ? 'pickup' : 'delivery';
+  function etaCb(minutes) {
+    return { text: '⏱ ' + minutes + ' min', callback_data: 'seteta:' + orderId + ':' + minutes + ':' + modeTag };
+  }
+  var rows = [
+    [ etaCb(10), etaCb(20), etaCb(30) ],
+    [ etaCb(45), etaCb(60), { text: '✅ Ready now', callback_data: 'seteta:' + orderId + ':0:' + modeTag } ],
+    [ { text: '↩️ Back', callback_data: 'bk:' + orderId + ':' + (status || 'New') + ':' + modeTag } ]
+  ];
+  return { inline_keyboard: rows };
 }
 
 // Build the shopkeeper dashboard URL for this tenant.
@@ -1181,7 +2632,7 @@ function buildOrderKeyboard_(currentStatus, orderId, mode, phoneDigits, customer
 function getDashboardUrl_() {
   var explicit = getCfgValue('DashboardURL') || getCfgValue('DashboardLink');
   if (explicit && /^https?:\/\//i.test(explicit)) return explicit;
-  var slug = getCfgValue('Slug') || getCfgValue('StoreSlug') || getStoreSlugFallback();
+  var slug = getSlug_();
   if (!slug) return '';
   var base = (getCfgValue('SiteURL') || 'https://storepro.in').replace(/\/+$/, '');
   return base + '/dashboard-v2.html?store=' + encodeURIComponent(slug);
@@ -1231,8 +2682,8 @@ function isDuplicateOrderId_(orderId) {
   return false;
 }
 
-// Look up an order row by orderId to recover phone/name/mode for keyboard rebuilds.
-// Returns null if not found.
+// Look up an order row by orderId to recover phone/name/mode/status for
+// keyboard rebuilds. Returns null if not found.
 function getOrderInfo_(orderId) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
@@ -1240,16 +2691,18 @@ function getOrderInfo_(orderId) {
     var data = sheet.getDataRange().getValues();
     if (data.length < 2) return null;
     var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
-    var idCol    = headers.indexOf('orderid'); if (idCol < 0) idCol = 0;
-    var phoneCol = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
-    var nameCol  = headers.indexOf('customername'); if (nameCol < 0) nameCol = headers.indexOf('name'); if (nameCol < 0) nameCol = 3;
-    var modeCol  = headers.indexOf('mode'); if (modeCol < 0) modeCol = 2;
+    var idCol     = headers.indexOf('orderid'); if (idCol < 0) idCol = 0;
+    var phoneCol  = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
+    var nameCol   = headers.indexOf('customername'); if (nameCol < 0) nameCol = headers.indexOf('name'); if (nameCol < 0) nameCol = 3;
+    var modeCol   = headers.indexOf('mode'); if (modeCol < 0) modeCol = 2;
+    var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
     for (var i = 1; i < data.length; i++) {
       if (String(data[i][idCol]).trim() === String(orderId).trim()) {
         return {
-          phone: String(data[i][phoneCol] || ''),
-          name:  String(data[i][nameCol] || ''),
-          mode:  String(data[i][modeCol] || '').toLowerCase()
+          phone:  String(data[i][phoneCol] || ''),
+          name:   String(data[i][nameCol] || ''),
+          mode:   String(data[i][modeCol] || '').toLowerCase(),
+          status: String(data[i][statusCol] || '').trim()
         };
       }
     }
@@ -1257,73 +2710,177 @@ function getOrderInfo_(orderId) {
   return null;
 }
 
-// ⚠️ ADVANCED / OPTIONAL — only use if you have a Cloudflare Worker proxy set up.
-// For per-tenant standalone setup, use installTelegramPollingTrigger() instead
-// (polling works without any external infrastructure).
+// Customer recognition. Returns { count, lifetime } across all PRIOR
+// non-cancelled orders matching this customer's phone (last 10 digits — keeps
+// us robust against +91 prefix variations and other formatting quirks).
 //
-// Why this is advanced: Apps Script /exec URLs return 302 redirects which
-// Telegram's webhook code refuses to follow. So a direct webhook never works.
-// You'd need a Cloudflare Worker (or similar) to follow the redirect for Telegram.
+// Used by sendTelegramAlert to decorate the new-order message ("🌟 Regular —
+// 5th order"), and by /vip / /find for customer lookup. Cheap on small
+// stores (<10k orders), but for very busy ones we cap the read to the last
+// 2000 rows to keep latency predictable.
+function getCustomerStats_(phoneDigits) {
+  var out = { count: 0, lifetime: 0 };
+  try {
+    if (!phoneDigits) return out;
+    var key = String(phoneDigits).replace(/\D/g, '').slice(-10);
+    if (!key) return out;
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+    if (!sheet || sheet.getLastRow() < 2) return out;
+    var lastRow = sheet.getLastRow();
+    var firstRow = Math.max(2, lastRow - 2000);
+    var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var headers = headerRow.map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+    var phoneCol = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
+    var totalCol = headers.indexOf('total'); if (totalCol < 0) totalCol = 8;
+    var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+    var data = sheet.getRange(firstRow, 1, lastRow - firstRow + 1, sheet.getLastColumn()).getValues();
+    for (var i = 0; i < data.length; i++) {
+      var p = String(data[i][phoneCol] || '').replace(/\D/g, '').slice(-10);
+      if (p !== key) continue;
+      var s = String(data[i][statusCol] || '').toLowerCase();
+      if (s === 'cancelled') continue;
+      out.count += 1;
+      out.lifetime += parseFloat(data[i][totalCol]) || 0;
+    }
+  } catch (e) { Logger.log('getCustomerStats_: ' + e); }
+  return out;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CLOUDFLARE WEBHOOK SETUP — instant Telegram response (≤1s)
+// ═══════════════════════════════════════════════════════════════════
+// Why use this instead of polling:
+//   • Polling: button taps wait up to 60s for the next minute trigger
+//   • Webhook via Cloudflare Worker: button taps process in ~1-2s
+//   • Worker also follows the 302 redirect from Apps Script /exec, which
+//     Telegram itself refuses to follow
 //
-// Most tenants should NOT use this. They should use installTelegramPollingTrigger().
+// Setup for this tenant (one-time, ~30 seconds):
+//   1. Make sure Config has: ScriptURL, Slug, PushSecret, PushRelayURL
+//      (PushSecret is the per-store derived HMAC; PushRelayURL is the worker URL)
+//   2. Set TELEGRAM_BOT_TOKEN in Script Properties (already done if you've used Telegram)
+//   3. Run setTelegramWebhook() from the editor → ▶ Run
+//   4. (optional) Run removeTelegramPollingTrigger() to disable the polling backup
+//      and save Apps Script quota — webhook is the primary path now
+// ═══════════════════════════════════════════════════════════════════
 function setTelegramWebhook() {
   var token = getTelegramToken_();
-  if (!token) { Logger.log('❌ No TelegramBotToken in Config'); return; }
+  if (!token) { Logger.log('❌ No bot token. Set TELEGRAM_BOT_TOKEN in Script Properties first.'); return; }
 
-  // Apps Script /exec URL — where Telegram updates ultimately get forwarded.
-  // Each tenant's Sheet has its own ScriptURL (already used by the storefront).
-  var execUrl = getCfgValue('ScriptURL') || getCfgValue('OrderScript') || getCfgValue('Script') || '';
+  var execUrl = getScriptURL_();
   if (!execUrl || execUrl.indexOf('/exec') < 0) {
-    Logger.log('❌ ScriptURL row in Config tab is missing or not a /exec URL.');
-    Logger.log('   Fix: Deploy → New deployment → Web app → Anyone → copy /exec URL → paste into Config "ScriptURL"');
+    Logger.log('❌ ScriptURL not set (Script Properties or Config).');
+    Logger.log('   Fix: Deploy → New deployment → Web app → Anyone → copy /exec URL');
+    Logger.log('   Then run 🔒 Admin → Set Apps Script URL… (or paste into Config "ScriptURL").');
     return;
   }
 
-  // Cloudflare Worker proxy URL — shared infrastructure, ONE worker serves all tenants.
-  // Per-tenant routing happens via the ?target= query param: each tenant's webhook
-  // points the worker at its own ScriptURL. NO per-tenant config at Cloudflare needed.
-  // Defaults to PushRelayURL since the same worker hosts both push relay + Telegram proxy.
-  var proxyBase = getCfgValue('TelegramProxyURL') || getCfgValue('PushRelayURL') || '';
+  var proxyBase = getCfgValue('TelegramProxyURL') || getPushRelayURL_();
   if (!proxyBase) {
-    Logger.log('❌ No TelegramProxyURL or PushRelayURL in Config.');
-    Logger.log('   Add row "TelegramProxyURL" with the Cloudflare Worker base URL,');
-    Logger.log('   e.g. https://storepro-push.storepro.workers.dev');
+    Logger.log('❌ No PushRelayURL set (Script Properties or Config).');
+    Logger.log('   Run setPushRelayURLPrompt_ from 🔒 Admin menu, or add Config row "PushRelayURL"');
+    Logger.log('   with the Cloudflare Worker base URL — e.g. https://storepro-push.storepro.workers.dev');
     return;
   }
   proxyBase = proxyBase.replace(/\/+$/, '');
 
-  // Compose: <worker>/telegram/<botToken>?target=<urlencoded execUrl>
-  var webhookUrl = proxyBase + '/telegram/' + token + '?target=' + encodeURIComponent(execUrl);
+  var slug = getSlug_();
+  if (!slug) {
+    Logger.log('❌ Slug not set (Script Properties or Config) — needed for worker auth.');
+    Logger.log('   Run setSlugPrompt_ from 🔒 Admin menu.');
+    return;
+  }
 
-  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/setWebhook', {
+  var pushSecret = getPushSecret_();
+  if (!pushSecret) {
+    Logger.log('❌ PushSecret not set (Script Properties or Config) — needed for worker auth.');
+    Logger.log('   Run printPushSecretForSlug("' + slug + '") in the master registry script,');
+    Logger.log('   then paste the result via 🔒 Admin → Set Push secret… (or into Config "PushSecret" row).');
+    return;
+  }
+
+  // Random secret_token to verify Telegram → worker authenticity. Telegram
+  // includes it in every webhook request as X-Telegram-Bot-Api-Secret-Token.
+  // Stored in worker KV under tg-secret:<botToken>.
+  var secretToken = '';
+  try {
+    var bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, slug + ':' + token + ':' + Date.now());
+    secretToken = '';
+    for (var i = 0; i < bytes.length; i++) {
+      var b = bytes[i] & 0xff;
+      secretToken += (b < 16 ? '0' : '') + b.toString(16);
+    }
+    secretToken = secretToken.substring(0, 32); // 32 hex chars = 128 bits
+  } catch (e) { secretToken = ''; }
+
+  // Step 1: register this tenant's bot with the worker (writes to KV).
+  // Auth is via PushSecret which proves we own this slug (HMAC verification).
+  Logger.log('Step 1/2: Registering with worker at ' + proxyBase + '/admin/register-tg ...');
+  var regRes = UrlFetchApp.fetch(proxyBase + '/admin/register-tg', {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify({
+      slug: slug,
+      secret: pushSecret,
+      botToken: token,
+      execUrl: execUrl,
+      secretToken: secretToken,
+      forwardOnly: '' // forward everything; pass 'callback_query' to forward only taps
+    }),
+    muteHttpExceptions: true
+  });
+  Logger.log('  Worker response: HTTP ' + regRes.getResponseCode() + ' → ' + regRes.getContentText().slice(0, 300));
+  if (regRes.getResponseCode() !== 200) {
+    Logger.log('❌ Worker registration failed. Check the response above.');
+    Logger.log('   Common causes:');
+    Logger.log('   • PushSecret mismatch — slug or master PUSH_SECRET on the worker has changed');
+    Logger.log('   • Worker not deployed yet — deploy push/worker.js with `wrangler deploy`');
+    Logger.log('   • PushRelayURL points at the wrong worker domain');
+    return;
+  }
+
+  // Step 2: tell Telegram to send updates to the worker
+  var webhookUrl = proxyBase + '/telegram/' + token;
+  Logger.log('Step 2/2: Telling Telegram to send updates to ' + webhookUrl);
+  var tgRes = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/setWebhook', {
     method: 'post',
     contentType: 'application/json',
     payload: JSON.stringify({
       url: webhookUrl,
+      secret_token: secretToken,
       allowed_updates: ['message', 'callback_query'],
       drop_pending_updates: true
     }),
     muteHttpExceptions: true
   });
-  Logger.log('Webhook URL set to:');
-  Logger.log('  ' + webhookUrl);
-  Logger.log('  (worker proxy forwards to: ' + execUrl + ')');
-  Logger.log('Telegram response: HTTP ' + res.getResponseCode() + ' → ' + res.getContentText());
-  if (res.getResponseCode() === 200) {
-    Logger.log('✅ Webhook registered.');
-    Logger.log('   • Button taps + slash commands now route via worker → Apps Script');
-    Logger.log('   • All tenant-specific config stays in this Sheet — Cloudflare needs no per-shop setup');
-    Logger.log('   • Optional: run removeTelegramPollingTrigger() to disable the polling backup');
-    Logger.log('     (saves quota; keep it on if you want redundancy)');
+  Logger.log('  Telegram response: HTTP ' + tgRes.getResponseCode() + ' → ' + tgRes.getContentText().slice(0, 300));
+  if (tgRes.getResponseCode() !== 200) {
+    Logger.log('❌ Telegram setWebhook failed.');
+    return;
   }
+
+  // Mark mode = webhook so saveOrder skips the inlineBurstPoll long-poll
+  // (it's only needed in polling mode; the worker already forwards taps in
+  // ~1-2s). Reclaims ~50 sec of Apps Script runtime per order.
+  try { PropertiesService.getScriptProperties().setProperty('TELEGRAM_MODE', 'webhook'); } catch (e) {}
+
+  Logger.log('');
+  Logger.log('✅ Webhook installed.');
+  Logger.log('   Button taps + slash commands now route Telegram → worker → Apps Script in ~1-2s.');
+  Logger.log('   Order alerts continue to fire instantly (UrlFetch from saveOrder).');
+  Logger.log('   inlineBurstPoll skipped on every order — saves ~50 sec/order of execution time.');
+  Logger.log('');
+  Logger.log('   To save Apps Script quota further, you can now disable polling:');
+  Logger.log('   → run removeTelegramPollingTrigger() from the editor');
+  Logger.log('   (Polling is the fallback; webhook is faster + cheaper.)');
 }
 
 // Diagnostic — POSTs to the script's own /exec URL and prints what comes back.
 // If you see 302 here too, the deployment access is wrong even though it appears
 // "Anyone" in the dropdown. If you see 200, Telegram should also work.
 function testWebAppPost() {
-  var url = getCfgValue('ScriptURL') || getCfgValue('OrderScript') || getCfgValue('Script');
-  if (!url) { Logger.log('❌ No ScriptURL in Config — paste your /exec URL there first'); return; }
+  var url = getScriptURL_();
+  if (!url) { Logger.log('❌ ScriptURL not set — run 🔒 Admin → Set Apps Script URL or add to Config'); return; }
   Logger.log('Testing POST to: ' + url);
 
   var sample = JSON.stringify({
@@ -1361,6 +2918,10 @@ function deleteTelegramWebhook() {
   var token = getTelegramToken_();
   if (!token) { Logger.log('❌ No TelegramBotToken in Config'); return; }
   var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/deleteWebhook?drop_pending_updates=true', { muteHttpExceptions: true });
+  // Mode is no longer webhook. We don't promote to polling here because the
+  // user might be tearing down entirely (removing telegram). installTelegram-
+  // PollingTrigger will set polling explicitly when they want it back.
+  try { PropertiesService.getScriptProperties().deleteProperty('TELEGRAM_MODE'); } catch (e) {}
   Logger.log('Telegram response: HTTP ' + res.getResponseCode() + ' → ' + res.getContentText());
 }
 
@@ -1402,6 +2963,10 @@ function installTelegramPollingTrigger() {
   // Create new minute-based trigger
   ScriptApp.newTrigger('pollTelegramUpdates').timeBased().everyMinutes(1).create();
 
+  // Mark mode = polling. saveOrder uses this to decide whether inlineBurstPoll
+  // should run (yes for polling, no for webhook).
+  try { PropertiesService.getScriptProperties().setProperty('TELEGRAM_MODE', 'polling'); } catch (e) {}
+
   var activeBudget = parseInt(getCfgValue('TelegramPollSeconds') || getCfgValue('TelegramPoll') || '30', 10);
   var businessHours = getCfgValue('BusinessHours');
   Logger.log('✅ Adaptive Telegram polling installed.');
@@ -1440,6 +3005,15 @@ function removeTelegramPollingTrigger() {
   triggers.forEach(function(t) {
     if (t.getHandlerFunction() === 'pollTelegramUpdates') { ScriptApp.deleteTrigger(t); removed++; }
   });
+  // If the only reason TELEGRAM_MODE was 'polling' was this trigger, we no
+  // longer have polling. Don't blindly clear it though — webhook mode might
+  // already be active.
+  try {
+    var props = PropertiesService.getScriptProperties();
+    if ((props.getProperty('TELEGRAM_MODE') || '') === 'polling') {
+      props.deleteProperty('TELEGRAM_MODE');
+    }
+  } catch (e) {}
   Logger.log('Removed ' + removed + ' polling trigger(s).');
 }
 
@@ -1690,16 +3264,434 @@ function inlineBurstPoll_(durationSec) {
   Logger.log('[inline burst] ' + pollsThisRun + ' polls, ' + updatesProcessed + ' updates in ' + Math.round((Date.now() - (deadlineMs - durationSec * 1000)) / 1000) + 's');
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// PROACTIVE BRIEFINGS — bot pings the shopkeeper without being asked.
+// ═══════════════════════════════════════════════════════════════════
+// Three jobs, all installed via installProactiveBriefings():
+//
+//   1. morningBriefing_   — daily at 9am IST. Recaps yesterday + flags
+//                            anything that needs attention today (out-of-stock
+//                            products, store still showing closed, etc).
+//   2. eveningSummary_    — daily at 10pm IST. Today's totals vs same
+//                            weekday average over the last 4 weeks.
+//   3. pendingOrderNag_   — every 15 min. Pings the bot if any order has
+//                            been sitting in 'New' for >15 min (forgotten).
+//
+// Cancellation-spike alerts fire reactively from updateOrderStatus, not on a
+// timer — see maybeAlertCancellationSpike_().
+//
+// QUOTA: free Gmail = 90 min/day Apps Script execution. Briefings add ~3-5
+// min/day on top of polling's ~50 min, comfortably inside the budget.
+//
+// TIMEZONE: triggers fire in the SCRIPT's timezone (Project Settings → General
+// → Timezone). Make sure it's Asia/Kolkata before installing.
+// ═══════════════════════════════════════════════════════════════════
+
+// One-tap install — wires up all three triggers. Idempotent: running a
+// second time replaces the existing triggers, never duplicates them.
+function installProactiveBriefings() {
+  var triggers = ScriptApp.getProjectTriggers();
+  triggers.forEach(function(t) {
+    var fn = t.getHandlerFunction();
+    if (fn === 'morningBriefing_' || fn === 'eveningSummary_' || fn === 'pendingOrderNag_') {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+  ScriptApp.newTrigger('morningBriefing_').timeBased().atHour(9).everyDays(1).create();
+  ScriptApp.newTrigger('eveningSummary_').timeBased().atHour(22).everyDays(1).create();
+  ScriptApp.newTrigger('pendingOrderNag_').timeBased().everyMinutes(15).create();
+
+  var tz = Session.getScriptTimeZone();
+  Logger.log('✅ Proactive briefings installed.');
+  Logger.log('');
+  Logger.log('   Morning briefing : daily 9:00 (' + tz + ')');
+  Logger.log('   Evening summary  : daily 22:00 (' + tz + ')');
+  Logger.log('   Pending-order nag: every 15 min (only fires when stale orders exist)');
+  Logger.log('');
+  if (tz !== 'Asia/Kolkata' && tz !== 'Asia/Calcutta') {
+    Logger.log('⚠️  Script timezone is ' + tz + ', not Asia/Kolkata.');
+    Logger.log('    Briefings will fire in ' + tz + ' time, not IST.');
+    Logger.log('    Fix in Project Settings → General → Time zone if you want IST.');
+  }
+}
+
+function uninstallProactiveBriefings() {
+  var removed = 0;
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    var fn = t.getHandlerFunction();
+    if (fn === 'morningBriefing_' || fn === 'eveningSummary_' || fn === 'pendingOrderNag_') {
+      ScriptApp.deleteTrigger(t);
+      removed++;
+    }
+  });
+  Logger.log('Removed ' + removed + ' proactive trigger(s).');
+}
+
+// MORNING BRIEFING — fires once at 9am script-timezone.
+// Sends to all configured Telegram chat IDs. Skips silently if Telegram isn't
+// wired up (no token / no chat IDs).
+function morningBriefing_() {
+  var token = getTelegramToken_();
+  var chatIds = getTelegramChatIds_();
+  if (!token || !chatIds) return;
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) {
+    broadcastToOwners_(token, chatIds, '☀️ <b>Good morning — ' + getShopName() + '</b>\n\nNo orders yet — share your store link and watch the alerts roll in.');
+    return;
+  }
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  var dateCol = headers.indexOf('date&time'); if (dateCol < 0) dateCol = 1;
+  var totalCol = headers.indexOf('total'); if (totalCol < 0) totalCol = 8;
+  var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+  var itemsCol = headers.indexOf('items'); if (itemsCol < 0) itemsCol = 7;
+  var phoneCol = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
+
+  // Yesterday + day-before-yesterday windows in IST. Date strings make for
+  // simpler matches than millisecond windows, so we format both as
+  // dd/mm/yyyy and compare.
+  var yesterdayStr = istDateString_(daysAgo_(1));
+  var dayBeforeStr = istDateString_(daysAgo_(2));
+
+  var y = { count: 0, rev: 0, items: {} };
+  var d = { count: 0, rev: 0 };
+  var phones = {};
+  for (var i = 1; i < data.length; i++) {
+    var dStr = formatCellDateOnly_(data[i][dateCol]);
+    var status = String(data[i][statusCol] || '').toLowerCase();
+    if (status === 'cancelled') continue;
+    if (dStr === yesterdayStr) {
+      y.count++;
+      y.rev += parseFloat(data[i][totalCol]) || 0;
+      var p = String(data[i][phoneCol] || '').replace(/\D/g, '').slice(-10);
+      if (p) phones[p] = true;
+      // Tally items for "top yesterday"
+      String(data[i][itemsCol] || '').split(/\n|,/).forEach(function(line) {
+        var s = String(line || '').trim().replace(/^\s*\d+\s*x\s*/i, '').replace(/\s*=\s*₹?\s*\d+(\.\d+)?\s*$/, '').trim();
+        if (s) {
+          var name = s.length > 50 ? s.slice(0, 50) : s;
+          y.items[name] = (y.items[name] || 0) + 1;
+        }
+      });
+    } else if (dStr === dayBeforeStr) {
+      d.count++;
+      d.rev += parseFloat(data[i][totalCol]) || 0;
+    }
+  }
+  var topItem = null;
+  Object.keys(y.items).forEach(function(k) {
+    if (!topItem || y.items[k] > topItem.count) topItem = { name: k, count: y.items[k] };
+  });
+
+  var lines = ['☀️ <b>Good morning — ' + getShopName() + '</b>\n'];
+  if (y.count > 0) {
+    lines.push('<b>Yesterday:</b> ' + y.count + ' orders · ₹' + Math.round(y.rev) + ' · ' + Object.keys(phones).length + ' customers');
+    if (d.count > 0) {
+      var revDelta = d.rev > 0 ? Math.round(((y.rev - d.rev) / d.rev) * 100) : 0;
+      var sign = revDelta > 0 ? '▲ +' : (revDelta < 0 ? '▼ ' : '= ');
+      lines.push('<i>vs day before: ' + d.count + ' orders · ₹' + Math.round(d.rev) + ' · ' + sign + Math.abs(revDelta) + '%</i>');
+    }
+    if (topItem) lines.push('🏆 Top item: <b>' + esc_(topItem.name) + '</b> (' + topItem.count + ' sold)');
+  } else {
+    lines.push('No orders yesterday — slow day? Tap /broadcast plans, /best to spot what to push.');
+  }
+
+  // Heads-up section
+  var heads = [];
+  // Out-of-stock count
+  try {
+    var pSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Products')
+              || SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Menu');
+    if (pSheet) {
+      var pHeaders = getProductHeaders(pSheet);
+      var stockCol = pHeaders.indexOf('stock');
+      if (stockCol >= 0) {
+        var pData = pSheet.getRange(2, 1, pSheet.getLastRow() - 1, pSheet.getLastColumn()).getValues();
+        var oos = 0;
+        for (var j = 0; j < pData.length; j++) {
+          if (/out\s*of\s*stock|sold\s*out/i.test(String(pData[j][stockCol] || ''))) oos++;
+        }
+        if (oos > 0) heads.push('🛑 ' + oos + ' product(s) currently OUT of stock — /stock to review');
+      }
+    }
+  } catch (e) {}
+  // Store currently closed?
+  if (String(getCfgValue('StoreOpen') || 'yes').toLowerCase() === 'no') {
+    heads.push('🔴 Storefront is showing CLOSED — /open when ready');
+  }
+  // Pending orders >24 hr old (forgotten yesterday/before)
+  try {
+    var stale = 0;
+    var dayMs = 24 * 60 * 60 * 1000;
+    for (var k = 1; k < data.length; k++) {
+      var s2 = String(data[k][statusCol] || '').toLowerCase();
+      if (s2 !== 'new' && s2 !== 'confirmed') continue;
+      var dt = data[k][dateCol];
+      var dMs = dt instanceof Date ? dt.getTime() : Date.parse(String(dt));
+      if (!isNaN(dMs) && (Date.now() - dMs) > dayMs) stale++;
+    }
+    if (stale > 0) heads.push('⏰ ' + stale + ' order(s) still pending from yesterday or earlier — /orders');
+  } catch (e) {}
+
+  if (heads.length) {
+    lines.push('');
+    lines.push('<b>Heads-up</b>');
+    heads.forEach(function(h) { lines.push('• ' + h); });
+  }
+
+  broadcastToOwners_(token, chatIds, lines.join('\n'));
+}
+
+// EVENING SUMMARY — fires once at 22:00 script-timezone.
+// Compares today to the average of the same weekday across the last 4 weeks
+// (so Tuesdays vs the last 4 Tuesdays). Surfaces "good day / slow day" framing.
+function eveningSummary_() {
+  var token = getTelegramToken_();
+  var chatIds = getTelegramChatIds_();
+  if (!token || !chatIds) return;
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) return;
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  var dateCol = headers.indexOf('date&time'); if (dateCol < 0) dateCol = 1;
+  var totalCol = headers.indexOf('total'); if (totalCol < 0) totalCol = 8;
+  var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+
+  var todayStr = istDateString_(new Date());
+  // Map of dateStr → {count, rev}, then we average the last 4 same-weekdays
+  var byDate = {};
+  for (var i = 1; i < data.length; i++) {
+    var dStr = formatCellDateOnly_(data[i][dateCol]);
+    if (!dStr) continue;
+    var status = String(data[i][statusCol] || '').toLowerCase();
+    var t = parseFloat(data[i][totalCol]) || 0;
+    if (!byDate[dStr]) byDate[dStr] = { count: 0, rev: 0, cancelled: 0 };
+    if (status === 'cancelled') {
+      byDate[dStr].cancelled++;
+    } else {
+      byDate[dStr].count++;
+      byDate[dStr].rev += t;
+    }
+  }
+  var today = byDate[todayStr] || { count: 0, rev: 0, cancelled: 0 };
+
+  // Average of last 4 same weekdays
+  var weekday = (new Date()).getDay();
+  var avgCount = 0, avgRev = 0, samples = 0;
+  for (var w = 1; w <= 4; w++) {
+    var d = daysAgo_(w * 7);
+    if (d.getDay() !== weekday) continue;
+    var key = istDateString_(d);
+    if (byDate[key]) {
+      avgCount += byDate[key].count;
+      avgRev += byDate[key].rev;
+      samples++;
+    }
+  }
+  if (samples > 0) {
+    avgCount = avgCount / samples;
+    avgRev = avgRev / samples;
+  }
+
+  var weekdayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][weekday];
+  var lines = ['🌙 <b>End of day — ' + getShopName() + '</b>\n'];
+  lines.push('<b>Today (' + weekdayName + '):</b> ' + today.count + ' orders · ₹' + Math.round(today.rev));
+  if (today.cancelled > 0) lines.push('   ❌ ' + today.cancelled + ' cancelled');
+  if (samples > 0) {
+    var deltaPct = avgRev > 0 ? Math.round(((today.rev - avgRev) / avgRev) * 100) : 0;
+    var verdict = deltaPct >= 20 ? '🎉 Great day' : (deltaPct >= 0 ? '👍 Solid' : (deltaPct >= -20 ? '📊 Below average' : '😕 Slow'));
+    var sign = deltaPct > 0 ? '+' : '';
+    lines.push('<i>vs avg ' + weekdayName + ' (last ' + samples + ' weeks): ₹' + Math.round(avgRev) + ' · ' + sign + deltaPct + '% — ' + verdict + '</i>');
+  } else {
+    lines.push('<i>Not enough history yet to compare to past ' + weekdayName + 's.</i>');
+  }
+  lines.push('');
+  lines.push('Sleep well 🛌  /open at sunrise, /close to pause anytime.');
+  broadcastToOwners_(token, chatIds, lines.join('\n'));
+}
+
+// PENDING-ORDER NAG — every 15 min. Pings the bot for any order in 'New'
+// status that has been sitting >15 min and <4 hours.
+//
+// Dedup: each order is nagged at most once. We keep a set of nagged ids in
+// Script Property NAGGED_ORDER_IDS, pruned to last 24h. If the shopkeeper
+// confirms or cancels via the buttons, the order leaves 'New' status and is
+// no longer eligible — natural exit.
+function pendingOrderNag_() {
+  var token = getTelegramToken_();
+  var chatIds = getTelegramChatIds_();
+  if (!token || !chatIds) return;
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+  if (!sheet || sheet.getLastRow() < 2) return;
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+  var idCol     = headers.indexOf('orderid'); if (idCol < 0) idCol = 0;
+  var dateCol   = headers.indexOf('date&time'); if (dateCol < 0) dateCol = 1;
+  var modeCol   = headers.indexOf('mode'); if (modeCol < 0) modeCol = 2;
+  var nameCol   = headers.indexOf('customername'); if (nameCol < 0) nameCol = 3;
+  var phoneCol  = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
+  var totalCol  = headers.indexOf('total'); if (totalCol < 0) totalCol = 8;
+  var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+
+  var props = PropertiesService.getScriptProperties();
+  var raw = props.getProperty('NAGGED_ORDER_IDS') || '[]';
+  var nagged;
+  try { nagged = JSON.parse(raw); } catch (e) { nagged = []; }
+  if (!Array.isArray(nagged)) nagged = [];
+  var DAY_MS = 24 * 60 * 60 * 1000;
+  nagged = nagged.filter(function(e) { return e && e.id && e.t && (Date.now() - e.t) < DAY_MS; });
+  var naggedSet = {};
+  nagged.forEach(function(e) { naggedSet[e.id] = true; });
+
+  var FIFTEEN_MIN_MS = 15 * 60 * 1000;
+  var FOUR_HOURS_MS  = 4 * 60 * 60 * 1000;
+  var now = Date.now();
+  var newlyNagged = [];
+
+  for (var i = 1; i < data.length; i++) {
+    var status = String(data[i][statusCol] || '').toLowerCase();
+    if (status !== 'new') continue;
+    var orderId = String(data[i][idCol]).trim();
+    if (!orderId || naggedSet[orderId]) continue;
+    var dt = data[i][dateCol];
+    var dMs = dt instanceof Date ? dt.getTime() : Date.parse(String(dt));
+    if (isNaN(dMs)) continue;
+    var ageMs = now - dMs;
+    if (ageMs < FIFTEEN_MIN_MS || ageMs > FOUR_HOURS_MS) continue;
+
+    var ageMin = Math.round(ageMs / 60000);
+    var customerName = String(data[i][nameCol] || 'Customer');
+    var phoneDigits = String(data[i][phoneCol] || '').replace(/\D/g, '').slice(-10);
+    var modeStr = String(data[i][modeCol] || 'pickup').toLowerCase();
+    var total = Math.round(parseFloat(data[i][totalCol]) || 0);
+
+    var msg = '⏰ <b>Order still pending — ' + ageMin + ' min</b>\n\n' +
+              '<code>' + esc_(orderId) + '</code> · ' + esc_(customerName) +
+              (phoneDigits ? ' · 📞 ' + phoneDigits : '') +
+              ' · ₹' + total + '\n\n' +
+              '<i>Tap Confirm or Cancel — customer is waiting.</i>';
+    var keyboard = buildOrderKeyboard_('New', orderId, modeStr, phoneDigits, customerName);
+    broadcastToOwners_(token, chatIds, msg, keyboard);
+    newlyNagged.push({ id: orderId, t: now });
+    if (newlyNagged.length >= 5) break; // never spam more than 5 nags per fire
+  }
+
+  if (newlyNagged.length) {
+    nagged = nagged.concat(newlyNagged);
+    if (nagged.length > 200) nagged = nagged.slice(-200);
+    try { props.setProperty('NAGGED_ORDER_IDS', JSON.stringify(nagged)); } catch (e) {}
+  }
+}
+
+// CANCELLATION-SPIKE ALERT — called from updateOrderStatus when a cancel
+// lands. If 3+ cancels in the last 30 min, alert ONCE per spike (throttled
+// via a Script Property).
+//
+// Why fire it from a status change, not a cron: the data is fresh, the
+// shopkeeper is already engaged with the bot ("they just hit cancel"), and we
+// avoid 4 cron-jobs/hour for a rare event.
+function maybeAlertCancellationSpike_() {
+  try {
+    var token = getTelegramToken_();
+    var chatIds = getTelegramChatIds_();
+    if (!token || !chatIds) return;
+
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+    if (!sheet || sheet.getLastRow() < 2) return;
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+    var dateCol = headers.indexOf('date&time'); if (dateCol < 0) dateCol = 1;
+    var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+
+    var THIRTY_MIN_MS = 30 * 60 * 1000;
+    var now = Date.now();
+    var recent = 0;
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][statusCol] || '').toLowerCase() !== 'cancelled') continue;
+      var dt = data[i][dateCol];
+      var dMs = dt instanceof Date ? dt.getTime() : Date.parse(String(dt));
+      if (!isNaN(dMs) && (now - dMs) <= THIRTY_MIN_MS) recent++;
+    }
+    if (recent < 3) return;
+
+    var props = PropertiesService.getScriptProperties();
+    var lastAlert = parseInt(props.getProperty('CANCEL_SPIKE_LAST_ALERT') || '0');
+    if (now - lastAlert < THIRTY_MIN_MS) return; // throttle: one alert per 30 min window
+
+    var msg = '⚠️ <b>Cancellation spike — ' + recent + ' cancels in 30 min</b>\n\n' +
+              'Something off? Check stock, payment issues, or your storefront.\n\n' +
+              'Tap /close to pause new orders if needed, /diag to verify systems.';
+    broadcastToOwners_(token, chatIds, msg);
+    try { props.setProperty('CANCEL_SPIKE_LAST_ALERT', String(now)); } catch (e) {}
+  } catch (e) { Logger.log('[cancel-spike] ' + e); }
+}
+
+// ─── SHARED HELPERS for the briefings ───────────────────────────────
+
+// Send the same message to every configured chat id. Used by all proactive
+// jobs since a tenant may have multiple recipients (owner + manager).
+function broadcastToOwners_(token, chatIds, text, replyMarkup) {
+  String(chatIds).split(/[,;\s]+/).filter(Boolean).forEach(function(chatId) {
+    try {
+      var payload = {
+        chat_id: chatId,
+        text: text,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true
+      };
+      if (replyMarkup) payload.reply_markup = replyMarkup;
+      UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+        method: 'post',
+        contentType: 'application/json',
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      });
+    } catch (e) { Logger.log('[broadcast] chat ' + chatId + ': ' + e); }
+  });
+}
+
+// Date math, IST-anchored. Apps Script's Date defaults to script timezone, so
+// we explicitly format in Asia/Kolkata to keep day boundaries consistent
+// with what the shopkeeper sees on their phone.
+function daysAgo_(n) {
+  var d = new Date();
+  d.setDate(d.getDate() - n);
+  return d;
+}
+function istDateString_(d) {
+  return d.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
+}
+// Pull the date portion out of an Orders cell (which can be a Date or a
+// pre-formatted string from saveOrder's "en-IN" timestamp). Returns a
+// dd/mm/yyyy string in IST so equality checks are robust.
+function formatCellDateOnly_(v) {
+  if (v instanceof Date) return istDateString_(v);
+  // saveOrder writes strings like "5/4/2026, 10:42:15 am" — split on comma.
+  var s = String(v || '').trim();
+  var datePart = s.split(',')[0].trim();
+  return datePart;
+}
+
+// Editor-runnable wrappers — Apps Script's "▶ Run" doesn't accept private
+// (underscore-suffixed) functions in the dropdown. These mirrors let the user
+// fire briefings on demand for testing.
+function testMorningBriefing()  { morningBriefing_(); }
+function testEveningSummary()   { eveningSummary_(); }
+function testPendingOrderNag()  { pendingOrderNag_(); }
+
 // ═══════════════════════════════════
 // PUSH DEBUG — run manually from Apps Script editor to diagnose
 // ═══════════════════════════════════
 function testPushNow() {
-  var relay  = getCfgValue('PushRelayURL') || getCfgValue('PushURL');
-  var slug   = getCfgValue('Slug') || getCfgValue('StoreSlug') || getStoreSlugFallback();
-  var secret = getCfgValue('PushSecret');
-  Logger.log('Relay URL:  ' + (relay || '❌ MISSING — add "PushRelayURL" to Config tab'));
-  Logger.log('Slug:       ' + (slug  || '❌ MISSING — add "Slug" to Config tab'));
-  Logger.log('Secret set: ' + (secret ? '✓ yes' : '❌ MISSING — add "PushSecret" to Config tab'));
+  var relay  = getPushRelayURL_();
+  var slug   = getSlug_();
+  var secret = getPushSecret_();
+  Logger.log('Relay URL:  ' + (relay || '❌ MISSING — set via 🔒 Admin → Set Push relay URL'));
+  Logger.log('Slug:       ' + (slug  || '❌ MISSING — set via 🔒 Admin → Set Store slug'));
+  Logger.log('Secret set: ' + (secret ? '✓ yes (' + secret.length + ' chars)' : '❌ MISSING — set via 🔒 Admin → Set Push secret'));
   if (!relay || !slug || !secret) return;
 
   Logger.log('Sending test push for slug: ' + slug);
@@ -1763,7 +3755,12 @@ function submitReview(orderId, stars, text) {
   Logger.log('submitReview: order ' + orderId + ' not found');
 }
 
-function updateOrderStatus(orderId, newStatus, comment) {
+function updateOrderStatus(orderId, newStatus, comment, opts) {
+  // `opts` is optional: { excludeChatId } — when the change was triggered by
+  // a Telegram button tap, the caller passes the tapper's chat id so the
+  // milestone alert skips just that chat (the tapper already sees the
+  // keyboard-edit as instant feedback). All other paths leave it undefined,
+  // which means every configured chat ID gets the alert.
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Orders');
   if (!sheet) return;
@@ -1787,6 +3784,7 @@ function updateOrderStatus(orderId, newStatus, comment) {
         sheet.getRange(i + 1, statusCol + 1).setValue(newStatus);
         var colors = {
           'New': '#e8faed', 'Confirmed': '#eff6ff', 'Packed': '#fff7ed',
+          'Out for Delivery': '#fef9c3',
           'Delivered': '#f3f4f6', 'Picked Up': '#f3f4f6', 'Cancelled': '#fef2f2',
           'Done': '#f3f4f6', 'Completed': '#f3f4f6'
         };
@@ -1829,7 +3827,23 @@ function updateOrderStatus(orderId, newStatus, comment) {
       if (email && newStatus === 'Cancelled') {
         try { sendCancelledEmail(email, orderId, customerName, total, shopName, comment); } catch(e) {}
       }
-      
+      // Spike detector — if 3+ cancels land in 30 min, alert the bot once.
+      if (newStatus === 'Cancelled') {
+        try { maybeAlertCancellationSpike_(); } catch(e) {}
+      }
+
+      // Milestone Telegram alert — fires on Packed / Out for Delivery /
+      // Delivered / Picked Up regardless of trigger. Skips the tapper's chat
+      // when called from handleTelegramCallback (they already see the
+      // keyboard-edit), so the perceived button-tap latency stays snappy.
+      // Multi-chat-ID setups (owner + manager + audit channel) still get the
+      // fresh alert in every OTHER chat. See sendTelegramStatusAlert_.
+      if (newStatus === 'Packed' || newStatus === 'Out for Delivery' ||
+          newStatus === 'Delivered' || newStatus === 'Picked Up' ||
+          newStatus === 'Done' || newStatus === 'Completed') {
+        try { sendTelegramStatusAlert_(orderId, newStatus, comment, opts); } catch (e) {}
+      }
+
       break;
     }
   }
@@ -1868,6 +3882,30 @@ function getProductHeaders(sheet) {
   return sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(function(h) { return String(h).trim().toLowerCase(); });
 }
 
+// Coerce every cell value to String before writing to the sheet. Sheets
+// preserves the JS type of values passed to setValue/setValues, so a numeric
+// price from the dashboard ends up as a Number-typed cell — gviz then
+// returns `c.v` as a number (without `c.f`), and storefront/dashboard code
+// that does `.trim()` / `.replace()` / etc. on the value crashes.
+// Writing as strings keeps the cell typed as text and the UI consistent.
+function toCell_(v) {
+  if (v === undefined || v === null) return '';
+  if (typeof v === 'string') return v;
+  // Don't string-ify objects/arrays — those shouldn't reach a cell anyway,
+  // but if one does we'd rather see "[object Object]" caught in review than
+  // smear a JSON blob across the sheet.
+  if (typeof v === 'number' && !isFinite(v)) return '';
+  return String(v);
+}
+
+// Force a freshly-created/written range to text format ('@') so Sheets does
+// not later auto-coerce string-looking-numeric values back to numbers.
+// Best-effort — wrapped in try/catch since formatting can fail on protected
+// ranges or weird sheet states without affecting the actual write.
+function setRangeText_(range) {
+  try { range.setNumberFormat('@'); } catch (e) {}
+}
+
 function addProduct(p) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Products') || ss.getSheetByName('Menu') || ss.getSheetByName('Sheet1');
@@ -1882,9 +3920,15 @@ function addProduct(p) {
     sheet.setFrozenRows(1);
   }
   var headers = getProductHeaders(sheet);
-  var row = [];
-  headers.forEach(function(h) { row.push(p[h] || p[h.charAt(0).toUpperCase() + h.slice(1)] || ''); });
+  var row = headers.map(function(h) {
+    var raw = p[h];
+    if (raw === undefined || raw === null || raw === '') raw = p[h.charAt(0).toUpperCase() + h.slice(1)];
+    return toCell_(raw);
+  });
   sheet.appendRow(row);
+  // Force the new row's cells to text format so Sheets doesn't silently coerce
+  // back to Number on next edit.
+  setRangeText_(sheet.getRange(sheet.getLastRow(), 1, 1, headers.length));
 }
 
 function updateProduct(p) {
@@ -1895,14 +3939,153 @@ function updateProduct(p) {
   if (rowNum < 2) return;
   var headers = getProductHeaders(sheet);
   headers.forEach(function(h, i) {
-    var val = p[h] || p[h.charAt(0).toUpperCase() + h.slice(1)];
-    if (val !== undefined && val !== null) sheet.getRange(rowNum, i + 1).setValue(val);
+    var raw = p[h];
+    if (raw === undefined || raw === null) raw = p[h.charAt(0).toUpperCase() + h.slice(1)];
+    if (raw !== undefined && raw !== null) {
+      var cell = sheet.getRange(rowNum, i + 1);
+      setRangeText_(cell);
+      cell.setValue(toCell_(raw));
+    }
   });
 }
 
 function deleteProduct(rowNum) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Products') || ss.getSheetByName('Menu') || ss.getSheetByName('Sheet1');
+  if (!sheet || rowNum < 2) return;
+  sheet.deleteRow(rowNum);
+}
+
+// Bulk-write many products in one batched setValues call. Used by the Menu
+// Import feature in the dashboard — one batch of 25-50 rows lands in ~500ms,
+// vs ~25 sequential addProduct calls taking 10+ seconds.
+//
+// `itemsParam` is a JSON-encoded array of objects (or already an array if
+// called from doPost with parsed JSON). Each object's keys are matched
+// case-insensitively against the Products sheet's header row.
+//
+// Auto-creates the Products sheet with the standard 18-column schema if the
+// tenant doesn't have one yet — same shape as addProduct's lazy-create.
+function addProductsBulk(itemsParam) {
+  var items;
+  if (typeof itemsParam === 'string') {
+    try { items = JSON.parse(itemsParam); } catch (e) { return 0; }
+  } else {
+    items = itemsParam;
+  }
+  if (!Array.isArray(items) || !items.length) return 0;
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Products') || ss.getSheetByName('Menu') || ss.getSheetByName('Sheet1');
+  if (!sheet) {
+    sheet = ss.insertSheet('Products');
+    sheet.getRange(1, 1, 1, 18).setValues([[
+      'name', 'hindiname', 'category', 'price', 'mrp', 'unit', 'description',
+      'image', 'veg', 'bestseller', 'combo', 'quickqty', 'rating', 'prepTime',
+      'serves', 'sizes', 'addons', 'stock'
+    ]]);
+    sheet.getRange(1, 1, 1, 18).setFontWeight('bold').setBackground('#0c831f').setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+  }
+  var headers = getProductHeaders(sheet);
+  // Build rows aligned to existing header order. Look up each cell by both
+  // the lowercased header and a Title-cased variant so payloads from any of
+  // our parsers (which preserve mixed casing) work. Every cell is coerced to
+  // String so Sheets stores the cell as text — see toCell_() for why.
+  var rows = items.map(function(item) {
+    return headers.map(function(h) {
+      if (item[h] !== undefined && item[h] !== null && item[h] !== '') return toCell_(item[h]);
+      var Cap = h.charAt(0).toUpperCase() + h.slice(1);
+      if (item[Cap] !== undefined && item[Cap] !== null && item[Cap] !== '') return toCell_(item[Cap]);
+      return '';
+    });
+  });
+  var startRow = sheet.getLastRow() + 1;
+  var writeRange = sheet.getRange(startRow, 1, rows.length, headers.length);
+  setRangeText_(writeRange);
+  writeRange.setValues(rows);
+  return rows.length;
+}
+
+// ═══════════════════════════════════
+// DAILY MENU (canteen-style daily list)
+// ═══════════════════════════════════
+// Backed by an optional `DailyMenu` tab. Schema mirrors what
+// `templates/DailyMenu-template.csv` documents: Name, Section, Veg, Price,
+// PriceNonVeg, Description, Available, TimeWindow. The dashboard manages
+// rows here via add/update/delete actions; the storefront reads via gviz.
+
+function ensureDailyMenuSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('DailyMenu');
+  if (sheet) return sheet;
+  sheet = ss.insertSheet('DailyMenu');
+  sheet.getRange(1, 1, 1, 8).setValues([[
+    'Name', 'Section', 'Veg', 'Price', 'PriceNonVeg', 'Description', 'Available', 'TimeWindow'
+  ]]);
+  sheet.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#0c831f').setFontColor('#ffffff');
+  sheet.setFrozenRows(1);
+  return sheet;
+}
+
+function getDailyMenuHeaders_(sheet) {
+  return sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+    .map(function(h) { return String(h).trim().toLowerCase().replace(/\s+/g, ''); });
+}
+
+function dailyMenuValue_(p, header) {
+  // The dashboard sends both original casing (Name, PriceNonVeg) and
+  // normalized (name, pricenonveg) — accept either, plus a few aliases the
+  // storefront's parser also tolerates.
+  var aliases = {
+    'pricenonveg': ['pricenonveg', 'pricenv', 'nonvegprice'],
+    'timewindow':  ['timewindow', 'time'],
+    'available':   ['available', 'avail']
+  };
+  var keys = aliases[header] || [header];
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    if (p[k] !== undefined && p[k] !== null && p[k] !== '') return p[k];
+    var Cap = k.charAt(0).toUpperCase() + k.slice(1);
+    if (p[Cap] !== undefined && p[Cap] !== null && p[Cap] !== '') return p[Cap];
+  }
+  return '';
+}
+
+function addDailyMenuItem(p) {
+  var sheet = ensureDailyMenuSheet_();
+  var headers = getDailyMenuHeaders_(sheet);
+  var row = headers.map(function(h) { return toCell_(dailyMenuValue_(p, h)); });
+  sheet.appendRow(row);
+  setRangeText_(sheet.getRange(sheet.getLastRow(), 1, 1, headers.length));
+}
+
+function updateDailyMenuItem(p) {
+  var sheet = ensureDailyMenuSheet_();
+  var rowNum = parseInt(p.row);
+  if (rowNum < 2) return;
+  var headers = getDailyMenuHeaders_(sheet);
+  headers.forEach(function(h, i) {
+    var val = dailyMenuValue_(p, h);
+    // Only overwrite when the dashboard actually sent a value; lets a partial
+    // update (e.g. just toggling Available) leave other cells alone.
+    if (val !== undefined && val !== null && val !== '') {
+      var cell = sheet.getRange(rowNum, i + 1);
+      setRangeText_(cell);
+      cell.setValue(toCell_(val));
+    } else if (p['_clear_' + h] === '1') {
+      // Optional: explicit clear marker — sent when the dashboard wants to
+      // null out a previously-set value (e.g. removing a TimeWindow).
+      var clearCell = sheet.getRange(rowNum, i + 1);
+      setRangeText_(clearCell);
+      clearCell.setValue('');
+    }
+  });
+}
+
+function deleteDailyMenuItem(rowNum) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('DailyMenu');
   if (!sheet || rowNum < 2) return;
   sheet.deleteRow(rowNum);
 }

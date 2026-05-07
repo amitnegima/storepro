@@ -8,7 +8,15 @@
 // Each store has its OWN Apps Script for that (store-apps-script.js).
 // ═══════════════════════════════════════════════════════════
 
-var TEMPLATE_SHEET_ID = "PUT_YOUR_TEMPLATE_SHEET_ID_HERE";
+// TEMPLATE_SHEET_ID is read from Script Properties so the file ID isn't
+// committed to source. To set: Apps Script editor → ⚙ Project Settings →
+// Script Properties → Add → key=TEMPLATE_SHEET_ID, value=<the Drive file ID>.
+// If unset, createStore() falls back to scaffolding a tenant Sheet from scratch.
+function getTemplateSheetId_() {
+  try { return PropertiesService.getScriptProperties().getProperty('TEMPLATE_SHEET_ID') || ''; }
+  catch (e) { return ''; }
+}
+
 var SITE_URL = "https://www.storepro.in";
 
 // ═══════════════════════════════════════════════════════════
@@ -541,13 +549,14 @@ function showRegistryDiagnostic_() {
   var props = PropertiesService.getScriptProperties();
   var pushSecret = props.getProperty('PUSH_SECRET') || '';
   var adminPwd = props.getProperty('ADMIN_PASSWORD') || '';
-  var hasTpl = TEMPLATE_SHEET_ID && TEMPLATE_SHEET_ID.indexOf('PUT_') < 0 && TEMPLATE_SHEET_ID.length > 20;
+  var tplId = getTemplateSheetId_();
+  var hasTpl = tplId && tplId.indexOf('PUT_') < 0 && tplId.length > 20;
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Stores');
   var storeCount = sheet ? Math.max(0, sheet.getLastRow() - 1) : 0;
   var msg = '';
   msg += 'Master PUSH_SECRET:    ' + (pushSecret ? '✅ set (' + pushSecret.length + ' chars)' : '❌ MISSING — push will fail') + '\n';
   msg += 'ADMIN_PASSWORD:        ' + (adminPwd    ? '✅ set'                                : '❌ MISSING — admin endpoints disabled') + '\n';
-  msg += 'TEMPLATE_SHEET_ID:     ' + (hasTpl      ? '✅ ' + TEMPLATE_SHEET_ID.slice(0, 12) + '…' : '— not set (will scaffold from scratch)') + '\n';
+  msg += 'TEMPLATE_SHEET_ID:     ' + (hasTpl      ? '✅ ' + tplId.slice(0, 12) + '…'         : '— not set (will scaffold from scratch)') + '\n';
   msg += 'Stores in registry:    ' + storeCount + '\n';
   ui.alert('Registry Diagnostic', msg, ui.ButtonSet.OK);
 }
@@ -581,6 +590,7 @@ function doGet(e) {
   if (action === 'updateRegistry' && p.row && p.column) { updateRegistryCell(parseInt(p.row), p.column, p.value || ''); return ok('Cell updated'); }
   if (action === 'migrateSchema') { return jsonOut_(migrateSchema()); }
   if (action === 'recalcHealth')  { return jsonOut_(recalcHealth()); }
+  if (action === 'cloudinaryUsage') { return jsonOut_(getCloudinaryUsage_()); }
 
   return ok('StorePro Registry API active');
 }
@@ -612,6 +622,7 @@ function doPost(e) {
     if (data.action === 'updateRegistry') { updateRegistryCell(parseInt(data.row), data.column, data.value || ''); return ok('Cell updated'); }
     if (data.action === 'migrateSchema')  { return jsonOut_(migrateSchema()); }
     if (data.action === 'recalcHealth')   { return jsonOut_(recalcHealth()); }
+    if (data.action === 'cloudinaryUsage'){ return jsonOut_(getCloudinaryUsage_()); }
     return ok('Unknown action');
   } catch (err) { return ok('Error: ' + err); }
 }
@@ -619,6 +630,44 @@ function doPost(e) {
 function ok(msg) { return ContentService.createTextOutput(msg); }
 function jsonOut_(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
 function forbidden_()  { return jsonOut_({ error: 'forbidden', hint: 'admin token missing or invalid; set ADMIN_PASSWORD in Script Properties and log in via admin.html' }); }
+
+// ═══ CLOUDINARY USAGE PROXY ═══
+// Cloudinary admin API requires API_KEY + API_SECRET. Browsers must never see the secret,
+// so admin.html calls this server-side proxy. Set these Script Properties on the registry script:
+//   CLOUDINARY_CLOUD   = "storepro"
+//   CLOUDINARY_API_KEY = "<from Cloudinary dashboard>"
+//   CLOUDINARY_API_SECRET = "<from Cloudinary dashboard>"
+function getCloudinaryUsage_() {
+  var props = PropertiesService.getScriptProperties();
+  var cloud = props.getProperty('CLOUDINARY_CLOUD') || 'storepro';
+  var key = props.getProperty('CLOUDINARY_API_KEY');
+  var secret = props.getProperty('CLOUDINARY_API_SECRET');
+  if (!key || !secret) return { error: 'not_configured', hint: 'Set CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in Script Properties' };
+  try {
+    var auth = Utilities.base64Encode(key + ':' + secret);
+    var resp = UrlFetchApp.fetch('https://api.cloudinary.com/v1_1/' + cloud + '/usage', {
+      headers: { Authorization: 'Basic ' + auth },
+      muteHttpExceptions: true
+    });
+    var code = resp.getResponseCode();
+    var body = resp.getContentText();
+    if (code !== 200) return { error: 'api_error', code: code, body: body.substring(0, 200) };
+    var u = JSON.parse(body);
+    return {
+      ok: true,
+      cloud: cloud,
+      plan: u.plan || 'Free',
+      credits: u.credits || {},
+      transformations: u.transformations || {},
+      storage: u.storage || {},
+      bandwidth: u.bandwidth || {},
+      requests: u.requests || 0,
+      resources: u.resources || 0,
+      derivedResources: u.derived_resources || 0,
+      lastUpdated: u.last_updated || new Date().toISOString()
+    };
+  } catch (e) { return { error: 'fetch_failed', message: String(e) }; }
+}
 
 // ═══ ADMIN AUTH ═══
 // ADMIN_PASSWORD lives in Script Properties (Project Settings → Script Properties).
@@ -997,10 +1046,11 @@ function createStore(p) {
   var pin = String(Math.floor(1000 + Math.random() * 9000));
 
   var newSheet;
-  var hasValidTemplate = TEMPLATE_SHEET_ID && TEMPLATE_SHEET_ID.indexOf('PUT_') < 0 && TEMPLATE_SHEET_ID.length > 20;
+  var tplId = getTemplateSheetId_();
+  var hasValidTemplate = tplId && tplId.indexOf('PUT_') < 0 && tplId.length > 20;
   if (hasValidTemplate) {
     try {
-      var template = DriveApp.getFileById(TEMPLATE_SHEET_ID);
+      var template = DriveApp.getFileById(tplId);
       var copy = template.makeCopy(shopName + ' — StorePro Store');
       newSheet = SpreadsheetApp.openById(copy.getId());
       copy.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
