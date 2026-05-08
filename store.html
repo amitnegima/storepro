@@ -488,13 +488,30 @@ function parseKV(r){
   return o;
 }
 
+// Tenant slug source: ?store=<slug> wins (back-compat with every existing
+// share link); falls back to <slug>.storepro.in subdomain.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
+
 // Resolve which sheet to load
 function resolveStore(callback){
   var params=new URLSearchParams(window.location.search);
   // Direct Sheet ID — bypass registry
   if(params.get('shop')){SHEET_ID=params.get('shop');SCRIPT_URL=params.get('script')||'';callback();return}
-  // Slug lookup from master registry
-  var slug=params.get('store');
+  // Slug lookup from master registry — accepts ?store= or <slug>.storepro.in
+  var slug=resolveTenantSlug();
   // No params — redirect to landing page (index.html)
   if(!slug){
     // On deployed site: redirect to homepage
@@ -516,15 +533,18 @@ function resolveStore(callback){
     var cols=[];
     if(headerRow&&headerRow.c){for(var h=0;h<headerRow.c.length;h++){var hc=headerRow.c[h];cols.push(hc&&hc.v!=null?String(hc.v).toLowerCase().trim().replace(/\s+/g,''):'')}}
     var found=false;var seen=[];
+    var matchedRow=null;
     for(var i=1;i<r.table.rows.length;i++){
       if(found)break;
       var row=r.table.rows[i];
       var o={};cols.forEach(function(k,j){var c=row.c&&row.c[j];o[k]=c&&c.v!=null?String(c.v).trim():''});
       var rowSlug=(o.slug||o.store||o.name||'').toLowerCase().trim();
+      var rowSub=(o.subdomain||'').toLowerCase().trim();
       if(rowSlug)seen.push(rowSlug);
-      if(rowSlug===slug.toLowerCase()){
+      if(rowSlug===slug.toLowerCase()||(rowSub&&rowSub===slug.toLowerCase())){
         SHEET_ID=o.sheetid||o.sheet||o.id||'';
         SCRIPT_URL=o.scripturl||o.script||'';
+        matchedRow=o;
         console.log('[StorePro] Slug matched. SHEET_ID='+SHEET_ID+' SCRIPT_URL='+(SCRIPT_URL?'(set)':'(empty)'));
         found=true;
       }
@@ -532,6 +552,46 @@ function resolveStore(callback){
     if(!SHEET_ID){
       console.error('[StorePro] Slug "'+slug+'" not found in registry. Slugs seen: '+seen.join(', '));
       showStoreNotFound(slug);return;
+    }
+
+    // ─── Auto-route to specialized template based on shop type ───
+    // Today every tenant lands on store.html (generic). For shops that have
+    // a dedicated UI (restaurant/fastfood/dhaba/meatshop), redirect to that
+    // template instead so the customer gets a polished category-specific
+    // experience. The map is intentionally permissive (matches "fast food"
+    // / "fastfood" / "kitchen" all to fastfood.html).
+    //
+    // Per-tenant override: registry column "Template" or "UI" — set it to
+    // an explicit filename (e.g. "fastfood.html") to force a specific UI
+    // regardless of type, or to "store.html" to opt out of auto-routing.
+    var override=String((matchedRow.template||matchedRow.ui||'')).trim().toLowerCase();
+    var type=String((matchedRow.type||matchedRow.shoptype||matchedRow.category||'')).toLowerCase().trim();
+    var target='';
+    if(override&&/\.html$/.test(override)){
+      target=override;
+    }else if(/restaurant|cafe|café/.test(type)){
+      target='restaurant.html';
+    }else if(/fast.?food|kitchen|tiffin/.test(type)){
+      target='fastfood.html';
+    }else if(/dhaba/.test(type)){
+      target='dhaba.html';
+    }else if(/meat|fish|chicken|mutton|butcher/.test(type)){
+      target='meatshop.html';
+    }
+    // Anything else (grocery, bakery, pharmacy, hardware, etc.) keeps
+    // store.html — it's already the generic template tuned for those types.
+
+    // Only redirect if the target is a DIFFERENT specialized template AND
+    // we're currently on store.html (avoid redirect loops if user lands
+    // here some other way, e.g., directly visiting /store.html with a slug
+    // that should have stayed put).
+    var here=(location.pathname.split('/').pop()||'store.html').toLowerCase();
+    if(target&&target!=='store.html'&&target!==here){
+      console.log('[StorePro] Type "'+type+'" → routing to '+target);
+      // Preserve query string (?store=, ?test=, etc.) and the current
+      // hostname (subdomain stays in URL) by using a relative replace.
+      location.replace(target+location.search);
+      return;
     }
     callback();
   };
@@ -1417,12 +1477,15 @@ function injectSchemaLD_(){
     else if(/pharmacy/i.test(type))schemaType='Pharmacy';
     else if(/hardware/i.test(type))schemaType='HardwareStore';
     else if(/grocery|kirana|store|meat/i.test(type))schemaType='Store';
-    var slug=(new URLSearchParams(location.search)).get('store')||'';
+    var slug=resolveTenantSlug();
+    // Subdomain-aware canonical URL: when on <slug>.storepro.in we don't
+    // need the ?store= query. On apex/file://, fall back to query param.
+    var onSubdomain=/\.(?:storepro\.in|localhost)$/i.test(location.hostname)&&slug&&!(new URLSearchParams(location.search)).get('store');
     var data={
       '@context':'https://schema.org',
       '@type':schemaType,
       name:name,
-      url:location.origin+location.pathname+(slug?'?store='+slug:''),
+      url:location.origin+location.pathname+(onSubdomain?'':(slug?'?store='+slug:'')),
       description:cfg('tagline','')||cfg('herosubtitle','')||(name+' — order online'),
       telephone:cfg('phone','')||cfg('whatsapp',''),
       priceRange:cfg('pricerange','')||'₹₹',

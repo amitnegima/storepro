@@ -439,16 +439,61 @@ footer{padding:36px 20px 28px;border-top:1px solid var(--line);background:var(--
 var MASTER_SHEET_ID = "1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo";
 var SITE_URL = "https://storepro.in";
 
-// Slug router (legacy): if landed on /?store=<slug>, redirect to right .html
+// Tenant slug source: ?store=<slug> wins (back-compat with every existing
+// share link); falls back to <slug>.storepro.in subdomain (production) OR
+// <slug>.localhost (local dev — modern browsers auto-resolve any
+// *.localhost to 127.0.0.1 per RFC 6761). Returns '' for the apex domain
+// (storepro.in / 127.0.0.1) and reserved subdomains (www, app, etc.).
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
+
+// Reserved-subdomain router: handle platform-internal subdomains BEFORE
+// tenant slug routing. admin.storepro.in (or admin.localhost for local dev)
+// → SaaS-owner admin panel. The admin panel itself has its own password gate
+// (ADMIN_PASSWORD via the master registry's Apps Script), so this is just
+// URL navigation, not security.
+(function(){
+  if(/^admin\.(?:storepro\.in|localhost)$/i.test(location.hostname)){
+    var p=location.pathname;
+    if(p===''||p==='/'||/\/index\.html$/i.test(p)){
+      window.location.replace('/admin.html'+location.search);
+      return;
+    }
+  }
+  // Future reserved subdomains (dashboard.*, status.*, docs.*) can be added
+  // here on the same pattern. Today they fall through to the directory
+  // landing page since they\'re flagged "reserved" in resolveTenantSlug().
+})();
+
+// Slug router: if a tenant slug is present (via ?store=, ?shop=, or
+// <slug>.storepro.in subdomain), redirect to store.html which dispatches
+// to the right template based on the registry's "type" column. Subdomain
+// stays in the hostname automatically because we use a relative redirect.
 (function(){
   var p=new URLSearchParams(window.location.search);
   var store=p.get('store');var shop=p.get('shop');
-  if(store||shop){
+  var subSlug=resolveTenantSlug(); // includes subdomain detection
+  if(store||shop||subSlug){
     if(window.location.protocol!=='file:'){
+      // Relative redirect — preserves the current hostname (subdomain or
+      // apex) and any existing query string.
       window.location.replace('store.html'+window.location.search);return;
     }
+    // file:// fallback for local testing
     if(shop){window.location.replace('store.html?shop='+shop);return}
-    window.location.replace('https://rawatgroceryconfectionery.vercel.app/?store='+store);
+    window.location.replace('https://rawatgroceryconfectionery.vercel.app/?store='+(store||subSlug));
   }
 })();
 
@@ -502,10 +547,22 @@ function loadStores(){
       if(explicitlyHidden){skipped.push({reason:'Active='+o.active+' / Public='+o.public,slug:o.slug});return}
       var createdAt=parseDate(o.createdat);
       var isNew=createdAt&&(Date.now()-createdAt.getTime()<14*24*3600000);
+      // Build the customer-facing URL. Preference order:
+      //   1. Explicit URL column (admin can override per row)
+      //   2. <subdomain>.storepro.in if a Subdomain column is set (cleanest)
+      //   3. ?store=<slug> on the apex (back-compat default)
+      var sub=String(o.subdomain||'').toLowerCase().trim();
+      var defaultUrl;
+      if(sub&&/^[a-z0-9-]+$/.test(sub)){
+        defaultUrl='https://'+sub+'.storepro.in/';
+      }else{
+        defaultUrl=SITE_URL+'/?store='+encodeURIComponent(o.slug);
+      }
       stores.push({
         slug:o.slug||'',shop:o.shopname||o.slug||'Store',city:o.city||'',
         type:(o.shoptype||'').toLowerCase(),
-        url:o.url||(SITE_URL+'/?store='+encodeURIComponent(o.slug)),
+        subdomain:sub,
+        url:o.url||defaultUrl,
         logo:o.logo||'',tagline:o.tagline||'',
         verified:verified,featured:featured,isNew:isNew,acceptingOrders:acceptingOrders,
         rating:parseFloat(o.rating||'0')||0,

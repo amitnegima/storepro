@@ -13,6 +13,27 @@ var SHEET_ID="",SCRIPT_URL="";
 // add/update/deleteProduct) pass the server-side token check.
 var DASH_TOKEN="";
 var STORE_META={}; // from master registry: ShopName, OwnerName, Plan, etc.
+
+// Tenant slug source: ?store=<slug> wins (back-compat with every existing
+// dashboard PIN-entry link); falls back to <slug>.storepro.in subdomain.
+// dashboard-v2.html also defines this in <head> for the early manifest IIFE,
+// but we re-declare here so this file works standalone for any caller.
+if(typeof resolveTenantSlug!=='function'){
+  window.resolveTenantSlug=function(){
+    try{
+      var qs=new URLSearchParams(location.search);
+      var s=qs.get('store');
+      if(s)return String(s).toLowerCase().trim();
+      var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+      if(m){
+        var sub=m[1];
+        var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+        if(!reserved[sub])return sub;
+      }
+      return '';
+    }catch(e){return ''}
+  };
+}
 var configData=[],productData=[],productHeaders=[],allOrders=[];
 var _editProdIdx=-1; // -1 = adding new product
 var activeStatusFilter='all',activeDateFilter='today',activeCat='all';
@@ -48,7 +69,7 @@ function uploadImageToCloud(file,onProgress){
     fd.append('file',file);
     fd.append('upload_preset',CLOUDINARY.preset);
     // Tag every upload with the tenant slug so we can audit/clean later
-    var slug=(new URLSearchParams(location.search).get('store')||'').toLowerCase();
+    var slug=resolveTenantSlug();
     if(slug)fd.append('folder','storepro/'+slug);
     var xhr=new XMLHttpRequest();
     xhr.open('POST',url);
@@ -615,7 +636,7 @@ function dismissInstall(){
 // ════════════════════════════════════════════
 function pushRelayUrl(){return PUSH_RELAY_URL||getCfg('PushRelayURL','')||getCfg('PushURL','')}
 function vapidPubKey(){return VAPID_PUBLIC_KEY||getCfg('VapidPublicKey','')}
-function pushStoreId(){return STORE_META.slug||(new URLSearchParams(location.search)).get('store')||''}
+function pushStoreId(){return STORE_META.slug||resolveTenantSlug()||''}
 function pushAvailable(){
   return !!(pushRelayUrl()&&vapidPubKey()&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window);
 }
@@ -699,7 +720,7 @@ function openNotifSettings(){renderNotifSettings();$('notifSheet').classList.add
 // once we know the real ShopName from Config, we replace it for nicer install UX) ───
 function injectTenantManifest(){
   try{
-    var slug=STORE_META.slug||(new URLSearchParams(location.search)).get('store')||'';
+    var slug=STORE_META.slug||resolveTenantSlug()||'';
     var shop=getCfg('ShopName','')||STORE_META.shopname||'';
     if(!shop)return; // nothing better than what HTML head already set
     var manifest={
@@ -880,11 +901,13 @@ function resolveStore(cb){
     SHEET_ID=p.get('shop');SCRIPT_URL=p.get('script')||'';
     cb();return;
   }
-  var slug=(p.get('store')||'demo').toLowerCase();
+  // resolveTenantSlug() handles ?store= AND <slug>.storepro.in subdomain.
+  // Fall back to 'demo' so the local-dev sandbox keeps working.
+  var slug=resolveTenantSlug()||'demo';
   loadSheet(MASTER_SHEET_ID,'Stores',function(r){
     if(!r){cb();return}
     var parsed=parseSheetRows(r);
-    var found=parsed.rows.find(function(o){return(o.slug||'').toLowerCase()===slug});
+    var found=parsed.rows.find(function(o){return(o.slug||'').toLowerCase()===slug||(o.subdomain||'').toLowerCase()===slug});
     if(found){
       STORE_META=found;
       // Prefer sheetid; fall back to sheetid1 if the master sheet has a stale
@@ -948,7 +971,7 @@ function bootstrap(){
   // green before Config loads from the sheet. paintHeader() will overwrite once
   // the authoritative value comes back.
   try{
-    var slug=(new URLSearchParams(location.search)).get('store');
+    var slug=resolveTenantSlug();
     if(slug){
       var cached=localStorage.getItem('sl_brand_'+slug.toLowerCase());
       if(/^#[0-9a-f]{6}$/i.test(cached||'')){
@@ -995,7 +1018,7 @@ function paintHeader(){
   // Cache shop name + type + brand color + logo for instant personalization next visit
   // (splash screen and PWA manifest both read from these)
   try{
-    var slug=(STORE_META.slug||(new URLSearchParams(location.search)).get('store')||'').toLowerCase();
+    var slug=(STORE_META.slug||resolveTenantSlug()||'').toLowerCase();
     if(slug){
       localStorage.setItem('sl_shopname_'+slug,name);
       var stype=STORE_META.shoptype||getCfg('ShopType','');
@@ -3177,11 +3200,15 @@ function applyCustomTheme(){
    and Telegram alert — that's intentional, it proves the wiring works).
    ════════════════════════════════════════════════════════════════════ */
 function placeTestOrder(){
-  var slug=(new URLSearchParams(location.search)).get('store')||STORE_META.slug||'';
+  var slug=resolveTenantSlug()||STORE_META.slug||'';
   if(!slug){showToast('No store slug — can\'t open storefront');return}
   var ok=confirm('🧪 Open your storefront in test mode?\n\n• A test banner will appear at the top of the page\n• Place a real order with your own name/phone\n• It WILL show up in your Orders tab and ping your Telegram (proves wiring works)\n• Delete the row from the Orders tab afterwards\n\nProceed?');
   if(!ok)return;
-  window.open('/?store='+encodeURIComponent(slug)+'&test=1','_blank');
+  // When the dashboard itself runs on a subdomain, the storefront is on the
+  // same subdomain → relative URL keeps it there. Otherwise pass ?store=.
+  var onSub=/\.(?:storepro\.in|localhost)$/i.test(location.hostname)&&!(new URLSearchParams(location.search)).get('store');
+  var href=onSub?'/?test=1':'/?store='+encodeURIComponent(slug)+'&test=1';
+  window.open(href,'_blank');
 }
 
 /* Support contacts — change once to update everywhere across dashboard.
@@ -3190,7 +3217,7 @@ var SUPPORT_WHATSAPP='919717732597'; // shopkeeper-facing support
 var SUPPORT_EMAIL='amitnegimca@gmail.com';
 
 function showForgotPin(){
-  var slug=(new URLSearchParams(location.search)).get('store')||'';
+  var slug=resolveTenantSlug();
   var msg='Hi! I forgot the dashboard PIN for my store '+(slug?'('+slug+')':'')+'. Please help me reset it.\n\nShop name: \nRegistered phone: ';
   var waUrl='https://wa.me/'+SUPPORT_WHATSAPP+'?text='+encodeURIComponent(msg);
   var mailUrl='mailto:'+SUPPORT_EMAIL+'?subject='+encodeURIComponent('Dashboard PIN reset request'+(slug?' — '+slug:''))+'&body='+encodeURIComponent(msg);

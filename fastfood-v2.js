@@ -12,6 +12,26 @@ var allOrdersList=[],trendingItems=[],itemRatings={};
 var _todayOrderCount=0,_liveOrderCount=0;
 var customerHistoryItems=[]; // item names this device has ordered before, freq-sorted
 
+// Tenant slug source: ?store=<slug> wins; falls back to <slug>.storepro.in
+// subdomain. fastfood-v2.html may already define this in <head>; keep this
+// fallback so the file works when loaded standalone.
+if(typeof resolveTenantSlug!=='function'){
+  window.resolveTenantSlug=function(){
+    try{
+      var qs=new URLSearchParams(location.search);
+      var s=qs.get('store');
+      if(s)return String(s).toLowerCase().trim();
+      var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+      if(m){
+        var sub=m[1];
+        var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+        if(!reserved[sub])return sub;
+      }
+      return '';
+    }catch(e){return ''}
+  };
+}
+
 function $(i){return document.getElementById(i)}
 function esc(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML.replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function jss(s){return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,'\\n').replace(/\r/g,'').replace(/</g,'\\u003c')}
@@ -87,12 +107,12 @@ function sendCmd(params,cb){
 function resolveStore(cb){
   var p=new URLSearchParams(location.search);
   if(p.get('shop')){SHEET_ID=p.get('shop');SCRIPT_URL=p.get('script')||'';cb();return}
-  var slug=(p.get('store')||'').toLowerCase();
+  var slug=resolveTenantSlug();
   if(!slug){showStoreNotFound('No store specified');return}
   loadSheet(MASTER_SHEET_ID,'Stores',function(r){
     if(!r){showStoreNotFound('Could not connect to store registry');return}
     var parsed=parseSheetRows(r);
-    var found=parsed.rows.find(function(o){return(o.slug||'').toLowerCase()===slug});
+    var found=parsed.rows.find(function(o){return(o.slug||'').toLowerCase()===slug||(o.subdomain||'').toLowerCase()===slug});
     if(!found){showStoreNotFound('Store "'+slug+'" not found');return}
     STORE_META=found;
     SHEET_ID=found.sheetid||'';
@@ -237,7 +257,7 @@ function paintHeader(){
   $('tbName').textContent=name;
   // Cache name/type/brand/logo for next-visit PWA manifest personalization
   try{
-    var slug=(STORE_META.slug||(new URLSearchParams(location.search)).get('store')||'').toLowerCase();
+    var slug=(STORE_META.slug||resolveTenantSlug()||'').toLowerCase();
     if(slug){
       localStorage.setItem('ff_shopname_'+slug,name);
       var stype=STORE_META.shoptype||getCfg('ShopType','');

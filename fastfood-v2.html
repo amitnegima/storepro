@@ -12,10 +12,26 @@
 <link rel="apple-touch-icon" href="/icon-192.png">
 <title>Order Online · StorePro</title>
 <script>
+// Tenant slug source: ?store=<slug> wins (back-compat with every existing
+// share link); falls back to <slug>.storepro.in subdomain. Defined globally
+// here so both the early PWA-manifest IIFE AND the main script can use it.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
 (function(){
   try{
-    var params=new URLSearchParams(location.search||'');
-    var slug=(params.get('store')||'').toLowerCase();
+    var slug=resolveTenantSlug();
     if(!slug)return;
 
     var cName=localStorage.getItem('ff_shopname_'+slug)||'';
@@ -618,8 +634,7 @@ textarea.field-i{height:auto;min-height:60px;padding:10px 14px;resize:vertical;l
   // Populate splash with cached shop name/type/brand BEFORE menu paints
   (function(){
     try{
-      var p=new URLSearchParams(location.search);
-      var slug=(p.get('store')||'').toLowerCase();
+      var slug=(typeof resolveTenantSlug==='function'?resolveTenantSlug():'').toLowerCase();
       if(!slug){var s0=document.getElementById('splash');if(s0)s0.classList.add('gone');return}
       var cachedName=localStorage.getItem('ff_shopname_'+slug);
       var cachedType=localStorage.getItem('ff_shoptype_'+slug);

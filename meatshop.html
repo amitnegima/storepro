@@ -664,8 +664,27 @@ function addrWithMap_(addr){
 function LS(name,cb){if(!SID){cb(null);return}if(!window.google)window.google={};if(!window.google.visualization)window.google.visualization={};if(!window.google.visualization.Query)window.google.visualization.Query={};window.google.visualization.Query.setResponse=function(r){cb(r)};var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(name)+'&_t='+Date.now();s.onerror=function(){cb(null)};document.body.appendChild(s)}
 function G(k,d){var n=k.toLowerCase().replace(/\s+/g,'');for(var c in C){if(c.toLowerCase().replace(/\s+/g,'')===n)return C[c]||d}return d||''}
 
+// Tenant slug source: ?store=<slug> wins (back-compat with every existing
+// share link); falls back to <slug>.storepro.in subdomain.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
+
 function init(){
-  var p=new URLSearchParams(location.search),slug=p.get('store')||p.get('shop')||'',sh=p.get('sheet')||'';
+  // Resolution priority: ?sheet=<sheetId> (debug bypass) > ?store=<slug>
+  // > <slug>.storepro.in > ?shop=<slug> (legacy alt).
+  var p=new URLSearchParams(location.search),slug=resolveTenantSlug()||p.get('shop')||'',sh=p.get('sheet')||'';
   if(sh){SID=sh;loadCfg(function(){loadProd()})}
   else if(slug){lookup(slug,function(){loadCfg(function(){loadProd()})})}
   else err('No store specified','Add ?store=name to the URL');
@@ -682,7 +701,7 @@ function lookup(slug,cb){
     for(var i=1;i<r.table.rows.length;i++){
       var row=r.table.rows[i],o={};
       cols.forEach(function(k,j){var cl=row.c&&row.c[j];o[k]=cl?(cl.f!=null?String(cl.f).trim():cl.v!=null?String(cl.v).trim():''):''});
-      if((o.slug||'').toLowerCase()===slug.toLowerCase()){SID=o.sheetid||'';SU=o.scripturl||o.script||''}
+      if((o.slug||'').toLowerCase()===slug.toLowerCase()||(o.subdomain||'').toLowerCase()===slug.toLowerCase()){SID=o.sheetid||'';SU=o.scripturl||o.script||''}
     }
     if(SID)cb();else err('Store not found','"'+slug+'" is not active');
   };
@@ -1980,11 +1999,12 @@ setTimeout(applyLangToDom,1500);
     var name=G('ShopName','');
     if(!name){setTimeout(tryInject,500);return}
     try{
-      var slug=(new URLSearchParams(location.search)).get('store')||'';
+      var slug=resolveTenantSlug();
+      var onSubdomain=/\.(?:storepro\.in|localhost)$/i.test(location.hostname)&&slug&&!(new URLSearchParams(location.search)).get('store');
       var data={
         '@context':'https://schema.org','@type':'Store',
         name:name,
-        url:location.origin+location.pathname+(slug?'?store='+slug:''),
+        url:location.origin+location.pathname+(onSubdomain?'':(slug?'?store='+slug:'')),
         description:G('Tagline','')||(name+' — fresh meat, daily cuts'),
         telephone:G('Phone','')||G('WhatsApp',''),
         priceRange:G('PriceRange','')||'₹₹',

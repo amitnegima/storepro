@@ -500,11 +500,28 @@ function parseRows(r){
   return results;
 }
 
+// Tenant slug source: ?store=<slug> wins (back-compat with every existing
+// share link); falls back to <slug>.storepro.in subdomain.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
+
 // ══ STORE RESOLUTION ══
 function resolveStore(cb){
   var p=new URLSearchParams(window.location.search);
   if(p.get('shop')){SHEET_ID=p.get('shop');SCRIPT_URL=p.get('script')||'';cb();return}
-  var slug=p.get('store');
+  var slug=resolveTenantSlug();
   if(!slug){
     document.body.innerHTML='<div style="padding:40px 20px;text-align:center;font-family:DM Sans,sans-serif"><div style="font-size:48px">🍽️</div><h1 style="margin:12px 0 8px;font-size:22px">Restaurant URL needed</h1><p style="color:#666;font-size:13px">Add ?store=restaurant-slug to the URL</p></div>';
     return;
@@ -521,7 +538,7 @@ function resolveStore(cb){
       if(found)break;
       var row=r.table.rows[i];
       var o={};cols.forEach(function(k,j){var c=row.c&&row.c[j];o[k]=c&&c.v!=null?String(c.v).trim():''});
-      if((o.slug||'').toLowerCase()===slug.toLowerCase()){
+      if((o.slug||'').toLowerCase()===slug.toLowerCase()||(o.subdomain||'').toLowerCase()===slug.toLowerCase()){
         SHEET_ID=o.sheetid||'';
         SCRIPT_URL=o.scripturl||'';
         found=true;
@@ -1496,11 +1513,12 @@ setTimeout(applyLangToDom,1500);
     if(!window.config||!cfg('shopname','')){setTimeout(tryInject,500);return}
     try{
       var name=cfg('shopname','');
-      var slug=(new URLSearchParams(location.search)).get('store')||'';
+      var slug=resolveTenantSlug();
+      var onSubdomain=/\.(?:storepro\.in|localhost)$/i.test(location.hostname)&&slug&&!(new URLSearchParams(location.search)).get('store');
       var data={
         '@context':'https://schema.org','@type':'Restaurant',
         name:name,
-        url:location.origin+location.pathname+(slug?'?store='+slug:''),
+        url:location.origin+location.pathname+(onSubdomain?'':(slug?'?store='+slug:'')),
         description:cfg('tagline','')||cfg('herosubtitle','')||(name+' — order online'),
         telephone:cfg('phone','')||cfg('whatsapp',''),
         priceRange:cfg('pricerange','')||'₹₹',

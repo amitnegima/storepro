@@ -1014,9 +1014,12 @@ function toggleStoreStatus(){
 
 // Share store link
 function shareStoreLink(){
-  var slug=new URLSearchParams(window.location.search).get('store')||'';
+  var slug=resolveTenantSlug();
+  // When the dashboard runs on <slug>.storepro.in, the storefront is on the
+  // same subdomain — sharing the bare URL is enough; ?store= is redundant.
+  var onSub=/\.(?:storepro\.in|localhost)$/i.test(location.hostname)&&slug&&!(new URLSearchParams(location.search)).get('store');
   var base=window.location.origin+window.location.pathname.replace(/dashboard2?\.html.*/,'');
-  var url=base+(slug?'?store='+slug:'?shop='+SHEET_ID);
+  var url=base+(onSub?'':(slug?'?store='+slug:'?shop='+SHEET_ID));
   // Try to find which template the store uses (default to store.html)
   var shopType=(getConfigVal('shoptype','')||'').toLowerCase();
   var template='store.html';
@@ -1934,10 +1937,27 @@ function initDashboard(){
   });
 }
 
+// Tenant slug source: ?store=<slug> wins (back-compat); falls back to
+// <slug>.storepro.in subdomain.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
+
 function resolveStore(cb){
   var p=new URLSearchParams(window.location.search);
   if(p.get('shop')){SHEET_ID=p.get('shop');SCRIPT_URL=p.get('script')||'';cb();return}
-  var slug=p.get('store');
+  var slug=resolveTenantSlug();
   if(!slug){
     document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:Inter,sans-serif;background:linear-gradient(135deg,#f0fdf4,#f5f5f5)"><div style="text-align:center;max-width:420px"><div style="font-size:64px;margin-bottom:8px">🏬</div><h1 style="font-size:24px;font-weight:800;color:#0c831f;margin-bottom:8px">Dashboard 2.0</h1><p style="font-size:14px;color:#666;line-height:1.6;margin-bottom:24px">Use your dashboard link:<br><br><code style="background:#dcfce7;padding:4px 10px;border-radius:6px;font-size:12px;color:#0c831f">dashboard2.html?store=your-store-name</code></p></div></div>';
     return;
@@ -1949,7 +1969,8 @@ function resolveStore(cb){
     parsed.rows.forEach(function(o){
       if(found)return;
       var rs=(o.slug||'').toLowerCase().trim();
-      if(rs===slug.toLowerCase()){
+      var rsSub=(o.subdomain||'').toLowerCase().trim();
+      if(rs===slug.toLowerCase()||(rsSub&&rsSub===slug.toLowerCase())){
         SHEET_ID=o.sheetid||'';SCRIPT_URL=o.scripturl||o.script||'';
         var sn=o.shopname||o.slug||slug;$('hdrName').textContent=sn;$('heroName').textContent=sn;
         found=true;

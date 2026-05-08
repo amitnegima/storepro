@@ -13,11 +13,26 @@
 <title>Dashboard 2.0 · StorePro</title>
 <!-- PWA: per-tenant manifest must be present on first paint for Chrome to fire beforeinstallprompt -->
 <script>
+// Tenant slug source: ?store=<slug> wins (back-compat); falls back to
+// <slug>.storepro.in subdomain. Defined globally here so both the early
+// PWA-manifest IIFE below AND the main dashboard script downstream can use it.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
 (function(){
   try{
-    var qs=location.search||'';
-    var params=new URLSearchParams(qs);
-    var slug=(params.get('store')||'').toLowerCase();
+    var slug=resolveTenantSlug();
     if(!slug)return; // no store = no per-tenant manifest
 
     // Pull cached values from previous successful load (instant personalization)
@@ -700,8 +715,8 @@ input,textarea,select{font-family:inherit}
   // Inline & inline-of-the-inline: populate splash with the right shop name BEFORE anything else paints.
   (function(){
     try{
-      var p=new URLSearchParams(location.search);
-      var slug=(p.get('store')||'').toLowerCase();
+      // resolveTenantSlug() defined in head — handles ?store= and subdomain.
+      var slug=(typeof resolveTenantSlug==='function'?resolveTenantSlug():'').toLowerCase();
       if(!slug)return;
       var cachedName=localStorage.getItem('sl_shopname_'+slug);
       var cachedType=localStorage.getItem('sl_shoptype_'+slug);

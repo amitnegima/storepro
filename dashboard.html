@@ -1472,7 +1472,7 @@ try{pinAttempts=parseInt(sessionStorage.getItem('pin_attempts')||'0');pinLockUnt
 function pinNext(el,n){if(el.value.length===1&&n>0)$('p'+n).focus();if(n===0&&el.value.length===1)checkPin()}
 function pinBack(e,i){if(e.key==='Backspace'&&i>0&&e.target.value==='')$('p'+i).focus()}
 var SUPPORT_WHATSAPP='919717732597',SUPPORT_EMAIL='amitnegimca@gmail.com';
-(function(){var lnk=$('forgotPinLink');if(!lnk)return;lnk.addEventListener('click',function(e){e.preventDefault();var slug=(new URLSearchParams(location.search)).get('store')||'';var msg='Hi! I forgot the dashboard PIN for my store '+(slug?'('+slug+')':'')+'. Please help me reset it.\n\nShop name: \nRegistered phone: ';$('forgotPinWa').href='https://wa.me/'+SUPPORT_WHATSAPP+'?text='+encodeURIComponent(msg);$('forgotPinMail').href='mailto:'+SUPPORT_EMAIL+'?subject='+encodeURIComponent('Dashboard PIN reset request'+(slug?' — '+slug:''))+'&body='+encodeURIComponent(msg);$('forgotPinPop').style.display='flex'})})();
+(function(){var lnk=$('forgotPinLink');if(!lnk)return;lnk.addEventListener('click',function(e){e.preventDefault();var slug=resolveTenantSlug();var msg='Hi! I forgot the dashboard PIN for my store '+(slug?'('+slug+')':'')+'. Please help me reset it.\n\nShop name: \nRegistered phone: ';$('forgotPinWa').href='https://wa.me/'+SUPPORT_WHATSAPP+'?text='+encodeURIComponent(msg);$('forgotPinMail').href='mailto:'+SUPPORT_EMAIL+'?subject='+encodeURIComponent('Dashboard PIN reset request'+(slug?' — '+slug:''))+'&body='+encodeURIComponent(msg);$('forgotPinPop').style.display='flex'})})();
 
 function checkPin(){
   unlockAudio(); // Unlock audio on user gesture
@@ -1658,11 +1658,28 @@ function initDashboard(){loadSheet('Config',function(r){
     setTimeout(function(){$('p1').focus()},300);
   }
 })}
+// Tenant slug source: ?store=<slug> wins (back-compat); falls back to
+// <slug>.storepro.in subdomain.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
+
 function resolveStore(cb){
   var p=new URLSearchParams(window.location.search);
   // Direct sheet ID
   if(p.get('shop')){SHEET_ID=p.get('shop');SCRIPT_URL=p.get('script')||DEFAULT_SCRIPT;cb();return}
-  var slug=p.get('store');
+  var slug=resolveTenantSlug();
   // No params — show help or redirect
   if(!slug){
     if(window.location.protocol!=='file:'){window.location.replace(window.location.href.split('dashboard.html')[0]);return}
@@ -1678,7 +1695,8 @@ function resolveStore(cb){
     parsed.rows.forEach(function(o){
       if(found)return;
       var rowSlug=(o.slug||'').toLowerCase().trim();
-      if(rowSlug===slug.toLowerCase()){
+      var rowSub=(o.subdomain||'').toLowerCase().trim();
+      if(rowSlug===slug.toLowerCase()||(rowSub&&rowSub===slug.toLowerCase())){
         SHEET_ID=o.sheetid||'';
         SCRIPT_URL=o.scripturl||o.script||DEFAULT_SCRIPT;
         var shopName=o.shopname||o.slug||slug;
