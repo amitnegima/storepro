@@ -28,7 +28,7 @@
   --r:10px;--r2:14px;--r3:20px;--r4:28px;--pill:100px;
   --f:'DM Sans',system-ui,sans-serif;
   --ease:cubic-bezier(.4,0,.2,1);
-  --mw:780px;--px:max(16px,env(safe-area-inset-left,16px))
+  --mw:520px;--px:max(16px,env(safe-area-inset-left,16px))
 }
 /* Modern micro-animations + loader — same family as the rest of the storefronts */
 @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
@@ -42,6 +42,10 @@
 .order-spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-right-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-3px;flex-shrink:0}
 @media (prefers-reduced-motion:reduce){.bump,.dish-add-btn.tick,.order-sending::after{animation:none!important}*{transition-duration:.01ms!important}}
 body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100dvh;line-height:1.5}
+@media(min-width:541px){
+  body{background:#e9eaee}
+  body::before{content:'';position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:var(--mw);background:var(--bg);box-shadow:0 0 60px rgba(15,23,42,.12);z-index:-1;pointer-events:none}
+}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
@@ -60,7 +64,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .top-cart-badge.pop{animation:pop .3s var(--ease)}
 
 /* Hero */
-.hero{position:relative;height:160px;overflow:hidden;background:linear-gradient(135deg,var(--brand-dk),var(--brand))}
+.hero{position:relative;height:160px;overflow:hidden;background:linear-gradient(135deg,var(--brand-dk),var(--brand));max-width:var(--mw);margin:0 auto}
 .hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;mix-blend-mode:overlay;transition:.3s}
 .hero.has-bg .hero-bg-img{opacity:1;mix-blend-mode:normal}
 .hero.has-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.45) 60%,rgba(0,0,0,.7) 100%);pointer-events:none}
@@ -204,6 +208,27 @@ body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smo
 .co-row .co-input{margin:0}
 .co-textarea{width:100%;min-height:70px;padding:10px 14px;border:1.5px solid var(--line);border-radius:var(--r);font:500 13px var(--f);outline:none;resize:vertical;font-family:var(--f);background:var(--white)}.co-textarea:focus{border-color:var(--brand)}
 .co-loc-btn{width:100%;height:42px;border:1.5px dashed var(--brand);border-radius:var(--r);background:var(--brand-bg);color:var(--brand);font:700 12px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;transition:.15s}.co-loc-btn:hover{background:var(--brand);color:#fff;border-style:solid}.co-loc-btn:disabled{opacity:.6;cursor:wait}
+.co-loc-btn.urgent{border-style:solid;background:#fef3c7;color:#92400e;border-color:#f59e0b;animation:pulseDelivBtn 2.4s ease-in-out infinite}
+@keyframes pulseDelivBtn{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}50%{box-shadow:0 0 0 6px rgba(245,158,11,.18)}}
+.deliv-card{display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:12px;margin-bottom:10px;border:1.5px solid;background:#fff}
+.deliv-card.ok{background:linear-gradient(135deg,#dcfce7,#f0fdf4);border-color:#86efac}
+.deliv-card.err{background:linear-gradient(135deg,#fee2e2,#fef2f2);border-color:#fca5a5}
+.deliv-card.warn{background:linear-gradient(135deg,#fef3c7,#fffbeb);border-color:#fcd34d}
+.deliv-card.info{background:linear-gradient(135deg,#dbeafe,#eff6ff);border-color:#93c5fd}
+.deliv-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 16px var(--f);color:#fff;flex-shrink:0}
+.deliv-card.ok .deliv-icon{background:#16a34a}
+.deliv-card.err .deliv-icon{background:#dc2626}
+.deliv-card.warn .deliv-icon{background:#d97706}
+.deliv-card.info .deliv-icon{background:#2563eb}
+.deliv-body{flex:1;min-width:0}
+.deliv-title{font:800 14px var(--f);color:var(--ink1);line-height:1.25}
+.deliv-card.ok .deliv-title{color:#15803d}
+.deliv-card.err .deliv-title{color:#991b1b}
+.deliv-card.warn .deliv-title{color:#92400e}
+.deliv-card.info .deliv-title{color:#1e40af}
+.deliv-sub{font:500 12px var(--f);color:var(--ink2);margin-top:3px;line-height:1.45}
+.deliv-sub b{font-weight:800}
+.co-place-btn.blocked{opacity:.5;cursor:not-allowed;filter:grayscale(.4)}
 .co-loc-status{font-size:11px;color:var(--ink3);margin-bottom:8px;padding:6px 10px;border-radius:6px}
 .co-loc-status.ok{background:var(--green-bg);color:var(--green)}
 .co-loc-status.err{background:var(--red-bg);color:var(--red)}
@@ -526,16 +551,79 @@ var dailyMenuItems=[];
 // Cart and customer loaded after SHEET_ID is resolved in init()
 var savedCustomer={};
 
-// ── GPS capture for accurate delivery ──
-// When the customer taps "Use my current location", we keep the raw lat/lng
-// here so addrWithMap_() can append a tappable Google Maps link to the
-// address that goes to the dashboard + WhatsApp. That gives the rider an
-// exact pin to navigate to instead of a fuzzy text address.
+// ── GPS capture + delivery-radius enforcement ──
+// addrWithMap_() — appends a Maps pin to the address sent to dashboard+WhatsApp.
+// Delivery gate: when Config has RequireGPS=yes the customer MUST share live
+// location before "Place Order" enables. With DeliveryRadiusKm + ShopLat/Lng
+// set, distance is computed live and out-of-range customers are blocked.
 var _gpsLat='',_gpsLng='';
+var _requireGps=false, _radiusKm=0, _shopLat=0, _shopLng=0;
+var _distKm=null, _inRange=null;
+
 function addrWithMap_(addr){
   if(!_gpsLat||!_gpsLng)return addr||'';
   if((addr||'').indexOf('maps.google.com')>=0||(addr||'').indexOf('🗺️')>=0)return addr;
   return (addr||'')+'\n🗺️ Map: https://maps.google.com/?q='+_gpsLat+','+_gpsLng;
+}
+
+function loadDelivConfig(){
+  _requireGps=/^(yes|true|1|on|enabled|required|compulsory)$/i.test(
+    cfg('requiregps','')||cfg('requirelocation','')||cfg('locationrequired','')||cfg('compulsorylocation','')||'');
+  _radiusKm=parseFloat(
+    cfg('deliveryradiuskm','')||cfg('deliveryradius','')||cfg('maxdeliveryradius','')||cfg('radiuskm','')||'0')||0;
+  _shopLat=parseFloat(
+    cfg('shoplat','')||cfg('latitude','')||cfg('restaurantlat','')||cfg('lat','')||'0')||0;
+  _shopLng=parseFloat(
+    cfg('shoplng','')||cfg('shoplon','')||cfg('longitude','')||cfg('restaurantlng','')||cfg('lng','')||'0')||0;
+}
+function distanceKm(lat1,lng1,lat2,lng2){
+  var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function recalcDistance(){
+  if(!_gpsLat||!_gpsLng||!_shopLat||!_shopLng){_distKm=null;_inRange=null;return}
+  _distKm=distanceKm(parseFloat(_gpsLat),parseFloat(_gpsLng),_shopLat,_shopLng);
+  _inRange=_radiusKm>0?_distKm<=_radiusKm:true;
+}
+function fmtDist(km){
+  if(km==null)return '';
+  if(km<1)return Math.round(km*1000)+' m';
+  return km.toFixed(km<10?1:0)+' km';
+}
+function renderDelivGate(){
+  var el=$('delivGate');if(!el)return;
+  if(!_requireGps && !_radiusKm){el.innerHTML='';return}
+  recalcDistance();
+  if(!_gpsLat||!_gpsLng){
+    if(_requireGps){
+      el.innerHTML='<div class="deliv-card warn"><div class="deliv-icon">📍</div><div class="deliv-body"><div class="deliv-title">Live location required</div><div class="deliv-sub">This shop only delivers within '+(_radiusKm||'a fixed')+' km — share your location below to confirm.</div></div></div>';
+    }else if(_radiusKm){
+      el.innerHTML='<div class="deliv-card info"><div class="deliv-icon">📍</div><div class="deliv-body"><div class="deliv-title">Check delivery range</div><div class="deliv-sub">Share your location to see if we deliver to you ('+_radiusKm+' km radius).</div></div></div>';
+    }
+    return;
+  }
+  if(!_shopLat||!_shopLng){
+    el.innerHTML='<div class="deliv-card ok"><div class="deliv-icon">✓</div><div class="deliv-body"><div class="deliv-title">Location captured</div><div class="deliv-sub">A live map pin will be sent to the rider for accurate delivery.</div></div></div>';
+    return;
+  }
+  var d=fmtDist(_distKm);
+  if(_inRange){
+    el.innerHTML='<div class="deliv-card ok"><div class="deliv-icon">✓</div><div class="deliv-body"><div class="deliv-title">Within delivery range</div><div class="deliv-sub">You are <b>'+d+'</b> from our shop'+(_radiusKm?' · we deliver up to '+_radiusKm+' km':'')+'.</div></div></div>';
+  }else{
+    el.innerHTML='<div class="deliv-card err"><div class="deliv-icon">✗</div><div class="deliv-body"><div class="deliv-title">Outside delivery range</div><div class="deliv-sub">You are <b>'+d+'</b> away. We deliver only within <b>'+_radiusKm+' km</b>. Try pickup or contact the shop.</div></div></div>';
+  }
+}
+function updatePlaceOrderState(){
+  var btn=$('placeBtn');if(!btn)return;
+  var blocked=false, why='';
+  if(activeMode==='delivery'){
+    if(_requireGps && (!_gpsLat||!_gpsLng)){blocked=true;why='Share your live location to place order'}
+    else if(_inRange===false){blocked=true;why='You are outside our '+_radiusKm+' km delivery range'}
+  }
+  btn.disabled=blocked;
+  btn.title=blocked?why:'';
+  btn.classList.toggle('blocked',blocked);
 }
 
 function $(id){return document.getElementById(id)}
@@ -543,6 +631,8 @@ function esc(s){var d=document.createElement('div');d.textContent=String(s==null
 function showToast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
 function cfg(k,d){return(config[(k||'').toLowerCase().replace(/\s+/g,'')]||d||'').trim?(config[(k||'').toLowerCase().replace(/\s+/g,'')]||d||'').trim():(config[(k||'').toLowerCase().replace(/\s+/g,'')]||d||'')}
 function fnum(n){return parseFloat(n||0)}
+function shadeHex(hex,pct){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=Math.abs(pct)/100;if(pct>0){r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f)}else{r=Math.round(r*(1-f));g=Math.round(g*(1-f));b=Math.round(b*(1-f))}return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}catch(e){return hex}}
+function hexAlpha(hex,a){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return 'rgba('+r+','+g+','+b+','+a+')'}catch(e){return 'rgba(12,131,31,'+a+')'}}
 
 // ══ DATA LOADING ══
 function loadSheet(name,cb){
@@ -891,6 +981,9 @@ function applyConfig(){
   var configScript=cfg('orderscript','');
   if(configScript&&!SCRIPT_URL)SCRIPT_URL=configScript;
 
+  // Load delivery-gate config (RequireGPS, ShopLat/Lng, DeliveryRadiusKm)
+  loadDelivConfig();
+
   var name=cfg('shopname','Dhaba');
   document.title=name+' — Order Online';
   $('topName').textContent=name;
@@ -964,15 +1057,16 @@ function applyConfig(){
     }
   }
   
-  // Brand color (overrides veg theme if set explicitly)
+  // Brand color — uses same derivation as home.html for consistency across home + storefront
   var brandColor=cfg('brandcolor','');
-  if(brandColor){
+  if(/^#[0-9a-f]{6}$/i.test(brandColor)){
     var r=document.documentElement.style;
     r.setProperty('--brand',brandColor);
-    var hex=brandColor.replace('#','');
-    var rr=parseInt(hex.substring(0,2),16),gg=parseInt(hex.substring(2,4),16),bb=parseInt(hex.substring(4,6),16);
-    r.setProperty('--brand-bg','rgba('+rr+','+gg+','+bb+',.08)');
-    r.setProperty('--brand-dk','rgb('+Math.max(0,rr-40)+','+Math.max(0,gg-40)+','+Math.max(0,bb-40)+')');
+    r.setProperty('--brand-dk',shadeHex(brandColor,-25));
+    r.setProperty('--brand-lt',shadeHex(brandColor,15));
+    r.setProperty('--brand-bg',shadeHex(brandColor,82));
+    r.setProperty('--brand-glow',hexAlpha(brandColor,.35));
+    r.setProperty('--brand2',shadeHex(brandColor,15));
     var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brandColor);
   }
   
@@ -1598,9 +1692,12 @@ function renderCheckout(){
   // Address (only for delivery)
   if(activeMode==='delivery'){
     html+='<div class="co-section"><div class="co-sec-h">Delivery Address</div>';
-    html+='<button class="co-loc-btn" id="locBtn" onclick="getCurrentLocation()">📍 Use my current location</button>';
+    html+='<div id="delivGate"></div>';
+    var locBtnLabel=_requireGps?'📍 Share my live location (required)':'📍 Use my current location';
+    html+='<button class="co-loc-btn'+(_requireGps?' urgent':'')+'" id="locBtn" onclick="getCurrentLocation()">'+locBtnLabel+'</button>';
     html+='<div class="co-loc-status" id="locStatus" style="display:none"></div>';
-    html+='<textarea class="co-textarea" id="coAddress" placeholder="House no, area, landmark, city">'+esc(savedCustomer.address||'')+'</textarea>';
+    var addrPlaceholder=_requireGps?'Add landmark / building / floor (helps the rider find you)':'House no, area, landmark, city';
+    html+='<textarea class="co-textarea" id="coAddress" placeholder="'+esc(addrPlaceholder)+'">'+esc(savedCustomer.address||'')+'</textarea>';
     html+='</div>';
   }
   
@@ -1638,6 +1735,9 @@ function renderCheckout(){
   
   $('coBody').innerHTML=html;
   $('placeBtnTotal').textContent=cfg('currency','₹')+grand.toLocaleString('en-IN');
+  // Paint the delivery-gate card + lock Place Order if gate not satisfied.
+  renderDelivGate();
+  updatePlaceOrderState();
 }
 
 function setMode(m){activeMode=m;renderCheckout()}
@@ -1656,20 +1756,23 @@ function getCurrentLocation(){
     function(pos){
       var lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
       _gpsLat=lat;_gpsLng=lng;
+      var btnLbl=_requireGps?'📍 Re-share my location':'📍 Use my current location';
       fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lng+'&zoom=18&addressdetails=1')
         .then(function(r){return r.json()})
         .then(function(data){
-          btn.disabled=false;btn.innerHTML='📍 Use my current location';
+          btn.disabled=false;btn.innerHTML=btnLbl;
           var addr=data.display_name||(lat+', '+lng);
           $('coAddress').value=addr;
-          showLocStatus('✓ Location captured · accurate map pin will be sent','ok');
-          checkDeliveryRadius(parseFloat(lat),parseFloat(lng));
+          showLocStatus('✓ Location captured · map pin will be sent to the rider','ok');
+          renderDelivGate();
+          updatePlaceOrderState();
         })
         .catch(function(){
-          btn.disabled=false;btn.innerHTML='📍 Use my current location';
+          btn.disabled=false;btn.innerHTML=btnLbl;
           $('coAddress').value='Lat: '+lat+', Lng: '+lng;
-          showLocStatus('✓ GPS captured · please add details · map pin will be sent','ok');
-          checkDeliveryRadius(parseFloat(lat),parseFloat(lng));
+          showLocStatus('✓ GPS captured · please add landmark details','ok');
+          renderDelivGate();
+          updatePlaceOrderState();
         });
     },
     function(err){
@@ -1690,26 +1793,10 @@ function showLocStatus(msg,type){
   s.textContent=msg;
 }
 
-function checkDeliveryRadius(lat,lng){
-  var rLat=fnum(cfg('restaurantlat','')),rLng=fnum(cfg('restaurantlng',''));
-  var maxKm=fnum(cfg('maxdeliveryradius','5'));
-  if(!rLat||!rLng||!maxKm)return;
-  var dist=haversine(lat,lng,rLat,rLng);
-  var btn=$('placeBtn');
-  if(dist>maxKm){
-    showLocStatus('⚠️ You are '+dist.toFixed(1)+' km away. We deliver only within '+maxKm+' km.','err');
-    btn.disabled=true;
-  }else{
-    showLocStatus('✓ You are '+dist.toFixed(1)+' km away — within delivery range','ok');
-    btn.disabled=false;
-  }
-}
-
-function haversine(lat1,lng1,lat2,lng2){
-  var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
-  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
+// Legacy aliases — older code paths still call these. Both delegate to the
+// centralized delivery-gate logic in renderDelivGate() / distanceKm().
+function checkDeliveryRadius(lat,lng){_gpsLat=String(lat);_gpsLng=String(lng);renderDelivGate();updatePlaceOrderState()}
+function haversine(lat1,lng1,lat2,lng2){return distanceKm(lat1,lng1,lat2,lng2)}
 
 // ══ PLACE ORDER ══
 function placeOrder(){
@@ -1723,6 +1810,20 @@ function placeOrder(){
   if(!name){alert('Please enter your name');return}
   if(!phone||phone.length<10){alert('Please enter a valid 10-digit phone number');return}
   if(activeMode==='delivery'&&!address){alert('Please enter your delivery address');return}
+
+  // Delivery-gate enforcement — same logic as fastfood.html.
+  if(activeMode==='delivery'){
+    if(_requireGps && (!_gpsLat||!_gpsLng)){
+      alert('Please tap "Share my live location" — this shop only delivers within '+(_radiusKm||'a fixed')+' km, so we need your GPS to confirm.');
+      var lb=$('locBtn');if(lb)lb.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    recalcDistance();
+    if(_inRange===false){
+      alert('Sorry — you are '+fmtDist(_distKm)+' away. We deliver only within '+_radiusKm+' km. You can still order for pickup.');
+      return;
+    }
+  }
 
   var placeBtn=$('placeBtn');
   if(placeBtn){

@@ -26,6 +26,10 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--F);background:var(--BG);color:var(--T1);-webkit-font-smoothing:antialiased}
+@media(min-width:481px){
+  body{background:#e9eaee}
+  body::before{content:'';position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:var(--MW);background:var(--BG);box-shadow:0 0 60px rgba(15,23,42,.12);z-index:-1;pointer-events:none}
+}
 
 /* === HEADER === */
 .hdr{position:sticky;top:0;z-index:100;background:var(--R);max-width:var(--MW);margin:0 auto}
@@ -710,7 +714,25 @@ function lookup(slug,cb){
 
 function loadCfg(cb){LS('Config',function(r){if(r&&r.table&&r.table.rows)r.table.rows.forEach(function(row){var a=row.c&&row.c[0],b=row.c&&row.c[1],k='',v='';if(a){k=a.f!=null?String(a.f).trim():a.v!=null?String(a.v).trim():''}if(b){v=b.f!=null?String(b.f).trim():b.v!=null?String(b.v).trim():''}if(k&&k.toLowerCase()!=='key')C[k]=v});if(!SU){SU=G('OrderScript','')||G('ScriptURL','')||G('Script','')||''}applyCfg();cb()})}
 
+function shadeHex(hex,pct){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=Math.abs(pct)/100;if(pct>0){r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f)}else{r=Math.round(r*(1-f));g=Math.round(g*(1-f));b=Math.round(b*(1-f))}return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}catch(e){return hex}}
+function hexAlpha(hex,a){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return 'rgba('+r+','+g+','+b+','+a+')'}catch(e){return 'rgba(139,26,26,'+a+')'}}
 function applyCfg(){
+  // Brand color — when set, rewrite the entire red theme so storefront matches home/dashboard
+  var brandColor=G('BrandColor','');
+  if(/^#[0-9a-f]{6}$/i.test(brandColor)){
+    var rs=document.documentElement.style;
+    rs.setProperty('--R',brandColor);
+    rs.setProperty('--R2',shadeHex(brandColor,15));
+    rs.setProperty('--R3',shadeHex(brandColor,30));
+    rs.setProperty('--Rbg',shadeHex(brandColor,88));
+    rs.setProperty('--Rlt',shadeHex(brandColor,70));
+    rs.setProperty('--brand',brandColor);
+    rs.setProperty('--brand-dk',shadeHex(brandColor,-25));
+    rs.setProperty('--brand-lt',shadeHex(brandColor,15));
+    rs.setProperty('--brand-bg',shadeHex(brandColor,82));
+    rs.setProperty('--brand-glow',hexAlpha(brandColor,.35));
+    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brandColor);
+  }
   var n=G('shopname','Fresh Meat Shop');
   $('shopName').textContent=n;$('ftName').textContent=n;$('ftAddr').textContent=G('address','');
   // Update splash with real name

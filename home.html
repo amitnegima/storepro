@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0c831f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Loading… · StorePro</title>
+<link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Noto+Sans+Devanagari:wght@500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#0c831f;
+  --brand-dk:#075d16;
+  --brand-lt:#16a34a;
+  --brand-bg:#dcfce7;
+  --brand-glow:rgba(12,131,31,.35);
+  --bg:#fafafa;
+  --bg-2:#f3f4f6;
+  --card:#fff;
+  --text:#0b1220;
+  --text-2:#374151;
+  --muted:#6b7280;
+  --T4:#9ca3af;
+  --line:#e5e7eb;
+  --line-soft:#f1f3f5;
+  --gold:#facc15;
+  --gold-dk:#d97706;
+  --rose:#e11d48;
+  --radius:14px;
+  --radius-lg:20px;
+  --F:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --FH:'Noto Sans Devanagari',sans-serif;
+  --FS:'Playfair Display',Georgia,serif;
+  --MW:520px;
+  --EASE:cubic-bezier(.25,.8,.25,1);
+  --shadow-sm:0 1px 3px rgba(15,23,42,.05);
+  --shadow:0 4px 16px rgba(15,23,42,.07);
+  --shadow-lg:0 12px 36px rgba(15,23,42,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overscroll-behavior-y:none}
+body{font-family:var(--F);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.55;text-rendering:optimizeLegibility}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.page{max-width:var(--MW);margin:0 auto;background:var(--card);min-height:100vh;min-height:100dvh;position:relative}
+@media(min-width:521px){
+  body{background:#e9eaee}
+  .page{box-shadow:0 0 60px rgba(15,23,42,.1)}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SPLASH — friendly first impression while data loads
+   ═══════════════════════════════════════════════════════════════════ */
+.splash{position:fixed;inset:0;background:linear-gradient(160deg,var(--brand-dk),var(--brand) 50%,var(--brand-lt));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:9999;transition:opacity .5s,transform .5s var(--EASE);color:#fff}
+.splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 25% 30%,rgba(255,255,255,.12),transparent 50%),radial-gradient(circle at 75% 70%,rgba(255,255,255,.08),transparent 45%);pointer-events:none}
+.splash-emoji{font-size:72px;animation:popIn .6s var(--EASE) both;filter:drop-shadow(0 8px 20px rgba(0,0,0,.3));position:relative}
+.splash-name{font:800 26px var(--F);letter-spacing:-.5px;animation:fadeUp .5s .25s var(--EASE) both;text-align:center;padding:0 28px;opacity:0;position:relative}
+.splash-tag{font:500 12px var(--F);opacity:0;animation:fadeUp .5s .4s var(--EASE) both;color:rgba(255,255,255,.85);position:relative}
+.splash-loader{width:34px;height:34px;border:3px solid rgba(255,255,255,.18);border-top-color:#fff;border-radius:50%;margin-top:6px;opacity:0;animation:fadeUp .4s .5s var(--EASE) both,spin .8s .5s linear infinite;position:relative}
+@keyframes popIn{0%{transform:scale(0) rotate(-25deg);opacity:0}60%{transform:scale(1.18) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STICKY HEADER — compact, appears as user scrolls past hero
+   ═══════════════════════════════════════════════════════════════════ */
+.hdr{position:sticky;top:0;z-index:90;background:rgba(255,255,255,.95);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line-soft);transition:box-shadow .25s,border-color .25s}
+.hdr.scrolled{box-shadow:var(--shadow-sm);border-color:var(--line)}
+.hdr-logo{width:42px;height:42px;border-radius:11px;object-fit:cover;background:var(--bg);flex-shrink:0;border:1.5px solid var(--line)}
+.hdr-info{flex:1;min-width:0}
+.hdr-name{font:800 15px var(--F);color:var(--text);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.hdr-meta{font:500 11px var(--F);color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px}
+.hdr-meta .dot{width:5px;height:5px;border-radius:50%;background:var(--T4);flex-shrink:0}
+.hdr-meta .open{color:#16a34a;font-weight:700}
+.hdr-meta .closed{color:#dc2626;font-weight:700}
+.hdr-cta{padding:9px 16px;background:var(--brand);color:#fff;border-radius:11px;font:800 13px var(--F);flex-shrink:0;white-space:nowrap;letter-spacing:-.1px;transition:transform .15s,box-shadow .15s;box-shadow:0 2px 8px var(--brand-glow)}
+.hdr-cta:active{transform:scale(.94)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO — large dramatic photo, brand-themed gradient overlay,
+   floating quick-action card overlapping the bottom edge
+   ═══════════════════════════════════════════════════════════════════ */
+.hero{position:relative;min-height:440px;background:linear-gradient(135deg,var(--brand-dk) 0%,var(--brand) 60%,var(--brand-lt) 100%);background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:32px 22px 80px;color:#fff;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.15) 40%,rgba(0,0,0,.78) 100%);pointer-events:none}
+.hero::after{content:'';position:absolute;top:0;left:0;width:100%;height:50%;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 100%);pointer-events:none}
+.hero-pills{position:relative;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;animation:fadeUp .6s .15s var(--EASE) both}
+.hero-pill{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.28);border-radius:999px;font:700 11px var(--F);letter-spacing:.02em;text-transform:uppercase}
+.hero-pill.live{background:rgba(34,197,94,.22);border-color:rgba(74,222,128,.5);color:#bbf7d0}
+.hero-pill.closed{background:rgba(239,68,68,.22);border-color:rgba(248,113,113,.5);color:#fecaca}
+.hero-pill .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 1.5s infinite}
+.hero-pill.closed .dot{background:#ef4444;animation:none}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.hero-name{position:relative;font:800 36px/1.05 var(--F);letter-spacing:-1px;text-shadow:0 4px 18px rgba(0,0,0,.45);animation:fadeUp .55s .25s var(--EASE) both}
+.hero-name.long{font-size:30px}
+.hero-tagline{position:relative;font:500 15px var(--F);opacity:.95;margin-top:10px;text-shadow:0 2px 10px rgba(0,0,0,.4);max-width:340px;animation:fadeUp .55s .35s var(--EASE) both}
+.hero-tagline.hi{font-family:var(--FH)}
+.hero-actions{position:relative;display:flex;gap:8px;margin-top:24px;animation:fadeUp .55s .45s var(--EASE) both}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:14px 22px;border-radius:13px;font:800 14px var(--F);border:none;cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .15s;color:inherit;letter-spacing:-.1px;white-space:nowrap}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:#fff;color:var(--brand);box-shadow:0 6px 20px rgba(0,0,0,.22);flex:1;font-size:15px;padding:15px 22px}
+.btn-secondary{background:rgba(255,255,255,.18);color:#fff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.32);padding:15px 14px;font-size:14px}
+
+/* Floating stats card — overlaps the bottom of the hero */
+.stats-bar{position:relative;margin:-56px 16px 0;background:#fff;border-radius:16px;padding:14px 12px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;box-shadow:var(--shadow-lg);z-index:2;animation:fadeUp .55s .55s var(--EASE) both}
+.stat{text-align:center;padding:6px 8px;border-right:1px solid var(--line-soft);position:relative}
+.stat:last-child{border-right:none}
+.stat-v{font:800 18px var(--F);color:var(--text);line-height:1.1;letter-spacing:-.4px;display:flex;align-items:center;justify-content:center;gap:3px}
+.stat-v .star{color:var(--gold);font-size:15px}
+.stat-l{font:600 10px var(--F);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   QUICK CHIPS — feature highlights row (free delivery, payment, etc.)
+   ═══════════════════════════════════════════════════════════════════ */
+.chips-row{padding:18px 16px 6px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
+.chips-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:9px 14px;background:var(--bg);border:1.5px solid var(--line);border-radius:999px;font:700 12px var(--F);color:var(--text-2);display:inline-flex;align-items:center;gap:6px;scroll-snap-align:start;white-space:nowrap}
+.chip-em{font-size:14px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTIONS — generous spacing, clear hierarchy
+   ═══════════════════════════════════════════════════════════════════ */
+.section{padding:28px 22px;background:var(--card)}
+.section.tinted{background:var(--bg-2)}
+.section + .section{border-top:1px solid var(--line-soft)}
+.section-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:18px}
+.section-title{font:800 22px var(--F);color:var(--text);letter-spacing:-.5px;line-height:1.15}
+.section-title .accent{color:var(--brand)}
+.section-sub{font:500 13px var(--F);color:var(--muted);margin-top:4px}
+.section-cta{font:700 13px var(--F);color:var(--brand);flex-shrink:0;display:inline-flex;align-items:center;gap:3px}
+.section-cta:active{opacity:.7}
+
+/* Reveal-on-scroll animation */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s var(--EASE),transform .55s var(--EASE)}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ABOUT — story-style with serif accent
+   ═══════════════════════════════════════════════════════════════════ */
+.about-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px;position:relative;overflow:hidden}
+.about-card::before{content:'\201C';position:absolute;top:-12px;right:14px;font:800 100px var(--FS);color:var(--brand-bg);line-height:1;pointer-events:none;opacity:.5}
+.about-text{font:500 15px/1.7 var(--F);color:var(--text-2);white-space:pre-line;position:relative;z-index:1}
+.about-text:first-letter{font:800 28px var(--FS);color:var(--brand);float:left;line-height:1;margin:5px 8px 0 0}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MENU PREVIEW — rich product cards
+   ═══════════════════════════════════════════════════════════════════ */
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.menu-item{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .2s;box-shadow:var(--shadow-sm)}
+.menu-item:active{transform:scale(.98)}
+.menu-item-img-wrap{position:relative;width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#f3f4f6,#e5e7eb);overflow:hidden}
+.menu-item-img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--EASE)}
+.menu-item:hover .menu-item-img{transform:scale(1.06)}
+.menu-item-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(135deg,var(--brand-bg),var(--bg))}
+.menu-item-veg{position:absolute;top:8px;left:8px;width:18px;height:18px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.menu-item-veg::before{content:'';width:8px;height:8px;border-radius:50%;background:#22c55e}
+.menu-item-veg.nv::before{background:#dc2626}
+.menu-item-best{position:absolute;top:8px;right:8px;padding:3px 8px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#78350f;border-radius:6px;font:800 9px var(--F);text-transform:uppercase;letter-spacing:.06em;box-shadow:0 2px 6px rgba(245,158,11,.3)}
+.menu-item-info{padding:11px 12px}
+.menu-item-name{font:700 13.5px var(--F);color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px}
+.menu-item-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.menu-item-price{font:800 15px var(--F);color:var(--brand);letter-spacing:-.3px}
+.menu-item-price.ask{color:var(--muted);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.menu-cta{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;background:var(--brand);color:#fff;border-radius:13px;font:800 14px var(--F);box-shadow:0 4px 14px var(--brand-glow);transition:transform .15s,box-shadow .15s}
+.menu-cta:active{transform:scale(.98)}
+.menu-cta-arrow{transition:transform .25s}
+.menu-cta:hover .menu-cta-arrow{transform:translateX(3px)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HOURS / LOCATION
+   ═══════════════════════════════════════════════════════════════════ */
+.loc-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.loc-status{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line-soft);background:linear-gradient(135deg,var(--brand-bg),transparent)}
+.loc-status.closed{background:linear-gradient(135deg,#fee2e2,transparent)}
+.open-pill{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:#fff;border-radius:999px;font:800 13px var(--F);box-shadow:var(--shadow-sm)}
+.open-pill.open{color:#15803d}
+.open-pill.closed{color:#b91c1c}
+.open-pill .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 1.6s infinite}
+.open-pill.closed .dot{background:#ef4444;animation:none}
+.loc-status-sub{font:600 12px var(--F);color:var(--muted)}
+.loc-body{padding:16px 18px}
+.loc-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.loc-row:last-child{border-bottom:none}
+.loc-icon{width:36px;height:36px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.loc-content{flex:1;min-width:0}
+.loc-label{font:700 11px var(--F);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.loc-value{font:600 13.5px var(--F);color:var(--text);line-height:1.5;word-break:break-word}
+.loc-action{font:700 12px var(--F);color:var(--brand);margin-top:4px;display:inline-flex;align-items:center;gap:3px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REVIEWS — premium feel with avatar circles
+   ═══════════════════════════════════════════════════════════════════ */
+.reviews-summary{display:flex;align-items:center;gap:14px;padding:18px;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fcd34d;border-radius:var(--radius-lg);margin-bottom:14px}
+.reviews-rating{font:800 36px var(--F);color:#92400e;letter-spacing:-1.5px;line-height:1}
+.reviews-stars-big{font-size:14px;color:#f59e0b;letter-spacing:1px;margin-top:2px}
+.reviews-count{font:700 12px var(--F);color:#78350f;margin-top:2px}
+.reviews-cta{margin-left:auto;padding:8px 14px;background:#fff;color:#92400e;border-radius:10px;font:700 12px var(--F)}
+.review{background:var(--card);border:1px solid var(--line);padding:16px 18px;border-radius:var(--radius);margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+.review:last-child{margin-bottom:0}
+.review-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--brand-lt),var(--brand-dk));color:#fff;display:flex;align-items:center;justify-content:center;font:800 16px var(--F);flex-shrink:0;letter-spacing:-.5px}
+.review-body{flex:1;min-width:0}
+.review-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.review-name{font:800 13.5px var(--F);color:var(--text)}
+.review-stars{color:var(--gold);font-size:13px;letter-spacing:.5px;line-height:1}
+.review-text{font:500 13.5px/1.55 var(--F);color:var(--text-2);font-style:italic}
+.review-text::before{content:'\201C';color:var(--T4);font-weight:700;margin-right:1px}
+.review-text::after{content:'\201D';color:var(--T4);font-weight:700;margin-left:1px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GALLERY — horizontal scroll with snap, lightbox-feel
+   ═══════════════════════════════════════════════════════════════════ */
+.gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding:0 22px;margin:0 -22px;-webkit-overflow-scrolling:touch}
+.gallery::-webkit-scrollbar{display:none}
+.gallery-img{width:280px;height:200px;border-radius:var(--radius);object-fit:cover;flex-shrink:0;scroll-snap-align:start;background:var(--bg);box-shadow:var(--shadow-sm);transition:transform .15s}
+.gallery-img:active{transform:scale(.97)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HOW IT WORKS — visual 3-step process
+   ═══════════════════════════════════════════════════════════════════ */
+.steps{display:flex;gap:10px}
+.step{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 14px;text-align:center;position:relative}
+.step-n{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font:800 13px var(--F);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px var(--brand-glow)}
+.step-em{font-size:32px;margin:6px 0 6px}
+.step-t{font:800 12px var(--F);color:var(--text);text-transform:uppercase;letter-spacing:.04em;line-height:1.3}
+.step-d{font:500 11px var(--F);color:var(--muted);margin-top:4px;line-height:1.4}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CONTACT — large clear action buttons
+   ═══════════════════════════════════════════════════════════════════ */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.contact-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 12px;border-radius:var(--radius);font:800 13px var(--F);background:var(--card);border:1.5px solid var(--line);transition:transform .15s,border-color .15s,background .15s}
+.contact-btn:active{transform:scale(.97)}
+.contact-icon{font-size:24px;line-height:1}
+.contact-btn.wa{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-color:#86efac;color:#15803d}
+.contact-btn.call{background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-color:#93c5fd;color:#1e40af}
+.contact-btn.mail{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#fcd34d;color:#92400e}
+.contact-btn.web{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:#c4b5fd;color:#5b21b6}
+.contact-btn.insta{background:linear-gradient(135deg,#fce7f3,#fbcfe8);border-color:#f9a8d4;color:#be185d}
+.contact-btn.fb{background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-color:#93c5fd;color:#1d4ed8}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOOTER — rich, brand-stamped, social
+   ═══════════════════════════════════════════════════════════════════ */
+.foot{padding:32px 22px calc(120px + env(safe-area-inset-bottom));text-align:center;background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);border-top:1px solid var(--line)}
+.foot-name{font:800 18px var(--F);color:var(--text);letter-spacing:-.3px}
+.foot-tag{font:500 12px var(--F);color:var(--muted);margin-top:4px}
+.foot-line{width:36px;height:2px;background:var(--brand);margin:18px auto;border-radius:1px}
+.foot-brand{font:600 11px var(--F);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.foot-brand b{color:var(--brand);font-weight:800}
+.foot-love{font:500 11px var(--F);color:var(--T4);margin-top:6px}
+.foot-love .heart{color:var(--rose);animation:heartbeat 1.6s ease-in-out infinite}
+@keyframes heartbeat{0%,30%,50%,70%,100%{transform:scale(1)}40%{transform:scale(1.18)}60%{transform:scale(1.12)}}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STICKY CTA — floats up after user scrolls past hero
+   ═══════════════════════════════════════════════════════════════════ */
+.sticky-cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(110%);max-width:var(--MW);width:100%;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:12px 18px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);z-index:80;transition:transform .4s var(--EASE);box-shadow:0 -10px 30px rgba(0,0,0,.06)}
+.sticky-cta.show{transform:translateX(-50%) translateY(0)}
+.sticky-cta .btn-fixed{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:54px;background:linear-gradient(135deg,var(--brand-lt),var(--brand) 50%,var(--brand-dk));color:#fff;border-radius:14px;font:800 16px var(--F);box-shadow:0 8px 22px var(--brand-glow);letter-spacing:-.2px}
+.sticky-cta .btn-fixed:active{transform:scale(.97)}
+.has-sticky{padding-bottom:0}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ERROR / EMPTY STATE
+   ═══════════════════════════════════════════════════════════════════ */
+.empty-state{text-align:center;padding:72px 24px;background:var(--card);min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.empty-emoji{font-size:80px;margin-bottom:18px;opacity:.7}
+.empty-title{font:800 24px var(--F);color:var(--text);margin-bottom:8px;letter-spacing:-.5px}
+.empty-text{font:500 15px var(--F);color:var(--muted);line-height:1.6;margin-bottom:22px;max-width:320px}
+.empty-cta{padding:14px 28px;background:var(--brand);color:#fff;border-radius:12px;font:800 14px var(--F);box-shadow:0 6px 18px var(--brand-glow)}
+
+/* Fonts >=16px on touch to prevent iOS Safari zoom-on-focus */
+@media(pointer:coarse){input:not([type=color]):not([type=range]):not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  .reveal,.hero-pills,.hero-name,.hero-tagline,.hero-actions,.stats-bar,.splash-emoji,.splash-name,.splash-tag,.splash-loader{animation:none!important;opacity:1!important;transform:none!important;transition-duration:.01ms!important}
+  *{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SPLASH (replaced once tenant Config loads)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="splash" id="splash">
+  <div class="splash-emoji" id="splashEmoji">🏬</div>
+  <div class="splash-name" id="splashName">Loading…</div>
+  <div class="splash-tag">Powered by StorePro</div>
+  <div class="splash-loader"></div>
+</div>
+
+<div class="page" id="page" style="display:none">
+
+  <!-- Sticky compact header -->
+  <div class="hdr" id="hdr">
+    <img class="hdr-logo" id="hdrLogo" alt="" style="display:none">
+    <div class="hdr-info">
+      <div class="hdr-name" id="hdrName">Loading…</div>
+      <div class="hdr-meta" id="hdrMeta"></div>
+    </div>
+    <a class="hdr-cta" id="hdrCta" href="#">🛒 Order</a>
+  </div>
+
+  <!-- Hero with brand-themed gradient + photo overlay -->
+  <div class="hero" id="hero">
+    <div class="hero-pills" id="heroPills"></div>
+    <div class="hero-name" id="heroName"></div>
+    <div class="hero-tagline" id="heroTagline"></div>
+    <div class="hero-actions">
+      <a class="btn btn-primary" id="btnOrder" href="#">🛒 Order Online</a>
+      <a class="btn btn-secondary" id="btnCall" href="#" style="display:none">📞 Call</a>
+      <a class="btn btn-secondary" id="btnDir" href="#" style="display:none">📍 Map</a>
+    </div>
+  </div>
+
+  <!-- Floating stats bar (overlaps hero) -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat" id="statRating">
+      <div class="stat-v"><span class="star">★</span><span id="statRatingV">—</span></div>
+      <div class="stat-l">Rating</div>
+    </div>
+    <div class="stat" id="statOrders">
+      <div class="stat-v" id="statOrdersV">—</div>
+      <div class="stat-l">Orders</div>
+    </div>
+    <div class="stat" id="statSince">
+      <div class="stat-v" id="statSinceV">—</div>
+      <div class="stat-l">Since</div>
+    </div>
+  </div>
+
+  <!-- Quick chips: free delivery, payment, etc. -->
+  <div class="chips-row" id="chipsRow"></div>
+
+  <!-- About / story (optional) -->
+  <div class="section reveal" id="aboutSec" style="display:none">
+    <div class="section-h">
+      <div>
+        <div class="section-title">Our <span class="accent">story</span></div>
+        <div class="section-sub" id="aboutSub">A little about us</div>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-text" id="aboutText"></div>
+    </div>
+  </div>
+
+  <!-- Menu preview -->
+  <div class="section tinted reveal" id="menuSec" style="display:none">
+    <div class="section-h">
+      <div>
+        <div class="section-title" id="menuTitle">⭐ Popular <span class="accent">items</span></div>
+        <div class="section-sub" id="menuSub">Tap "Order" to see the full menu</div>
+      </div>
+    </div>
+    <div class="menu-grid" id="menuGrid"></div>
+    <a class="menu-cta" id="menuCta" href="#">
+      <span>See full menu</span>
+      <span class="menu-cta-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- Hours + Location -->
+  <div class="section reveal" id="hoursSec" style="display:none">
+    <div class="section-h">
+      <div>
+        <div class="section-title">Visit <span class="accent">us</span></div>
+        <div class="section-sub">Hours, location & how to reach</div>
+      </div>
+    </div>
+    <div class="loc-card">
+      <div class="loc-status" id="locStatus">
+        <span class="open-pill open" id="openPill"><span class="dot"></span>Open now</span>
+        <span class="loc-status-sub" id="openSub"></span>
+      </div>
+      <div class="loc-body" id="locBody"></div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="section tinted reveal" id="reviewsSec" style="display:none">
+    <div class="section-h">
+      <div>
+        <div class="section-title">Customers <span class="accent">love us</span></div>
+        <div class="section-sub" id="reviewsSub">What people are saying</div>
+      </div>
+    </div>
+    <div id="reviewsList"></div>
+  </div>
+
+  <!-- Gallery -->
+  <div class="section reveal" id="gallerySec" style="display:none">
+    <div class="section-h">
+      <div>
+        <div class="section-title">📸 Take a <span class="accent">peek</span></div>
+        <div class="section-sub">A few photos from the shop</div>
+      </div>
+    </div>
+    <div class="gallery" id="galleryList"></div>
+  </div>
+
+  <!-- How to order — visual 3-step -->
+  <div class="section tinted reveal" id="howSec">
+    <div class="section-h">
+      <div>
+        <div class="section-title">How it <span class="accent">works</span></div>
+        <div class="section-sub">Three taps to a delicious order</div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-em">📋</div>
+        <div class="step-t">Browse</div>
+        <div class="step-d">Pick what you like</div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-em">🛒</div>
+        <div class="step-t">Add to cart</div>
+        <div class="step-d">UPI or COD</div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-em">🎉</div>
+        <div class="step-t" id="step3T">Enjoy</div>
+        <div class="step-d" id="step3D">Delivery or pickup</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="section reveal" id="contactSec">
+    <div class="section-h">
+      <div>
+        <div class="section-title">Get in <span class="accent">touch</span></div>
+        <div class="section-sub">We'd love to hear from you</div>
+      </div>
+    </div>
+    <div class="contact-grid" id="contactGrid"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="foot">
+    <div class="foot-name" id="footName">StorePro Store</div>
+    <div class="foot-tag" id="footTag">Order online · made simple</div>
+    <div class="foot-line"></div>
+    <div class="foot-brand">Powered by <b>StorePro</b></div>
+    <div class="foot-love">Made with <span class="heart">♥</span> in India</div>
+  </div>
+</div>
+
+<!-- Sticky bottom CTA — appears after scroll past hero -->
+<div class="sticky-cta" id="stickyCta">
+  <a class="btn-fixed" id="stickyOrder" href="#">
+    <span>🛒</span>
+    <span id="stickyText">Start your order</span>
+    <span>→</span>
+  </a>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// HOME.HTML — premium tenant landing page
+// ═══════════════════════════════════════════════════════════════════
+// Loads when a customer visits a tenant subdomain at the root path
+// AND the master registry has HomePage=yes for that tenant.
+//
+// Reads from:
+//   - Master registry (slug + subdomain → SHEET_ID, SCRIPT_URL, Type)
+//   - Tenant Config tab (ShopName, Tagline, About, BrandColor, …)
+//   - Tenant Products tab (top items for menu preview)
+//   - Tenant Orders tab (rating + recent reviews + total order count)
+//
+// The page degrades gracefully — works with minimum config (just
+// ShopName) and progressively gets richer as Config gains more rows.
+// ═══════════════════════════════════════════════════════════════════
+
+var $=function(id){return document.getElementById(id)};
+function E(s){var d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML}
+function attr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// Tenant slug source: ?store=<slug> wins (back-compat); falls back to
+// <slug>.storepro.in or <slug>.localhost subdomain.
+function resolveTenantSlug(){
+  try{
+    var qs=new URLSearchParams(location.search);
+    var s=qs.get('store');
+    if(s)return String(s).toLowerCase().trim();
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])return sub;
+    }
+    return '';
+  }catch(e){return ''}
+}
+
+var MASTER_SHEET_ID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
+var SHEET_ID='', SCRIPT_URL='', TYPE='', SLUG='';
+var config={}, products=[], reviews=[], orderCount=0, ratingAvg=0, ratingCount=0;
+// Reviews can come from two sources:
+//   1. Config tab (Review1Name…Review5Name) — hand-written testimonials OR
+//      auto-pulled from Google Maps via the daily refreshGoogleReviews trigger.
+//      These take priority because they're either the shopkeeper's chosen voice
+//      or the public-facing Google rating.
+//   2. Orders tab (ReviewStars/ReviewText) — real post-delivery customer reviews.
+//      These are appended after Config reviews; total cap is 5 cards.
+// Rating + RatingCount: Config values override Orders-derived ones if set,
+// because the Google Maps rating is what customers see when they search the
+// shop on Google — keeping the storefront in sync with that is more useful
+// than a freshly-launched shop's "5.0 from 2 reviews" Orders tally.
+var cfgReviews=[], cfgRatingOverride=null, cfgRatingCountOverride=null;
+
+// gviz JSONP loader — same pattern as the storefront templates.
+function gviz(sheetId, sheetName, cb, useHeaders0){
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){cb(r)};
+  var s=document.createElement('script');
+  var hdrParam=useHeaders0?'&headers=0':'';
+  s.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(sheetName)+hdrParam+'&_t='+Date.now();
+  s.onerror=function(){cb(null)};
+  document.body.appendChild(s);
+}
+
+function cfg(k,d){
+  k=String(k).toLowerCase().replace(/\s+/g,'');
+  for(var key in config){
+    if(key.toLowerCase().replace(/\s+/g,'')===k)return config[key]||d||'';
+  }
+  return d||'';
+}
+
+// ─── Init ──────────────────────────────────────────────────────────
+function init(){
+  SLUG=resolveTenantSlug();
+  if(!SLUG){
+    location.href='/';
+    return;
+  }
+  lookupTenant(SLUG, function(found){
+    if(!found){
+      showError('Store not found',
+        '"'+E(SLUG)+'" doesn\'t exist or isn\'t active yet.');
+      return;
+    }
+    gviz(SHEET_ID, 'Config', function(r){
+      if(r) parseConfig(r);
+      applyConfig();
+      // Reveal page once Config-driven content is painted
+      $('page').style.display='block';
+      setTimeout(function(){$('splash').classList.add('hide')},250);
+      // Load supporting data in parallel — neither blocks the page reveal
+      gviz(SHEET_ID, 'Products', function(pr){if(pr)parseProducts(pr); renderMenu()});
+      gviz(SHEET_ID, 'Orders',   function(or){if(or)parseOrders(or); renderReviews(); renderStats()});
+      // Init scroll-driven UI after page is visible
+      setTimeout(initScrollUI, 100);
+    });
+  });
+}
+
+function lookupTenant(slug, cb){
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table||!r.table.rows||r.table.rows.length<2){cb(false);return}
+    var headerRow=r.table.rows[0];
+    var cols=[];
+    if(headerRow&&headerRow.c){for(var h=0;h<headerRow.c.length;h++){var hc=headerRow.c[h];cols.push(hc&&hc.v!=null?String(hc.v).toLowerCase().trim().replace(/\s+/g,''):'')}}
+    for(var i=1;i<r.table.rows.length;i++){
+      var row=r.table.rows[i];
+      var o={};
+      cols.forEach(function(k,j){var c=row.c&&row.c[j];o[k]=c&&c.v!=null?String(c.v).trim():''});
+      var rs=(o.slug||'').toLowerCase();
+      var rsSub=(o.subdomain||'').toLowerCase();
+      if(rs===slug||(rsSub&&rsSub===slug)){
+        SHEET_ID=o.sheetid||o.sheet||o.id||'';
+        SCRIPT_URL=o.scripturl||o.script||'';
+        TYPE=String(o.type||o.shoptype||o.category||'').toLowerCase().trim();
+        if(SHEET_ID){cb(true);return}
+      }
+    }
+    cb(false);
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=0&_t='+Date.now();
+  s.onerror=function(){cb(false)};
+  document.body.appendChild(s);
+}
+
+// Map shop type → specialized order template.
+// Same logic as store.html so the order CTA always lands on the right UI.
+function getOrderUrl(){
+  var t=TYPE;
+  var template='/store.html';
+  if(/restaurant|cafe|café/.test(t)) template='/restaurant.html';
+  else if(/fast.?food|kitchen|tiffin/.test(t)) template='/fastfood.html';
+  else if(/dhaba/.test(t)) template='/dhaba.html';
+  else if(/meat|fish|chicken|mutton|butcher/.test(t)) template='/meatshop.html';
+  else if(/library|study|reading.?room|coaching/.test(t)) template='/library.html';
+  return template+location.search;
+}
+
+// ─── Config parsing ────────────────────────────────────────────────
+function parseConfig(r){
+  if(!r||!r.table||!r.table.rows)return;
+  r.table.rows.forEach(function(row){
+    var a=row.c&&row.c[0], b=row.c&&row.c[1];
+    var k='', v='';
+    if(a)k=a.f!=null?String(a.f).trim():a.v!=null?String(a.v).trim():'';
+    if(b)v=b.f!=null?String(b.f).trim():b.v!=null?String(b.v).trim():'';
+    if(k && k.toLowerCase()!=='key')config[k]=v;
+  });
+  parseConfigReviews();
+}
+
+// Hand-written testimonials OR Google-pulled reviews from Config tab.
+// Look for Review1Name/Review1Stars/Review1Text/Review1Date/Review1Photo
+// (case-insensitive) up to Review5. A review is "valid" if it has BOTH a name
+// and either text or stars — empty rows are skipped.
+function parseConfigReviews(){
+  cfgReviews=[];
+  for(var n=1;n<=5;n++){
+    var name = cfg('review'+n+'name','');
+    var stars= parseInt(cfg('review'+n+'stars','0'))||0;
+    var text = cfg('review'+n+'text','');
+    var date = cfg('review'+n+'date','');
+    var photo= cfg('review'+n+'photo','');
+    if(!name) continue;
+    if(!stars && !text) continue;
+    cfgReviews.push({
+      name:String(name),
+      stars:stars||5,
+      text:String(text).slice(0,260),
+      date:String(date),
+      photo:String(photo)
+    });
+  }
+  // Rating + RatingCount overrides — Config wins if either is set so the
+  // storefront mirrors what customers see on Google. parseOrders later
+  // computes its own values, but renderStats / renderReviews check these
+  // overrides first.
+  var r = parseFloat(cfg('rating',''));
+  if(!isNaN(r) && r>0) cfgRatingOverride=r;
+  var rc = parseInt(cfg('ratingcount','0'))||0;
+  if(rc>0) cfgRatingCountOverride=rc;
+}
+
+function applyConfig(){
+  var name=cfg('shopname','Store');
+  var tagline=cfg('tagline','')||cfg('herotagline','')||'';
+  var brand=cfg('brandcolor','')||cfg('brand','');
+  if(/^#[0-9a-f]{6}$/i.test(brand)){
+    document.documentElement.style.setProperty('--brand', brand);
+    document.documentElement.style.setProperty('--brand-dk', shadeHex(brand,-25));
+    document.documentElement.style.setProperty('--brand-lt', shadeHex(brand,15));
+    document.documentElement.style.setProperty('--brand-bg', shadeHex(brand,82));
+    document.documentElement.style.setProperty('--brand-glow', hexAlpha(brand,.35));
+    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brand);
+  }
+
+  document.title=name+' · Order Online';
+  $('splashName').textContent=name;
+  $('splashEmoji').textContent=typeEmoji(TYPE);
+  $('hdrName').textContent=name;
+  $('heroName').textContent=name;
+  if(name.length>20) $('heroName').classList.add('long');
+  $('heroTagline').textContent=tagline;
+  if(/[ऀ-ॿ]/.test(tagline))$('heroTagline').classList.add('hi'); // Devanagari → Hindi font
+  $('footName').textContent=name;
+  $('footTag').textContent=tagline||'Order online · made simple';
+
+  // Logo
+  var logoUrl=primaryImage(cfg('logo',''));
+  if(logoUrl){
+    $('hdrLogo').src=cldThumb(logoUrl,128,'fill');
+    $('hdrLogo').style.display='block';
+  }
+
+  // Hero background — prefer dedicated HeroImage, fall back to logo
+  var heroImg=primaryImage(cfg('heroimage','')||cfg('hero',''));
+  if(!heroImg && logoUrl)heroImg=logoUrl;
+  if(heroImg){
+    $('hero').style.backgroundImage='linear-gradient(135deg,rgba(0,0,0,.15),rgba(0,0,0,.45)),url('+cldThumb(heroImg,1000,'fill')+')';
+  }
+
+  // Hero pills — open status first, then verified/featured/since/etc.
+  renderHeroPills();
+
+  // Header meta
+  renderHdrMeta();
+
+  // Order CTAs
+  var orderUrl=getOrderUrl();
+  $('btnOrder').href=orderUrl;
+  $('hdrCta').href=orderUrl;
+  $('stickyOrder').href=orderUrl;
+  $('menuCta').href=orderUrl;
+
+  // Phone CTA
+  var phone=cfg('phone','')||cfg('whatsapp','');
+  if(phone){
+    var p=String(phone).replace(/\D/g,'');
+    $('btnCall').href='tel:+'+p;
+    $('btnCall').style.display='inline-flex';
+  }
+
+  // Directions CTA
+  var address=cfg('address','');
+  if(address){
+    $('btnDir').href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address);
+    $('btnDir').style.display='inline-flex';
+  }
+
+  // Highlight chips
+  renderChips();
+
+  // About
+  var about=cfg('about','')||cfg('description','');
+  if(about){
+    $('aboutSec').style.display='block';
+    $('aboutText').textContent=about;
+  }
+
+  // Hours + location card
+  renderHoursLocation();
+
+  // Gallery
+  renderGallery();
+
+  // How-it-works tweaks based on shop type
+  customizeHowItWorks();
+
+  // Contact buttons
+  renderContact();
+
+  // PWA: per-tenant manifest
+  setupManifest(name, brand);
+
+  // Reset stats placeholders to nicer defaults until Orders comes back
+  $('statRatingV').textContent='New';
+  $('statOrdersV').textContent='1st';
+  $('statSinceV').textContent=cfg('established','')||cfg('since','')||cfg('founded','')||computeYearOpen();
+}
+
+function renderHeroPills(){
+  var pills=[];
+  // Open / closed status
+  var hours=cfg('businesshours','')||cfg('hours','')||cfg('timing','');
+  if(hours){
+    var ok=isOpenNow(hours);
+    pills.push('<span class="hero-pill '+(ok?'live':'closed')+'"><span class="dot"></span>'+(ok?'Open now':'Closed')+'</span>');
+  }
+  // Verified
+  var verified=cfg('verified','')||cfg('trusted','');
+  if(/yes|true|1/i.test(verified))pills.push('<span class="hero-pill">✓ Verified</span>');
+  // Veg / non-veg badge
+  var veg=cfg('veg','')||cfg('isveg','');
+  if(/yes|true|1|pure/i.test(veg))pills.push('<span class="hero-pill">🌱 Pure veg</span>');
+  // Cuisines (comma or pipe separated)
+  var cuisines=cfg('cuisines','')||cfg('cuisine','');
+  if(cuisines){
+    cuisines.split(/[|,]/).slice(0,2).forEach(function(c){
+      c=c.trim();if(c)pills.push('<span class="hero-pill">'+E(c)+'</span>');
+    });
+  }
+  if(!pills.length){
+    // Fallback: type-based pill
+    var t=typeLabel(TYPE);
+    if(t)pills.push('<span class="hero-pill">'+typeEmoji(TYPE)+' '+E(t)+'</span>');
+  }
+  $('heroPills').innerHTML=pills.join('');
+}
+
+function renderHdrMeta(){
+  var bits=[];
+  var hours=cfg('businesshours','')||cfg('hours','')||cfg('timing','');
+  if(hours){
+    var ok=isOpenNow(hours);
+    bits.push('<span class="'+(ok?'open':'closed')+'">●</span> '+(ok?'Open':'Closed'));
+  }
+  var area=cfg('city','')||cfg('area','')||cfg('locality','');
+  if(area){if(bits.length)bits.push('<span class="dot"></span>');bits.push(E(area))}
+  var t=typeLabel(TYPE);
+  if(t&&!area){if(bits.length)bits.push('<span class="dot"></span>');bits.push(E(t))}
+  $('hdrMeta').innerHTML=bits.join('');
+}
+
+function renderChips(){
+  var chips=[];
+  // Free delivery
+  var freeAbove=cfg('freedelivery','')||cfg('freedeliveryabove','');
+  if(freeAbove)chips.push('<span class="chip"><span class="chip-em">🛵</span> Free delivery above ₹'+E(freeAbove)+'</span>');
+  else if(cfg('delivery','')) chips.push('<span class="chip"><span class="chip-em">🛵</span> '+E(cfg('delivery',''))+'</span>');
+  // Delivery time
+  var delTime=cfg('estimateddeliverytime','')||cfg('deliverytime','');
+  if(delTime)chips.push('<span class="chip"><span class="chip-em">⏱️</span> '+E(delTime)+'</span>');
+  // Minimum order
+  var minOrder=cfg('minorder','');
+  if(minOrder)chips.push('<span class="chip"><span class="chip-em">📦</span> Min order ₹'+E(minOrder)+'</span>');
+  // Payment methods
+  var payments=cfg('paymentmethods','')||cfg('payments','');
+  if(payments){
+    chips.push('<span class="chip"><span class="chip-em">💳</span> '+E(payments)+'</span>');
+  }else{
+    // Default: COD + UPI
+    chips.push('<span class="chip"><span class="chip-em">💳</span> COD &amp; UPI</span>');
+  }
+  // Specialty
+  var spec=cfg('specialty','')||cfg('known','');
+  if(spec)chips.push('<span class="chip"><span class="chip-em">⭐</span> Famous for '+E(spec)+'</span>');
+  // WhatsApp
+  if(cfg('whatsapp',''))chips.push('<span class="chip"><span class="chip-em">💬</span> WhatsApp orders</span>');
+
+  $('chipsRow').innerHTML=chips.join('');
+}
+
+function renderHoursLocation(){
+  var hours=cfg('businesshours','')||cfg('hours','')||cfg('timing','');
+  var address=cfg('address','');
+  var phone=cfg('phone','');
+  var wa=cfg('whatsapp','')||phone;
+  if(!hours&&!address&&!phone){$('hoursSec').style.display='none';return}
+
+  $('hoursSec').style.display='block';
+
+  // Open/closed status
+  if(hours){
+    var ok=isOpenNow(hours);
+    var statusEl=$('locStatus');
+    statusEl.classList.toggle('closed',!ok);
+    var pill=$('openPill');
+    pill.classList.toggle('open',ok);
+    pill.classList.toggle('closed',!ok);
+    pill.innerHTML='<span class="dot"></span>'+(ok?'Open now':'Closed');
+    $('openSub').textContent=ok?'Accepting orders':'Opens later';
+  }else{
+    $('locStatus').style.display='none';
+  }
+
+  var rows=[];
+  if(hours){
+    rows.push({icon:'🕒',label:'Hours',value:E(hours)});
+  }
+  if(address){
+    var dirLink='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address);
+    rows.push({icon:'📍',label:'Address',value:E(address),action:'<a class="loc-action" href="'+dirLink+'" target="_blank">Get directions →</a>'});
+  }
+  if(phone){
+    var p=String(phone).replace(/\D/g,'');
+    rows.push({icon:'📞',label:'Call',value:'<a href="tel:+'+p+'" style="color:var(--text)">'+E(phone)+'</a>'});
+  }
+  if(wa){
+    var w=String(wa).replace(/\D/g,'');
+    rows.push({icon:'💬',label:'WhatsApp',value:'<a href="https://wa.me/'+w+'" target="_blank" style="color:var(--text)">+91 '+E(w.slice(-10))+'</a>'});
+  }
+  $('locBody').innerHTML=rows.map(function(r){
+    return '<div class="loc-row"><div class="loc-icon">'+r.icon+'</div><div class="loc-content"><div class="loc-label">'+r.label+'</div><div class="loc-value">'+r.value+'</div>'+(r.action||'')+'</div></div>';
+  }).join('');
+}
+
+function renderGallery(){
+  var gallery=parseImages(cfg('gallery',''));
+  if(!gallery.length){$('gallerySec').style.display='none';return}
+  $('gallerySec').style.display='block';
+  $('galleryList').innerHTML=gallery.map(function(u){
+    return '<img class="gallery-img" src="'+attr(cldThumb(u,560,'fill'))+'" alt="" loading="lazy">';
+  }).join('');
+}
+
+function customizeHowItWorks(){
+  // Step-3 microcopy adapts to shop type
+  if(/restaurant|cafe|fast.?food|kitchen|dhaba|tiffin/i.test(TYPE)){
+    $('step3T').textContent='Eat well';
+    $('step3D').textContent='Delivery or pickup';
+  }else if(/meat|fish|chicken/i.test(TYPE)){
+    $('step3T').textContent='Get fresh';
+    $('step3D').textContent='Delivered or pickup';
+  }else if(/grocery|kirana/i.test(TYPE)){
+    $('step3T').textContent='Save time';
+    $('step3D').textContent='Delivery or pickup';
+  }else if(/library|study|reading.?room|coaching/i.test(TYPE)){
+    $('step3T').textContent='Walk in';
+    $('step3D').textContent='Any time of day';
+  }
+}
+
+function renderContact(){
+  var bits=[];
+  var phone=cfg('phone','');
+  var wa=cfg('whatsapp','')||phone;
+  var email=cfg('email','');
+  var website=cfg('website','');
+  var insta=cfg('instagram','')||cfg('insta','');
+  var fb=cfg('facebook','')||cfg('fb','');
+
+  if(phone){
+    var p=String(phone).replace(/\D/g,'');
+    bits.push('<a class="contact-btn call" href="tel:+'+p+'"><span class="contact-icon">📞</span><span>Call</span></a>');
+  }
+  if(wa){
+    var w=String(wa).replace(/\D/g,'');
+    var msg=encodeURIComponent('Hi! I have a question about '+(cfg('shopname','your shop')));
+    bits.push('<a class="contact-btn wa" href="https://wa.me/'+w+'?text='+msg+'" target="_blank"><span class="contact-icon">💬</span><span>WhatsApp</span></a>');
+  }
+  if(email){
+    bits.push('<a class="contact-btn mail" href="mailto:'+attr(email)+'"><span class="contact-icon">✉️</span><span>Email</span></a>');
+  }
+  if(website){
+    var wUrl=website.indexOf('http')===0?website:'https://'+website;
+    bits.push('<a class="contact-btn web" href="'+attr(wUrl)+'" target="_blank"><span class="contact-icon">🌐</span><span>Website</span></a>');
+  }
+  if(insta){
+    var iUrl=insta.indexOf('http')===0?insta:'https://instagram.com/'+insta.replace(/^@/,'');
+    bits.push('<a class="contact-btn insta" href="'+attr(iUrl)+'" target="_blank"><span class="contact-icon">📷</span><span>Instagram</span></a>');
+  }
+  if(fb){
+    var fUrl=fb.indexOf('http')===0?fb:'https://facebook.com/'+fb;
+    bits.push('<a class="contact-btn fb" href="'+attr(fUrl)+'" target="_blank"><span class="contact-icon">👍</span><span>Facebook</span></a>');
+  }
+  if(!bits.length){$('contactSec').style.display='none';return}
+  $('contactGrid').innerHTML=bits.join('');
+}
+
+// ─── Products parsing ──────────────────────────────────────────────
+function parseProducts(r){
+  if(!r||!r.table||!r.table.rows)return;
+  var hd=[], ds=0;
+  if(r.table.cols)r.table.cols.forEach(function(c){hd.push((c.label||'').toLowerCase().replace(/\s+/g,''))});
+  if(hd.every(function(h){return !h})&&r.table.rows.length>0){
+    hd=[]; var fr=r.table.rows[0];
+    if(fr.c)fr.c.forEach(function(cl){var v=cl?(cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''):'';hd.push(v.toLowerCase().replace(/\s+/g,''))});
+    ds=1;
+  }
+  for(var i=ds;i<r.table.rows.length;i++){
+    var row=r.table.rows[i];if(!row.c)continue;
+    var o={};
+    row.c.forEach(function(cl,ci){if(ci>=hd.length)return;var k=hd[ci];if(!k)return;var v=cl?(cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''):'';o[k]=v});
+    if(o.name){
+      var stock=String(o.stock||'in stock').toLowerCase();
+      if(/out|sold|0|false|no/.test(stock))continue;
+      products.push({
+        name:o.name,
+        price:parseFloat(o.price)||0,
+        image:o.image||'',
+        emoji:o.emoji||'',
+        bestseller:String(o.bestseller||'').toLowerCase()==='yes',
+        veg:String(o.veg||'').toLowerCase(),
+        category:o.category||''
+      });
+    }
+  }
+}
+
+function renderMenu(){
+  if(!products.length){$('menuSec').style.display='none';return}
+  // Best 6 — bestsellers first, then top by order. Cap at 6.
+  var picks=products.filter(function(p){return p.bestseller}).slice(0,6);
+  if(picks.length<4){
+    products.forEach(function(p){
+      if(picks.indexOf(p)<0 && picks.length<6) picks.push(p);
+    });
+  }
+  if(!picks.length){$('menuSec').style.display='none';return}
+
+  $('menuSec').style.display='block';
+  var anyBestseller=picks.some(function(p){return p.bestseller});
+  $('menuTitle').innerHTML=anyBestseller?'⭐ Most-loved <span class="accent">items</span>':'Featured <span class="accent">items</span>';
+  $('menuSub').textContent=picks.length+' of '+products.length+' available items · tap to see them all';
+
+  var html=picks.map(function(p){
+    var img=primaryImage(p.image);
+    var imgHtml=img
+      ? '<img class="menu-item-img" src="'+attr(cldThumb(img,400,'fill'))+'" alt="" loading="lazy">'
+      : '<div class="menu-item-emoji">'+(p.emoji||catEmoji(p.category)||typeEmoji(TYPE))+'</div>';
+    var vegHtml='';
+    if(/yes|true|veg|1/.test(p.veg) && !/non.?veg/.test(p.veg)){
+      vegHtml='<div class="menu-item-veg" title="Vegetarian"></div>';
+    }else if(/non.?veg|nv|no/.test(p.veg)){
+      vegHtml='<div class="menu-item-veg nv" title="Non-vegetarian"></div>';
+    }
+    var bestHtml=p.bestseller?'<div class="menu-item-best">★ Best</div>':'';
+    var priceHtml=p.price>0
+      ? '<span class="menu-item-price">₹'+p.price+'</span>'
+      : '<span class="menu-item-price ask">Ask price</span>';
+    return '<div class="menu-item"><div class="menu-item-img-wrap">'+imgHtml+vegHtml+bestHtml+'</div>'
+      +'<div class="menu-item-info"><div class="menu-item-name">'+E(p.name)+'</div>'
+      +'<div class="menu-item-bottom">'+priceHtml+'</div></div></div>';
+  }).join('');
+  $('menuGrid').innerHTML=html;
+}
+
+// ─── Orders parsing (for reviews + total order count + rating) ─────
+function parseOrders(r){
+  if(!r||!r.table||!r.table.rows)return;
+  var hd=[];
+  if(r.table.cols)r.table.cols.forEach(function(c){hd.push((c.label||'').toLowerCase().replace(/\s+/g,''))});
+  var ratingSum=0;
+  for(var i=0;i<r.table.rows.length;i++){
+    var row=r.table.rows[i];if(!row.c)continue;
+    var o={};
+    row.c.forEach(function(cl,ci){if(ci>=hd.length)return;var k=hd[ci];if(!k)return;var v=cl?(cl.f!=null?String(cl.f):cl.v!=null?String(cl.v):''):'';o[k]=v});
+    if(o.orderid)orderCount++;
+    var stars=parseInt(o.reviewstars||'0')||0;
+    if(stars>=1){
+      ratingSum+=stars;
+      ratingCount++;
+    }
+    if(stars>=4 && o.reviewtext){
+      reviews.push({
+        stars:stars,
+        text:String(o.reviewtext).slice(0,220),
+        name:String(o.customername||'Customer').split(/\s+/)[0]
+      });
+    }
+  }
+  reviews=reviews.reverse().slice(0,3); // most recent first
+  ratingAvg=ratingCount?(ratingSum/ratingCount):0;
+}
+
+function renderStats(){
+  // Rating — Config override (e.g. Google rating) wins, else Orders-derived
+  var displayRating = cfgRatingOverride!=null ? cfgRatingOverride : ratingAvg;
+  var displayCount  = cfgRatingCountOverride!=null ? cfgRatingCountOverride : ratingCount;
+  if(displayCount>0 || displayRating>0){
+    $('statRatingV').textContent=displayRating.toFixed(1);
+  }
+  // Orders served
+  if(orderCount>0){
+    $('statOrdersV').textContent=formatBigNum(orderCount);
+  }
+  // Established / since (re-evaluate with config + Orders fallback)
+  var since=cfg('established','')||cfg('since','')||cfg('founded','');
+  if(!since){since=computeYearOpen()}
+  $('statSinceV').textContent=since||'—';
+}
+
+function renderReviews(){
+  // Merge: Config-sourced reviews first (Google or hand-written), then Orders
+  // reviews. Cap at 5 cards total so the section stays scannable on mobile.
+  var merged = cfgReviews.concat(reviews).slice(0,5);
+  if(!merged.length){$('reviewsSec').style.display='none';return}
+  $('reviewsSec').style.display='block';
+  // Display rating + count: Config override (Google rating) wins over Orders
+  var displayRating = cfgRatingOverride!=null ? cfgRatingOverride : ratingAvg;
+  var displayCount  = cfgRatingCountOverride!=null ? cfgRatingCountOverride : ratingCount;
+  $('reviewsSub').textContent = displayCount
+    ? 'Based on '+displayCount+' reviews'
+    : 'What people are saying';
+
+  var html='';
+  // Summary card if we have a rating to display
+  if(displayCount>=2 || (displayRating>0 && cfgRatingOverride!=null)){
+    var stars='';for(var s=0;s<5;s++)stars+=(s<Math.round(displayRating)?'★':'☆');
+    html+='<div class="reviews-summary">'
+      +'<div><div class="reviews-rating">'+displayRating.toFixed(1)+'</div>'
+      +'<div class="reviews-stars-big">'+stars+'</div>'
+      +'<div class="reviews-count">'+displayCount+' reviews</div></div>'
+      +'<a class="reviews-cta" href="'+E(getOrderUrl())+'">Order now</a>'
+      +'</div>';
+  }
+  // Individual review cards. Cards backed by a Google profile photo render
+  // the avatar as an <img>; fall back to the initial-letter circle otherwise.
+  merged.forEach(function(rv){
+    var initial=String(rv.name||'?').charAt(0).toUpperCase();
+    var st='';for(var s=0;s<5;s++)st+=(s<rv.stars?'★':'☆');
+    var avatar = rv.photo
+      ? '<div class="review-avatar" style="background:none"><img src="'+E(rv.photo)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover" referrerpolicy="no-referrer" onerror="this.parentNode.innerHTML=\''+initial+'\'"></div>'
+      : '<div class="review-avatar">'+initial+'</div>';
+    var dateLine = rv.date ? '<div class="review-date" style="font:500 11px var(--F);color:var(--muted);margin-top:2px">'+E(rv.date)+'</div>' : '';
+    html+='<div class="review">'
+      +avatar
+      +'<div class="review-body">'
+      +'<div class="review-top"><div class="review-name">'+E(rv.name)+dateLine+'</div><div class="review-stars">'+st+'</div></div>'
+      +'<div class="review-text">'+E(rv.text)+'</div>'
+      +'</div></div>';
+  });
+  // "Rate us on Google" CTA — only when the daily refresh has populated
+  // RateUsURL (which it does for any tenant with a configured GooglePlaceID).
+  // Hand-written-testimonial tenants without a Google listing won't see it.
+  var rateUsUrl = cfg('rateusurl','');
+  if(rateUsUrl){
+    html+='<a class="review-rate-cta" href="'+E(rateUsUrl)+'" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:14px 18px;background:var(--brand-bg);color:var(--brand);border-radius:13px;font:800 13px var(--F);text-decoration:none;border:1.5px solid var(--brand);transition:transform .15s">'
+      +'<span style="font-size:16px">⭐</span>'
+      +'<span>Rate us on Google</span>'
+      +'<span style="margin-left:auto;opacity:.7;font-size:14px">›</span>'
+      +'</a>';
+  }
+  $('reviewsList').innerHTML=html;
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────
+function isOpenNow(hoursStr){
+  try{
+    var m=String(hoursStr).match(/(\d{1,2})(?::?(\d{2}))?\s*[-–to]+\s*(\d{1,2})(?::?(\d{2}))?/i);
+    if(!m)return true;
+    var openMin=parseInt(m[1])*60+parseInt(m[2]||'0');
+    var closeMin=parseInt(m[3])*60+parseInt(m[4]||'0');
+    var now=new Date();
+    var istMs=now.getTime()+(now.getTimezoneOffset()+330)*60*1000;
+    var ist=new Date(istMs);
+    var nowMin=ist.getHours()*60+ist.getMinutes();
+    if(closeMin>openMin)return nowMin>=openMin&&nowMin<=closeMin;
+    return nowMin>=openMin||nowMin<=closeMin;
+  }catch(e){return true}
+}
+
+function shadeHex(hex,pct){
+  try{
+    var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=Math.abs(pct)/100;
+    if(pct>0){r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f)}
+    else{r=Math.round(r*(1-f));g=Math.round(g*(1-f));b=Math.round(b*(1-f))}
+    return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+  }catch(e){return hex}
+}
+function hexAlpha(hex,alpha){
+  try{
+    var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+    return 'rgba('+r+','+g+','+b+','+alpha+')';
+  }catch(e){return 'rgba(12,131,31,'+alpha+')'}
+}
+
+function cldThumb(url,w,mode){
+  if(!url)return url;
+  var s=String(url);
+  var m=s.match(/^(https?:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\/)(.+)$/);
+  if(!m)return s;
+  if(/^[a-z]_[^,\/]+(,|\/)/i.test(m[2]))return s;
+  return m[1]+'w_'+(w||400)+',c_'+(mode||'fill')+',q_auto,f_auto/'+m[2];
+}
+function parseImages(s){return String(s||'').split('|').map(function(u){return u.trim()}).filter(Boolean)}
+function primaryImage(s){return parseImages(s)[0]||''}
+
+function formatBigNum(n){
+  if(n>=1000000)return (n/1000000).toFixed(1).replace(/\.0$/,'')+'M';
+  if(n>=1000)return (n/1000).toFixed(1).replace(/\.0$/,'')+'k';
+  return String(n);
+}
+
+function computeYearOpen(){
+  // Heuristic: derive "Since YYYY" from earliest order if Config didn't set it.
+  // (Mostly cosmetic — gives the homepage a "since 2023" badge automatically.)
+  return new Date().getFullYear();
+}
+
+function typeEmoji(t){
+  t=String(t||'').toLowerCase();
+  if(/restaurant/.test(t))return '🍽️';
+  if(/cafe|café/.test(t))return '☕';
+  if(/fast.?food|kitchen|tiffin/.test(t))return '🍔';
+  if(/dhaba/.test(t))return '🥘';
+  if(/meat|fish|chicken|mutton|butcher/.test(t))return '🥩';
+  if(/library|study|reading.?room|coaching/.test(t))return '📚';
+  if(/grocery|kirana/.test(t))return '🛒';
+  if(/bakery/.test(t))return '🍰';
+  if(/pharma/.test(t))return '💊';
+  return '🏬';
+}
+function typeLabel(t){
+  t=String(t||'').toLowerCase();
+  if(/restaurant/.test(t))return 'Restaurant';
+  if(/cafe|café/.test(t))return 'Café';
+  if(/fast.?food/.test(t))return 'Fast food';
+  if(/kitchen/.test(t))return 'Kitchen';
+  if(/tiffin/.test(t))return 'Tiffin service';
+  if(/dhaba/.test(t))return 'Dhaba';
+  if(/meat|butcher/.test(t))return 'Meat shop';
+  if(/fish/.test(t))return 'Fish market';
+  if(/library|study|reading.?room/.test(t))return 'Library';
+  if(/coaching/.test(t))return 'Coaching';
+  if(/grocery|kirana/.test(t))return 'Grocery';
+  if(/bakery/.test(t))return 'Bakery';
+  if(/pharma/.test(t))return 'Pharmacy';
+  return '';
+}
+function catEmoji(c){
+  c=String(c||'').toLowerCase();
+  if(/burger|sandwich/.test(c))return '🍔';
+  if(/pizza/.test(c))return '🍕';
+  if(/chicken/.test(c))return '🍗';
+  if(/biryani|rice/.test(c))return '🍚';
+  if(/drink|beverage|juice/.test(c))return '🥤';
+  if(/dessert|sweet|cake/.test(c))return '🍰';
+  if(/roti|bread|naan/.test(c))return '🫓';
+  if(/dal|curry|gravy/.test(c))return '🍛';
+  if(/snack|starter/.test(c))return '🍿';
+  return '';
+}
+
+function setupManifest(shopName, brand){
+  try{
+    if(location.protocol==='file:')return;
+    var icons=[
+      {src:location.origin+'/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
+      {src:location.origin+'/icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}
+    ];
+    var logoUrl=primaryImage(cfg('logo',''));
+    if(logoUrl){
+      icons=[
+        {src:cldThumb(logoUrl,192,'fill'),sizes:'192x192',type:'image/png',purpose:'any maskable'},
+        {src:cldThumb(logoUrl,512,'fill'),sizes:'512x512',type:'image/png',purpose:'any maskable'}
+      ];
+    }
+    var m={
+      name:shopName+' — Order Online',
+      short_name:(shopName||'Shop').slice(0,12),
+      description:'Order online from '+shopName,
+      start_url:location.origin+location.pathname+location.search,
+      id:location.pathname+location.search,
+      display:'standalone',
+      background_color:'#ffffff',
+      theme_color:brand||'#0c831f',
+      orientation:'portrait',
+      icons:icons
+    };
+    var blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+    var link=document.querySelector('link[rel=manifest]');
+    if(link)link.href=URL.createObjectURL(blob);
+  }catch(e){}
+}
+
+function showError(title, msg){
+  $('splash').classList.add('hide');
+  $('page').style.display='block';
+  $('page').innerHTML='<div class="empty-state">'
+    +'<div class="empty-emoji">🏬</div>'
+    +'<div class="empty-title">'+E(title)+'</div>'
+    +'<div class="empty-text">'+E(msg)+'</div>'
+    +'<a class="empty-cta" href="/">← Back to StorePro</a>'
+    +'</div>';
+}
+
+// ─── Scroll-driven UI: reveal-on-scroll, sticky CTA, header shadow ─
+function initScrollUI(){
+  // Reveal sections as they enter the viewport
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}
+      });
+    },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+  }else{
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});
+  }
+
+  // Sticky CTA + header shadow on scroll
+  var hero=$('hero');
+  var hdr=$('hdr');
+  var sticky=$('stickyCta');
+  function onScroll(){
+    var y=window.scrollY||window.pageYOffset||0;
+    if(hero){
+      var threshold=hero.offsetTop+hero.offsetHeight-100;
+      if(y>threshold){sticky.classList.add('show')}
+      else{sticky.classList.remove('show')}
+    }
+    if(hdr){
+      hdr.classList.toggle('scrolled',y>20);
+    }
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+// ─── Service worker (HTTPS only) ───────────────────────────────────
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
+
+// Failsafe: if init takes >9s, show error
+var _initTimeout=setTimeout(function(){
+  if($('splash')&&!$('splash').classList.contains('hide')){
+    showError('Taking too long', 'We could not load this store. Please check your internet connection and try again.');
+  }
+},9000);
+
+init();
+// Clear failsafe once page is shown
+var _watch=setInterval(function(){
+  if($('page')&&$('page').style.display!=='none'){clearTimeout(_initTimeout);clearInterval(_watch)}
+},500);
+</script>
+</body>
+</html>

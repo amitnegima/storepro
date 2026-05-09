@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#4F46E5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Loading… · StorePro</title>
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Noto+Sans+Devanagari:wght@500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  /* "Indigo Study" — modern academic palette. Indigo brand for focus +
+     trust, emerald accent for positive/active states, cool slate neutrals
+     on a barely-warm off-white. Replaces the previous saturated teal
+     for a more contemporary, less default-Tailwind look. */
+  --brand:#4F46E5;--brand-dk:#3730A3;--brand-lt:#818CF8;--brand-bg:#EEF2FF;--brand-glow:rgba(79,70,229,.30);
+  --accent:#10B981;--accent-dk:#047857;--accent-bg:#D1FAE5;
+  --bg:#FAFAFA;--card:#FFFFFF;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#94A3B8;
+  --line:#E2E8F0;--line-soft:#F1F5F9;
+  --gold:#F59E0B;--rose:#E11D48;
+  --r:12px;--r2:16px;--r3:22px;--pill:999px;
+  --mw:520px;
+  --px:max(18px,env(safe-area-inset-left,18px));
+  --F:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --FH:'Noto Sans Devanagari',sans-serif;
+  --FS:'Playfair Display',Georgia,serif;
+  --EASE:cubic-bezier(.25,.8,.25,1);
+  --sh:0 1px 3px rgba(15,23,42,.05);
+  --sh2:0 8px 24px rgba(15,23,42,.08);
+  --sh3:0 16px 48px rgba(15,23,42,.12);
+}
+html,body{overscroll-behavior-y:none}
+body{font-family:var(--F);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55;min-height:100dvh}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+@media(min-width:541px){
+  body{background:#e9eaee}
+  body::before{content:'';position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);width:var(--mw);background:var(--bg);box-shadow:0 0 60px rgba(15,23,42,.12);z-index:-1;pointer-events:none}
+}
+
+/* ─── SPLASH ─────────────────────────────────────── */
+.splash{position:fixed;inset:0;background:linear-gradient(160deg,var(--brand-dk),var(--brand) 50%,var(--brand-lt));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:9999;transition:opacity .5s,transform .5s var(--EASE);color:#fff}
+.splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 25% 30%,rgba(255,255,255,.12),transparent 50%),radial-gradient(circle at 75% 70%,rgba(255,255,255,.08),transparent 45%);pointer-events:none}
+.splash-emoji{font-size:64px;animation:popIn .55s var(--EASE) both;filter:drop-shadow(0 8px 20px rgba(0,0,0,.3));position:relative}
+.splash-name{font:800 24px var(--F);letter-spacing:-.5px;animation:fadeUp .5s .25s var(--EASE) both;text-align:center;padding:0 28px;opacity:0;position:relative}
+.splash-tag{font:500 12px var(--F);opacity:0;animation:fadeUp .5s .4s var(--EASE) both;color:rgba(255,255,255,.85);position:relative}
+.splash-loader{width:30px;height:30px;border:3px solid rgba(255,255,255,.18);border-top-color:#fff;border-radius:50%;margin-top:6px;opacity:0;animation:fadeUp .4s .5s var(--EASE) both,spin .8s .5s linear infinite;position:relative}
+
+@keyframes popIn{0%{transform:scale(0) rotate(-25deg);opacity:0}60%{transform:scale(1.18) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* ─── PAGE ───────────────────────────────────────── */
+.page{display:none;min-height:100dvh;position:relative;background:var(--bg)}
+
+/* ─── TOP HEADER ─────────────────────────────────── */
+.hdr{position:sticky;top:0;z-index:90;background:rgba(255,255,255,.94);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);padding:11px var(--px);display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line-soft);max-width:var(--mw);margin:0 auto;transition:box-shadow .25s}
+.hdr.scrolled{box-shadow:var(--sh)}
+.hdr-logo{width:44px;height:44px;border-radius:12px;object-fit:cover;background:var(--brand-bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--brand);border:1.5px solid var(--line)}
+.hdr-logo.has-img{font-size:0}
+.hdr-info{flex:1;min-width:0}
+.hdr-name{font:800 15px var(--F);color:var(--ink);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.hdr-meta{font:500 11px var(--F);color:var(--ink3);margin-top:2px;display:flex;align-items:center;gap:6px}
+.hdr-meta .open{color:var(--brand);font-weight:700;display:flex;align-items:center;gap:4px}
+.hdr-meta .open::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hdr-cta{padding:9px 16px;background:var(--brand);color:#fff;border-radius:11px;font:800 12px var(--F);flex-shrink:0;white-space:nowrap;letter-spacing:-.1px;cursor:pointer;border:none;box-shadow:0 2px 8px var(--brand-glow);transition:transform .15s}
+.hdr-cta:active{transform:scale(.94)}
+.hdr-track{width:36px;height:36px;background:var(--brand-bg);color:var(--brand);border:1.5px solid var(--brand);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;flex-shrink:0;padding:0;transition:.15s}
+.hdr-track:hover{background:var(--brand);color:#fff}
+.hdr-track:active{transform:scale(.92)}
+
+/* ─── HERO ───────────────────────────────────────── */
+.hero{position:relative;min-height:340px;background:linear-gradient(135deg,var(--brand-dk) 0%,var(--brand) 60%,var(--brand-lt) 100%);background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:32px 22px 42px;color:#fff;overflow:hidden;max-width:var(--mw);margin:0 auto}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.55) 100%);pointer-events:none}
+.hero.has-bg::before{background:linear-gradient(180deg,rgba(0,0,0,.30) 0%,rgba(0,0,0,.70) 100%)}
+.hero-badge{position:relative;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);backdrop-filter:blur(10px);padding:6px 14px;border-radius:var(--pill);font:800 11px var(--F);letter-spacing:.06em;text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.22);align-self:flex-start;animation:fadeUp .6s .2s var(--EASE) both}
+.hero-name{position:relative;font:800 32px var(--F);line-height:1.1;letter-spacing:-.6px;margin-top:14px;text-shadow:0 4px 24px rgba(0,0,0,.5);animation:fadeUp .55s .35s var(--EASE) both}
+.hero-name.long{font-size:26px}
+.hero-name-hi{position:relative;font:600 16px var(--FH);opacity:.92;margin-top:4px;animation:fadeUp .55s .4s var(--EASE) both}
+.hero-tag{position:relative;font:500 14px var(--F);opacity:.95;margin-top:8px;text-shadow:0 2px 10px rgba(0,0,0,.4);animation:fadeUp .55s .45s var(--EASE) both}
+.hero-stats{position:relative;display:flex;gap:10px;margin-top:20px;animation:fadeUp .55s .55s var(--EASE) both}
+.hero-stat{flex:1;background:rgba(255,255,255,.16);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.18);border-radius:13px;padding:10px 12px;text-align:center}
+.hero-stat-v{font:800 16px var(--F);letter-spacing:-.3px}
+.hero-stat-l{font:600 9px var(--F);text-transform:uppercase;letter-spacing:.06em;opacity:.85;margin-top:2px}
+
+/* ─── CHIPS ──────────────────────────────────────── */
+.chips{padding:18px var(--px) 4px;max-width:var(--mw);margin:0 auto;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:8px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--pill);font:700 12px var(--F);color:var(--ink2);display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sh)}
+.chip-i{color:var(--brand);font-size:13px}
+
+/* ─── SECTIONS ───────────────────────────────────── */
+.section{max-width:var(--mw);margin:0 auto;padding:24px var(--px) 4px}
+.section-title{font:800 20px var(--F);letter-spacing:-.4px;color:var(--ink);margin-bottom:4px}
+.section-title .accent{color:var(--brand)}
+.section-sub{font:500 13px var(--F);color:var(--ink3);margin-bottom:16px}
+
+/* ─── ABOUT ──────────────────────────────────────── */
+.about-card{background:var(--card);border-radius:var(--r3);padding:22px;border:1px solid var(--line-soft);box-shadow:var(--sh);position:relative;overflow:hidden}
+.about-card::before{content:'\201C';position:absolute;top:-14px;right:18px;font:800 110px var(--FS);color:var(--brand-bg);line-height:1;pointer-events:none;opacity:.6}
+.about-text{font:500 14px var(--F);color:var(--ink2);line-height:1.7;position:relative}
+.about-text:first-letter{font:800 28px var(--FS);color:var(--brand);float:left;line-height:1;margin:5px 8px 0 0}
+
+/* ─── PLAN CARDS ─────────────────────────────────── */
+.plans{display:flex;flex-direction:column;gap:12px;padding-top:6px}
+.plan{background:var(--card);border-radius:var(--r2);padding:18px;border:2px solid var(--line);position:relative;cursor:pointer;transition:.2s var(--EASE);box-shadow:var(--sh)}
+.plan:hover{border-color:var(--brand-lt);transform:translateY(-2px);box-shadow:var(--sh2)}
+.plan.popular{border-color:var(--brand);background:linear-gradient(135deg,var(--brand-bg) 0%,var(--card) 80%)}
+.plan.popular::before{content:'★ MOST POPULAR';position:absolute;top:-9px;left:18px;background:var(--brand);color:#fff;font:800 9px var(--F);padding:4px 10px;border-radius:var(--pill);letter-spacing:.08em;box-shadow:0 4px 10px var(--brand-glow)}
+.plan-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.plan-name{font:800 16px var(--F);color:var(--ink);letter-spacing:-.2px;line-height:1.2}
+.plan-name-hi{font:500 12px var(--FH);color:var(--ink3);margin-top:2px}
+.plan-cat{display:inline-block;font:700 10px var(--F);color:var(--brand);background:var(--brand-bg);padding:3px 10px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+.plan-prices{text-align:right;flex-shrink:0}
+.plan-price{font:800 22px var(--F);color:var(--ink);letter-spacing:-.5px;line-height:1}
+.plan-mrp{font:600 12px var(--F);color:var(--ink4);text-decoration:line-through;margin-top:2px}
+.plan-save{font:800 10px var(--F);color:var(--brand);background:var(--brand-bg);padding:2px 8px;border-radius:var(--pill);margin-top:4px;display:inline-block}
+.plan-desc{font:500 12px var(--F);color:var(--ink2);margin-top:10px;line-height:1.55}
+.plan-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.plan-dur{font:700 11px var(--F);color:var(--ink3);display:flex;align-items:center;gap:5px}
+.plan-cta{padding:9px 18px;background:var(--brand);color:#fff;border:none;border-radius:var(--r);font:800 12px var(--F);cursor:pointer;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 3px 10px var(--brand-glow)}
+.plan-cta:active{transform:scale(.95)}
+
+/* ─── AMENITIES ──────────────────────────────────── */
+.amen{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.amen-item{display:flex;align-items:center;gap:10px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.amen-i{width:34px;height:34px;background:var(--brand-bg);color:var(--brand);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.amen-l{font:700 12px var(--F);color:var(--ink);line-height:1.25}
+
+/* ─── REVIEWS ────────────────────────────────────── */
+.reviews-summary{background:linear-gradient(135deg,#fff8e1,#fef3c7);border:1px solid #fde68a;border-radius:var(--r2);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+.reviews-rating{font:800 36px var(--F);color:#92400e;letter-spacing:-1.5px;line-height:1}
+.reviews-stars{color:#f59e0b;font-size:14px;letter-spacing:1px;margin-top:2px}
+.reviews-count{font:600 11px var(--F);color:#92400e;opacity:.8;margin-top:3px}
+.reviews-cta{padding:11px 18px;background:#92400e;color:#fff;border-radius:11px;font:800 12px var(--F);text-decoration:none;flex-shrink:0;box-shadow:0 4px 12px rgba(146,64,14,.25)}
+.review{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r);padding:14px;display:flex;gap:12px;margin-bottom:8px;box-shadow:var(--sh)}
+.review-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--brand-lt),var(--brand-dk));color:#fff;display:flex;align-items:center;justify-content:center;font:800 16px var(--F);flex-shrink:0;letter-spacing:-.5px;overflow:hidden}
+.review-body{flex:1;min-width:0}
+.review-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.review-name{font:700 13px var(--F);color:var(--ink);line-height:1.2}
+.review-date{font:500 11px var(--F);color:var(--ink4);margin-top:2px}
+.review-rating{color:#f59e0b;font-size:11px;letter-spacing:.5px;flex-shrink:0}
+.review-text{font:500 13px var(--F);color:var(--ink2);line-height:1.55;margin-top:6px}
+.review-text.hi{font-family:var(--FH)}
+.rate-cta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:14px 18px;background:var(--brand-bg);color:var(--brand);border-radius:13px;font:800 13px var(--F);text-decoration:none;border:1.5px solid var(--brand);transition:.15s}
+.rate-cta:hover{background:var(--brand);color:#fff}
+
+/* ─── GALLERY ────────────────────────────────────── */
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:var(--bg)}
+
+/* ─── HOW IT WORKS ───────────────────────────────── */
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;align-items:flex-start;gap:14px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.step-n{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font:800 13px var(--F);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 10px var(--brand-glow)}
+.step-t{font:700 13px var(--F);color:var(--ink);line-height:1.4}
+.step-d{font:500 12px var(--F);color:var(--ink3);margin-top:3px;line-height:1.5}
+
+/* ─── LOCATION ───────────────────────────────────── */
+.loc{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
+.loc-row{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line-soft)}
+.loc-row:last-child{border-bottom:none}
+.loc-i{width:36px;height:36px;border-radius:10px;background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.loc-c{flex:1;min-width:0}
+.loc-l{font:600 11px var(--F);color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+.loc-v{font:600 13px var(--F);color:var(--ink);line-height:1.4;margin-top:2px}
+.loc-action{font:700 12px var(--F);color:var(--brand);margin-top:4px;display:inline-flex;align-items:center;gap:3px}
+
+/* ─── FOOTER ─────────────────────────────────────── */
+.foot{padding:32px var(--px) 120px;text-align:center;max-width:var(--mw);margin:0 auto}
+.foot-line{width:36px;height:2px;background:var(--brand);margin:18px auto;border-radius:1px}
+.foot-brand{font:600 12px var(--F);color:var(--ink3);line-height:1.7}
+.foot-brand b{color:var(--brand);font-weight:800}
+.foot-power{font:500 11px var(--F);color:var(--ink4);margin-top:14px;letter-spacing:.04em}
+
+/* ─── STICKY CTA ─────────────────────────────────── */
+.scta{position:fixed;bottom:0;left:0;right:0;z-index:80;display:flex;justify-content:center;pointer-events:none;padding:12px var(--px) calc(12px + env(safe-area-inset-bottom))}
+.scta-in{max-width:var(--mw);width:100%;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:12px 14px;border:1px solid var(--line);border-radius:18px;box-shadow:0 -8px 28px rgba(0,0,0,.10),var(--sh2);pointer-events:auto;display:flex;gap:8px;align-items:center}
+.scta-btn{flex:1;height:50px;background:linear-gradient(135deg,var(--brand-lt),var(--brand) 50%,var(--brand-dk));color:#fff;border:none;border-radius:13px;font:800 14px var(--F);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.2px;box-shadow:0 6px 18px var(--brand-glow)}
+.scta-btn:active{transform:scale(.97)}
+.scta-call{width:50px;height:50px;background:var(--brand-bg);color:var(--brand);border:none;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;flex-shrink:0;text-decoration:none;border:1.5px solid var(--brand)}
+.scta-wa{width:50px;height:50px;background:#dcfce7;color:#15803d;border:1.5px solid #15803d;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;flex-shrink:0;text-decoration:none}
+.scta-wa:hover{background:#15803d;color:#fff}
+
+/* ─── ENROLL SHEET ───────────────────────────────── */
+/* ─── SEATS-LEFT BANNER ──────────────────────── */
+/* Tiered scarcity: <60% → social proof, 60-85% → soft urgency, 85-99% → hard
+   urgency, 100% → waitlist. Dashboard owners can hide via Config.ShowSeatsLeft=no
+   (e.g. tenants on a rotation model who oversell memberships vs physical seats). */
+/* Constrain to the same mobile-first column the rest of the page uses
+   (--mw=520px). Inner edges align with .section content (which has
+   padding:24px var(--px)) so the banner sits flush with surrounding cards
+   on desktop instead of stretching to the viewport edges. */
+.seats-banner{margin:0 auto 22px;max-width:calc(var(--mw) - var(--px) * 2);width:calc(100% - var(--px) * 2);padding:16px 18px;border-radius:16px;display:flex;align-items:center;gap:14px;animation:fadeIn .4s var(--EASE);box-shadow:0 4px 16px rgba(15,23,42,.05);position:relative}
+.seats-banner-i{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;flex-shrink:0;background:rgba(255,255,255,.7);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.seats-banner-c{flex:1;min-width:0}
+.seats-banner-t{font:800 15px var(--F);letter-spacing:-.2px;line-height:1.25}
+.seats-banner-d{font:500 12.5px var(--F);margin-top:4px;line-height:1.5;opacity:.78}
+.seats-banner.calm{background:linear-gradient(135deg,#EEF2FF 0%,#F5F3FF 50%,#fff 100%);border:1px solid rgba(79,70,229,.28);color:#1E2F6B}
+.seats-banner.calm .seats-banner-i{background:#fff;color:#4F46E5}
+.seats-banner.warn{background:linear-gradient(135deg,#fef3c7,#fff);border:1px solid #d97706;color:#92400e}
+.seats-banner.warn .seats-banner-i{background:#fff;color:#d97706}
+.seats-banner.urgent{background:linear-gradient(135deg,#fee2e2,#fff);border:1.5px solid #dc2626;color:#991b1b;animation:fadeIn .4s var(--EASE),pulseUrgent 2.5s ease-in-out infinite}
+.seats-banner.urgent .seats-banner-i{background:#fff;color:#dc2626}
+@keyframes pulseUrgent{0%,100%{box-shadow:0 4px 12px rgba(220,38,38,.15)}50%{box-shadow:0 4px 22px rgba(220,38,38,.32)}}
+.seats-banner.full{background:linear-gradient(135deg,#1a1f36,#0b1220);color:#fff;border:1px solid #1a1f36}
+.seats-banner.full .seats-banner-i{background:rgba(255,255,255,.1);color:#fff}
+/* Right-side stat block — replaces the standalone progress bar so the
+   "X of Y" ratio is legible even when the bar is barely filled (e.g. 4/40). */
+.seats-banner-stat{flex:0 0 auto;text-align:right;padding-left:14px;border-left:1px dashed rgba(0,0,0,.12);min-width:88px}
+.seats-banner.full .seats-banner-stat{border-left-color:rgba(255,255,255,.18)}
+.seats-banner-stat-num{font:800 20px var(--F);letter-spacing:-.5px;line-height:1;display:flex;align-items:baseline;gap:4px;justify-content:flex-end}
+.seats-banner-stat-num .of{font-size:13px;font-weight:600;opacity:.55;letter-spacing:0}
+.seats-banner-stat-lbl{font:700 9.5px var(--F);text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-top:5px}
+.seats-banner-bar{margin-top:8px;width:100%;height:5px;background:rgba(0,0,0,.08);border-radius:99px;overflow:hidden}
+.seats-banner.full .seats-banner-bar{background:rgba(255,255,255,.15)}
+.seats-banner-bar-fill{height:100%;background:currentColor;border-radius:99px;transition:width .8s var(--EASE);opacity:.65}
+.seats-waitlist-btn{padding:10px 18px;background:#fff;color:#0b1220;border-radius:10px;font:800 11px var(--F);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border:none;flex-shrink:0;transition:.15s}
+.seats-waitlist-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+@media(max-width:480px){
+  .seats-banner{flex-wrap:wrap;padding:14px 14px;gap:12px}
+  .seats-banner-stat{width:100%;text-align:left;padding-left:0;border-left:none;border-top:1px dashed rgba(0,0,0,.1);padding-top:10px;margin-top:2px}
+  .seats-banner.full .seats-banner-stat{border-top-color:rgba(255,255,255,.18)}
+  .seats-banner-stat-num{justify-content:flex-start}
+  .seats-banner-bar{width:100%}
+  .seats-waitlist-btn{width:100%}
+}
+
+/* ─── WAITLIST MODAL ─────────────────────────── */
+.wl-bg{position:fixed;inset:0;background:rgba(11,18,32,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:240;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s var(--EASE)}
+.wl-card{background:var(--card);border-radius:18px;max-width:420px;width:100%;box-shadow:0 24px 60px rgba(15,23,42,.25);animation:wlSlideUp .25s var(--EASE);overflow:hidden}
+@keyframes wlSlideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.wl-hdr{padding:24px 22px 14px;border-bottom:1px solid var(--line-soft);text-align:center}
+.wl-hdr-i{font-size:38px;margin-bottom:8px}
+.wl-hdr-t{font:800 18px var(--F);letter-spacing:-.3px;color:var(--ink)}
+.wl-hdr-s{font:500 12px var(--F);color:var(--ink3);margin-top:5px;line-height:1.5}
+.wl-body{padding:18px 22px}
+.wl-field{margin-bottom:14px}
+.wl-field-l{font:700 11px var(--F);color:var(--ink2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;display:block}
+.wl-field-i{width:100%;height:42px;padding:0 14px;border:1.5px solid var(--line);border-radius:10px;font:500 13px var(--F);color:var(--ink);background:var(--card);outline:none;transition:.15s}
+.wl-field-i:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}
+.wl-foot{padding:14px 22px 22px;display:flex;flex-direction:column;gap:8px}
+.wl-btn{height:46px;border-radius:10px;font:800 13px var(--F);letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:none;transition:.15s}
+.wl-btn.prim{background:var(--brand);color:#fff;box-shadow:0 4px 12px var(--brand-glow)}
+.wl-btn.prim:hover{background:var(--brand-dk)}
+.wl-btn.ghost{background:var(--bg);color:var(--ink2);border:1.5px solid var(--line)}
+
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center;animation:fadeIn .25s var(--EASE)}
+.sheet-overlay.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.sheet{background:var(--card);border-radius:var(--r3) var(--r3) 0 0;max-width:var(--mw);width:100%;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;animation:slideUp .3s var(--EASE)}
+.sheet-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.sheet-hdr-t{font:800 17px var(--F);color:var(--ink);letter-spacing:-.3px}
+.sheet-hdr-s{font:500 12px var(--F);color:var(--ink3);margin-top:2px}
+.sheet-x{width:34px;height:34px;border:none;background:var(--bg);border-radius:50%;font-size:18px;color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sheet-body{padding:18px 22px;overflow-y:auto;flex:1}
+.sheet-foot{padding:14px 22px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line-soft);background:var(--card);flex-shrink:0}
+
+.field{margin-bottom:14px}
+.field-l{font:700 12px var(--F);color:var(--ink2);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.field-l-req{color:var(--rose)}
+.field-i,.field-s,.field-t{width:100%;height:46px;padding:0 14px;border:1.5px solid var(--line);border-radius:var(--r);font:600 14px var(--F);color:var(--ink);background:var(--card);outline:none;transition:.15s;font-family:var(--F)}
+.field-t{height:auto;min-height:72px;padding:12px 14px;resize:vertical}
+.field-i:focus,.field-s:focus,.field-t:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}
+.field-s{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-help{font:500 11px var(--F);color:var(--ink3);margin-top:5px;line-height:1.45}
+.field-err{font:600 11px var(--F);color:var(--rose);margin-top:5px;display:none}
+.field.err .field-err{display:block}
+.field.err .field-i,.field.err .field-s,.field.err .field-t{border-color:var(--rose)}
+
+.plan-summary{background:var(--brand-bg);border:1px solid var(--brand);border-radius:var(--r);padding:14px 16px;margin-bottom:18px}
+.plan-sum-t{font:800 13px var(--F);color:var(--brand-dk);letter-spacing:-.2px}
+.plan-sum-d{font:600 12px var(--F);color:var(--ink2);margin-top:4px;line-height:1.4}
+.plan-sum-row{display:flex;align-items:center;justify-content:space-between;font:700 13px var(--F);color:var(--ink);margin-top:10px;padding-top:10px;border-top:1px dashed var(--brand)}
+.plan-sum-row.tot{font-size:16px;color:var(--brand-dk);font-weight:900}
+.addon-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);margin-bottom:8px;cursor:pointer;transition:.15s}
+.addon-row:hover{border-color:var(--brand-lt)}
+.addon-row.on{border-color:var(--brand);background:var(--brand-bg)}
+.addon-cb{width:20px;height:20px;border:1.5px solid var(--line2,#cbd5e1);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--card);transition:.15s}
+.addon-row.on .addon-cb{background:var(--brand);border-color:var(--brand);color:#fff;font:800 11px var(--F)}
+.addon-row.on .addon-cb::after{content:'✓'}
+.addon-c{flex:1;min-width:0}
+.addon-n{font:700 12px var(--F);color:var(--ink);line-height:1.25}
+.addon-d{font:500 11px var(--F);color:var(--ink3);margin-top:2px;line-height:1.4}
+.addon-p{font:800 13px var(--F);color:var(--brand);flex-shrink:0}
+
+.submit-btn{width:100%;height:50px;background:linear-gradient(135deg,var(--brand-lt),var(--brand) 50%,var(--brand-dk));color:#fff;border:none;border-radius:13px;font:800 14px var(--F);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.2px;box-shadow:0 6px 18px var(--brand-glow);transition:.15s}
+.submit-btn:active{transform:scale(.97)}
+.submit-btn:disabled{background:var(--line);cursor:not-allowed;box-shadow:none}
+
+/* Order sending shimmer */
+.order-sending{pointer-events:none;cursor:wait;position:relative;overflow:hidden}
+.order-sending::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);background-size:200% 100%;animation:shimmerSweep 1.4s var(--EASE) infinite;pointer-events:none}
+@keyframes shimmerSweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.order-spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+/* ─── SUCCESS SHEET ──────────────────────────────── */
+.succ{padding:42px 24px 28px;text-align:center}
+.succ-i{width:72px;height:72px;border-radius:50%;background:var(--brand-bg);color:var(--brand);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:36px;animation:popIn .55s var(--EASE) both;border:3px solid var(--brand);position:relative}
+.succ-i::after{content:'';position:absolute;inset:-8px;border:2px solid var(--brand);border-radius:50%;animation:successRing .9s var(--EASE) .15s both;opacity:0}
+@keyframes successRing{0%{opacity:.5;transform:scale(.85)}100%{opacity:0;transform:scale(1.15)}}
+.succ-t{font:800 22px var(--F);color:var(--ink);letter-spacing:-.4px}
+.succ-s{font:500 14px var(--F);color:var(--ink3);margin-top:8px;line-height:1.55}
+.succ-id{font:800 13px monospace;color:var(--brand-dk);background:var(--brand-bg);padding:8px 16px;border-radius:var(--pill);display:inline-block;margin-top:14px;letter-spacing:.04em}
+.succ-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.succ-btn{height:46px;border-radius:var(--r);font:800 13px var(--F);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border:none;text-decoration:none}
+.succ-btn.prim{background:var(--brand);color:#fff;box-shadow:0 4px 14px var(--brand-glow)}
+.succ-btn.sec{background:var(--bg);color:var(--ink2);border:1.5px solid var(--line)}
+
+/* ─── VERIFICATION SECTION ──────────────────────── */
+.verify-sec{margin:18px 0;padding:14px 16px;background:linear-gradient(135deg,var(--brand-bg) 0%,var(--bg) 80%);border:1px solid var(--brand);border-radius:var(--r2)}
+.verify-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.verify-t{font:800 13px var(--F);color:var(--brand-dk);letter-spacing:-.2px;text-transform:uppercase;font-size:11px}
+.verify-s{font:500 11px var(--F);color:var(--ink2);margin-top:4px;line-height:1.5}
+.photo-up{position:relative;border:1.5px dashed var(--line);border-radius:var(--r);background:var(--card);transition:.15s;overflow:hidden}
+.photo-up:hover{border-color:var(--brand)}
+.photo-up.uploaded{border-style:solid;border-color:var(--brand);background:var(--brand-bg)}
+.photo-up-pick{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px 16px;cursor:pointer;text-align:center;gap:4px}
+.photo-up-i{font-size:28px;margin-bottom:4px}
+.photo-up-t{font:700 12px var(--F);color:var(--ink2);letter-spacing:-.1px}
+.photo-up-h{font:500 11px var(--F);color:var(--ink3);line-height:1.4;max-width:280px}
+.photo-up-prev{position:relative;padding:10px;display:flex;align-items:center;justify-content:center}
+.photo-up-prev img{max-width:100%;max-height:200px;border-radius:8px;display:block}
+.photo-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.photo-up-prog{height:4px;background:var(--bg);overflow:hidden}
+.photo-up-prog-bar{height:100%;background:var(--brand);width:0;transition:width .2s linear}
+
+/* ─── TRACK ──────────────────────────────────────── */
+.trk-tabs{display:flex;gap:6px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:var(--r)}
+.trk-tab{flex:1;padding:9px 10px;background:transparent;color:var(--ink3);border:none;border-radius:8px;font:700 12px var(--F);cursor:pointer;letter-spacing:-.1px;transition:.15s}
+.trk-tab.on{background:var(--card);color:var(--brand);box-shadow:var(--sh);font-weight:800}
+.track-result{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-top:14px;animation:fadeUp .3s var(--EASE) both}
+.track-empty{text-align:center;padding:40px 20px;color:var(--ink3);font:600 14px var(--F)}
+.track-status{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--pill);font:800 11px var(--F);letter-spacing:.06em;text-transform:uppercase}
+.track-status.new{background:#fef3c7;color:#92400e}
+.track-status.confirmed{background:var(--brand-bg);color:var(--brand-dk)}
+.track-status.cancelled{background:#fee2e2;color:#991b1b}
+.track-status.delivered,.track-status.completed,.track-status.done{background:#e0e7ff;color:#3730a3}
+.track-status::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+.track-meta{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font:600 13px var(--F);color:var(--ink2);margin-top:14px}
+.track-meta-l{color:var(--ink3);font-weight:600}
+.track-comment{margin-top:14px;padding:12px 14px;background:linear-gradient(160deg,#eff6ff,#dbeafe);border-left:4px solid var(--brand);border-radius:0 var(--r) var(--r) 0;font:600 13px var(--F);color:#1e3a8a;line-height:1.55}
+.track-comment-l{font:800 10px var(--F);color:var(--brand);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.track-eta{margin-top:14px;padding:12px 14px;background:#fef9c3;border-left:4px solid #d97706;border-radius:0 var(--r) var(--r) 0;font:700 13px var(--F);color:#78350f;line-height:1.55}
+.track-recent{margin-top:18px;padding-top:18px;border-top:1px dashed var(--line)}
+.track-recent-t{font:700 11px var(--F);color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.track-recent-i{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:6px;cursor:pointer;transition:.15s}
+.track-recent-i:hover{border-color:var(--brand)}
+.track-recent-id{font:700 12px ui-monospace,Menlo,Consolas,monospace;color:var(--brand);letter-spacing:.04em}
+.track-recent-d{font:500 11px var(--F);color:var(--ink4);margin-top:2px}
+.track-recent-arrow{font:700 16px var(--F);color:var(--ink3)}
+
+/* ─── 404 ─────────────────────────────────────────── */
+.notfound{display:flex;align-items:center;justify-content:center;min-height:100dvh;padding:24px;text-align:center}
+.notfound-emoji{font-size:64px;margin-bottom:14px}
+.notfound-t{font:800 22px var(--F);color:var(--ink);margin-bottom:8px}
+.notfound-d{font:500 14px var(--F);color:var(--ink3);max-width:320px;line-height:1.55;margin-bottom:24px}
+.notfound-btn{padding:12px 28px;background:var(--brand);color:#fff;border-radius:11px;font:800 13px var(--F);text-decoration:none}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <div class="splash-emoji">📚</div>
+  <div class="splash-name" id="splashName">Loading…</div>
+  <div class="splash-tag" id="splashTag">Starting up…</div>
+  <div class="splash-loader"></div>
+</div>
+
+<!-- PAGE -->
+<main class="page" id="page">
+
+  <header class="hdr" id="hdr">
+    <div class="hdr-logo" id="hdrLogo">📚</div>
+    <div class="hdr-info">
+      <div class="hdr-name" id="hdrName">—</div>
+      <div class="hdr-meta"><span class="open" id="hdrOpen">Open 24/7</span><span id="hdrCity">—</span></div>
+    </div>
+    <button class="hdr-track" onclick="openTrack()" title="Track my enrollment" aria-label="Track">📋</button>
+    <button class="hdr-cta" onclick="openEnroll()">Enroll</button>
+  </header>
+
+  <section class="hero" id="hero">
+    <span class="hero-badge" id="heroBadge">📚 Library · 24/7</span>
+    <h1 class="hero-name" id="heroName">—</h1>
+    <div class="hero-name-hi" id="heroNameHi" style="display:none"></div>
+    <p class="hero-tag" id="heroTag">A peaceful place to study.</p>
+    <div class="hero-stats" id="heroStats" style="display:none">
+      <div class="hero-stat"><div class="hero-stat-v" id="heroStat1V">—</div><div class="hero-stat-l" id="heroStat1L">—</div></div>
+      <div class="hero-stat"><div class="hero-stat-v" id="heroStat2V">—</div><div class="hero-stat-l" id="heroStat2L">—</div></div>
+      <div class="hero-stat"><div class="hero-stat-v" id="heroStat3V">—</div><div class="hero-stat-l" id="heroStat3L">—</div></div>
+    </div>
+  </section>
+
+  <div class="chips" id="chips"></div>
+
+  <section class="section" id="aboutSec">
+    <h2 class="section-title">Why students <span class="accent">love it here</span></h2>
+    <p class="section-sub" id="aboutSub">A library you'll love coming back to.</p>
+    <div class="about-card"><p class="about-text" id="aboutText">—</p></div>
+  </section>
+
+  <!-- Seats-left banner — populated by renderSeatsAvailable() once Orders load.
+       Hidden by default; only shows when capacity is configured + ShowSeatsLeft!=no -->
+  <div class="seats-banner" id="seatsBanner" style="display:none"></div>
+
+  <section class="section">
+    <h2 class="section-title">Pick your <span class="accent">study plan</span></h2>
+    <p class="section-sub">Pay first, walk in any time · cancel any time</p>
+    <div class="plans" id="plansList"></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">What you <span class="accent">get</span></h2>
+    <p class="section-sub">Everything you need to focus</p>
+    <div class="amen">
+      <div class="amen-item"><span class="amen-i">📶</span><span class="amen-l">Free Wifi</span></div>
+      <div class="amen-item"><span class="amen-i">🔌</span><span class="amen-l">Power outlets at every seat</span></div>
+      <div class="amen-item"><span class="amen-i">🔒</span><span class="amen-l">Personal lockers</span></div>
+      <div class="amen-item"><span class="amen-i">❄️</span><span class="amen-l">AC seating available</span></div>
+      <div class="amen-item"><span class="amen-i">🕐</span><span class="amen-l">24/7 access</span></div>
+      <div class="amen-item"><span class="amen-i">📚</span><span class="amen-l">Quiet study zone</span></div>
+      <div class="amen-item"><span class="amen-i">💧</span><span class="amen-l">Drinking water</span></div>
+      <div class="amen-item"><span class="amen-i">🚻</span><span class="amen-l">Clean washrooms</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="reviewsSec" style="display:none">
+    <h2 class="section-title">What students <span class="accent">are saying</span></h2>
+    <p class="section-sub" id="reviewsSub">Real reviews from real students</p>
+    <div id="reviewsList"></div>
+  </section>
+
+  <section class="section" id="gallerySec" style="display:none">
+    <h2 class="section-title">A peek <span class="accent">inside</span></h2>
+    <p class="section-sub">The vibe you'll be studying in</p>
+    <div class="gal" id="galGrid"></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">How <span class="accent">it works</span></h2>
+    <p class="section-sub">Three simple steps</p>
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div><div class="step-t" id="how1">Pick the plan that fits your study schedule</div></div></div>
+      <div class="step"><div class="step-n">2</div><div><div class="step-t" id="how2">Fill the quick enrollment form (30 seconds)</div></div></div>
+      <div class="step"><div class="step-n">3</div><div><div class="step-t" id="how3">Walk in any time · We'll show you to your seat</div></div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Visit <span class="accent">us</span></h2>
+    <p class="section-sub">Always open · Always quiet</p>
+    <div class="loc">
+      <div class="loc-row" id="locAddr">
+        <div class="loc-i">📍</div>
+        <div class="loc-c">
+          <div class="loc-l">Address</div>
+          <div class="loc-v" id="addrV">—</div>
+          <a class="loc-action" id="addrLink" href="#" target="_blank" rel="noopener" style="display:none">Get directions →</a>
+        </div>
+      </div>
+      <div class="loc-row" id="locPhone">
+        <div class="loc-i">📞</div>
+        <div class="loc-c">
+          <div class="loc-l">Call us</div>
+          <div class="loc-v" id="phoneV">—</div>
+          <a class="loc-action" id="phoneLink" href="#">Tap to call →</a>
+        </div>
+      </div>
+      <div class="loc-row" id="locWa" style="display:none">
+        <div class="loc-i">💬</div>
+        <div class="loc-c">
+          <div class="loc-l">WhatsApp</div>
+          <div class="loc-v">Chat with us</div>
+          <a class="loc-action" id="waLink" href="#" target="_blank" rel="noopener">Open WhatsApp →</a>
+        </div>
+      </div>
+      <div class="loc-row" id="locHours">
+        <div class="loc-i">🕐</div>
+        <div class="loc-c">
+          <div class="loc-l">Hours</div>
+          <div class="loc-v" id="hoursV">Open 24/7</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot-line"></div>
+    <div class="foot-brand"><b id="footName">—</b><br><span id="footTag">—</span></div>
+    <div class="foot-power">Powered by <b style="color:var(--brand)">StorePro</b></div>
+  </footer>
+</main>
+
+<!-- STICKY CTA -->
+<div class="scta" id="scta" style="display:none">
+  <div class="scta-in">
+    <a class="scta-call" id="sctaCall" href="#" aria-label="Call">📞</a>
+    <a class="scta-wa" id="sctaWa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp" style="display:none">💬</a>
+    <button class="scta-btn" onclick="openEnroll()">📚 Enroll Now</button>
+  </div>
+</div>
+
+<!-- ENROLL SHEET -->
+<div class="sheet-overlay" id="enrollOverlay" onclick="if(event.target===this)closeEnroll()">
+  <div class="sheet">
+    <div class="sheet-hdr">
+      <div>
+        <div class="sheet-hdr-t">Enroll yourself</div>
+        <div class="sheet-hdr-s">Takes 30 seconds · pay later in person or via UPI</div>
+      </div>
+      <button class="sheet-x" onclick="closeEnroll()" aria-label="Close">✕</button>
+    </div>
+    <div class="sheet-body" id="enrollBody"></div>
+    <div class="sheet-foot">
+      <button class="submit-btn" id="submitBtn" onclick="submitEnroll()">📚 Confirm Enrollment</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACK SHEET -->
+<div class="sheet-overlay" id="trackOverlay" onclick="if(event.target===this)closeTrack()">
+  <div class="sheet">
+    <div class="sheet-hdr">
+      <div>
+        <div class="sheet-hdr-t">📋 Track your enrollment</div>
+        <div class="sheet-hdr-s">Look up your status & expiry</div>
+      </div>
+      <button class="sheet-x" onclick="closeTrack()" aria-label="Close">✕</button>
+    </div>
+    <div class="sheet-body">
+      <!-- Tabs: by ID (primary) / by phone (fallback for new device) -->
+      <div class="trk-tabs">
+        <button class="trk-tab on" id="trkTabId" onclick="switchTrackTab('id')">📋 By ID</button>
+        <button class="trk-tab" id="trkTabPhone" onclick="switchTrackTab('phone')">📱 By phone</button>
+      </div>
+
+      <!-- Tab 1: by ID -->
+      <div id="trkPaneId">
+        <div class="field">
+          <label class="field-l">Enrollment ID <span class="field-l-req">*</span></label>
+          <input class="field-i" id="trackInput" placeholder="ENR-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" style="text-transform:uppercase;letter-spacing:.06em;font-family:ui-monospace,Menlo,Consolas,monospace">
+          <div class="field-help">You got this when you enrolled. Format: <code>ENR-…</code></div>
+        </div>
+        <button class="submit-btn" onclick="doTrack()">🔍 Track</button>
+      </div>
+
+      <!-- Tab 2: by phone + ID4 -->
+      <div id="trkPanePhone" style="display:none">
+        <div class="field">
+          <label class="field-l">Phone number <span class="field-l-req">*</span></label>
+          <input class="field-i" id="trackPhone" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile" autocomplete="tel" oninput="sanitizePhone10(this)">
+        </div>
+        <div class="field">
+          <label class="field-l">Last 4 digits of ID <span class="field-l-req">*</span></label>
+          <input class="field-i" id="trackId4" inputmode="numeric" maxlength="4" placeholder="e.g. 1234" pattern="\d{4}">
+          <div class="field-help">For your safety, we need both phone + ID last-4 to look you up.</div>
+        </div>
+        <button class="submit-btn" onclick="doTrackByPhone()">🔍 Find my enrollments</button>
+      </div>
+
+      <div id="trackResult"></div>
+      <div id="trackRecent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS SHEET -->
+<div class="sheet-overlay" id="successOverlay">
+  <div class="sheet">
+    <div class="succ">
+      <div class="succ-i">✓</div>
+      <div class="succ-t">You're enrolled! 🎉</div>
+      <div class="succ-s" id="succSub">We'll see you soon. Tap below to call us if you have any questions.</div>
+      <div class="succ-id" id="succId">—</div>
+      <div class="succ-actions">
+        <a class="succ-btn prim" id="succCall" href="#">📞 Call the library</a>
+        <a class="succ-btn" id="succWa" href="#" target="_blank" rel="noopener" style="background:#15803d;color:#fff;display:none">💬 WhatsApp us</a>
+        <a class="succ-btn sec" href="#" onclick="event.preventDefault();printReceipt_($('succId').textContent)">📄 Save receipt as PDF</a>
+        <a class="succ-btn sec" href="#" onclick="event.preventDefault();closeSuccess();openTrack($('succId').textContent)">📋 Track this enrollment</a>
+        <a class="succ-btn sec" href="#" onclick="event.preventDefault();closeSuccess()">Close</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// THE STUDY POINT LIBRARY · enrollment storefront
+// ───────────────────────────────────────────────────────────────────
+// Mirrors the architecture of fastfood/meatshop/restaurant — the user
+// taps Enroll, fills a short form, and we POST it to the tenant's
+// Apps Script as a regular order. From the shopkeeper's side it lands
+// in the Orders tab with the chosen plan in the items column, so
+// every existing dashboard / Telegram / push pipe works unchanged.
+// ═══════════════════════════════════════════════════════════════════
+
+// Top-of-script diagnostics — runs BEFORE any var declarations or function
+// definitions, so even if a syntax/parse error happens later, this proves
+// the script tag itself loaded. Catches JS errors anywhere on the page and
+// surfaces them on the splash so the customer (and the developer in DevTools)
+// can see what went wrong.
+(function(){
+  try{
+    var t=document.getElementById('splashTag');
+    if(t)t.textContent='Booting JS…';
+  }catch(e){}
+  if(window.console&&console.log)console.log('[library] script entry');
+  // Hard-cap watchdog — fires no matter what. Lives at the very top so it's
+  // armed before any other code can throw.
+  setTimeout(function(){
+    if(window.__LIB_INIT_DONE)return;
+    var d=document.body;if(!d)return;
+    d.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;font-family:DM Sans,system-ui,sans-serif;background:#f8fafc"><div style="max-width:440px"><div style="font-size:54px;margin-bottom:14px">⏱</div><div style="font-size:22px;font-weight:800;margin-bottom:8px;color:#0b1220">Boot hung</div><div style="font-size:13px;color:#6b7280;margin-bottom:18px;line-height:1.6">The library data didn\'t load within 6 seconds.<br><br><b>Open DevTools (F12 → Console)</b> and share what you see — that\'ll tell us exactly which step is stuck.</div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a href="'+location.pathname+location.search+'" style="display:inline-block;padding:11px 22px;background:#4F46E5;color:#fff;border-radius:11px;font-weight:800;font-size:13px;text-decoration:none">↻ Retry</a><button onclick="(async()=>{try{var r=await navigator.serviceWorker.getRegistrations();await Promise.all(r.map(x=>x.unregister()));await caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c))))}catch(e){}location.reload(true)})()" style="padding:11px 22px;background:#fff;color:#4F46E5;border:1.5px solid #4F46E5;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit">🧹 Clear cache &amp; retry</button></div></div></div>';
+  },6000);
+  // Surface any uncaught JS error onto the splash so we don't have to ask
+  // the user to open DevTools every time.
+  window.addEventListener('error',function(ev){
+    try{
+      var t2=document.getElementById('splashTag');
+      if(t2)t2.textContent='⚠️ JS error: '+(ev&&ev.message||'unknown');
+    }catch(_){}
+    if(window.console&&console.error)console.error('[library] uncaught:',ev&&(ev.error||ev.message));
+  });
+  window.addEventListener('unhandledrejection',function(ev){
+    try{
+      var t3=document.getElementById('splashTag');
+      if(t3)t3.textContent='⚠️ Promise rejection: '+(ev&&ev.reason&&ev.reason.message||ev.reason||'unknown');
+    }catch(_){}
+  });
+})();
+
+try { console.log('[library] checkpoint A: top-level vars'); } catch(e){}
+var MASTER_SHEET_ID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
+var SHEET_ID='', SCRIPT_URL='', TYPE='Library', SLUG='';
+var config={}, plans=[], reviews=[], orderCount=0, ratingAvg=0, ratingCount=0;
+var cfgReviews=[], cfgRatingOverride=null, cfgRatingCountOverride=null;
+var selectedPlan=null, selectedAddons={};
+// Cloudinary credentials — same master tenant as dashboard-v2.js. Photo uploads
+// land in folder "storepro/<slug>/id-photos/" so per-tenant isolation holds.
+var CLOUDINARY={cloud:'storepro',preset:'storepro_products'};
+var idPhotoUrl='';   // set after a successful upload, cleared by clearIdPhoto()
+
+function $(id){return document.getElementById(id)}
+function E(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function cfg(k,d){var v=config[(k||'').toLowerCase().replace(/\s+/g,'')];return v!=null&&v!==''?String(v):(d!==undefined?d:'')}
+function fnum(s){var n=parseFloat(String(s||'').replace(/[^\d.]/g,''));return isNaN(n)?0:n}
+// Live sanitizer for 10-digit Indian mobile inputs. Wired to oninput on
+// every phone field so:
+//   • Mobile autofill that injects "+91 9876543210" / "+919876543210" /
+//     "(98765) 43210" cleans up to "9876543210" without the user noticing.
+//   • Pasting from a contact-card with country code does the right thing.
+//   • Typing past 10 chars trims the extra rather than corrupting the
+//     prefix (which is what maxlength="10" does silently with autofill).
+//   • The native numeric keypad stays open thanks to inputmode="numeric"
+//     on the input itself; this helper just polices the value.
+function sanitizePhone10(el){
+  if(!el)return;
+  var d=String(el.value||'').replace(/\D/g,'');
+  // Strip leading "91" country code only when the result would otherwise
+  // exceed 10 digits — protects real numbers that happen to start with 91
+  // (the leading "9" is a valid mobile prefix in India).
+  if(d.length===12 && d.substring(0,2)==='91') d=d.substring(2);
+  if(d.length>10) d=d.substring(0,10);
+  if(el.value!==d) el.value=d;
+}
+
+// ─── Tenant resolution (subdomain or ?store=) ───
+function resolveTenantSlug(){
+  var qs=new URLSearchParams(location.search);
+  var s=qs.get('store');
+  if(s)return s.toLowerCase();
+  var host=location.hostname.toLowerCase();
+  // *.storepro.in or *.localhost
+  var m=host.match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+  if(m){
+    var sub=m[1];
+    var reserved={'www':1,'admin':1,'app':1,'api':1,'mail':1};
+    if(!reserved[sub])return sub;
+  }
+  return '';
+}
+
+// ─── gviz JSONP ───
+// IMPORTANT: never delete window.google.visualization.Query.setResponse —
+// each gviz call overwrites it just before its <script> tag loads, and Google's
+// response script literally calls google.visualization.Query.setResponse(...).
+// Deleting the handler between calls (an earlier bug) crashed every subsequent
+// fetch with "setResponse is not a function" mid-init.
+function gviz(sheetId,sheetName,cb,useHeaders0){
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){cb(r)};
+  var hParam=useHeaders0?'&headers=0':'';
+  var url='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json'+hParam+'&sheet='+encodeURIComponent(sheetName)+'&_t='+Date.now();
+  var sc=document.createElement('script');
+  sc.src=url;
+  sc.onerror=function(){cb(null)};
+  document.body.appendChild(sc);
+}
+
+// Match home.html's proven Stores-lookup pattern — explicitly request
+// headers=0 so the first row arrives as a regular data row whose cells we
+// read as the column-name header. This sidesteps gviz's auto-detect, which
+// occasionally returns inconsistent shapes for the registry sheet.
+function lookupTenant(slug,cb){
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){
+    if(!r||!r.table||!r.table.rows||r.table.rows.length<2){
+      console.warn('[lookupTenant] empty registry response',r);
+      cb(false);return;
+    }
+    var headerRow=r.table.rows[0];
+    var cols=[];
+    if(headerRow&&headerRow.c){
+      for(var h=0;h<headerRow.c.length;h++){
+        var hc=headerRow.c[h];
+        cols.push(hc&&hc.v!=null?String(hc.v).toLowerCase().trim().replace(/\s+/g,''):'');
+      }
+    }
+    console.log('[lookupTenant] registry cols:',cols,'rows:',r.table.rows.length-1);
+    var seenSlugs=[];
+    for(var i=1;i<r.table.rows.length;i++){
+      var row=r.table.rows[i];
+      var o={};
+      cols.forEach(function(k,j){var c=row.c&&row.c[j];o[k]=c&&c.v!=null?String(c.v).trim():''});
+      var rs=(o.slug||'').toLowerCase();
+      var rsSub=(o.subdomain||'').toLowerCase();
+      if(rs)seenSlugs.push(rs);
+      if(rs===slug.toLowerCase()||(rsSub&&rsSub===slug.toLowerCase())){
+        SHEET_ID=o.sheetid||o.sheet||o.id||'';
+        SCRIPT_URL=o.scripturl||o.script||'';
+        TYPE=String(o.type||o.shoptype||o.category||'Library').toLowerCase().trim();
+        console.log('[lookupTenant] matched slug=',rs,'sheetId=',SHEET_ID?'(set)':'(EMPTY)','type=',TYPE);
+        if(SHEET_ID){cb(true);return}
+      }
+    }
+    console.warn('[lookupTenant] no match for "'+slug+'" — registry has slugs:',seenSlugs.slice(0,20));
+    cb(false);
+  };
+  var s=document.createElement('script');
+  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=0&_t='+Date.now();
+  s.onerror=function(){console.error('[lookupTenant] registry script load failed');cb(false)};
+  document.body.appendChild(s);
+}
+
+// ─── Sheet row parser (handles both label and header-row-0 shapes) ───
+function parseRows(r){
+  if(!r||!r.table)return [];
+  var headers=[],rows=r.table.rows||[];
+  if(r.table.cols&&r.table.cols.length){
+    var allLabeled=true;
+    r.table.cols.forEach(function(c){
+      var label=(c.label||'').trim();
+      if(!label)allLabeled=false;
+      headers.push(label.toLowerCase().replace(/\s+/g,''));
+    });
+    if(!allLabeled && rows[0]){
+      var hRow=rows[0];headers=[];
+      if(hRow.c)hRow.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});
+      rows=rows.slice(1);
+    }
+  }
+  // For text-like columns prefer c.v (raw) over c.f (formatted) so Sheets'
+  // helpful comma-grouping / scientific-notation can't corrupt phone numbers
+  // and order IDs. Numeric/currency cells still benefit from c.f display.
+  var TEXTLIKE=/^(phone|whatsapp|orderid|orderid|id|customername|name|email|address|items|status|payment|ordernotes|notes|shopkeepercomment|comment|plan|startdate|expirydate|idtype|idlast4|dob|guardian|emergency|idphoto)$/;
+  return rows.map(function(row){
+    var o={};
+    if(!row.c)return o;
+    headers.forEach(function(h,j){
+      var c=row.c[j];
+      var v;
+      if(!c){v=''}
+      else if(TEXTLIKE.test(h)){
+        v = (c.v!=null?String(c.v):(c.f!=null?String(c.f):''));
+        v = v.replace(/,/g,''); // strip thousand-separators
+      }else{
+        v = (c.f!=null?String(c.f):(c.v!=null?String(c.v):''));
+      }
+      o[h]=String(v).trim();
+    });
+    return o;
+  });
+}
+
+try { console.log('[library] checkpoint B: after parseRows'); } catch(e){}
+
+// ─── Color helpers (matches home.html) ───
+function shadeHex(hex,pct){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=Math.abs(pct)/100;if(pct>0){r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f)}else{r=Math.round(r*(1-f));g=Math.round(g*(1-f));b=Math.round(b*(1-f))}return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}catch(e){return hex}}
+function hexAlpha(hex,a){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return 'rgba('+r+','+g+','+b+','+a+')'}catch(e){return 'rgba(15,118,110,'+a+')'}}
+
+// ─── Apply Config to UI ───
+function applyConfig(){
+  var name=cfg('shopname','The Study Point Library');
+  var hindi=cfg('shopnamehindi','');
+  var tagline=cfg('tagline','')||cfg('herotagline','')||'A peaceful place to study.';
+  var brand=cfg('brandcolor','')||cfg('brand','');
+  if(/^#[0-9a-f]{6}$/i.test(brand)){
+    var rs=document.documentElement.style;
+    rs.setProperty('--brand',brand);
+    rs.setProperty('--brand-dk',shadeHex(brand,-25));
+    rs.setProperty('--brand-lt',shadeHex(brand,18));
+    rs.setProperty('--brand-bg',shadeHex(brand,82));
+    rs.setProperty('--brand-glow',hexAlpha(brand,.35));
+    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brand);
+  }
+
+  document.title=name+' · Enroll Online';
+  $('splashName').textContent=name;
+  $('hdrName').textContent=name;
+  $('hdrCity').textContent=cfg('city','');
+  $('heroName').textContent=name;
+  if(name.length>22)$('heroName').classList.add('long');
+  if(hindi){$('heroNameHi').textContent=hindi;$('heroNameHi').style.display='block'}
+  $('heroTag').textContent=tagline;
+
+  // Logo
+  var logo=cfg('logourl','')||cfg('logo','');
+  if(logo){var l=$('hdrLogo');l.innerHTML='<img src="'+E(logo)+'" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=\'📚\';this.parentNode.classList.remove(\'has-img\')">';l.classList.add('has-img')}
+
+  // Hero background image
+  var heroImg=cfg('heroimage','');
+  if(heroImg){var h=$('hero');h.style.backgroundImage='linear-gradient(180deg,rgba(0,0,0,.30),rgba(0,0,0,.7)),url('+JSON.stringify(heroImg)+')';h.classList.add('has-bg')}
+
+  // Hero stats
+  var s1L=cfg('stat1label',''),s1V=cfg('stat1value','');
+  var s2L=cfg('stat2label',''),s2V=cfg('stat2value','');
+  var s3L=cfg('stat3label',''),s3V=cfg('stat3value','');
+  if(s1V||s2V||s3V){
+    if(s1V){$('heroStat1L').textContent=s1L;$('heroStat1V').textContent=s1V}
+    if(s2V){$('heroStat2L').textContent=s2L;$('heroStat2V').textContent=s2V}
+    if(s3V){$('heroStat3L').textContent=s3L;$('heroStat3V').textContent=s3V}
+    $('heroStats').style.display='flex';
+  }
+
+  // Chips
+  var chipNames=[];
+  for(var i=1;i<=8;i++){var c=cfg('chip'+i,'');if(c)chipNames.push(c)}
+  if(chipNames.length){
+    var icons=['🕐','🤫','🪑','📶','🔌','🔒','❄️','💧'];
+    $('chips').innerHTML=chipNames.map(function(n,i){return '<span class="chip"><span class="chip-i">'+(icons[i]||'•')+'</span>'+E(n)+'</span>'}).join('');
+  }
+
+  // About
+  var about=cfg('about','');
+  $('aboutSub').textContent=cfg('aboutshort','')||tagline;
+  if(about)$('aboutText').textContent=about;else $('aboutSec').style.display='none';
+
+  // Steps
+  if(cfg('howitworks1',''))$('how1').textContent=cfg('howitworks1');
+  if(cfg('howitworks2',''))$('how2').textContent=cfg('howitworks2');
+  if(cfg('howitworks3',''))$('how3').textContent=cfg('howitworks3');
+
+  // Address + map link
+  var addr=cfg('address','');
+  $('addrV').textContent=addr||'—';
+  var maplink=cfg('maplink','')||cfg('googlemapsurl','');
+  if(maplink){var al=$('addrLink');al.href=maplink;al.style.display='inline-flex'}
+
+  // Phone
+  var phone=cfg('phone','');
+  if(phone){
+    var fmt=phone.replace(/^91/,'+91 ');
+    $('phoneV').textContent=fmt;
+    var pl=$('phoneLink');pl.href='tel:'+phone;
+    $('sctaCall').href='tel:'+phone;
+    $('succCall').href='tel:'+phone;
+  }else{
+    $('locPhone').style.display='none';
+    $('sctaCall').style.display='none';
+  }
+
+  // WhatsApp — surfaces in three places: contact section, sticky bottom CTA,
+  // and on the post-enrollment success screen. The link prefills a polite
+  // intro mentioning the shop name so the customer just hits Send.
+  var wa=cfg('whatsapp','');
+  if(wa){
+    var waNum=String(wa).replace(/\D/g,'');
+    var waMsg='Hi, I have a question about '+name;
+    var waUrl='https://wa.me/'+waNum+'?text='+encodeURIComponent(waMsg);
+    $('locWa').style.display='flex';
+    $('waLink').href=waUrl;
+    var sw=$('sctaWa');if(sw){sw.href=waUrl;sw.style.display='flex'}
+    var swSucc=$('succWa');if(swSucc){swSucc.href=waUrl;swSucc.style.display='flex'}
+  }
+
+  // Hours
+  var open24=String(cfg('open24x7','')||'').toLowerCase()==='yes';
+  if(open24){
+    $('hoursV').textContent='Open 24/7';
+    $('hdrOpen').textContent='Open 24/7';
+  }else{
+    var t=cfg('timing','9:00-21:00');
+    $('hoursV').textContent=t;
+    $('hdrOpen').textContent='Open '+t;
+  }
+
+  // Footer
+  $('footName').textContent=name;
+  $('footTag').textContent=cfg('aboutshort','')||tagline||'Powered by StorePro';
+
+  // Manifest
+  injectManifest(name,brand);
+
+  // Reviews from Config (Google or hand-written)
+  parseConfigReviews();
+  renderReviews();
+}
+
+function parseConfigReviews(){
+  cfgReviews=[];
+  for(var n=1;n<=5;n++){
+    var name=cfg('review'+n+'name','');
+    var stars=parseInt(cfg('review'+n+'stars','0'))||0;
+    var text=cfg('review'+n+'text','');
+    var date=cfg('review'+n+'date','');
+    if(!name)continue;
+    if(!stars && !text)continue;
+    cfgReviews.push({name:String(name),stars:stars||5,text:String(text).slice(0,260),date:String(date)});
+  }
+  var r=parseFloat(cfg('rating',''));
+  if(!isNaN(r)&&r>0)cfgRatingOverride=r;
+  var rc=parseInt(cfg('ratingcount','0'))||0;
+  if(rc>0)cfgRatingCountOverride=rc;
+}
+
+function renderReviews(){
+  var merged=cfgReviews.concat(reviews).slice(0,5);
+  if(!merged.length){$('reviewsSec').style.display='none';return}
+  $('reviewsSec').style.display='block';
+  var rating=cfgRatingOverride!=null?cfgRatingOverride:ratingAvg;
+  var count=cfgRatingCountOverride!=null?cfgRatingCountOverride:ratingCount;
+  $('reviewsSub').textContent=count?'Based on '+count+' reviews':'Real reviews from real students';
+
+  var html='';
+  if(count>=2||(rating>0&&cfgRatingOverride!=null)){
+    var stars='';for(var s=0;s<5;s++)stars+=(s<Math.round(rating)?'★':'☆');
+    html+='<div class="reviews-summary">'
+      +'<div><div class="reviews-rating">'+rating.toFixed(1)+'</div>'
+      +'<div class="reviews-stars">'+stars+'</div>'
+      +'<div class="reviews-count">'+count+' reviews</div></div>'
+      +'<button class="reviews-cta" onclick="openEnroll()">Enroll →</button>'
+      +'</div>';
+  }
+  merged.forEach(function(rv){
+    var initial=String(rv.name||'?').charAt(0).toUpperCase();
+    var st='';for(var s=0;s<5;s++)st+=(s<rv.stars?'★':'☆');
+    var dateLine=rv.date?'<div class="review-date">'+E(rv.date)+'</div>':'';
+    var hi=/[ऀ-ॿ]/.test(rv.text)?' hi':'';
+    html+='<div class="review">'
+      +'<div class="review-avatar">'+initial+'</div>'
+      +'<div class="review-body">'
+      +'<div class="review-top"><div><div class="review-name">'+E(rv.name)+'</div>'+dateLine+'</div><div class="review-rating">'+st+'</div></div>'
+      +'<div class="review-text'+hi+'">'+E(rv.text)+'</div>'
+      +'</div></div>';
+  });
+  var rate=cfg('rateusurl','');
+  if(rate){
+    html+='<a class="rate-cta" href="'+E(rate)+'" target="_blank" rel="noopener">'
+      +'<span style="font-size:16px">⭐</span><span>Rate us on Google</span>'
+      +'<span style="margin-left:auto;opacity:.7;font-size:14px">›</span></a>';
+  }
+  $('reviewsList').innerHTML=html;
+}
+
+// ─── Render plans ───
+function renderPlans(){
+  if(!plans.length){$('plansList').innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--ink3);font:600 14px var(--F)">Plans coming soon — call us for details</div>';return}
+  var cur=cfg('currency','₹');
+  $('plansList').innerHTML=plans.map(function(p,i){
+    var price=fnum(p.price);
+    var mrp=fnum(p.mrp);
+    var save=mrp>price?Math.round(((mrp-price)/mrp)*100):0;
+    var popular=String(p.bestseller||'').toLowerCase()==='yes'||String(p.bestseller||'').toLowerCase()==='bestseller';
+    return '<div class="plan'+(popular?' popular':'')+'" onclick="pickPlan('+i+')">'
+      +'<div class="plan-top">'
+        +'<div><div class="plan-name">'+E(p.name||'Plan')+'</div>'
+          +(p.hindiname?'<div class="plan-name-hi">'+E(p.hindiname)+'</div>':'')
+          +(p.category?'<span class="plan-cat">'+E(p.category)+'</span>':'')
+        +'</div>'
+        +'<div class="plan-prices">'
+          +'<div class="plan-price">'+cur+price.toLocaleString('en-IN')+'</div>'
+          +(mrp>price?'<div class="plan-mrp">'+cur+mrp.toLocaleString('en-IN')+'</div>':'')
+          +(save>0?'<div class="plan-save">SAVE '+save+'%</div>':'')
+        +'</div>'
+      +'</div>'
+      +(p.description?'<div class="plan-desc">'+E(p.description)+'</div>':'')
+      +'<div class="plan-foot">'
+        +'<div class="plan-dur">⏱ '+E(p.duration||p.unit||'')+'</div>'
+        +'<button class="plan-cta">Enroll →</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+// ─── Gallery ───
+function renderGallery(){
+  var imgs=[];
+  for(var i=1;i<=8;i++){var u=cfg('gallery'+i,'');if(u)imgs.push(u)}
+  if(!imgs.length)return;
+  $('gallerySec').style.display='block';
+  $('galGrid').innerHTML=imgs.slice(0,6).map(function(u){return '<img src="'+E(u)+'" alt="" loading="lazy">'}).join('');
+}
+
+// ─── Seats-left tiered scarcity ───
+// Reads SeatCapacity from Config + counts unique active members from Orders,
+// renders one of four messages (social-proof / soft-urgency / hard-urgency /
+// waitlist) into #seatsBanner. Hides itself if capacity is unset or
+// Config.ShowSeatsLeft = no/off/0 (rotation-model libraries that oversell
+// memberships vs physical seats can opt out).
+function renderSeatsAvailable(){
+  if(!SHEET_ID){console.log('[seats] no SHEET_ID — skipped');return}
+  var b=$('seatsBanner');
+  if(!b){console.log('[seats] #seatsBanner element missing — skipped');return}
+  var show=String(cfg('showseatsleft','yes')||'yes').toLowerCase();
+  if(show==='no'||show==='off'||show==='0'){console.log('[seats] ShowSeatsLeft=no — disabled by tenant');return}
+
+  // Resolve capacity. Try the dedicated keys first, then auto-detect from
+  // the hero stat blocks (Stat1Label/Stat2Label/Stat3Label) — most templates
+  // already carry the seat count there as e.g. "40+" / "80 seats", so the
+  // shopkeeper doesn't need a config edit to get scarcity working.
+  var cap=parseInt(String(cfg('seatcapacity','')||cfg('capacity','')||'').replace(/[^\d]/g,''),10)||0;
+  if(!cap){
+    for(var i=1;i<=3;i++){
+      var lbl=String(cfg('stat'+i+'label','')||'').toLowerCase();
+      if(/seat|capacity/.test(lbl)){
+        var v=String(cfg('stat'+i+'value','')||'').replace(/[^\d]/g,'');
+        var n=parseInt(v,10);
+        if(n>0){cap=n;console.log('[seats] auto-detected capacity '+cap+' from Stat'+i+'Value');break}
+      }
+    }
+  }
+  if(!cap||cap<5){
+    console.log('[seats] no SeatCapacity configured (try adding "SeatCapacity, 40" to your Config tab) — banner hidden');
+    return;
+  }
+
+  gviz(SHEET_ID,'Orders',function(r){
+    if(!r){b.style.display='none';return}
+    var orders=parseRows(r);
+    var nowMs=Date.now();
+    // Dedupe by phone (last 10 digits) so historical rows for the same person
+    // don't double-count against capacity.
+    var seen={};
+    var activeCount=0;
+    orders.forEach(function(o){
+      var status=String(o.status||'').toLowerCase().replace(/\s+/g,'');
+      // Don't count rows that aren't actually using a seat:
+      //   cancelled / rejected — never started (or aborted)
+      //   paused             — frozen, expiry will be extended on resume
+      //   waitlist           — signed up because we were already full; not a member yet
+      //   completed / done   — plan ran its course, member has moved on
+      if(status==='cancelled'||status==='paused'||status==='rejected'
+         ||status==='waitlist'||status==='completed'||status==='done')return;
+      var exp=parseExpiryMs_(o);
+      if(exp && exp<nowMs)return;
+      var p=String(o.phone||'').replace(/\D/g,'').slice(-10);
+      if(!p)return;
+      if(seen[p])return;
+      seen[p]=true;
+      activeCount++;
+    });
+
+    var pct=Math.round((activeCount/cap)*100);
+    var seatsLeft=Math.max(0,cap-activeCount);
+    var threshLow=parseInt(cfg('seatsscarcitythreshold','60'),10)||60;
+    var threshHigh=parseInt(cfg('seatsalmostfull','85'),10)||85;
+
+    var tCls,tIcon,tTitle,tDesc,isFull=false;
+    if(pct>=100||seatsLeft===0){
+      isFull=true; tCls='full'; tIcon='🎯';
+      tTitle='We\'re at capacity right now';
+      tDesc='All '+cap+' seats are taken. Join the waitlist — we\'ll text you the moment a seat opens.';
+    }else if(pct>=threshHigh){
+      tCls='urgent'; tIcon='🔥';
+      tTitle='Only '+seatsLeft+' seat'+(seatsLeft===1?'':'s')+' left this month';
+      tDesc='Filling up fast — book your plan now before they\'re gone.';
+    }else if(pct>=threshLow){
+      tCls='warn'; tIcon='⚡';
+      tTitle=seatsLeft+' seats available for this month';
+      tDesc='Filling up — pick your plan now to reserve a seat.';
+    }else{
+      tCls='calm'; tIcon='👥';
+      tTitle='Already '+activeCount+' student'+(activeCount===1?'':'s')+' study here';
+      tDesc=seatsLeft+' seats available · join the community.';
+    }
+
+    var html=''
+      +'<div class="seats-banner-i">'+tIcon+'</div>'
+      +'<div class="seats-banner-c">'
+      +  '<div class="seats-banner-t">'+E(tTitle)+'</div>'
+      +  '<div class="seats-banner-d">'+E(tDesc)+'</div>'
+      +'</div>';
+    if(isFull){
+      html+='<button class="seats-waitlist-btn" onclick="openWaitlist()">Join waitlist</button>';
+    }else{
+      var fillPct=Math.min(100,pct);
+      // Right-side stat: "X / Y · seats taken" with a thin progress bar
+      // beneath. The big number conveys the ratio even when the bar is
+      // mostly empty (e.g. 4/40 calm state) — bar still adds visual weight
+      // as occupancy rises into warn/urgent territory.
+      html+=''
+        +'<div class="seats-banner-stat">'
+        +  '<div class="seats-banner-stat-num">'+activeCount+'<span class="of">/ '+cap+'</span></div>'
+        +  '<div class="seats-banner-stat-lbl">seats taken</div>'
+        +  '<div class="seats-banner-bar"><div class="seats-banner-bar-fill" style="width:'+fillPct+'%"></div></div>'
+        +'</div>';
+    }
+    b.className='seats-banner '+tCls;
+    b.innerHTML=html;
+    b.style.display='flex';
+  });
+}
+
+// Mirror of the dashboard's expiry-derivation logic. Tries the dedicated
+// Expiry Date column first, falls back to Start Date + plan duration parsed
+// from the items column. Returns 0 if nothing parseable (treated as still active).
+function parseExpiryMs_(o){
+  var exp=String(o.expirydate||'').trim();
+  if(exp){var m=Date.parse(exp);if(!isNaN(m))return m}
+  var startStr=String(o.startdate||'').trim();
+  if(!startStr){
+    var notes=String(o.ordernotes||o.notes||'');
+    var sm=notes.match(/start=([^·]+?)(?:\s*·|$)/i);
+    if(sm)startStr=sm[1].trim();
+  }
+  if(!startStr)return 0;
+  var sMs=Date.parse(startStr);
+  if(isNaN(sMs))return 0;
+  var firstLine=String(o.items||'').split(/\r?\n/)[0]||'';
+  var d=firstLine.match(/(\d+)\s*(day|week|month|year)/i);
+  if(!d)return sMs+30*86400000; // default 30d if duration not specified
+  var n=parseInt(d[1])||1, u=d[2].toLowerCase();
+  var days=u==='day'?n:u==='week'?n*7:u==='month'?n*30:n*365;
+  return sMs+days*86400000;
+}
+
+// Waitlist mini-modal — shown only when the library hits 100% capacity.
+// Submits to the same newOrder endpoint customers normally use, but with
+// total=0 and notes prefixed "Enrollment · plan=Waitlist · waitlist=yes" so
+// the shopkeeper can filter waitlist signups separately on the dashboard.
+function openWaitlist(){
+  closeWaitlist();
+  var html=''
+    +'<div class="wl-bg" id="wl_root" onclick="if(event.target===this)closeWaitlist()">'
+    +'<div class="wl-card">'
+    +  '<div class="wl-hdr">'
+    +    '<div class="wl-hdr-i">📋</div>'
+    +    '<div class="wl-hdr-t">Join the waitlist</div>'
+    +    '<div class="wl-hdr-s">No charge today. We\'ll text you the moment a seat opens — usually within 1-2 weeks.</div>'
+    +  '</div>'
+    +  '<div class="wl-body">'
+    +    '<div class="wl-field"><label class="wl-field-l">Your name *</label><input class="wl-field-i" id="wl_name" placeholder="Full name"></div>'
+    +    '<div class="wl-field"><label class="wl-field-l">Phone (10 digits) *</label><input class="wl-field-i" id="wl_phone" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" autocomplete="tel" placeholder="9876543210" oninput="sanitizePhone10(this)"></div>'
+    +    '<div class="wl-field"><label class="wl-field-l">Email (optional)</label><input class="wl-field-i" id="wl_email" type="email" placeholder="you@example.com"></div>'
+    +  '</div>'
+    +  '<div class="wl-foot">'
+    +    '<button class="wl-btn prim" id="wl_save" onclick="saveWaitlist()">📋 Add me to waitlist</button>'
+    +    '<button class="wl-btn ghost" onclick="closeWaitlist()">Cancel</button>'
+    +  '</div>'
+    +'</div></div>';
+  var d=document.createElement('div');d.innerHTML=html;document.body.appendChild(d.firstChild);
+  document.body.style.overflow='hidden';
+  setTimeout(function(){var e=document.getElementById('wl_name');if(e)e.focus()},120);
+}
+function closeWaitlist(){
+  var d=document.getElementById('wl_root');
+  if(d)d.remove();
+  document.body.style.overflow='';
+}
+function saveWaitlist(){
+  var name=String((document.getElementById('wl_name')&&document.getElementById('wl_name').value)||'').trim();
+  var phone=String((document.getElementById('wl_phone')&&document.getElementById('wl_phone').value)||'').replace(/\D/g,'');
+  var email=String((document.getElementById('wl_email')&&document.getElementById('wl_email').value)||'').trim();
+  if(!name){alert('Please enter your name');return}
+  if(!/^[6-9]\d{9}$/.test(phone)){alert('Please enter a valid 10-digit Indian phone number');return}
+  if(!SCRIPT_URL){alert('Storefront not configured — please contact us by phone instead');return}
+
+  var orderId='WL-'+Date.now().toString(36).toUpperCase();
+  var btn=document.getElementById('wl_save');
+  if(btn){btn.disabled=true;btn.textContent='Adding…'}
+
+  // Fire-and-forget via <img>.src — same pattern as submitEnroll. newOrder is
+  // a public action so no token needed. status='Waitlist' lets the dashboard
+  // filter these out from the regular enrollment counts.
+  var params={
+    action:'newOrder',
+    orderId:orderId,
+    name:name,
+    phone:'91'+phone,
+    email:email,
+    address:'Waitlist signup',
+    items:'🪑 Waitlist signup — notify when a seat opens',
+    total:0,
+    mode:'waitlist',
+    payment:'none',
+    notes:'Enrollment · plan=Waitlist · waitlist=yes',
+    status:'Waitlist'
+  };
+  var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k])}).join('&');
+  var img=new Image();
+  img.src=SCRIPT_URL+'?'+qs;
+
+  setTimeout(function(){
+    closeWaitlist();
+    alert('✓ You\'re on the waitlist!\n\nWe\'ll contact you on +91 '+phone+' the moment a seat opens.\nReference: '+orderId);
+  },1200);
+}
+
+// ─── Enroll flow ───
+function pickPlan(i){
+  selectedPlan=plans[i];
+  selectedAddons={};
+  openEnroll();
+}
+
+function openEnroll(){
+  if(!selectedPlan && plans.length){
+    // Default to most popular if user clicks generic Enroll button
+    selectedPlan = plans.find(function(p){var b=String(p.bestseller||'').toLowerCase();return b==='yes'||b==='bestseller'}) || plans[2] || plans[0];
+  }
+  // Fresh form state: previous ID photo doesn't carry over to the next session
+  idPhotoUrl='';
+  buildEnrollForm();
+  $('enrollOverlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeEnroll(){
+  $('enrollOverlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function buildEnrollForm(){
+  var p=selectedPlan;
+  var cur=cfg('currency','₹');
+  var html='';
+
+  if(p){
+    html+='<div class="plan-summary">'
+      +'<div class="plan-sum-t">'+E(p.name)+(p.hindiname?' · '+E(p.hindiname):'')+'</div>'
+      +(p.description?'<div class="plan-sum-d">'+E(p.description)+'</div>':'')
+      +'<div class="plan-sum-row"><span>Plan price</span><span>'+cur+fnum(p.price).toLocaleString('en-IN')+'</span></div>'
+      +(p.duration?'<div class="plan-sum-row"><span>Duration</span><span>'+E(p.duration)+'</span></div>':'')
+      +'</div>';
+  }
+
+  // Plan picker — let user change it inside the form
+  if(plans.length>1){
+    html+='<div class="field">'
+      +'<label class="field-l">Plan <span class="field-l-req">*</span></label>'
+      +'<select class="field-s" id="enrollPlan" onchange="changePlan(this.value)">'
+      +plans.map(function(pl,i){var sel=p&&pl.name===p.name?' selected':'';return '<option value="'+i+'"'+sel+'">'+E(pl.name)+' · '+cur+fnum(pl.price).toLocaleString('en-IN')+'</option>'}).join('')
+      +'</select>'
+      +'</div>';
+  }
+
+  html+='<div class="field-row">'
+    +'<div class="field"><label class="field-l">Full name <span class="field-l-req">*</span></label><input class="field-i" id="enrName" placeholder="Your full name" autocomplete="name"><div class="field-err">Please enter your name</div></div>'
+    +'<div class="field"><label class="field-l">Phone <span class="field-l-req">*</span></label><input class="field-i" id="enrPhone" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile" autocomplete="tel" oninput="sanitizePhone10(this)"><div class="field-err">10-digit phone required (must start with 6, 7, 8 or 9)</div></div>'
+    +'</div>';
+
+  html+='<div class="field"><label class="field-l">Email (optional)</label><input class="field-i" id="enrEmail" type="email" placeholder="for receipt + reminders" autocomplete="email"></div>';
+
+  html+='<div class="field"><label class="field-l">Start date <span class="field-l-req">*</span></label><input class="field-i" id="enrStart" type="date" min="'+todayISO_()+'"><div class="field-err">Pick a start date</div></div>';
+
+  // Add-ons (parsed from plan's addons column: "Locker:100, AC seat:400")
+  if(p && p.addons){
+    var addons=parseAddons_(p.addons);
+    if(addons.length){
+      html+='<div class="field"><label class="field-l">Add-ons (optional)</label>';
+      html+=addons.map(function(a,i){
+        return '<div class="addon-row" onclick="toggleAddon('+i+',\''+E(a.name)+'\','+a.price+')" id="addon'+i+'">'
+          +'<div class="addon-cb"></div>'
+          +'<div class="addon-c"><div class="addon-n">'+E(a.name)+'</div><div class="addon-d">monthly add-on</div></div>'
+          +'<div class="addon-p">+'+cur+a.price+'</div>'
+          +'</div>';
+      }).join('');
+      html+='</div>';
+    }
+  }
+
+  // ─── VERIFICATION SECTION ─────────────────────────
+  // Visibility per tenant policy via Config:
+  //   RequireIDDetails = yes | optional | no
+  //   Sub-policy keys: RequireDOB, RequireGuardian, RequireEmergencyContact,
+  //   RequireAddress (each: yes | no — default optional/visible)
+  // The privacy notice is always shown inside the section header so
+  // customers know we don't keep full Aadhaar.
+  var idPolicy = String(cfg('requireiddetails','optional')).toLowerCase();
+  if(idPolicy !== 'no'){
+    var privacyNotice = cfg('privacynotice','') ||
+      'We only ask for what we need. Full ID number stays with you — we keep just the last 4 digits. Bring the original at your first visit.';
+    var dobPolicy = (String(cfg('requiredob','no')).toLowerCase()==='yes')?'required':((String(cfg('requiredob','show')).toLowerCase()==='no')?'hidden':'optional');
+    var guardPolicy = (String(cfg('requireguardian','no')).toLowerCase()==='yes')?'required':((String(cfg('requireguardian','show')).toLowerCase()==='no')?'hidden':'optional');
+    var emergPolicy = (String(cfg('requireemergencycontact','no')).toLowerCase()==='yes')?'required':((String(cfg('requireemergencycontact','show')).toLowerCase()==='no')?'hidden':'optional');
+    var addrPolicy = (String(cfg('requireaddress','no')).toLowerCase()==='yes')?'required':((String(cfg('requireaddress','show')).toLowerCase()==='no')?'hidden':'optional');
+    var idAllRequired = idPolicy==='yes';
+
+    html+='<div class="verify-sec">'
+      +'<div class="verify-hdr"><span style="font-size:14px">🔒</span><div><div class="verify-t">Verification details'+(idAllRequired?' <span class="field-l-req">*</span>':' <span style="font:600 11px var(--F);color:var(--ink3);text-transform:none;letter-spacing:0">(optional but recommended)</span>')+'</div><div class="verify-s">'+E(privacyNotice)+'</div></div></div>';
+
+    if(dobPolicy!=='hidden'){
+      html+='<div class="field"><label class="field-l">Date of birth'+(dobPolicy==='required'?' <span class="field-l-req">*</span>':'')+'</label><input class="field-i" id="enrDOB" type="date" max="'+todayISO_()+'"><div class="field-err">Please enter date of birth</div></div>';
+    }
+    if(guardPolicy!=='hidden'){
+      html+='<div class="field"><label class="field-l">Father\'s / Guardian\'s name'+(guardPolicy==='required'?' <span class="field-l-req">*</span>':'')+'</label><input class="field-i" id="enrGuardian" placeholder="As on official documents" autocomplete="off"><div class="field-err">Please enter guardian\'s name</div></div>';
+    }
+    if(emergPolicy!=='hidden'){
+      html+='<div class="field-row">'
+        +'<div class="field"><label class="field-l">Emergency contact name'+(emergPolicy==='required'?' <span class="field-l-req">*</span>':'')+'</label><input class="field-i" id="enrEmergName" placeholder="Parent / spouse / friend"></div>'
+        +'<div class="field"><label class="field-l">Emergency phone'+(emergPolicy==='required'?' <span class="field-l-req">*</span>':'')+'</label><input class="field-i" id="enrEmergPhone" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile" autocomplete="tel" oninput="sanitizePhone10(this)"><div class="field-err">10-digit phone required (must start with 6, 7, 8 or 9)</div></div>'
+      +'</div>';
+    }
+    if(addrPolicy!=='hidden'){
+      html+='<div class="field"><label class="field-l">Permanent address'+(addrPolicy==='required'?' <span class="field-l-req">*</span>':'')+'</label><textarea class="field-t" id="enrAddr" placeholder="House / street / city / pincode"></textarea><div class="field-err">Please enter your address</div></div>';
+    }
+
+    // ID type + last 4 digits + optional photo
+    html+='<div class="field-row">'
+      +'<div class="field"><label class="field-l">ID type'+(idAllRequired?' <span class="field-l-req">*</span>':'')+'</label>'
+        +'<select class="field-s" id="enrIdType">'
+          +'<option value="">— select —</option>'
+          +'<option>Aadhaar</option>'
+          +'<option>Student ID</option>'
+          +'<option>Driving Licence</option>'
+          +'<option>Voter ID</option>'
+          +'<option>PAN</option>'
+          +'<option>Passport</option>'
+          +'<option>Other</option>'
+        +'</select>'
+        +'<div class="field-err">Pick an ID type</div>'
+      +'</div>'
+      +'<div class="field"><label class="field-l">Last 4 digits'+(idAllRequired?' <span class="field-l-req">*</span>':'')+'</label><input class="field-i" id="enrId4" inputmode="numeric" maxlength="4" placeholder="e.g. 1234" pattern="\\d{4}"><div class="field-err">Need last 4 digits</div><div class="field-help">We never store the full number. Keeps your ID safe.</div></div>'
+    +'</div>';
+
+    // Photo upload (only if Cloudinary is configured globally — already is)
+    html+='<div class="field"><label class="field-l">ID photo (optional)</label>'
+      +'<div class="photo-up" id="photoUp">'
+        +'<div class="photo-up-prev" id="photoPrev" style="display:none"><img id="photoPrevImg" alt="ID preview"><button type="button" class="photo-x" onclick="clearIdPhoto()" aria-label="Remove">✕</button></div>'
+        +'<label class="photo-up-pick" id="photoPick" for="photoFile">'
+          +'<span class="photo-up-i">📷</span>'
+          +'<span class="photo-up-t">Tap to upload photo of your ID</span>'
+          +'<span class="photo-up-h">JPG / PNG · max 10 MB · skip if you\'d rather show in person</span>'
+        +'</label>'
+        +'<input type="file" id="photoFile" accept="image/*" capture="environment" style="display:none" onchange="handleIdPhoto(this)">'
+        +'<div class="photo-up-prog" id="photoProg" style="display:none"><div class="photo-up-prog-bar" id="photoProgBar"></div></div>'
+      +'</div>'
+      +'<div class="field-help" id="photoHelp" style="display:none;color:var(--brand);font-weight:700">✓ Uploaded — shopkeeper will see this on the order</div>'
+    +'</div>';
+
+    html+='</div>'; // /verify-sec
+  }
+
+  html+='<div class="field"><label class="field-l">Notes (optional)</label><textarea class="field-t" id="enrNotes" placeholder="Anything we should know? E.g. preferred seat, exam you\'re preparing for…"></textarea></div>';
+
+  $('enrollBody').innerHTML=html;
+
+  // Default the date to today
+  var d=$('enrStart');if(d&&!d.value)d.value=todayISO_();
+}
+
+function todayISO_(){
+  var d=new Date();
+  var ist=new Date(d.getTime()+(d.getTimezoneOffset()+330)*60000);
+  return ist.toISOString().slice(0,10);
+}
+
+function parseAddons_(s){
+  // "Locker:100, AC seat:400" → [{name:"Locker",price:100},...]
+  return String(s||'').split(',').map(function(p){
+    var bits=p.split(':');
+    if(bits.length<2)return null;
+    var price=parseFloat(bits[1]);
+    return isNaN(price)?null:{name:bits[0].trim(),price:price};
+  }).filter(Boolean);
+}
+
+function changePlan(idx){
+  selectedPlan=plans[idx];
+  selectedAddons={};
+  buildEnrollForm();
+}
+
+function toggleAddon(i,name,price){
+  if(selectedAddons[i]){
+    delete selectedAddons[i];
+    $('addon'+i).classList.remove('on');
+  }else{
+    selectedAddons[i]={name:name,price:price};
+    $('addon'+i).classList.add('on');
+  }
+}
+
+try { console.log('[library] checkpoint C: after toggleAddon'); } catch(e){}
+
+// ─── ID photo upload ─────────────────────────────
+// Customer-facing only — uploads to Cloudinary's master account in a per-
+// tenant folder so the shopkeeper can review the ID before the customer's
+// first physical visit. Optional. The URL flows into the order's notes
+// column (idPhoto=…) so it surfaces in the dashboard + shopkeeper email.
+
+function handleIdPhoto(input){
+  var f=input.files&&input.files[0];if(!f)return;
+  // Basic validation — same rules as dashboard-v2.js uploads
+  if(!/^image\/(png|jpe?g|webp|heic|heif)$/i.test(f.type||'')){
+    alert('Please pick a JPG, PNG or WebP image.');input.value='';return;
+  }
+  if(f.size>10*1024*1024){
+    alert('Image too large ('+Math.round(f.size/1048576)+' MB). Max 10 MB.');input.value='';return;
+  }
+
+  $('photoPick').style.display='none';
+  $('photoProg').style.display='block';
+  var bar=$('photoProgBar');bar.style.width='0%';
+
+  // Local preview while uploading — instant feedback even on slow networks
+  var reader=new FileReader();
+  reader.onload=function(){
+    $('photoPrevImg').src=reader.result;
+    $('photoPrev').style.display='flex';
+  };
+  reader.readAsDataURL(f);
+
+  uploadIdPhoto_(f,function(p){bar.style.width=p+'%'}).then(function(url){
+    idPhotoUrl=url;
+    $('photoUp').classList.add('uploaded');
+    $('photoProg').style.display='none';
+    $('photoHelp').style.display='block';
+  }).catch(function(err){
+    alert('Could not upload ID photo: '+err.message+'\nYou can skip and show ID in person.');
+    clearIdPhoto();
+  });
+}
+
+function clearIdPhoto(){
+  idPhotoUrl='';
+  var inp=$('photoFile');if(inp)inp.value='';
+  $('photoPrev').style.display='none';
+  $('photoUp').classList.remove('uploaded');
+  $('photoPick').style.display='flex';
+  $('photoProg').style.display='none';
+  $('photoHelp').style.display='none';
+}
+
+function uploadIdPhoto_(file,onProgress){
+  return new Promise(function(resolve,reject){
+    var url='https://api.cloudinary.com/v1_1/'+CLOUDINARY.cloud+'/image/upload';
+    var fd=new FormData();
+    fd.append('file',file);
+    fd.append('upload_preset',CLOUDINARY.preset);
+    // Per-tenant folder, scoped to id-photos so shopkeepers can find them
+    fd.append('folder','storepro/'+(SLUG||'unknown')+'/id-photos');
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',url);
+    xhr.upload.onprogress=function(e){if(e.lengthComputable&&onProgress)onProgress(Math.round((e.loaded/e.total)*100))};
+    xhr.onload=function(){
+      try{
+        var r=JSON.parse(xhr.responseText||'{}');
+        if(xhr.status>=200&&xhr.status<300&&r.secure_url)resolve(r.secure_url);
+        else reject(new Error((r.error&&r.error.message)||('Upload failed ('+xhr.status+')')));
+      }catch(e){reject(new Error('Upload failed: bad response'))}
+    };
+    xhr.onerror=function(){reject(new Error('Network error during upload'))};
+    xhr.send(fd);
+  });
+}
+
+// ─── Submit enrollment ───
+function submitEnroll(){
+  if(!selectedPlan){alert('Please pick a plan first');return}
+
+  // Validation
+  var clearAll=function(){['enrName','enrPhone','enrStart','enrDOB','enrGuardian','enrEmergName','enrEmergPhone','enrAddr','enrIdType','enrId4'].forEach(function(id){var f=$(id);if(f&&f.parentNode)f.parentNode.classList.remove('err')})};
+  clearAll();
+
+  // Core fields
+  var name=($('enrName').value||'').trim();
+  var phone=($('enrPhone').value||'').replace(/\D/g,'');
+  var email=($('enrEmail').value||'').trim();
+  var start=($('enrStart').value||'').trim();
+  var notes=($('enrNotes').value||'').trim();
+  // Verification fields — only present when policy isn't "no"
+  var dob=($('enrDOB')?$('enrDOB').value:'').trim();
+  var guardian=($('enrGuardian')?$('enrGuardian').value:'').trim();
+  var emergName=($('enrEmergName')?$('enrEmergName').value:'').trim();
+  var emergPhone=($('enrEmergPhone')?$('enrEmergPhone').value:'').replace(/\D/g,'');
+  var addr=($('enrAddr')?$('enrAddr').value:'').trim();
+  var idType=($('enrIdType')?$('enrIdType').value:'').trim();
+  var id4=($('enrId4')?$('enrId4').value:'').replace(/\D/g,'');
+
+  // Validation
+  var ok=true;
+  function flag(id){var el=$(id);if(el&&el.parentNode){el.parentNode.classList.add('err');ok=false}}
+  if(!name) flag('enrName');
+  if(!/^[6-9]\d{9}$/.test(phone)) flag('enrPhone');
+  if(!start) flag('enrStart');
+
+  // Conditional validation per per-tenant policy
+  var idPolicy=String(cfg('requireiddetails','optional')).toLowerCase();
+  var dobReq=String(cfg('requiredob','no')).toLowerCase()==='yes';
+  var guardReq=String(cfg('requireguardian','no')).toLowerCase()==='yes';
+  var emergReq=String(cfg('requireemergencycontact','no')).toLowerCase()==='yes';
+  var addrReq=String(cfg('requireaddress','no')).toLowerCase()==='yes';
+  if(dobReq && !dob) flag('enrDOB');
+  if(guardReq && !guardian) flag('enrGuardian');
+  if(emergReq){
+    if(!emergName) flag('enrEmergName');
+    if(!/^[6-9]\d{9}$/.test(emergPhone)) flag('enrEmergPhone');
+  }
+  if(addrReq && !addr) flag('enrAddr');
+  if(idPolicy==='yes'){
+    if(!idType) flag('enrIdType');
+    if(!/^\d{4}$/.test(id4)) flag('enrId4');
+  }
+  // Soft validation: if a 10-digit phone was started in emergency phone, require it complete
+  if(emergPhone && !/^[6-9]\d{9}$/.test(emergPhone)) flag('enrEmergPhone');
+  // ID4 sanity — if user filled SOME digits but not 4, complain
+  if(id4 && id4.length<4) flag('enrId4');
+
+  if(!ok){
+    var firstErr=document.querySelector('.field.err');
+    if(firstErr)firstErr.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  var cur=cfg('currency','₹');
+  var planPrice=fnum(selectedPlan.price);
+  var addonLines=[],addonTotal=0;
+  Object.keys(selectedAddons).forEach(function(k){
+    var a=selectedAddons[k];
+    addonLines.push('+ '+a.name+' = '+cur+a.price);
+    addonTotal+=a.price;
+  });
+  var total=planPrice+addonTotal;
+
+  var lines=['📚 Plan: '+selectedPlan.name+(selectedPlan.duration?' ('+selectedPlan.duration+')':'')+' = '+cur+planPrice];
+  if(addonLines.length)lines=lines.concat(addonLines);
+  lines.push('📅 Start: '+start);
+  if(idType)lines.push('🪪 ID: '+idType+(id4?' ····'+id4:''));
+  if(dob)lines.push('🎂 DOB: '+dob);
+  if(guardian)lines.push('👨‍👩‍👧 Guardian: '+guardian);
+  if(emergName||emergPhone)lines.push('🆘 Emergency: '+emergName+(emergPhone?' ('+emergPhone+')':''));
+  if(addr)lines.push('🏠 Address: '+addr);
+  if(idPhotoUrl)lines.push('📷 ID photo: '+idPhotoUrl);
+  if(notes)lines.push('📝 '+notes);
+
+  var btn=$('submitBtn');
+  btn.classList.add('order-sending');
+  btn.disabled=true;
+  btn.innerHTML='<span class="order-spin"></span> Checking…';
+
+  if(!SCRIPT_URL){
+    alert('Sorry, enrollment is temporarily offline. Please call us instead.');
+    btn.classList.remove('order-sending');btn.disabled=false;
+    btn.innerHTML='📚 Confirm Enrollment';
+    return;
+  }
+
+  // Duplicate check — block re-enrollment if same phone has a non-cancelled
+  // order for the SAME plan within the plan's duration window.
+  // Daily plans: 1-day window. Monthly: 30 days. Yearly: 365 days. Different
+  // plan or beyond the window: always allowed. Cancelled previous: always allowed.
+  checkDuplicateEnrollment_(phone, selectedPlan, function(existing){
+    if(existing){
+      btn.classList.remove('order-sending');btn.disabled=false;
+      btn.innerHTML='📚 Confirm Enrollment';
+      showDuplicateBlock_(existing);
+      return;
+    }
+    proceedEnroll_({
+      name:name,phone:phone,email:email,start:start,
+      dob:dob,guardian:guardian,emergName:emergName,emergPhone:emergPhone,addr:addr,
+      idType:idType,id4:id4,idPhoto:idPhotoUrl,
+      notes:notes,lines:lines,total:total,btn:btn
+    });
+  });
+}
+
+function proceedEnroll_(p){
+  var btn=p.btn;
+  btn.innerHTML='<span class="order-spin"></span> Confirming…';
+  var orderId='ENR-'+Date.now().toString(36).toUpperCase();
+
+  // Pack all verification fields into the notes payload using key=value · key=value
+  // syntax. Server-side parsers (shopkeeper email, duplicate check, dashboard
+  // detail view) read the fields they care about; everything is preserved.
+  var notesParts=['Enrollment','plan='+selectedPlan.name];
+  if(p.start)notesParts.push('start='+p.start);
+  if(p.idType)notesParts.push('idType='+p.idType);
+  if(p.id4)notesParts.push('id4='+p.id4);
+  if(p.dob)notesParts.push('dob='+p.dob);
+  if(p.guardian)notesParts.push('guardian='+p.guardian);
+  if(p.emergName||p.emergPhone)notesParts.push('emergency='+p.emergName+(p.emergPhone?' '+p.emergPhone:''));
+  if(p.addr)notesParts.push('addr='+p.addr.replace(/[·\n\r]/g,' '));
+  if(p.idPhoto)notesParts.push('idPhoto='+p.idPhoto);
+  if(p.notes)notesParts.push(p.notes);
+  var notesPacked=notesParts.join(' · ');
+
+  // Address column — keep it short and shopkeeper-readable. Permanent address
+  // (if entered) is the most useful single line; falls back to ID type.
+  var addressLine='Walk-in';
+  if(p.addr)addressLine='Walk-in · '+p.addr;
+  else if(p.idType)addressLine='Walk-in · '+p.idType+(p.id4?' ····'+p.id4:'');
+
+  var params={
+    action:'newOrder',
+    orderId:orderId,
+    name:p.name,
+    phone:'91'+p.phone,
+    email:p.email,
+    address:addressLine,
+    items:p.lines.join('\n'),
+    total:p.total,
+    mode:'pickup',
+    payment:'pay-at-shop',
+    notes:notesPacked,
+    status:'New'
+  };
+
+  // Fire-and-forget via <img> — same pattern as other storefronts
+  var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k])}).join('&');
+  var img=new Image();
+  img.src=SCRIPT_URL+'?'+qs;
+
+  // Optimistic success after 800ms — gives the image request enough time
+  setTimeout(function(){
+    closeEnroll();
+    saveRecentOrder_(orderId, selectedPlan, p.total);
+    showSuccess(orderId);
+    btn.classList.remove('order-sending');
+    btn.disabled=false;
+    btn.innerHTML='📚 Confirm Enrollment';
+    selectedPlan=null;selectedAddons={};
+    idPhotoUrl='';
+  },800);
+}
+
+// ─── DUPLICATE PREVENTION ──────────────────────────
+// Checks the tenant's Orders sheet for an active enrollment matching this
+// phone + plan combination, within the plan's duration window. Calls cb with
+// the existing-order object if found, or null if clean to proceed.
+function checkDuplicateEnrollment_(phone10, plan, cb){
+  var planName=String(plan&&plan.name||'').toLowerCase().trim();
+  if(!planName){cb(null);return}
+  var lockoutDays=parseDurationDays_(plan.duration||plan.unit||'');
+  var cutoffMs=Date.now()-(lockoutDays*86400000);
+
+  gviz(SHEET_ID,'Orders',function(r){
+    if(!r||!r.table||!r.table.rows){cb(null);return}
+    var headers=[],rows=r.table.rows||[];
+    if(r.table.cols&&r.table.cols.length){
+      var allLabeled=true;
+      r.table.cols.forEach(function(c){var label=(c.label||'').trim();if(!label)allLabeled=false;headers.push(label.toLowerCase().replace(/\s+/g,''))});
+      if(!allLabeled && rows[0]){
+        var hRow=rows[0];headers=[];
+        if(hRow.c)hRow.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});
+        rows=rows.slice(1);
+      }
+    }
+
+    // Most-recent first — tenants append, so reverse iterating finds the
+    // freshest match without scanning a year of history.
+    for(var i=rows.length-1;i>=0;i--){
+      var row=rows[i];if(!row.c)continue;
+      var o={};
+      headers.forEach(function(h,j){var c=row.c[j];var v=c?(c.f!=null?String(c.f):c.v!=null?String(c.v):''):'';o[h]=String(v).trim()});
+
+      var status=String(o.status||'').toLowerCase().trim();
+      // Cancelled / rejected enrollments don't count — clean slate
+      if(status==='cancelled'||status==='rejected')continue;
+
+      var rowPhone=String(o.phone||'').replace(/\D/g,'').slice(-10);
+      if(rowPhone!==phone10)continue;
+
+      // Plan match — read from notes column (saved as "plan=Monthly Standard ·…")
+      // OR from items column (first line: "📚 Plan: Monthly Standard…")
+      var rowPlanName='';
+      var notesPlanMatch=String(o.ordernotes||o.notes||'').match(/plan=([^·]+?)(?:\s*·|$)/);
+      if(notesPlanMatch)rowPlanName=notesPlanMatch[1].trim().toLowerCase();
+      if(!rowPlanName){
+        var firstLine=String(o.items||'').split(/\r?\n/)[0]||'';
+        var m=firstLine.match(/plan:\s*([^=]+?)(?:\s*\(|\s*=|$)/i);
+        if(m)rowPlanName=m[1].trim().toLowerCase();
+      }
+      if(!rowPlanName||rowPlanName!==planName)continue;
+
+      // Time window check — only block if the existing enrollment is still
+      // within its duration. Allows monthly customers to re-up after 30 days.
+      var dt=String(o.dateandtime||o['date&time']||o.date||'').trim();
+      var dMs=parseOrderDate_(dt);
+      if(dMs && dMs<cutoffMs)continue;
+
+      // Active duplicate found
+      cb(o);
+      return;
+    }
+    cb(null);
+  });
+}
+
+function parseDurationDays_(d){
+  d=String(d||'').toLowerCase();
+  var m=d.match(/(\d+)\s*(day|week|month|year)/);
+  if(!m){
+    // Plan duration not parseable — fall back by category. Daily / weekly
+    // are the only plans short enough to need a tighter window; everything
+    // else gets 30 days as a sensible default lockout.
+    if(/day|daily/.test(d))return 1;
+    if(/week/.test(d))return 7;
+    return 30;
+  }
+  var n=parseInt(m[1])||1;
+  var u=m[2];
+  if(u==='day')return n;
+  if(u==='week')return n*7;
+  if(u==='month')return n*30;
+  if(u==='year')return n*365;
+  return 30;
+}
+
+function parseOrderDate_(s){
+  // Orders sheet writes dates as "5/9/2026, 10:42:15 am" via toLocaleString
+  // ('en-IN'). Date.parse handles that format. Returns ms or NaN.
+  if(!s)return 0;
+  var t=Date.parse(String(s));
+  if(!isNaN(t))return t;
+  // Fallback: dd/mm/yyyy parse
+  var m=String(s).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m){
+    var d=parseInt(m[1]),mo=parseInt(m[2])-1,y=parseInt(m[3]);
+    return new Date(y,mo,d).getTime();
+  }
+  return 0;
+}
+
+function showDuplicateBlock_(existing){
+  var planName=String(existing.items||'').split(/\r?\n/)[0]||'this plan';
+  var orderId=String(existing.orderid||'—');
+  var status=String(existing.status||'New');
+  var statusClass=status.toLowerCase().replace(/\s+/g,'')==='cancelled'?'cancelled':status.toLowerCase()==='confirmed'?'confirmed':'new';
+  var html=''
+    +'<div class="track-result" style="border-color:#d97706;background:#fffbeb">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+        +'<span style="font-size:24px">⚠️</span>'
+        +'<div><div style="font:800 14px var(--F);color:#78350f;letter-spacing:-.2px">You\'re already enrolled</div>'
+        +'<div style="font:500 12px var(--F);color:#92400e;margin-top:2px">An active enrollment for this plan exists for this number.</div></div>'
+      +'</div>'
+      +'<div class="track-meta">'
+        +'<div class="track-meta-l">📋 ID</div><div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;color:var(--brand)">'+E(orderId)+'</div>'
+        +'<div class="track-meta-l">📚 Plan</div><div>'+E(planName)+'</div>'
+        +'<div class="track-meta-l">🟢 Status</div><div><span class="track-status '+statusClass+'">'+E(status)+'</span></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:14px">'
+        +'<button onclick="closeEnroll();setTimeout(function(){openTrack(\''+E(orderId)+'\')},200)" style="flex:1;padding:11px;background:var(--brand);color:#fff;border:none;border-radius:var(--r);font:800 12px var(--F);cursor:pointer">📋 View enrollment</button>'
+        +'<button onclick="dismissDuplicate_()" style="flex:1;padding:11px;background:#fff;color:var(--ink2);border:1.5px solid var(--line);border-radius:var(--r);font:700 12px var(--F);cursor:pointer">↩ Pick another plan</button>'
+      +'</div>'
+      +'<div style="margin-top:10px;font:500 11px var(--F);color:#78350f;line-height:1.5">If you think this is wrong (e.g. you cancelled and want to re-enroll), please call us — we\'ll sort it out.</div>'
+    +'</div>';
+  var existingBlock=document.getElementById('dupBlock');
+  if(existingBlock)existingBlock.remove();
+  var wrap=document.createElement('div');
+  wrap.id='dupBlock';
+  wrap.innerHTML=html;
+  $('enrollBody').insertBefore(wrap,$('enrollBody').firstChild);
+  $('enrollBody').scrollTop=0;
+}
+
+function dismissDuplicate_(){
+  var b=document.getElementById('dupBlock');if(b)b.remove();
+}
+
+function showSuccess(orderId){
+  $('succId').textContent=orderId;
+  $('succSub').textContent='We\'ll see you at '+cfg('shopname','the library')+' soon. Tap below to call us if you have any questions.';
+  $('successOverlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeSuccess(){
+  $('successOverlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+try { console.log('[library] checkpoint D: before TRACK_STORAGE_KEY'); } catch(e){}
+
+// ─── TRACKING ──────────────────────────────────────
+// Customer enters their enrollment ID, we query the tenant's Orders sheet via
+// gviz, and render the latest status + plan + start date + any shopkeeper
+// comment. Recently-seen IDs (this device, this slug) are kept in localStorage
+// for one-tap re-tracking.
+
+var TRACK_STORAGE_KEY = function(){return 'storepro_lib_'+(SLUG||'unknown')+'_orders'};
+try { console.log('[library] checkpoint E: after TRACK_STORAGE_KEY'); } catch(e){}
+
+function saveRecentOrder_(orderId, plan, total){
+  try{
+    var key=TRACK_STORAGE_KEY();
+    var raw=localStorage.getItem(key)||'[]';
+    var list=JSON.parse(raw);if(!Array.isArray(list))list=[];
+    // De-dupe — same id should bubble to top, not stack
+    list=list.filter(function(e){return e&&e.id&&e.id!==orderId});
+    list.unshift({id:orderId,plan:(plan&&plan.name)||'',total:total||0,t:Date.now()});
+    if(list.length>10)list=list.slice(0,10);
+    localStorage.setItem(key,JSON.stringify(list));
+  }catch(e){}
+}
+
+function loadRecentOrders_(){
+  try{
+    var raw=localStorage.getItem(TRACK_STORAGE_KEY())||'[]';
+    var list=JSON.parse(raw);
+    return Array.isArray(list)?list:[];
+  }catch(e){return []}
+}
+
+function openTrack(prefilledId){
+  $('trackResult').innerHTML='';
+  // Default tab: ID — both call-sites (header tap + post-success Track button)
+  // are coming from a flow where the user has the ID handy
+  switchTrackTab('id');
+  var input=$('trackInput');
+  input.value=String(prefilledId||'').toUpperCase();
+  // Clear phone-tab fields too so a previous lookup doesn't bleed across opens
+  if($('trackPhone'))$('trackPhone').value='';
+  if($('trackId4'))$('trackId4').value='';
+  $('trackOverlay').classList.add('show');
+  document.body.style.overflow='hidden';
+  // If we have a prefilled id, auto-track. Otherwise show recent list.
+  if(prefilledId){
+    setTimeout(doTrack,150);
+  }else{
+    renderRecentOrders_();
+  }
+  setTimeout(function(){input.focus()},250);
+}
+
+function closeTrack(){
+  $('trackOverlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+function renderRecentOrders_(){
+  var list=loadRecentOrders_();
+  var div=$('trackRecent');
+  if(!list.length){div.innerHTML='';return}
+  var html='<div class="track-recent">'
+    +'<div class="track-recent-t">📌 Recent enrollments on this device</div>'
+    +list.map(function(e){
+      var when=new Date(e.t||0);
+      var ago=relativeAgo_(when);
+      return '<div class="track-recent-i" onclick="trackById(\''+E(e.id)+'\')">'
+        +'<div><div class="track-recent-id">'+E(e.id)+'</div><div class="track-recent-d">'+E(e.plan||'Enrollment')+' · '+ago+'</div></div>'
+        +'<div class="track-recent-arrow">›</div>'
+      +'</div>';
+    }).join('')
+  +'</div>';
+  div.innerHTML=html;
+}
+
+function relativeAgo_(d){
+  if(!d||isNaN(d.getTime()))return '—';
+  var s=Math.round((Date.now()-d.getTime())/1000);
+  if(s<60)return 'just now';
+  if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+function trackById(id){
+  switchTrackTab('id');
+  $('trackInput').value=id;
+  doTrack();
+}
+
+// ─── Tab switching for the track sheet ───
+function switchTrackTab(which){
+  var idTab=$('trkTabId'),phoneTab=$('trkTabPhone');
+  var idPane=$('trkPaneId'),phonePane=$('trkPanePhone');
+  if(which==='phone'){
+    idTab.classList.remove('on');phoneTab.classList.add('on');
+    idPane.style.display='none';phonePane.style.display='block';
+  }else{
+    idTab.classList.add('on');phoneTab.classList.remove('on');
+    idPane.style.display='block';phonePane.style.display='none';
+  }
+  // Don't clear results — user might be comparing
+}
+
+// ─── Find enrollments by phone + last-4 of ID ───
+// Phone alone is too easy to guess (it's on the storefront's contact page);
+// requiring phone + ID last-4 makes lookup a dual-factor check that mirrors
+// the privacy promise — full ID never leaves the customer, but last-4 is
+// enough to prove they actually enrolled.
+function doTrackByPhone(){
+  var phone=String(($('trackPhone').value||'').replace(/\D/g,''));
+  var id4=String(($('trackId4').value||'').replace(/\D/g,''));
+
+  // Clear field-error states on retry
+  ['trackPhone','trackId4'].forEach(function(id){var f=$(id);if(f)f.parentNode.classList.remove('err')});
+  var ok=true;
+  if(!/^[6-9]\d{9}$/.test(phone)){$('trackPhone').parentNode.classList.add('err');ok=false}
+  if(!/^\d{4}$/.test(id4)){$('trackId4').parentNode.classList.add('err');ok=false}
+  if(!ok){
+    $('trackResult').innerHTML='<div class="track-empty" style="color:var(--rose)">Please enter both phone and last-4 of your ID.</div>';
+    return;
+  }
+
+  $('trackResult').innerHTML='<div class="track-empty"><span class="order-spin" style="border-color:rgba(15,118,110,.3);border-top-color:var(--brand);display:inline-block;width:24px;height:24px"></span><div style="margin-top:10px">Looking up your enrollments…</div></div>';
+  $('trackRecent').innerHTML='';
+
+  gviz(SHEET_ID,'Orders',function(r){
+    var matches=findOrdersByPhoneId4_(r,phone,id4);
+    if(!matches.length){
+      $('trackResult').innerHTML='<div class="track-empty" style="color:var(--rose)">'
+        +'❌ No enrollments found for that phone + ID combination.<br>'
+        +'<span style="font-size:12px;color:var(--ink3);font-weight:500">Double-check the digits. If your enrollment didn\'t include ID details, use "By ID" instead, or call us.</span>'
+      +'</div>';
+      return;
+    }
+    if(matches.length===1){
+      // Single hit — go straight to the detail view
+      renderTrackResult_(matches[0]);
+      return;
+    }
+    // Multiple hits — render a picker
+    renderEnrollmentPicker_(matches);
+  });
+}
+
+// Search the Orders sheet for rows matching phone (last-10) + ID4 (regex on
+// notes column "id4=NNNN"). Returns newest-first.
+function findOrdersByPhoneId4_(r,phone10,id4){
+  var hits=[];
+  if(!r||!r.table||!r.table.rows)return hits;
+  var headers=[],rows=r.table.rows||[];
+  if(r.table.cols&&r.table.cols.length){
+    var allLabeled=true;
+    r.table.cols.forEach(function(c){var label=(c.label||'').trim();if(!label)allLabeled=false;headers.push(label.toLowerCase().replace(/\s+/g,''))});
+    if(!allLabeled && rows[0]){
+      var hRow=rows[0];headers=[];
+      if(hRow.c)hRow.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});
+      rows=rows.slice(1);
+    }
+  }
+  for(var i=rows.length-1;i>=0;i--){
+    var row=rows[i];if(!row.c)continue;
+    var o={};
+    headers.forEach(function(h,j){var c=row.c[j];var v=c?(c.f!=null?String(c.f):c.v!=null?String(c.v):''):'';o[h]=String(v).trim()});
+
+    var rowPhone=String(o.phone||'').replace(/\D/g,'').slice(-10);
+    if(rowPhone!==phone10)continue;
+
+    var rowId4=String(o.ordernotes||o.notes||'').match(/id4=(\d{4})/);
+    if(!rowId4 || rowId4[1]!==id4)continue;
+
+    hits.push(o);
+  }
+  return hits;
+}
+
+function renderEnrollmentPicker_(matches){
+  var html='<div class="track-result">'
+    +'<div style="font:800 13px var(--F);color:var(--ink);margin-bottom:6px">Found '+matches.length+' enrollment'+(matches.length===1?'':'s')+' on this number</div>'
+    +'<div style="font:500 12px var(--F);color:var(--ink3);margin-bottom:14px">Tap one to see status</div>'
+    +matches.map(function(o){
+      var planName='';
+      var pm=String(o.ordernotes||o.notes||'').match(/plan=([^·]+?)(?:\s*·|$)/);
+      if(pm)planName=pm[1].trim();
+      else planName=String(o.items||'').split(/\r?\n/)[0]||'Enrollment';
+      var status=String(o.status||'New');
+      var statusKey=status.toLowerCase().replace(/\s+/g,'');
+      var statusClass=({new:'new',confirmed:'confirmed',cancelled:'cancelled',delivered:'delivered',pickedup:'delivered',done:'done',completed:'completed'})[statusKey]||'new';
+      return '<div class="track-recent-i" onclick="trackById(\''+E(o.orderid)+'\')" style="margin-bottom:8px">'
+        +'<div><div class="track-recent-id">'+E(o.orderid)+'</div>'
+        +'<div class="track-recent-d">'+E(planName)+'</div></div>'
+        +'<span class="track-status '+statusClass+'" style="font-size:10px;padding:4px 8px">'+E(status)+'</span>'
+      +'</div>';
+    }).join('')
+  +'</div>';
+  $('trackResult').innerHTML=html;
+}
+
+function doTrack(){
+  var id=String(($('trackInput').value||'').trim().toUpperCase());
+  if(!id){
+    $('trackResult').innerHTML='<div class="track-empty" style="color:var(--rose)">Please enter your enrollment ID</div>';
+    return;
+  }
+  $('trackResult').innerHTML='<div class="track-empty"><span class="order-spin" style="border-color:rgba(15,118,110,.3);border-top-color:var(--brand);display:inline-block;width:24px;height:24px"></span><div style="margin-top:10px">Looking up '+E(id)+'…</div></div>';
+  $('trackRecent').innerHTML='';
+
+  gviz(SHEET_ID,'Orders',function(r){
+    var match=findOrderInResponse_(r,id);
+    if(!match){
+      $('trackResult').innerHTML='<div class="track-empty" style="color:var(--rose)">'
+        +'❌ No enrollment found with ID <b>'+E(id)+'</b><br>'
+        +'<span style="font-size:12px;color:var(--ink3);font-weight:500">Double-check the ID or call us if you\'re unsure.</span>'
+      +'</div>';
+      renderRecentOrders_();
+      return;
+    }
+    renderTrackResult_(match);
+  });
+}
+
+function findOrderInResponse_(r,id){
+  if(!r||!r.table||!r.table.rows)return null;
+  // Orders sheet uses gviz auto-detect (label-based headers). Fall back to
+  // header-as-row-0 if labels are missing, mirroring parseRows.
+  var headers=[],rows=r.table.rows||[];
+  if(r.table.cols&&r.table.cols.length){
+    var allLabeled=true;
+    r.table.cols.forEach(function(c){
+      var label=(c.label||'').trim();
+      if(!label)allLabeled=false;
+      headers.push(label.toLowerCase().replace(/\s+/g,''));
+    });
+    if(!allLabeled && rows[0]){
+      var hRow=rows[0];headers=[];
+      if(hRow.c)hRow.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});
+      rows=rows.slice(1);
+    }
+  }
+  for(var i=0;i<rows.length;i++){
+    var row=rows[i];if(!row.c)continue;
+    var o={};
+    headers.forEach(function(h,j){var c=row.c[j];var v=c?(c.f!=null?String(c.f):c.v!=null?String(c.v):''):'';o[h]=String(v).trim()});
+    if(String(o.orderid||'').trim().toUpperCase()===id)return o;
+  }
+  return null;
+}
+
+function renderTrackResult_(o){
+  var status=String(o.status||'New').trim();
+  var statusKey=status.toLowerCase().replace(/\s+/g,'');
+  var statusClass=({new:'new',confirmed:'confirmed',cancelled:'cancelled',delivered:'delivered',pickedup:'delivered',done:'done',completed:'completed'})[statusKey]||'new';
+  var emoji=({'new':'🆕','confirmed':'✅','cancelled':'❌','delivered':'🎉','pickedup':'🎉','done':'✓','completed':'✓'})[statusKey]||'•';
+  var statusLabel=status==='Cancelled'?'Cancelled / Rejected':(status==='Delivered'||status==='Picked Up'||status==='Done'||status==='Completed'?'Active · enrolled':status);
+
+  // Cherry-pick the useful fields
+  var planLine = String(o.items||'').split(/\r?\n/)[0] || '—';
+  var dateStr = String(o.dateandtime||o['date&time']||o.date||'').trim();
+  var total = String(o.total||'').trim();
+  var comment = String(o.shopkeepercomment||o.comment||'').trim();
+  var eta = String(o.eta||'').trim();
+
+  // Try to extract plan name and start date from the items / notes column
+  var notes = String(o.ordernotes||o.notes||'').trim();
+  var planMatch = notes.match(/plan=([^·]+?)(?:\s*·|$)/);
+  var startMatch = notes.match(/start=([^·]+?)(?:\s*·|$)/);
+  var planName = planMatch ? planMatch[1].trim() : '';
+  var startDate = startMatch ? startMatch[1].trim() : '';
+
+  // ─── Expiry computation ───
+  // Plan duration sources, in order: items column line ("📚 Plan: Monthly (30 days)"),
+  // matching plan in our loaded plans[] array, hardcoded keyword fallback. Expiry =
+  // start_date + duration. We always show this for active enrollments — the customer
+  // wants to know "when does mine end?" before anything else.
+  var durationDays = parseDurationDays_(planLine) || (function(){
+    if(!planName)return 0;
+    var match=plans.find(function(p){return String(p.name||'').toLowerCase()===planName.toLowerCase()});
+    if(match)return parseDurationDays_(match.duration||match.unit||'');
+    return 0;
+  })();
+  var expiryStr='', daysRemaining=null, expiringSoon=false, expired=false;
+  if(startDate && durationDays){
+    var startMs=Date.parse(startDate);
+    if(!isNaN(startMs)){
+      var expMs=startMs+(durationDays*86400000);
+      var d=new Date(expMs);
+      expiryStr=d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+      var msLeft=expMs-Date.now();
+      daysRemaining=Math.ceil(msLeft/86400000);
+      expired=daysRemaining<=0;
+      expiringSoon=!expired && daysRemaining<=7;
+    }
+  }
+  var isCancelled=statusKey==='cancelled';
+  var isActive=!isCancelled;
+
+  var phoneDigits=String(cfg('whatsapp','')||cfg('phone','')).replace(/\D/g,'');
+  var waUrl=phoneDigits?('https://wa.me/'+phoneDigits+'?text='+encodeURIComponent('Hi, regarding my enrollment '+(o.orderid||''))):'';
+  var waRenewUrl=phoneDigits?('https://wa.me/'+phoneDigits+'?text='+encodeURIComponent('Hi, I want to renew my '+planName+' enrollment '+(o.orderid||''))):'';
+  var phoneUrl=String(cfg('phone',''))?('tel:'+cfg('phone','')):'';
+
+  var cur=cfg('currency','₹');
+
+  // Expiry banner — three flavours: expired (red), expiring soon (amber), healthy
+  // (teal). Cancelled enrollments get no banner — they don't have an expiry.
+  var expiryBanner='';
+  if(isActive && expiryStr){
+    if(expired){
+      expiryBanner='<div style="margin-top:14px;padding:14px 16px;background:#fee2e2;border-left:4px solid #dc2626;border-radius:0 var(--r) var(--r) 0">'
+        +'<div style="font:800 11px var(--F);color:#991b1b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">⏰ Plan expired</div>'
+        +'<div style="font:700 13px var(--F);color:#7f1d1d;line-height:1.5">Your plan ended on <b>'+E(expiryStr)+'</b> ('+Math.abs(daysRemaining)+' days ago). Renew to keep studying!</div>'
+        +(waRenewUrl?'<a href="'+E(waRenewUrl)+'" target="_blank" rel="noopener" style="display:block;margin-top:10px;padding:10px;background:#dc2626;color:#fff;border-radius:var(--r);text-align:center;font:800 12px var(--F);text-decoration:none">💬 Message us to renew</a>':'')
+      +'</div>';
+    }else if(expiringSoon){
+      expiryBanner='<div style="margin-top:14px;padding:14px 16px;background:#fef3c7;border-left:4px solid #d97706;border-radius:0 var(--r) var(--r) 0">'
+        +'<div style="font:800 11px var(--F);color:#92400e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">⚠️ Expiring soon</div>'
+        +'<div style="font:700 13px var(--F);color:#78350f;line-height:1.5">Your plan ends on <b>'+E(expiryStr)+'</b> · only <b>'+daysRemaining+' day'+(daysRemaining===1?'':'s')+' left</b>. Renew now to keep your seat.</div>'
+        +(waRenewUrl?'<a href="'+E(waRenewUrl)+'" target="_blank" rel="noopener" style="display:block;margin-top:10px;padding:10px;background:#d97706;color:#fff;border-radius:var(--r);text-align:center;font:800 12px var(--F);text-decoration:none">💬 Message us to renew</a>':'')
+      +'</div>';
+    }else{
+      expiryBanner='<div style="margin-top:14px;padding:12px 14px;background:var(--brand-bg);border-left:4px solid var(--brand);border-radius:0 var(--r) var(--r) 0">'
+        +'<div style="font:800 11px var(--F);color:var(--brand-dk);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">✅ Active</div>'
+        +'<div style="font:700 13px var(--F);color:var(--brand-dk);line-height:1.5">Plan ends on <b>'+E(expiryStr)+'</b> · <b>'+daysRemaining+' days</b> remaining</div>'
+      +'</div>';
+    }
+  }
+
+  var html='<div class="track-result">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'
+      +'<div><div style="font:700 11px var(--F);color:var(--ink3);text-transform:uppercase;letter-spacing:.06em">Enrollment</div>'
+      +'<div style="font:800 14px ui-monospace,Menlo,Consolas,monospace;color:var(--brand);letter-spacing:.04em;margin-top:3px">'+E(o.orderid||'—')+'</div></div>'
+      +'<span class="track-status '+statusClass+'">'+emoji+' '+E(statusLabel)+'</span>'
+    +'</div>'
+    +'<div class="track-meta">'
+      +(planName?'<div class="track-meta-l">📚 Plan</div><div>'+E(planName)+'</div>':'<div class="track-meta-l">📚 Item</div><div>'+E(planLine)+'</div>')
+      +(startDate?'<div class="track-meta-l">📅 Start</div><div>'+E(startDate)+'</div>':'')
+      +(expiryStr&&isActive?'<div class="track-meta-l">⏳ Ends</div><div>'+E(expiryStr)+'</div>':'')
+      +(dateStr?'<div class="track-meta-l">🕐 Booked</div><div>'+E(dateStr)+'</div>':'')
+      +(total?'<div class="track-meta-l">💰 Amount</div><div>'+cur+E(total)+'</div>':'')
+      +(o.customername?'<div class="track-meta-l">👤 Name</div><div>'+E(o.customername)+'</div>':'')
+    +'</div>'
+    +expiryBanner
+    +(eta?'<div class="track-eta"><b>⏱ '+E(eta)+'</b></div>':'')
+    +(comment?'<div class="track-comment"><div class="track-comment-l">💬 Message from the library</div>'+E(comment)+'</div>':'')
+
+    // Quick actions
+    +'<div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">'
+      +'<button onclick="printReceipt_(\''+E(o.orderid||'')+'\')" style="flex:1;min-width:120px;padding:11px;background:var(--card);color:var(--ink2);border:1.5px solid var(--line);border-radius:var(--r);text-align:center;font:800 12px var(--F);cursor:pointer">📄 Save receipt</button>'
+      +(phoneUrl?'<a href="'+E(phoneUrl)+'" style="flex:1;min-width:120px;padding:11px;background:var(--brand-bg);color:var(--brand);border:1.5px solid var(--brand);border-radius:var(--r);text-align:center;font:800 12px var(--F);text-decoration:none">📞 Call</a>':'')
+      +(waUrl?'<a href="'+E(waUrl)+'" target="_blank" rel="noopener" style="flex:1;min-width:120px;padding:11px;background:#15803d;color:#fff;border-radius:var(--r);text-align:center;font:800 12px var(--F);text-decoration:none">💬 WhatsApp</a>':'')
+    +'</div>'
+  +'</div>';
+
+  $('trackResult').innerHTML=html;
+}
+
+// ─── PRINTABLE RECEIPT ──────────────────────────────
+// Opens a popup window with a print-friendly receipt for the given order.
+// We re-fetch the order from the Sheet (don't trust whatever's on the
+// current page — keeps receipts trustworthy even when cached). Customers
+// often need this for student-fee reimbursements (parents, scholarships).
+//
+try { console.log('[library] checkpoint F: before printReceipt_'); } catch(e){}
+
+// Important: build the receipt HTML as a string and inject via document.open
+// then document.write then document.close. Do not include a literal closing
+// script tag sequence anywhere in this code (even inside JS comments) — the
+// HTML5 parser terminates the surrounding block when it sees that pattern,
+// regardless of JS context. We just call w.print() from the parent.
+function printReceipt_(orderId){
+  if(!orderId)return;
+  // Fetch fresh
+  gviz(SHEET_ID,'Orders',function(r){
+    var o=findOrderInResponse_(r,orderId);
+    if(!o){
+      alert('Could not find this enrollment to print.');
+      return;
+    }
+    var w=window.open('','_blank','width=480,height=700');
+    if(!w){
+      alert('Please allow popups so we can open your receipt.');
+      return;
+    }
+
+    // Pull fields the same way renderTrackResult_ does
+    var planLine=String(o.items||'').split(/\r?\n/)[0]||'—';
+    var dateStr=String(o.dateandtime||o['date&time']||o.date||'').trim();
+    var total=String(o.total||'').trim();
+    var notes=String(o.ordernotes||o.notes||'').trim();
+    var planMatch=notes.match(/plan=([^·]+?)(?:\s*·|$)/);
+    var startMatch=notes.match(/start=([^·]+?)(?:\s*·|$)/);
+    var planName=planMatch?planMatch[1].trim():'';
+    var startDate=startMatch?startMatch[1].trim():'';
+
+    // Compute expiry the same way the tracking page does
+    var durationDays=parseDurationDays_(planLine);
+    var expiryStr='';
+    if(startDate && durationDays){
+      var sMs=Date.parse(startDate);
+      if(!isNaN(sMs)){
+        var d=new Date(sMs+durationDays*86400000);
+        expiryStr=d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+      }
+    }
+
+    var shopName=cfg('shopname','Library');
+    var shopAddr=cfg('address','');
+    var shopPhone=cfg('phone','');
+    var shopEmail=cfg('email','');
+    var brand=cfg('brandcolor','#4F46E5');
+    var cur=cfg('currency','₹');
+
+    // Item rows — itemise everything from the items column for a clean bill
+    var itemRows=String(o.items||'').split(/\r?\n/).map(function(line){
+      line=line.trim();if(!line)return '';
+      // Extract amount if "= ₹X" present, otherwise show line as a single label
+      var m=line.match(/^(.*?)=\s*'+cur+'?\s*([\d,]+)\s*$/);
+      if(m){
+        return '<tr><td>'+E(m[1].trim())+'</td><td class="amt">'+cur+E(m[2].trim())+'</td></tr>';
+      }
+      return '<tr><td colspan="2">'+E(line)+'</td></tr>';
+    }).join('');
+
+    var receiptHtml=''
+      // VS Code Live Server (and other dev injectors) regex-replace the
+      // literal closing-body tag with their reload script. If we include
+      // that literal anywhere in this code, the injection lands INSIDE this
+      // JS string and breaks parsing. Splitting the tag name with string
+      // concat makes the literal undetectable to the regex but identical to
+      // the browser when written via document.write.
+      +'<!DOCTYPE html><html><he'+'ad><meta charset="UTF-8"><title>Receipt · '+E(orderId)+'</title>'
+      +'<style>'
+      +'@media print{body{margin:0;padding:0}.no-print{display:none}}'
+      +'body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#fff;color:#0b1220;margin:0;padding:24px;font-size:13px;line-height:1.5}'
+      +'.r{max-width:480px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:0;overflow:hidden}'
+      +'.hd{background:'+brand+';color:#fff;padding:24px 22px;text-align:center}'
+      +'.shop{font-size:20px;font-weight:800;letter-spacing:-.3px}'
+      +'.tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.85;margin-top:4px}'
+      +'.bd{padding:18px 22px}'
+      +'.oid{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:13px;color:'+brand+';background:#f3f4f6;padding:6px 12px;border-radius:6px;letter-spacing:.04em}'
+      +'.row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px dashed #e5e7eb;font-size:12px}'
+      +'.row:last-child{border-bottom:none}'
+      +'.row .l{color:#6b7280;font-weight:600}'
+      +'.row .v{color:#0b1220;font-weight:700;text-align:right}'
+      +'h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;font-weight:800;margin:18px 0 8px;border-bottom:1px solid #e5e7eb;padding-bottom:4px}'
+      +'table{width:100%;border-collapse:collapse;font-size:12px}'
+      +'table td{padding:6px 0;border-bottom:1px dashed #e5e7eb;vertical-align:top}'
+      +'table td.amt{text-align:right;font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:nowrap}'
+      +'.tot{margin-top:14px;padding:12px 14px;background:'+brand+';color:#fff;border-radius:8px;display:flex;justify-content:space-between;align-items:center}'
+      +'.tot .l{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.85}'
+      +'.tot .v{font-size:22px;font-weight:900;letter-spacing:-.5px}'
+      +'.ft{margin-top:18px;padding-top:14px;border-top:1px solid #e5e7eb;text-align:center;font-size:10px;color:#9ca3af;line-height:1.6}'
+      +'.btns{margin:18px auto;max-width:480px;display:flex;gap:8px}'
+      +'.btn{flex:1;padding:11px;border:none;border-radius:8px;font:700 12px sans-serif;cursor:pointer}'
+      +'.btn.p{background:'+brand+';color:#fff}'
+      +'.btn.s{background:#fff;color:#0b1220;border:1.5px solid #e5e7eb}'
+      +'</style></he'+'ad><bo'+'dy>'
+      +'<div class="r">'
+      +'<div class="hd">'
+      +  '<div class="shop">📚 '+E(shopName)+'</div>'
+      +  '<div class="tag">Enrollment Receipt</div>'
+      +'</div>'
+      +'<div class="bd">'
+      +  '<div style="text-align:center;margin-bottom:16px"><span class="oid">'+E(orderId)+'</span></div>'
+      +  (shopAddr?'<div class="row"><div class="l">📍 Address</div><div class="v">'+E(shopAddr)+'</div></div>':'')
+      +  (shopPhone?'<div class="row"><div class="l">📞 Phone</div><div class="v">'+E(shopPhone)+'</div></div>':'')
+      +  (shopEmail?'<div class="row"><div class="l">✉️ Email</div><div class="v">'+E(shopEmail)+'</div></div>':'')
+
+      +  '<h3>Customer</h3>'
+      +  '<div class="row"><div class="l">Name</div><div class="v">'+E(o.customername||'—')+'</div></div>'
+      +  (o.phone?'<div class="row"><div class="l">Phone</div><div class="v">'+E(o.phone)+'</div></div>':'')
+      +  (o.email?'<div class="row"><div class="l">Email</div><div class="v">'+E(o.email)+'</div></div>':'')
+
+      +  '<h3>Plan</h3>'
+      +  (planName?'<div class="row"><div class="l">Plan</div><div class="v">'+E(planName)+'</div></div>':'')
+      +  (startDate?'<div class="row"><div class="l">Start date</div><div class="v">'+E(startDate)+'</div></div>':'')
+      +  (expiryStr?'<div class="row"><div class="l">Valid until</div><div class="v">'+E(expiryStr)+'</div></div>':'')
+      +  (dateStr?'<div class="row"><div class="l">Booked</div><div class="v">'+E(dateStr)+'</div></div>':'')
+
+      +  '<h3>Bill</h3>'
+      +  '<table>'+itemRows+'</table>'
+      +  '<div class="tot"><div class="l">Total paid</div><div class="v">'+cur+E(total||'0')+'</div></div>'
+
+      +  '<div class="ft">Thank you for choosing '+E(shopName)+'.<br>Powered by <b>StorePro</b></div>'
+      +'</div></div>'
+
+      +'<div class="btns no-print">'
+      +  '<button class="btn p" onclick="window.print()">🖨 Print / Save as PDF</button>'
+      +  '<button class="btn s" onclick="window.close()">Close</button>'
+      +'</div>'
+
+      +'</bo'+'dy></html>';
+    w.document.open();
+    w.document.write(receiptHtml);
+    w.document.close();
+    // Auto-trigger print dialog after a short delay (lets the popup render)
+    setTimeout(function(){try{w.focus();w.print()}catch(e){}},300);
+  });
+}
+
+// ─── PWA manifest ───
+function injectManifest(name,brand){
+  try{
+    var manifest={
+      name:name,
+      short_name:name.length>12?name.slice(0,12):name,
+      start_url:location.pathname+location.search,
+      display:'standalone',
+      background_color:'#ffffff',
+      theme_color:brand||'#4F46E5',
+      orientation:'portrait',
+      icons:[{src:'/icon-192.png',sizes:'192x192',type:'image/png'},{src:'/icon-512.png',sizes:'512x512',type:'image/png'}]
+    };
+    var existing=document.querySelector('link[rel="manifest"][data-dyn]');
+    if(existing)existing.parentNode.removeChild(existing);
+    var blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+    var link=document.createElement('link');
+    link.rel='manifest';link.dataset.dyn='1';
+    link.href=URL.createObjectURL(blob);
+    document.head.appendChild(link);
+  }catch(e){}
+}
+
+// ─── Scroll behaviour ───
+function initScrollUI(){
+  var hdr=$('hdr'),scta=$('scta');
+  var onScroll=function(){
+    var y=window.scrollY;
+    if(y>10)hdr.classList.add('scrolled');else hdr.classList.remove('scrolled');
+    if(y>200)scta.style.display='flex';else scta.style.display='none';
+  };
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+try { console.log('[library] checkpoint G: before SW reg'); } catch(e){}
+
+// ─── Service worker ───
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
+try { console.log('[library] checkpoint H: after SW reg'); } catch(e){}
+
+// ─── 404 ───
+function showNotFound(slug){
+  var safe=String(slug).replace(/[<>"'&]/g,'');
+  document.body.innerHTML='<div class="notfound">'
+    +'<div><div class="notfound-emoji">📚</div>'
+    +'<div class="notfound-t">Library not found</div>'
+    +'<div class="notfound-d">"<b>'+safe+'</b>" doesn\'t exist or isn\'t set up yet.</div>'
+    +'<a class="notfound-btn" href="/">🏠 Go to StorePro</a></div></div>';
+}
+
+// ─── INIT ───
+// Each boot stage updates the splash subtitle so the customer (and the
+// developer) can see exactly where it's getting stuck. Stages:
+//   1. Resolving slug         → "Looking for «slug»…"
+//   2. Querying registry      → "Connecting to library data…"
+//   3. Loading config         → "Loading library info…"
+//   4. Loading plans          → "Loading plans…"
+//   5. Done                   → splash fades
+// If we hit 8s without progress, watchdog screen replaces splash with a
+// recoverable "Couldn't load" + force-refresh button (unregisters SW so
+// stale cached scripts don't trap repeat-loaders).
+var INIT_DONE=false;
+function setBootStage(text){
+  try{
+    var el=$('splashTag');if(el)el.textContent=text;
+    if(window.console&&console.log)console.log('[library boot] '+text);
+  }catch(e){}
+}
+function showStuckError(stage){
+  if(INIT_DONE)return;
+  document.body.innerHTML='<div class="notfound">'
+    +'<div><div class="notfound-emoji">⏱</div>'
+    +'<div class="notfound-t">Couldn\'t load this library</div>'
+    +'<div class="notfound-d">Stuck at: <b>'+stage+'</b><br><br>'
+    +'This can happen when:<br>'
+    +'• The tenant Sheet hasn\'t been onboarded yet<br>'
+    +'• Cached old code is being served by the browser<br>'
+    +'• Network blocked Google Sheets</div>'
+    +'<a class="notfound-btn" href="'+location.pathname+location.search+'">↻ Retry</a>'
+    +'<button onclick="(async()=>{try{var r=await navigator.serviceWorker.getRegistrations();await Promise.all(r.map(x=>x.unregister()));await caches.keys().then(k=>Promise.all(k.map(c=>caches.delete(c))))}catch(e){}location.reload(true)})()" style="display:inline-block;margin-top:10px;padding:11px 22px;background:#fff;color:#4F46E5;border:1.5px solid #4F46E5;border-radius:11px;font-weight:800;font-size:13px;text-decoration:none;cursor:pointer;font-family:inherit">🧹 Clear cache & retry</button>'
+    +'</div></div>';
+}
+try { console.log('[library] checkpoint I: before watchdog setTimeout'); } catch(e){}
+setTimeout(function(){showStuckError('timeout — boot took longer than 8s')},8000);
+try { console.log('[library] checkpoint J: after watchdog setTimeout, init() about to be defined'); } catch(e){}
+
+function init(){
+  setBootStage('Resolving tenant…');
+  SLUG=resolveTenantSlug();
+  if(!SLUG){INIT_DONE=true;window.__LIB_INIT_DONE=true;showNotFound('(no slug)');return}
+  $('splashName').textContent='Loading '+SLUG+'…';
+  setBootStage('Looking for "'+SLUG+'" in registry…');
+
+  lookupTenant(SLUG,function(found){
+    if(!found){INIT_DONE=true;window.__LIB_INIT_DONE=true;showNotFound(SLUG);return}
+    setBootStage('Loading library info…');
+
+    gviz(SHEET_ID,'Config',function(r){
+      if(r&&r.table&&r.table.rows){
+        r.table.rows.forEach(function(row){
+          var c0=row.c&&row.c[0],c1=row.c&&row.c[1];
+          var k=c0?(c0.f!=null?String(c0.f).trim():(c0.v!=null?String(c0.v).trim():'')):'';
+          var v='';if(c1){if(c1.f!=null)v=String(c1.f).trim();else if(c1.v!=null)v=String(c1.v).trim()}
+          if(k&&k.toLowerCase()!=='key'){
+            var kn=k.toLowerCase().replace(/\s+/g,'');
+            if(kn)config[kn]=v;
+          }
+        });
+      }
+      setBootStage('Painting page…');
+      applyConfig();
+      INIT_DONE=true;
+      window.__LIB_INIT_DONE=true;
+      $('page').style.display='block';
+      setTimeout(function(){$('splash').classList.add('hide')},250);
+
+      // Plans — second gviz call. With the setResponse-delete bug fixed,
+      // this now lands cleanly without crashing the page.
+      setBootStage('Loading plans…');
+      gviz(SHEET_ID,'Products',function(r2){
+        plans=r2?parseRows(r2).filter(function(p){return p.name && String(p.stock||'in stock').toLowerCase()!=='out of stock'}):[];
+        renderPlans();
+        renderGallery();
+        renderSeatsAvailable();
+        setBootStage('Ready');
+      });
+
+      setTimeout(initScrollUI,150);
+    });
+  });
+}
+
+try { console.log('[library] checkpoint Z: about to dispatch init, readyState=',document.readyState); } catch(e){}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+</script>
+
+</body>
+</html>

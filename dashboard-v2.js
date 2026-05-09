@@ -1257,6 +1257,124 @@ function statusPill(s){
 }
 function modeIcon(m){return m==='delivery'?'<div class="o-mode o-mode-d">🛵</div>':'<div class="o-mode o-mode-p">🛍️</div>'}
 
+// Library enrollment detail card. Detects orders whose notes start with
+// "Enrollment ·" (set by library.html) and renders a structured block
+// matching the shopkeeper email layout — verification fields with icons,
+// optional tap-to-open ID photo, and a leftover-notes bubble for any
+// freeform text the customer typed. Non-enrollment orders return ''.
+function renderEnrollmentBlock_(o){
+  var notes=String(o.notes||'');
+  if(!/^enrollment\b/i.test(notes))return '';
+
+  // Pull each field. The packed format is " key=value · key=value · …"
+  function field(k){
+    var rx=new RegExp(k+'=([^·]+?)(?:\\s*·|$)','i');
+    var m=notes.match(rx);
+    return m?m[1].trim():'';
+  }
+  var planLabel       = field('plan');
+  var startDate       = field('start');
+  var idType          = field('idType');
+  var id4             = field('id4');
+  var dob             = field('dob');
+  var guardian        = field('guardian');
+  var emergency       = field('emergency');
+  var permAddr        = field('addr');
+  var idPhoto         = field('idPhoto');
+
+  // Anything left over after stripping known fields = customer's freeform note
+  var trailing=notes.replace(/^enrollment\s*·?\s*/i,'')
+    .replace(/(?:^|\s·\s*)(?:plan|start|idType|id4|dob|guardian|emergency|addr|idPhoto)=[^·]+/gi,'')
+    .replace(/^\s*·\s*/,'').trim();
+
+  // Compute expiry (start + plan duration parsed from items first line)
+  var planLine=String(o.items||'').split(/\n/)[0]||'';
+  var dDays=parseDurationDaysDash_(planLine);
+  var expiryStr='', daysLeft=null, expired=false, expSoon=false;
+  if(startDate && dDays){
+    var sMs=Date.parse(startDate);
+    if(!isNaN(sMs)){
+      var eMs=sMs+dDays*86400000;
+      var d=new Date(eMs);
+      expiryStr=d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+      daysLeft=Math.ceil((eMs-Date.now())/86400000);
+      expired=daysLeft<=0;
+      expSoon=!expired && daysLeft<=7;
+    }
+  }
+
+  var isCancelled=String(o.status||'').toLowerCase()==='cancelled';
+  var rows='';
+  function row(emoji,label,value){
+    if(!value)return '';
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line)">'
+      +'<div style="width:18px;text-align:center;font-size:13px">'+emoji+'</div>'
+      +'<div style="flex:1;font:600 11px var(--F);color:var(--ink3)">'+esc(label)+'</div>'
+      +'<div style="font:700 12px var(--F);color:var(--ink);text-align:right">'+esc(value)+'</div>'
+      +'</div>';
+  }
+  rows+=row('📚','Plan',planLabel);
+  rows+=row('📅','Start',startDate);
+  if(expiryStr) rows+=row('⏳','Expires',expiryStr+(daysLeft!=null && !isCancelled?(' · '+(expired?Math.abs(daysLeft)+'d ago':daysLeft+'d left')):''));
+  rows+=row('🪪','ID',idType+(id4?' ····'+id4:''));
+  rows+=row('🎂','DOB',dob);
+  rows+=row('👨‍👩‍👧','Guardian',guardian);
+  rows+=row('🆘','Emergency',emergency);
+  rows+=row('🏠','Address',permAddr);
+
+  // Expiry alert pill (only for active enrollments)
+  var expBanner='';
+  if(!isCancelled && expiryStr){
+    if(expired){
+      expBanner='<div style="margin-top:8px;padding:8px 10px;background:#fee2e2;border-left:3px solid #dc2626;border-radius:0 6px 6px 0;font:700 11px var(--F);color:#991b1b">⏰ Expired '+Math.abs(daysLeft)+' day'+(Math.abs(daysLeft)===1?'':'s')+' ago — renewal needed</div>';
+    }else if(expSoon){
+      expBanner='<div style="margin-top:8px;padding:8px 10px;background:#fef3c7;border-left:3px solid #d97706;border-radius:0 6px 6px 0;font:700 11px var(--F);color:#78350f">⚠️ Expires in '+daysLeft+' day'+(daysLeft===1?'':'s')+' — send renewal reminder</div>';
+    }
+  }
+
+  // ID photo card — clickable, opens full image in new tab
+  var photoCard='';
+  if(idPhoto){
+    photoCard='<a href="'+esc(idPhoto)+'" target="_blank" rel="noopener" style="display:block;margin-top:10px;border:1.5px solid var(--brand);border-radius:8px;overflow:hidden;text-decoration:none">'
+      +'<img src="'+esc(idPhoto)+'" alt="ID photo" style="display:block;width:100%;max-height:240px;object-fit:contain;background:#000">'
+      +'<div style="padding:6px 10px;background:var(--brand-bg);color:var(--brand);font:800 10px var(--F);letter-spacing:.06em;text-transform:uppercase;text-align:center">📷 Tap to open ID photo</div>'
+      +'</a>';
+  }
+
+  var trailingHtml=trailing
+    ? '<div class="bubble bubble-cust" style="margin-top:8px"><div class="bubble-l">📝 Customer Note</div>"'+esc(trailing)+'"</div>'
+    : '';
+
+  return '<div class="o-sec" style="background:linear-gradient(135deg,var(--brand-bg) 0%,transparent 80%);border:1px solid var(--brand);border-radius:10px;padding:10px 12px">'
+    +'<div class="o-sec-l" style="color:var(--brand)">🔒 Enrollment Verification</div>'
+    +rows
+    +expBanner
+    +photoCard
+    +'</div>'
+    +trailingHtml;
+}
+
+// Parse "30 days" / "1 month" / "1 year" → number of days. Mirrors the
+// library.html parseDurationDays_; kept local here to avoid importing.
+function parseDurationDaysDash_(s){
+  s=String(s||'').toLowerCase();
+  var m=s.match(/(\d+)\s*(day|week|month|year)/);
+  if(m){
+    var n=parseInt(m[1])||1, u=m[2];
+    if(u==='day')return n;
+    if(u==='week')return n*7;
+    if(u==='month')return n*30;
+    if(u==='year')return n*365;
+  }
+  if(/daily|day pass/.test(s))return 1;
+  if(/weekly|week pass/.test(s))return 7;
+  if(/annual|yearly|year/.test(s))return 365;
+  if(/quarterly|3.?month/.test(s))return 90;
+  if(/half.?yearly|6.?month/.test(s))return 180;
+  if(/month/.test(s))return 30;
+  return 0;
+}
+
 function renderOrders(){
   var list=filtered(false);
   buildDateFilters();buildStatusFilters();
@@ -1289,7 +1407,15 @@ function orderHTML(o){
   if(!o.phone&&!o.email)h+='<span style="color:var(--ink4);font-size:11px">No contact info</span>';
   h+='</div></div>';
   if(o.address)h+='<div class="o-sec"><div class="o-sec-l">Delivery Address</div><div class="o-addr">📍 '+esc(o.address)+'</div></div>';
-  if(o.notes)h+='<div class="bubble bubble-cust"><div class="bubble-l">📝 Customer Note</div>"'+esc(o.notes)+'"</div>';
+  // Library enrollments: render the structured verification block instead
+  // of dumping the raw packed notes ("Enrollment · plan=… · idType=… · …").
+  // Returns '' for non-enrollment orders so other types keep existing UX.
+  var enrollHtml=renderEnrollmentBlock_(o);
+  if(enrollHtml){
+    h+=enrollHtml;
+  }else if(o.notes){
+    h+='<div class="bubble bubble-cust"><div class="bubble-l">📝 Customer Note</div>"'+esc(o.notes)+'"</div>';
+  }
   if(o.comment){o.comment.split(' | ').forEach(function(c){if(c.trim())h+='<div class="bubble bubble-shop"><div class="bubble-l">💬 You sent</div>'+esc(c.trim())+'</div>'})}
   if(o.reviewStars>0){
     var stars='';for(var i=0;i<5;i++)stars+=(i<o.reviewStars?'⭐':'☆');
@@ -3190,6 +3316,233 @@ function applyCustomTheme(){
   var v=String($('themeCustomHex').value||'').trim().toLowerCase();
   if(!/^#[0-9a-f]{6}$/i.test(v)){showToast('Use #RRGGBB format (e.g. #0c831f)');return}
   applyTheme(v);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HOMEPAGE CONFIGURATOR — self-serve UI for the tenant landing page
+   ════════════════════════════════════════════════════════════════════
+   Reads from / writes to the tenant's Config tab via existing
+   updateConfig action. The "Enable my homepage" toggle writes
+   Config.HomePage (yes/no). Content fields (Tagline, About, Logo,
+   Gallery, etc.) are read by home.html on render.
+
+   Image uploads use the same uploadImageToCloud() helper as the
+   Products page → no new infrastructure.
+
+   Save flow: collect changed fields → batch updateConfig calls →
+   refresh local configData so other tabs see updates immediately.
+   ════════════════════════════════════════════════════════════════════ */
+
+// Config keys this configurator owns. Order matters for save iteration
+// and the form-state collector. `type` controls how the value round-trips.
+//   text     — plain string
+//   bool     — checkbox → "yes" / "no"
+//   url      — image URL (with upload helper)
+//   gallery  — pipe-separated URL list
+var HP_FIELDS=[
+  {key:'HomePage',     id:'hpEnable',      type:'bool'},
+  {key:'Tagline',      id:'hpTagline',     type:'text'},
+  {key:'HeroImage',    id:'hpHeroImg',     type:'url',  prevId:'hpHeroImgPrev', fileId:'hpHeroImgFile'},
+  {key:'HeroBadge',    id:'hpHeroBadge',   type:'text'},
+  {key:'About',        id:'hpAbout',       type:'text'},
+  {key:'Established',  id:'hpEstablished', type:'text'},
+  {key:'Specialty',    id:'hpSpecialty',   type:'text'},
+  {key:'Cuisines',     id:'hpCuisines',    type:'text'},
+  {key:'Verified',     id:'hpVerified',    type:'bool'},
+  {key:'Veg',          id:'hpVeg',         type:'bool'},
+  {key:'MinOrder',     id:'hpMinOrder',    type:'text'},
+  {key:'FreeDelivery', id:'hpFreeDelivery',type:'text'},
+  {key:'EstimatedDeliveryTime', id:'hpEta', type:'text'},
+  {key:'PaymentMethods',        id:'hpPayments', type:'text'},
+  {key:'Gallery',      id:'hpGalleryRaw',  type:'gallery'},
+  {key:'Instagram',    id:'hpInsta',       type:'text'},
+  {key:'Facebook',     id:'hpFb',          type:'text'},
+  {key:'Website',      id:'hpWebsite',     type:'text'}
+];
+
+// Snapshot of what was loaded — used to detect "what changed" on save.
+var _hpSnapshot={};
+
+function openHomepage(){loadConfigForHomepage()}
+
+function loadConfigForHomepage(){
+  _hpSnapshot={};
+  HP_FIELDS.forEach(function(f){
+    var cur=getCfg(f.key,'');
+    _hpSnapshot[f.key]=cur;
+    var el=document.getElementById(f.id);if(!el)return;
+    if(f.type==='bool'){
+      el.checked=/^(yes|true|1|on|enabled|required|compulsory)$/i.test(cur);
+    }else{
+      el.value=cur||'';
+    }
+    if(f.type==='url'){
+      var prev=document.getElementById(f.prevId);
+      if(prev){
+        if(cur){prev.style.backgroundImage='url('+cur+')';prev.textContent=''}
+        else{prev.style.backgroundImage='';prev.textContent='📷'}
+      }
+    }
+  });
+  renderHpGallery();
+  // Live preview URL — prefer subdomain when set
+  var slug=resolveTenantSlug()||STORE_META.slug||'';
+  var subdomain=STORE_META.subdomain||'';
+  var liveUrl;
+  if(subdomain){liveUrl='https://'+subdomain+'.storepro.in/home.html'}
+  else if(slug){liveUrl=location.origin+'/home.html?store='+encodeURIComponent(slug)}
+  else{liveUrl=location.origin+'/home.html'}
+  var prev=document.getElementById('hpPreviewBtn');if(prev)prev.href=liveUrl;
+  var urlEl=document.getElementById('hpUrlPreview');
+  if(urlEl)urlEl.textContent=subdomain?(subdomain+'.storepro.in'):'your URL';
+  // Toggle card visual state
+  var card=document.getElementById('hpToggleCard');
+  if(card)card.classList.toggle('on', document.getElementById('hpEnable').checked);
+  // Wire image upload listeners (idempotent)
+  wireHpUpload('hpHeroImgFile','hpHeroImg','hpHeroImgPrev');
+  wireHpGalleryUpload();
+  // Toggle visual feedback
+  var enableEl=document.getElementById('hpEnable');
+  if(enableEl){
+    enableEl.onchange=function(){
+      if(card)card.classList.toggle('on', this.checked);
+    };
+  }
+  // Open the sheet
+  document.getElementById('homepageSheet').classList.add('open');
+  // Update the More-page subtitle to reflect current state
+  var sub=document.getElementById('hpStatusSub');
+  if(sub){
+    sub.textContent=enableEl&&enableEl.checked?'Enabled · brand your customer landing page':'Off · tap to enable a customer-facing landing page';
+  }
+}
+
+function wireHpUpload(fileId,inputId,prevId){
+  var fileEl=document.getElementById(fileId);if(!fileEl)return;
+  fileEl.onchange=function(){
+    var file=fileEl.files&&fileEl.files[0];if(!file)return;
+    var inp=document.getElementById(inputId);
+    var prev=document.getElementById(prevId);
+    if(prev)prev.textContent='⏳';
+    showToast('Uploading…');
+    uploadImageToCloud(file).then(function(url){
+      if(inp)inp.value=url;
+      if(prev){prev.style.backgroundImage='url('+url+')';prev.textContent=''}
+      showToast('✓ Uploaded','success');
+    }).catch(function(){
+      if(prev){prev.style.backgroundImage='';prev.textContent='📷'}
+      showToast('Upload failed — try again','error');
+    });
+    fileEl.value='';
+  };
+}
+
+function wireHpGalleryUpload(){
+  var fileEl=document.getElementById('hpGalleryFile');if(!fileEl)return;
+  fileEl.onchange=function(){
+    var files=Array.prototype.slice.call(fileEl.files||[]);
+    if(!files.length)return;
+    var raw=document.getElementById('hpGalleryRaw');
+    var existing=String(raw.value||'').split('|').map(function(u){return u.trim()}).filter(Boolean);
+    showToast('Uploading '+files.length+' photo(s)…');
+    Promise.all(files.map(function(f){return uploadImageToCloud(f).catch(function(){return null})})).then(function(urls){
+      var ok=urls.filter(Boolean);
+      if(!ok.length){showToast('All uploads failed','error');return}
+      var combined=existing.concat(ok).slice(0,8);
+      raw.value=combined.join(' | ');
+      renderHpGallery();
+      showToast('✓ '+ok.length+' added','success');
+    });
+    fileEl.value='';
+  };
+  var raw=document.getElementById('hpGalleryRaw');
+  if(raw)raw.oninput=renderHpGallery;
+}
+
+function renderHpGallery(){
+  var raw=document.getElementById('hpGalleryRaw');
+  var grid=document.getElementById('hpGalleryGrid');
+  if(!raw||!grid)return;
+  var urls=String(raw.value||'').split('|').map(function(u){return u.trim()}).filter(Boolean);
+  if(!urls.length){grid.innerHTML='';return}
+  grid.innerHTML=urls.map(function(u,i){
+    return '<div class="hp-gallery-item" style="background-image:url('+esc(u)+')">'
+      +'<button class="hp-gallery-rm" onclick="removeHpGalleryItem('+i+')" title="Remove">×</button>'
+      +'</div>';
+  }).join('');
+}
+function removeHpGalleryItem(i){
+  var raw=document.getElementById('hpGalleryRaw');if(!raw)return;
+  var urls=String(raw.value||'').split('|').map(function(u){return u.trim()}).filter(Boolean);
+  urls.splice(i,1);
+  raw.value=urls.join(' | ');
+  renderHpGallery();
+}
+
+function copyHpUrl(){
+  var btn=document.getElementById('hpPreviewBtn');if(!btn)return;
+  var u=btn.href;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(u).then(function(){showToast('✓ URL copied','success')});
+  }else{
+    var t=document.createElement('textarea');t.value=u;document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');showToast('✓ URL copied','success')}catch(e){}
+    document.body.removeChild(t);
+  }
+}
+
+function saveHomepage(){
+  var btn=document.getElementById('hpSaveBtn');
+  if(!btn)return;
+  btn.classList.add('saving');
+  btn.innerHTML='<span class="spin"></span> Saving…';
+
+  // Diff form state against snapshot.
+  var changed=[];
+  HP_FIELDS.forEach(function(f){
+    var el=document.getElementById(f.id);if(!el)return;
+    var newVal;
+    if(f.type==='bool')newVal=el.checked?'yes':'no';
+    else if(f.type==='gallery')newVal=String(el.value||'').split('|').map(function(u){return u.trim()}).filter(Boolean).join('|');
+    else newVal=String(el.value||'').trim();
+    var oldVal=String(_hpSnapshot[f.key]||'').trim();
+    if(newVal!==oldVal)changed.push({key:f.key,value:newVal});
+  });
+
+  if(!changed.length){
+    btn.classList.remove('saving');
+    btn.innerHTML='💾 Save changes';
+    showToast('Nothing to save','info');
+    return;
+  }
+
+  // Sequential save — Apps Script handles updateConfig serially anyway.
+  var done=0;
+  function saveNext(){
+    if(done>=changed.length){
+      btn.classList.remove('saving');
+      btn.innerHTML='✓ Saved';
+      // Refresh local configData so other tabs see the change immediately
+      changed.forEach(function(c){
+        var existing=configData.find(function(x){return(x.key||'').toLowerCase().replace(/\s+/g,'')===c.key.toLowerCase().replace(/\s+/g,'')});
+        if(existing)existing.value=c.value;
+        else configData.push({key:c.key,value:c.value});
+        _hpSnapshot[c.key]=c.value;
+      });
+      var sub=document.getElementById('hpStatusSub');
+      var enabled=document.getElementById('hpEnable').checked;
+      if(sub)sub.textContent=enabled?'Enabled · brand your customer landing page':'Off · tap to enable a customer-facing landing page';
+      setTimeout(function(){btn.innerHTML='💾 Save changes'},2000);
+      showToast('✓ Homepage saved · '+changed.length+' field(s) updated','success');
+      return;
+    }
+    var c=changed[done];
+    sendCmd('action=updateConfig&key='+encodeURIComponent(c.key)+'&value='+encodeURIComponent(c.value),function(){
+      done++;
+      saveNext();
+    });
+  }
+  saveNext();
 }
 
 /* ════════════════════════════════════════════════════════════════════

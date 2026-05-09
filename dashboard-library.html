@@ -1,0 +1,3096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>Library Dashboard · StorePro</title>
+<link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  /* "Indigo Study" — modern academic palette unified with library.html.
+     Indigo brand for focus, emerald accent for active/positive states,
+     cool slate neutrals on a barely-warm off-white. Replaces the warm
+     editorial cream-paper + forest-green + gold for a fresher, cleaner
+     SaaS feel without losing the calm/study tone. */
+  --brand:#4F46E5;--brand-dk:#3730A3;--brand-lt:#818CF8;--brand-bg:#EEF2FF;--brand-glow:rgba(79,70,229,.28);
+  --accent:#10B981;--accent-dk:#047857;--accent-bg:#D1FAE5;
+  --bg:#FAFAFA;--bg-deep:#F4F4F5;--card:#FFFFFF;--card-soft:#F8FAFC;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#94A3B8;
+  --line:#E2E8F0;--line-soft:#F1F5F9;
+  --rose:#E11D48;--rose-bg:#FFE4E6;--amber:#D97706;--amber-bg:#FEF3C7;
+  --blue:#2563EB;--blue-bg:#DBEAFE;--violet:#7C3AED;--violet-bg:#EDE9FE;
+  --r:10px;--r2:14px;--r3:18px;--r4:24px;--pill:999px;
+  --F:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --S:'Fraunces','DM Serif Display',Georgia,serif;
+  --EASE:cubic-bezier(.25,.8,.25,1);
+  --sh:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.05);
+  --sh2:0 8px 24px rgba(15,23,42,.06);
+  --sh3:0 24px 56px rgba(15,23,42,.10);
+  --SBW:248px;
+  --HDR:68px;
+}
+html,body{font-family:var(--F);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;font-size:14px}
+body{min-height:100vh;background-image:radial-gradient(circle at 20% 0%,rgba(79,70,229,.05),transparent 50%),radial-gradient(circle at 80% 100%,rgba(16,185,129,.04),transparent 50%);background-attachment:fixed}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{border:none;background:none;cursor:pointer}
+::selection{background:var(--brand-bg);color:var(--brand-dk)}
+
+/* ─── SPLASH ─────────────────────────────────── */
+.splash{position:fixed;inset:0;background:linear-gradient(160deg,var(--brand-dk),var(--brand) 50%,var(--brand-lt));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999;color:#fff;transition:opacity .4s,transform .4s}
+.splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash-icon{font-size:54px}
+.splash-name{font:800 22px var(--F);letter-spacing:-.5px;padding:0 24px;text-align:center}
+.splash-tag{font:500 12px var(--F);opacity:.85}
+.splash-loader{width:30px;height:30px;border:3px solid rgba(255,255,255,.18);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── PIN GATE ───────────────────────────────── */
+.pin-gate{position:fixed;inset:0;background:linear-gradient(160deg,var(--brand-dk),var(--brand) 60%,var(--brand-lt));display:none;align-items:center;justify-content:center;z-index:9000;padding:22px}
+.pin-gate.show{display:flex}
+.pin-card{background:var(--card);border-radius:var(--r3);padding:36px 32px;max-width:380px;width:100%;text-align:center;box-shadow:var(--sh3)}
+.pin-icon{font-size:42px;margin-bottom:8px}
+.pin-title{font:800 22px var(--F);letter-spacing:-.4px;margin-bottom:6px}
+.pin-sub{font:500 13px var(--F);color:var(--ink3);margin-bottom:24px}
+.pin-input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);font:800 18px monospace;letter-spacing:.4em;text-align:center;outline:none;transition:.15s}
+.pin-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}
+.pin-btn{width:100%;height:48px;background:var(--brand);color:#fff;border-radius:var(--r);font:800 14px var(--F);margin-top:14px;letter-spacing:.04em;text-transform:uppercase}
+.pin-btn:active{transform:scale(.98)}
+.pin-err{font:600 12px var(--F);color:var(--rose);margin-top:10px;display:none}
+.pin-err.show{display:block}
+
+/* ─── APP LAYOUT ─────────────────────────────── */
+.app{display:none;min-height:100vh}
+.app.show{display:grid;grid-template-columns:var(--SBW) 1fr;grid-template-rows:var(--HDR) 1fr;grid-template-areas:'sidebar topbar' 'sidebar main'}
+
+.topbar{grid-area:topbar;background:rgba(255,255,255,.78);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line-soft);padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:14px;position:sticky;top:0;z-index:50}
+.topbar-l{display:flex;align-items:center;gap:16px;min-width:0;flex:1}
+.topbar-search{flex:1;max-width:380px;display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--bg-deep);border:1px solid transparent;border-radius:var(--r);font:500 13px var(--F);color:var(--ink2);transition:.15s;cursor:pointer}
+.topbar-search:hover{border-color:var(--brand-lt);background:var(--card)}
+.topbar-search-i{color:var(--ink3);font-size:14px}
+.topbar-search-kbd{margin-left:auto;font:700 10px ui-monospace,monospace;background:var(--card);border:1px solid var(--line);padding:2px 6px;border-radius:5px;color:var(--ink3)}
+.topbar-status{font:700 10px var(--F);padding:5px 11px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.08em;display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line)}
+.topbar-status.open{background:var(--brand-bg);color:var(--brand-dk);border-color:transparent}
+.topbar-status.closed{background:var(--rose-bg);color:#991b1b;border-color:transparent}
+.topbar-status::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;box-shadow:0 0 0 0 currentColor}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(14,92,86,.5)}50%{opacity:.5;box-shadow:0 0 0 6px rgba(14,92,86,0)}}
+.topbar-r{display:flex;align-items:center;gap:8px}
+.topbar-btn{padding:9px 13px;border-radius:var(--r);background:var(--card);color:var(--ink2);font:700 12px var(--F);display:flex;align-items:center;gap:6px;border:1px solid var(--line);transition:.15s}
+.topbar-btn:hover{background:var(--brand);border-color:var(--brand);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px var(--brand-glow)}
+.topbar-icon{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;color:var(--ink2);transition:.15s;cursor:pointer}
+.topbar-icon:hover{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-dk)}
+/* Notification bell — red tint + pulsing ring + count badge when there
+   are unseen new enrollments. Badge auto-hides when count is 0. */
+.topbar-icon.bell.has-new{color:#dc2626;border-color:rgba(220,38,38,.32);background:#fef2f2;animation:bellShake 1.4s ease-in-out infinite}
+.topbar-icon.bell.has-new::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid rgba(220,38,38,.4);animation:bellPulse 1.6s ease-in-out infinite;pointer-events:none}
+@keyframes bellPulse{0%,100%{opacity:0;transform:scale(.92)}50%{opacity:1;transform:scale(1.12)}}
+@keyframes bellShake{0%,100%{transform:rotate(0)}10%,30%{transform:rotate(-9deg)}20%,40%{transform:rotate(9deg)}50%{transform:rotate(0)}}
+.topbar-icon-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#dc2626;color:#fff;font:800 10px var(--F);display:none;align-items:center;justify-content:center;border:2px solid var(--card);box-shadow:0 2px 6px rgba(220,38,38,.4);letter-spacing:-.02em;line-height:1;z-index:1}
+.topbar-icon.bell.has-new .topbar-icon-badge{display:flex}
+
+/* ─── SIDEBAR ─────────────────────────────────── */
+.sidebar{grid-area:sidebar;background:linear-gradient(170deg,#1E1B4B 0%,#3730A3 60%,#4F46E5 100%);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid rgba(255,255,255,.05)}
+.sidebar::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 100%,rgba(184,144,69,.08),transparent 50%);pointer-events:none}
+.sidebar-hdr{padding:22px 22px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;position:relative}
+.sidebar-logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--accent) 0%,#8C6A2B 100%);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 14px rgba(184,144,69,.3)}
+.sidebar-brand{font:800 15px var(--F);letter-spacing:-.2px;line-height:1.15;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sidebar-brand-sub{font:600 9px var(--F);color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.12em;margin-top:3px}
+.sidebar-section{font:700 9px var(--F);color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.14em;padding:14px 18px 6px}
+.sidebar-nav{flex:1;padding:8px 10px 14px;display:flex;flex-direction:column;gap:2px;position:relative}
+.snav{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;color:rgba(255,255,255,.72);font:600 13px var(--F);transition:.15s;cursor:pointer;letter-spacing:-.1px;position:relative}
+.snav:hover{background:rgba(255,255,255,.07);color:#fff}
+.snav.on{background:rgba(255,255,255,.1);color:#fff;font-weight:700}
+.snav.on::before{content:'';position:absolute;left:-10px;top:8px;bottom:8px;width:3px;background:var(--accent);border-radius:0 4px 4px 0}
+.snav-i{font-size:16px;width:22px;text-align:center}
+.snav-l{flex:1}
+.snav-b{font:800 10px var(--F);background:rgba(255,255,255,.14);color:#fff;padding:2px 7px;border-radius:99px;letter-spacing:.04em}
+.snav.on .snav-b{background:var(--accent);color:#fff}
+/* Urgent variant — pending enrollments awaiting confirm/cancel. Pulses
+   so the librarian's peripheral vision catches it from across the desk. */
+.snav-b.urgent{background:#dc2626;color:#fff;animation:badgePulse 1.6s ease-in-out infinite;box-shadow:0 0 0 0 rgba(220,38,38,.5)}
+.snav.on .snav-b.urgent{background:#fff;color:#dc2626;animation:badgePulse 1.6s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(220,38,38,.55)}50%{transform:scale(1.12);box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+/* "🆕 Pending new" section badge on Home pane — same pulse when >0. */
+.badge.urgent-pulse{background:#dc2626;color:#fff;animation:badgePulse 1.6s ease-in-out infinite}
+/* Pending-action banner — sits above the hero on Home when one or more
+   enrollments are awaiting Confirm/Cancel. Bright red, shaky icon —
+   librarian can't miss it walking back to their desk. Auto-hides at 0. */
+.pending-banner{display:none;margin:18px 28px 6px;padding:14px 18px;border-radius:16px;background:linear-gradient(135deg,#fef2f2 0%,#fff5f5 60%,#fff 100%);border:1.5px solid rgba(220,38,38,.4);align-items:center;gap:14px;animation:fadeIn .35s var(--EASE);box-shadow:0 6px 22px rgba(220,38,38,.10)}
+.pending-banner.show{display:flex}
+.pending-banner-i{width:46px;height:46px;border-radius:14px;background:#fff;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 2px 6px rgba(220,38,38,.18);animation:bellShake 1.4s ease-in-out infinite}
+.pending-banner-c{flex:1;min-width:0}
+.pending-banner-t{font:800 14.5px var(--F);color:#991b1b;letter-spacing:-.2px;line-height:1.25}
+.pending-banner-d{font:600 12px var(--F);color:#7f1d1d;opacity:.85;margin-top:3px;line-height:1.45}
+.pending-banner-acts{display:flex;gap:8px;flex-shrink:0;align-items:center}
+.pending-banner-acts .pb-cta{padding:9px 16px;background:#dc2626;color:#fff;border:none;border-radius:10px;font:800 12px var(--F);cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(220,38,38,.28);transition:.15s;letter-spacing:.02em}
+.pending-banner-acts .pb-cta:hover{background:#991b1b;transform:translateY(-1px);box-shadow:0 5px 14px rgba(220,38,38,.38)}
+.pending-banner-acts .pb-cta:active{transform:translateY(0)}
+@media(max-width:720px){
+  .pending-banner{margin:14px 14px 8px;padding:13px 14px;flex-wrap:wrap;gap:10px}
+  .pending-banner-acts{width:100%;justify-content:flex-start}
+  .pending-banner-acts .pb-cta{flex:1;justify-content:center}
+}
+.snav-divider{height:1px;background:rgba(255,255,255,.08);margin:10px 14px}
+.sidebar-foot{padding:14px;border-top:1px solid rgba(255,255,255,.08);position:relative}
+.sidebar-foot-card{background:rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;font:600 11px var(--F);color:rgba(255,255,255,.7);line-height:1.5}
+.sidebar-foot-card b{color:#fff;font-weight:800}
+
+.main{grid-area:main;padding:28px 32px 40px;overflow-y:auto;min-width:0}
+.pane{display:none}
+.pane.show{display:block;animation:fadeIn .35s var(--EASE)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── COMMON CARDS / SECTIONS ────────────────── */
+.section{margin-bottom:32px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.section-title{font:800 17px var(--F);letter-spacing:-.3px;color:var(--ink);display:flex;align-items:center;gap:9px}
+.section-title .badge{font:800 11px var(--F);background:var(--card);border:1px solid var(--line);color:var(--ink2);padding:3px 10px;border-radius:var(--pill);letter-spacing:.04em}
+.section-title.urgent{color:var(--rose)}
+.section-title.urgent .badge{background:var(--rose-bg);color:var(--rose);border-color:transparent}
+.section-title.warn{color:var(--amber)}
+.section-title.warn .badge{background:var(--amber-bg);color:var(--amber);border-color:transparent}
+.section-title.fresh{color:var(--brand)}
+.section-title.fresh .badge{background:var(--brand-bg);color:var(--brand-dk);border-color:transparent}
+.section-action{font:700 12px var(--F);color:var(--brand);display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border-radius:8px;transition:.15s}
+.section-action:hover{background:var(--brand);color:#fff}
+
+/* ─── HERO (Home greeting) ──────────────────── */
+.hero{background:linear-gradient(135deg,#1E1B4B 0%,#3730A3 50%,#4F46E5 100%);border-radius:var(--r4);padding:30px 36px;color:#fff;position:relative;overflow:hidden;margin-bottom:22px;box-shadow:0 12px 40px rgba(79,70,229,.22)}
+.hero::before{content:'';position:absolute;top:-100px;right:-80px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(184,144,69,.18),transparent 70%);pointer-events:none}
+.hero::after{content:'📚';position:absolute;right:38px;top:50%;transform:translateY(-50%) rotate(-8deg);font-size:140px;opacity:.07;pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;position:relative}
+.hero-eyebrow{font:700 10px var(--F);text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.hero-eyebrow::before{content:'';width:24px;height:1.5px;background:var(--accent)}
+.hero-greet{font:700 30px var(--S);letter-spacing:-.6px;line-height:1.1;color:#fff}
+.hero-greet b{font-weight:900;color:var(--accent);font-style:italic}
+.hero-sub{font:500 14px var(--F);color:rgba(255,255,255,.78);margin-top:10px;max-width:560px;line-height:1.55}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.hero-chip{font:700 11px var(--F);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);color:#fff;padding:6px 12px;border-radius:var(--pill);letter-spacing:.02em;display:inline-flex;align-items:center;gap:6px}
+.hero-chip b{color:var(--accent);font-weight:800}
+.hero-ring{width:148px;height:148px;position:relative;flex-shrink:0}
+.hero-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hero-ring-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:11}
+.hero-ring-fg{fill:none;stroke:var(--accent);stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset .8s var(--EASE)}
+.hero-ring-l{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.hero-ring-v{font:900 30px var(--F);color:#fff;letter-spacing:-1px;line-height:1}
+.hero-ring-c{font:700 9px var(--F);text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.55);margin-top:4px}
+
+/* ─── KPI STRIP ─────────────────────────────── */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;display:flex;flex-direction:column;gap:6px;transition:.18s var(--EASE);position:relative;overflow:hidden}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--sh2);border-color:var(--brand-lt)}
+.kpi-l{font:700 10px var(--F);text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);display:flex;align-items:center;gap:6px}
+.kpi-i{font-size:14px}
+.kpi-v{font:900 26px var(--F);color:var(--ink);letter-spacing:-.8px;line-height:1.05;font-feature-settings:'tnum'}
+.kpi-d{font:600 11px var(--F);color:var(--ink3);display:flex;align-items:center;gap:5px}
+.kpi-trend{font:800 10px var(--F);padding:2px 6px;border-radius:5px;letter-spacing:.04em}
+.kpi-trend.up{background:var(--brand-bg);color:var(--brand-dk)}
+.kpi-trend.down{background:var(--rose-bg);color:var(--rose)}
+.kpi-trend.flat{background:var(--bg-deep);color:var(--ink3)}
+.kpi.urgent{border-color:transparent;background:linear-gradient(135deg,#FFFBFA 0%,var(--rose-bg) 240%)}
+.kpi.urgent .kpi-v{color:var(--rose)}
+.kpi.warn{border-color:transparent;background:linear-gradient(135deg,#FFFBF0 0%,var(--amber-bg) 260%)}
+.kpi.warn .kpi-v{color:var(--amber)}
+.kpi.gold{border-color:transparent;background:linear-gradient(135deg,#FFFCF5 0%,var(--accent-bg) 260%)}
+.kpi.gold .kpi-v{color:var(--accent-dk)}
+
+/* ─── QUICK ACTIONS ─────────────────────────── */
+.qactions{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:30px}
+.qact{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:.18s var(--EASE);text-align:left;color:inherit}
+.qact:hover{transform:translateY(-2px);box-shadow:var(--sh2);border-color:var(--brand)}
+.qact-i{width:42px;height:42px;border-radius:11px;background:var(--brand-bg);color:var(--brand);font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.18s}
+.qact:hover .qact-i{background:var(--brand);color:#fff;transform:rotate(-3deg) scale(1.05)}
+.qact-t{font:800 13px var(--F);color:var(--ink);letter-spacing:-.1px;line-height:1.2}
+.qact-d{font:500 11px var(--F);color:var(--ink3);margin-top:3px}
+.qact.gold .qact-i{background:var(--accent-bg);color:var(--accent-dk)}
+.qact.gold:hover .qact-i{background:var(--accent);color:#fff}
+.qact.gold:hover{border-color:var(--accent)}
+
+/* ─── DATA CARDS (expiring etc) ──────────────── */
+.dlist{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
+.drow{display:grid;grid-template-columns:auto 1fr auto auto auto;gap:14px;padding:14px 18px;align-items:center;border-bottom:1px solid var(--line-soft);transition:.15s}
+.drow:last-child{border-bottom:none}
+.drow:hover{background:var(--card-soft)}
+.drow-name{font:700 14px var(--F);color:var(--ink);letter-spacing:-.2px;line-height:1.25;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow-name-sub{font:500 11px var(--F);color:var(--ink3);margin-top:2px}
+.drow-pill{font:700 10px var(--F);padding:5px 11px;border-radius:var(--pill);background:var(--bg-deep);color:var(--ink2);letter-spacing:.06em;text-transform:uppercase}
+.drow-pill.urgent{background:var(--rose-bg);color:var(--rose)}
+.drow-pill.warn{background:var(--amber-bg);color:var(--amber)}
+.drow-pill.fresh{background:var(--brand-bg);color:var(--brand-dk)}
+.drow-amount{font:800 13px var(--F);color:var(--ink);letter-spacing:-.2px}
+.drow-actions{display:flex;gap:6px}
+
+/* ─── AVATAR (initials) ─────────────────────── */
+.avt{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 13px var(--F);color:#fff;letter-spacing:.04em;flex-shrink:0;text-transform:uppercase;box-shadow:inset 0 -2px 6px rgba(0,0,0,.18),0 1px 2px rgba(26,31,54,.08)}
+.avt-sm{width:30px;height:30px;font-size:11px}
+.avt-lg{width:54px;height:54px;font-size:18px}
+
+/* ─── BUTTONS ───────────────────────────────── */
+.btn-sm{padding:8px 13px;border-radius:9px;font:800 11px var(--F);letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;transition:.15s;border:1.5px solid transparent;text-transform:uppercase}
+.btn-sm:hover{transform:translateY(-1px)}
+.btn-sm.prim{background:var(--brand);color:#fff;box-shadow:0 3px 10px var(--brand-glow)}
+.btn-sm.prim:hover{background:var(--brand-dk);box-shadow:0 4px 14px var(--brand-glow)}
+.btn-sm.gold{background:var(--accent);color:#fff;box-shadow:0 3px 10px rgba(184,144,69,.3)}
+.btn-sm.gold:hover{background:var(--accent-dk)}
+.btn-sm.wa{background:#15803d;color:#fff}
+.btn-sm.wa:hover{background:#0d6e35}
+.btn-sm.ghost{background:var(--card);color:var(--ink2);border-color:var(--line)}
+.btn-sm.ghost:hover{background:var(--brand-bg);color:var(--brand);border-color:var(--brand)}
+.btn-sm.danger{background:var(--rose-bg);color:var(--rose);border-color:transparent}
+.btn-sm.danger:hover{background:var(--rose);color:#fff}
+
+/* ─── EMPTY / SKELETON ──────────────────────── */
+.empty{padding:36px 22px;text-align:center;color:var(--ink3);background:var(--card);border:1px dashed var(--line);border-radius:var(--r2)}
+.empty-i{font-size:40px;margin-bottom:10px;opacity:.55}
+.empty-t{font:700 13px var(--F);color:var(--ink2)}
+.empty-s{font:500 12px var(--F);color:var(--ink3);margin-top:4px}
+.skl{background:linear-gradient(90deg,var(--line-soft) 0%,var(--bg-deep) 50%,var(--line-soft) 100%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ─── ACTIVITY FEED ─────────────────────────── */
+.activity{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:6px 0;box-shadow:var(--sh)}
+.act-row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;padding:11px 18px;align-items:center;border-bottom:1px dashed var(--line-soft);transition:.15s;cursor:pointer}
+.act-row:last-child{border-bottom:none}
+.act-row:hover{background:var(--card-soft)}
+.act-i{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:var(--bg-deep)}
+.act-i.add{background:var(--brand-bg);color:var(--brand-dk)}
+.act-i.confirm{background:var(--brand-bg);color:var(--brand-dk)}
+.act-i.cancel{background:var(--rose-bg);color:var(--rose)}
+.act-i.done{background:var(--blue-bg);color:var(--blue)}
+.act-i.note{background:var(--accent-bg);color:var(--accent-dk)}
+.act-c{font:600 12px var(--F);color:var(--ink2);line-height:1.45;min-width:0}
+.act-c b{color:var(--ink);font-weight:800}
+.act-t{font:600 11px var(--F);color:var(--ink3);white-space:nowrap}
+
+/* ─── FAB (mobile add walk-in) ──────────────── */
+.fab{position:fixed;right:20px;bottom:80px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dk) 100%);color:#fff;font-size:22px;display:none;align-items:center;justify-content:center;box-shadow:0 10px 26px var(--brand-glow);z-index:80;transition:.2s var(--EASE);cursor:pointer}
+.fab:hover{transform:scale(1.05) rotate(8deg)}
+.fab:active{transform:scale(.95)}
+
+/* ─── TWO-COLUMN ROWS ───────────────────────── */
+.split-2{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
+.split-3{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+
+/* ─── TINY SPARK CHART ──────────────────────── */
+.spark-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:18px 20px;box-shadow:var(--sh);height:100%}
+.spark-l{font:700 10px var(--F);text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:8px}
+.spark-v{font:900 26px var(--F);color:var(--ink);letter-spacing:-.7px;margin-bottom:12px;font-feature-settings:'tnum'}
+.spark-svg{width:100%;height:60px;display:block}
+.spark-line{fill:none;stroke:var(--brand);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.spark-area{fill:url(#sparkGrad);opacity:.32}
+
+/* ─── TOOLBAR + TABLES ──────────────────────── */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search{flex:1;min-width:200px;max-width:420px;display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);transition:.15s}
+.search:focus-within{border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-bg)}
+.search-i{color:var(--ink3);font-size:15px}
+.search input{flex:1;border:none;outline:none;background:none;font:500 13px var(--F);color:var(--ink)}
+.filter-pill{padding:8px 14px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);font:700 11px var(--F);color:var(--ink3);letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:.15s;text-transform:uppercase}
+.filter-pill:hover{border-color:var(--brand-lt);color:var(--brand)}
+.filter-pill.on{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:800;box-shadow:0 4px 10px var(--brand-glow)}
+
+.tbl{width:100%;background:var(--card);border:1px solid var(--line);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden;border-collapse:collapse}
+.tbl thead tr{background:var(--card-soft)}
+.tbl th{padding:13px 18px;text-align:left;font:700 10px var(--F);text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);border-bottom:1px solid var(--line)}
+.tbl td{padding:15px 18px;border-bottom:1px solid var(--line-soft);font:500 13px var(--F);color:var(--ink2);vertical-align:middle}
+.tbl tbody tr{cursor:pointer;transition:.12s}
+.tbl tbody tr:hover{background:var(--card-soft)}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl-cell-flex{display:flex;align-items:center;gap:11px}
+.tbl-name{font:700 13px var(--F);color:var(--ink);letter-spacing:-.1px}
+.tbl-name-sub{font:500 11px var(--F);color:var(--ink3);margin-top:2px}
+.tbl-mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600;font-size:12px;color:var(--ink2)}
+
+/* ─── DETAIL PANEL ──────────────────────────── */
+.detail{position:fixed;top:var(--HDR);right:0;bottom:0;width:520px;max-width:100vw;background:var(--card);border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(26,31,54,.1);transform:translateX(100%);transition:transform .28s var(--EASE);z-index:60;display:flex;flex-direction:column}
+.detail.show{transform:translateX(0)}
+.detail-hdr{padding:24px 24px 16px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;background:linear-gradient(180deg,var(--card-soft) 0%,var(--card) 100%)}
+.detail-hdr-l{flex:1;min-width:0;display:flex;align-items:center;gap:14px}
+.detail-name{font:800 19px var(--F);letter-spacing:-.4px;color:var(--ink)}
+.detail-meta{font:600 12px var(--F);color:var(--ink3);margin-top:5px;display:flex;flex-wrap:wrap;gap:10px}
+.detail-x{width:34px;height:34px;border-radius:50%;background:var(--bg-deep);font-size:16px;color:var(--ink2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+.detail-x:hover{background:var(--rose-bg);color:var(--rose)}
+.detail-body{padding:22px 24px;overflow-y:auto;flex:1}
+.detail-status{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:var(--pill);font:800 11px var(--F);letter-spacing:.06em;text-transform:uppercase}
+.detail-status.active{background:var(--brand-bg);color:var(--brand-dk)}
+.detail-status.warn{background:var(--amber-bg);color:var(--amber)}
+.detail-status.expired{background:var(--rose-bg);color:var(--rose)}
+.detail-status.cancelled{background:var(--bg-deep);color:var(--ink3)}
+.detail-status::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+.detail-card{margin-top:18px;background:var(--card-soft);border:1px solid var(--line-soft);border-radius:var(--r2);padding:16px 18px}
+.detail-card-t{font:800 10px var(--F);text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:10px}
+.detail-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font:600 13px var(--F);color:var(--ink)}
+.detail-row+.detail-row{border-top:1px dashed var(--line)}
+.detail-row-i{width:20px;text-align:center;flex-shrink:0;color:var(--ink3)}
+.detail-row-l{flex:1;color:var(--ink3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;align-self:center}
+.detail-row-v{color:var(--ink);font-weight:700;text-align:right}
+.detail-photo{margin-top:10px;border:1.5px solid var(--brand);border-radius:8px;overflow:hidden;display:block;text-decoration:none}
+.detail-photo img{display:block;width:100%;max-height:200px;object-fit:contain;background:#000}
+.detail-photo-cap{padding:7px 10px;background:var(--brand-bg);color:var(--brand);font:800 10px var(--F);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+.detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.detail-actions .btn-sm{justify-content:center;padding:11px 12px;font-size:12px}
+.detail-history{margin-top:18px}
+.dh-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);align-items:center}
+.dh-row:last-child{border-bottom:none}
+.dh-id{font:700 11px ui-monospace,Menlo,Consolas,monospace;color:var(--brand);letter-spacing:.04em}
+.dh-mid{font:500 11px var(--F);color:var(--ink3)}
+.dh-amount{font:700 12px var(--F);color:var(--ink)}
+
+/* ─── BANNER ─────────────────────────────────── */
+.banner{padding:14px 18px;border-radius:var(--r);margin-bottom:18px;display:flex;align-items:flex-start;gap:12px}
+.banner-icon{font-size:20px;flex-shrink:0}
+.banner-c{flex:1;font:600 13px var(--F);line-height:1.55}
+.banner-t{font-weight:800;font-size:14px;color:var(--ink)}
+.banner-d{color:var(--ink2);margin-top:3px}
+.banner.info{background:var(--blue-bg);border-left:4px solid var(--blue)}
+.banner.warn{background:var(--amber-bg);border-left:4px solid var(--amber)}
+.banner.urgent{background:var(--rose-bg);border-left:4px solid var(--rose)}
+
+/* ─── PLANS GRID ─────────────────────────────── */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.plan-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r2);padding:22px 22px 18px;box-shadow:var(--sh);transition:.18s var(--EASE);position:relative;overflow:hidden}
+.plan-card::after{content:'';position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,var(--brand-bg),transparent 70%);opacity:0;transition:.25s}
+.plan-card:hover{border-color:var(--brand);transform:translateY(-3px);box-shadow:var(--sh2)}
+.plan-card:hover::after{opacity:1}
+.plan-card.popular{border-color:var(--accent);background:linear-gradient(150deg,var(--accent-bg) 0%,#fff 65%)}
+.plan-card.popular::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.plan-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;position:relative}
+.plan-name{font:800 16px var(--F);color:var(--ink);letter-spacing:-.2px;line-height:1.25}
+.plan-cat{font:700 9px var(--F);color:var(--brand-dk);background:var(--brand-bg);padding:3px 9px;border-radius:var(--pill);text-transform:uppercase;letter-spacing:.1em;display:inline-block;margin-top:6px}
+.plan-pop{background:linear-gradient(135deg,var(--accent),#8C6A2B);color:#fff;font:800 9px var(--F);padding:5px 10px;border-radius:var(--pill);letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;box-shadow:0 4px 10px rgba(184,144,69,.3)}
+.plan-prc{font:900 28px var(--F);color:var(--ink);letter-spacing:-.8px;line-height:1;position:relative}
+.plan-prc-mrp{font:600 12px var(--F);color:var(--ink4);text-decoration:line-through;margin-left:8px}
+.plan-desc{font:500 12px var(--F);color:var(--ink2);line-height:1.55;margin-top:10px;min-height:34px}
+.plan-meta{display:flex;justify-content:space-between;gap:10px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font:600 11px var(--F);color:var(--ink3)}
+.plan-stat{display:flex;flex-direction:column;gap:3px}
+.plan-stat-v{font:800 17px var(--F);color:var(--ink);letter-spacing:-.3px}
+.plan-stat-l{font:600 9px var(--F);text-transform:uppercase;letter-spacing:.1em;color:var(--ink3)}
+
+/* ─── INSIGHTS PANE ──────────────────────────── */
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:26px}
+.ins-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:20px 22px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.ins-card::after{content:'';position:absolute;bottom:-14px;right:-14px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,var(--brand-bg),transparent 70%);opacity:.5;pointer-events:none}
+.ins-l{font:700 10px var(--F);text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px}
+.ins-v{font:900 28px var(--F);color:var(--ink);letter-spacing:-.7px;line-height:1;font-feature-settings:'tnum'}
+.ins-d{font:600 11px var(--F);color:var(--ink3);margin-top:6px}
+.ins-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font:600 13px var(--F)}
+.ins-row:last-child{border-bottom:none}
+.ins-row-l{color:var(--ink2);display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.ins-row-v{color:var(--ink);font-weight:800;font-feature-settings:'tnum'}
+.bar-h{height:8px;background:var(--line-soft);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar-h-f{height:100%;background:linear-gradient(90deg,var(--brand) 0%,var(--brand-lt) 100%);border-radius:99px;transition:width .4s var(--EASE)}
+
+/* ─── MODAL (walk-in / plan editor) ───────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(10,61,56,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:60px 20px 20px;overflow-y:auto;animation:fadeBg .25s var(--EASE)}
+@keyframes fadeBg{from{opacity:0}to{opacity:1}}
+.modal-card{background:var(--card);border-radius:var(--r3);max-width:580px;width:100%;box-shadow:var(--sh3);animation:slideUp .3s var(--EASE);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 80px);border:1px solid var(--line-soft)}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hdr{padding:22px 24px 16px;border-bottom:1px solid var(--line-soft);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-shrink:0;background:linear-gradient(180deg,var(--card-soft),var(--card))}
+.modal-t{font:800 19px var(--F);color:var(--ink);letter-spacing:-.3px}
+.modal-s{font:500 12px var(--F);color:var(--ink3);margin-top:4px;line-height:1.5}
+.modal-body{padding:20px 24px;overflow-y:auto;flex:1}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--line-soft);display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-shrink:0;background:var(--card)}
+.modal-foot .btn-sm{padding:11px 18px;font-size:12px}
+.sheet-x{width:34px;height:34px;border-radius:50%;background:var(--bg-deep);font-size:16px;color:var(--ink2);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;transition:.15s}
+.sheet-x:hover{background:var(--rose-bg);color:var(--rose)}
+
+.field{margin-bottom:16px}
+.field-l{font:700 10px var(--F);color:var(--ink2);margin-bottom:7px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.1em}
+.field-l-req{color:var(--rose)}
+.field-i,.field-s,.field-t{width:100%;height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:var(--r);font:500 13px var(--F);color:var(--ink);background:var(--card);outline:none;transition:.15s;font-family:var(--F)}
+.field-t{height:auto;min-height:80px;padding:12px 14px;resize:vertical}
+.field-i:focus,.field-s:focus,.field-t:focus{border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-bg)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field-s{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237A8190' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+
+/* ─── SETTINGS PANE ──────────────────────────── */
+.setg-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.setg-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:20px 22px;box-shadow:var(--sh)}
+.setg-card.span-2{grid-column:1 / -1}
+.setg-title{font:800 14px var(--F);color:var(--ink);letter-spacing:-.2px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+.setg-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+@media(max-width:900px){.setg-grid{grid-template-columns:1fr}}
+
+/* ─── IMAGE SLIDER (multi-upload + carousel) ─── */
+.imgsl{margin-bottom:18px}
+.imgsl-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:12px}
+.imgsl-tile{position:relative;aspect-ratio:1.4/1;border-radius:var(--r);overflow:hidden;background:var(--bg-deep);border:1.5px solid var(--line);cursor:grab;transition:.15s}
+.imgsl-tile:hover{border-color:var(--brand);box-shadow:var(--sh2)}
+.imgsl-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.imgsl-tile-x{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(180,35,24,.92);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;opacity:0;transition:.15s}
+.imgsl-tile:hover .imgsl-tile-x{opacity:1}
+.imgsl-tile-i{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.65);color:#fff;font:800 10px var(--F);padding:2px 7px;border-radius:99px}
+.imgsl-add{aspect-ratio:1.4/1;border-radius:var(--r);background:var(--card-soft);border:1.5px dashed var(--brand-lt);color:var(--brand);font:800 11px var(--F);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:.15s;text-transform:uppercase;letter-spacing:.06em}
+.imgsl-add:hover{background:var(--brand-bg);border-color:var(--brand);transform:translateY(-1px)}
+.imgsl-add-i{font-size:20px}
+.imgsl-help{font:500 11px var(--F);color:var(--ink3);line-height:1.55;margin-top:4px;display:flex;align-items:flex-start;gap:6px}
+.imgsl-help-i{flex-shrink:0;margin-top:2px}
+.imgsl-preview{margin-top:14px;border-radius:var(--r2);overflow:hidden;border:1px solid var(--line);background:var(--bg-deep);position:relative;aspect-ratio:16/9;max-height:280px}
+.imgsl-preview-empty{padding:32px 18px;text-align:center;color:var(--ink3)}
+.imgsl-slide{position:absolute;inset:0;opacity:0;transition:opacity .5s var(--EASE)}
+.imgsl-slide.on{opacity:1}
+.imgsl-slide img{width:100%;height:100%;object-fit:cover}
+.imgsl-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:6px;z-index:2}
+.imgsl-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.8);cursor:pointer;transition:.18s}
+.imgsl-dot.on{background:var(--accent);border-color:#fff;width:22px;border-radius:99px}
+
+/* ─── TOAST ─────────────────────────────────── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:13px 22px;border-radius:var(--r);font:700 13px var(--F);box-shadow:var(--sh3);z-index:300;opacity:0;transition:.25s var(--EASE);display:flex;align-items:center;gap:10px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--rose)}
+.toast.ok{background:var(--brand-dk)}
+
+/* ─── MOBILE NAV (≤768px) ────────────────────── */
+@media(max-width:1180px){
+  .qactions{grid-template-columns:repeat(2,1fr)}
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:1024px){
+  :root{--SBW:212px}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-ring{margin:0 auto}
+  .main{padding:22px}
+}
+@media(max-width:768px){
+  .app.show{grid-template-columns:1fr;grid-template-rows:var(--HDR) 1fr auto;grid-template-areas:'topbar' 'main' 'sidebar'}
+  .sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;border-top:1px solid rgba(255,255,255,.08);overflow:hidden;background:linear-gradient(180deg,#1E1B4B,#3730A3)}
+  .sidebar::before{display:none}
+  .sidebar-hdr,.sidebar-foot,.sidebar-section{display:none}
+  .sidebar-nav{flex-direction:row;padding:6px;gap:0;overflow-x:auto;scrollbar-width:none}
+  .sidebar-nav::-webkit-scrollbar{display:none}
+  .snav{flex-direction:column;gap:3px;padding:9px 12px;font-size:10px;letter-spacing:0;flex-shrink:0;flex:1;justify-content:center}
+  .snav.on::before{display:none}
+  .snav.on{background:rgba(184,144,69,.18)}
+  .snav-l{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+  .snav-i{font-size:18px;width:auto}
+  .snav-divider{display:none}
+  .snav-b{display:none}
+  .main{padding:16px 14px;padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+  .hero{padding:24px 22px;border-radius:var(--r3)}
+  .hero-greet{font-size:24px}
+  .hero::after{font-size:90px;right:14px}
+  .kpi-strip{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi-v{font-size:22px}
+  .qactions{grid-template-columns:1fr 1fr;gap:10px}
+  .qact{padding:14px 14px}
+  .qact-i{width:38px;height:38px;font-size:18px}
+  .detail{top:0;width:100vw;left:0;right:0}
+  .detail-hdr{padding:18px}
+  .topbar{padding:0 14px}
+  .topbar-search{display:none}
+  .split-2,.split-3{grid-template-columns:1fr}
+  .fab{display:flex}
+  .drow{grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:6px 10px}
+  .drow-pill,.drow-amount{justify-self:start}
+  .drow-actions{grid-column:1 / -1;justify-content:flex-end}
+  .tbl thead{display:none}
+  .tbl,.tbl tbody,.tbl tr{display:block;width:100%}
+  .tbl tr{padding:14px;border-bottom:1px solid var(--line-soft)}
+  .tbl td{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border:none;font-size:12px}
+  .tbl td::before{content:attr(data-l);font-weight:800;color:var(--ink3);font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+  .tbl td:first-child::before{display:none}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <div class="splash-icon">📚</div>
+  <div class="splash-name" id="splashName">Loading library…</div>
+  <div class="splash-tag">StorePro Dashboard</div>
+  <div class="splash-loader"></div>
+</div>
+
+<!-- PIN GATE -->
+<div class="pin-gate" id="pinGate">
+  <div class="pin-card">
+    <div class="pin-icon">🔒</div>
+    <div class="pin-title" id="pinTitle">Enter Dashboard PIN</div>
+    <div class="pin-sub" id="pinSub">Enter the 4-digit PIN to access this library's dashboard</div>
+    <input class="pin-input" id="pinInput" type="password" inputmode="numeric" maxlength="8" autocomplete="off" pattern="\d{4,8}">
+    <button class="pin-btn" onclick="verifyPin()">Unlock</button>
+    <div class="pin-err" id="pinErr">Wrong PIN — try again</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="topbar-l">
+      <div class="topbar-search" onclick="showPane('members');setTimeout(function(){var s=document.getElementById('memSearch');s&&s.focus()},120)">
+        <span class="topbar-search-i">🔍</span>
+        <span>Search members, orders…</span>
+        <span class="topbar-search-kbd">/</span>
+      </div>
+    </div>
+    <div class="topbar-r">
+      <span class="topbar-status open" id="topStatus">Open</span>
+      <a class="topbar-btn" id="topVisit" href="#" target="_blank">↗ Storefront</a>
+      <button class="topbar-icon bell" id="topBell" onclick="onBellClick(event)" title="No new enrollments" aria-label="New enrollment notifications">🔔<span class="topbar-icon-badge" id="topBellBadge">0</span></button>
+      <button class="topbar-icon" onclick="refreshData(true)" title="Refresh data">↻</button>
+      <button class="topbar-icon" onclick="logout()" title="Logout">⏻</button>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <div class="sidebar-logo">📚</div>
+      <div style="min-width:0;flex:1">
+        <div class="sidebar-brand" id="sbName">Library</div>
+        <div class="sidebar-brand-sub">StorePro · Library</div>
+      </div>
+    </div>
+    <div class="sidebar-section">Workspace</div>
+    <nav class="sidebar-nav">
+      <button class="snav on" data-pane="home" onclick="showPane('home')"><span class="snav-i">🏠</span><span class="snav-l">Dashboard</span></button>
+      <button class="snav" data-pane="members" onclick="showPane('members')"><span class="snav-i">👥</span><span class="snav-l">Members</span><span class="snav-b" id="navMembersB">0</span></button>
+      <button class="snav" data-pane="orders" onclick="showPane('orders')"><span class="snav-i">📋</span><span class="snav-l">Enrollments</span><span class="snav-b" id="navOrdersB" style="display:none">0</span></button>
+      <button class="snav" data-pane="plans" onclick="showPane('plans')"><span class="snav-i">💰</span><span class="snav-l">Plans</span><span class="snav-b" id="navPlansB">0</span></button>
+      <button class="snav" data-pane="insights" onclick="showPane('insights')"><span class="snav-i">📊</span><span class="snav-l">Insights</span></button>
+      <span class="snav-divider"></span>
+      <button class="snav" data-pane="settings" onclick="showPane('settings')"><span class="snav-i">⚙️</span><span class="snav-l">Settings</span></button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="sidebar-foot-card">
+        <b id="sbHelpName">Need help?</b><br>Email <a href="mailto:amitnegimca@gmail.com" style="color:var(--accent)">support</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- HOME PANE -->
+    <section class="pane show" id="paneHome">
+
+      <!-- Action-required banner — only renders when status=New enrollments exist.
+           Quick handoff to the Orders pane (filtered to New) where Confirm/Cancel
+           buttons sit on every row. Updated by renderHome(). -->
+      <div class="pending-banner" id="pendingBanner" role="alert">
+        <div class="pending-banner-i">🆕</div>
+        <div class="pending-banner-c">
+          <div class="pending-banner-t" id="pendingBannerT">— new enrollments waiting for action</div>
+          <div class="pending-banner-d">Confirm or cancel each one — students see their status update instantly.</div>
+        </div>
+        <div class="pending-banner-acts">
+          <button class="pb-cta" id="pendingBannerCta" onclick="reviewPending()">📋 Review now</button>
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-eyebrow" id="heroDate">— · —</div>
+            <h1 class="hero-greet" id="heroGreet">Good morning, <b>your library</b></h1>
+            <p class="hero-sub" id="heroSub">Here's how your library is doing today. Members in green are active, gold is your renewal pipeline.</p>
+            <div class="hero-meta" id="heroChips"></div>
+          </div>
+          <div class="hero-ring" id="heroRingWrap">
+            <svg viewBox="0 0 100 100">
+              <circle class="hero-ring-bg" cx="50" cy="50" r="42"></circle>
+              <circle class="hero-ring-fg" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89" id="heroRingFg"></circle>
+            </svg>
+            <div class="hero-ring-l">
+              <div class="hero-ring-v" id="heroRingV">—</div>
+              <div class="hero-ring-c">Capacity</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI STRIP -->
+      <div class="kpi-strip">
+        <div class="kpi gold">
+          <div class="kpi-l"><span class="kpi-i">👥</span> Active members</div>
+          <div class="kpi-v" id="statActive">—</div>
+          <div class="kpi-d" id="statActiveD">currently enrolled</div>
+        </div>
+        <div class="kpi urgent" id="statTodayCard" onclick="filterMembers('expiring-today')" style="cursor:pointer">
+          <div class="kpi-l"><span class="kpi-i">🔴</span> Expires today</div>
+          <div class="kpi-v" id="statToday">—</div>
+          <div class="kpi-d">tap to send reminders</div>
+        </div>
+        <div class="kpi warn" onclick="filterMembers('expiring-week')" style="cursor:pointer">
+          <div class="kpi-l"><span class="kpi-i">🟡</span> Expires this week</div>
+          <div class="kpi-v" id="statWeek">—</div>
+          <div class="kpi-d">renew before they lapse</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-l"><span class="kpi-i">📅</span> Today's enrollments</div>
+          <div class="kpi-v" id="statToday2">—</div>
+          <div class="kpi-d" id="statToday2D">₹0 collected</div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="qactions">
+        <button class="qact" onclick="openWalkin()">
+          <div class="qact-i">➕</div>
+          <div><div class="qact-t">Add walk-in</div><div class="qact-d">Quick enrollment</div></div>
+        </button>
+        <button class="qact gold" onclick="sendRenewalBlast()">
+          <div class="qact-i">📨</div>
+          <div><div class="qact-t">Renewal blast</div><div class="qact-d">WhatsApp expiring members</div></div>
+        </button>
+        <button class="qact" onclick="showPane('plans');setTimeout(function(){openPlanEditor()},150)">
+          <div class="qact-i">💰</div>
+          <div><div class="qact-t">New plan</div><div class="qact-d">Add a membership tier</div></div>
+        </button>
+        <button class="qact" onclick="showPane('insights')">
+          <div class="qact-i">📊</div>
+          <div><div class="qact-t">Insights</div><div class="qact-d">Revenue & retention</div></div>
+        </button>
+      </div>
+
+      <!-- EXPIRING TODAY (urgent) + ACTIVITY FEED -->
+      <div class="split-2">
+        <div>
+          <div class="section">
+            <div class="section-hdr">
+              <div class="section-title urgent">🔴 Expiring today <span class="badge" id="badgeToday">0</span></div>
+              <button class="section-action" onclick="filterMembers('expiring-today')">View all →</button>
+            </div>
+            <div id="listToday"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-hdr">
+              <div class="section-title warn">🟡 Expiring in 7 days <span class="badge" id="badgeWeek">0</span></div>
+              <button class="section-action" onclick="filterMembers('expiring-week')">View all →</button>
+            </div>
+            <div id="listWeek"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-hdr">
+              <div class="section-title fresh">🆕 Pending new <span class="badge" id="badgePending">0</span></div>
+              <button class="section-action" onclick="showPane('orders')">All orders →</button>
+            </div>
+            <div id="listPending"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section">
+            <div class="section-hdr">
+              <div class="section-title">📈 Trend</div>
+            </div>
+            <div class="spark-card">
+              <div class="spark-l">Active members · last 30 days</div>
+              <div class="spark-v" id="trendV">—</div>
+              <svg class="spark-svg" id="trendSvg" viewBox="0 0 300 60" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="sparkGrad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="var(--brand)" stop-opacity=".4"/>
+                    <stop offset="100%" stop-color="var(--brand)" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-hdr">
+              <div class="section-title">⚡ Recent activity</div>
+            </div>
+            <div class="activity" id="activityFeed"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEMBERS PANE -->
+    <section class="pane" id="paneMembers">
+      <div class="section-hdr">
+        <div class="section-title">👥 Members <span class="badge" id="memHdrBadge">0</span></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-sm ghost" onclick="exportMembersCSV()" title="Download Members as CSV">📥 Export CSV</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <span class="search-i">🔍</span>
+          <input id="memSearch" placeholder="Search by name, phone, or order ID…" oninput="renderMembersTable()">
+        </div>
+        <button class="filter-pill on" data-f="all" onclick="setMemFilter(this,'all')">All</button>
+        <button class="filter-pill" data-f="active" onclick="setMemFilter(this,'active')">🟢 Active</button>
+        <button class="filter-pill" data-f="expiring-today" onclick="setMemFilter(this,'expiring-today')">🔴 Expires today</button>
+        <button class="filter-pill" data-f="expiring-week" onclick="setMemFilter(this,'expiring-week')">🟡 Expires 7d</button>
+        <button class="filter-pill" data-f="expired" onclick="setMemFilter(this,'expired')">Expired</button>
+        <button class="filter-pill" data-f="cancelled" onclick="setMemFilter(this,'cancelled')">Cancelled</button>
+      </div>
+      <table class="tbl" id="memTbl">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Plan</th>
+            <th>Started</th>
+            <th>Expires</th>
+            <th>Status</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody id="memBody"></tbody>
+      </table>
+    </section>
+
+    <!-- ORDERS PANE -->
+    <section class="pane" id="paneOrders">
+      <div class="section-hdr">
+        <div class="section-title">📋 All enrollments <span class="badge" id="ordHdrBadge">0</span></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-sm ghost" onclick="exportOrdersCSV()" title="Download all orders as CSV">📥 Export CSV</button>
+          <button class="btn-sm prim" onclick="openWalkin()" style="padding:9px 14px;font-size:12px">+ Add walk-in</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <span class="search-i">🔍</span>
+          <input id="ordSearch" placeholder="Search by name, phone, order ID…" oninput="renderOrdersTable()">
+        </div>
+        <button class="filter-pill on" data-of="all" onclick="setOrdFilter(this,'all')">All</button>
+        <button class="filter-pill" data-of="new" onclick="setOrdFilter(this,'new')">🆕 New</button>
+        <button class="filter-pill" data-of="confirmed" onclick="setOrdFilter(this,'confirmed')">✅ Confirmed</button>
+        <button class="filter-pill" data-of="cancelled" onclick="setOrdFilter(this,'cancelled')">❌ Cancelled</button>
+        <button class="filter-pill" data-of="done" onclick="setOrdFilter(this,'done')">🎓 Completed</button>
+      </div>
+      <table class="tbl" id="ordTbl">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Phone</th>
+            <th>Plan</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordBody"></tbody>
+      </table>
+    </section>
+
+    <!-- PLANS PANE -->
+    <section class="pane" id="panePlans">
+      <div class="section-hdr">
+        <div class="section-title">💰 Plans <span class="badge" id="planHdrBadge">0</span></div>
+        <button class="btn-sm prim" onclick="openPlanEditor()" style="padding:9px 14px;font-size:12px">+ Add new plan</button>
+      </div>
+      <div class="plans-grid" id="plansGrid"></div>
+    </section>
+
+    <!-- SETTINGS PANE -->
+    <section class="pane" id="paneSettings">
+      <div class="section-hdr">
+        <div class="section-title">⚙️ Settings</div>
+      </div>
+      <div class="setg-grid" id="setgGrid"></div>
+    </section>
+
+    <!-- INSIGHTS PANE -->
+    <section class="pane" id="paneInsights">
+      <div class="section-hdr">
+        <div class="section-title">📊 Insights</div>
+      </div>
+      <div class="ins-grid">
+        <div class="ins-card">
+          <div class="ins-l">💰 Revenue · last 30 days</div>
+          <div class="ins-v" id="insRev30">—</div>
+          <div class="ins-d" id="insRev30D">— / day average</div>
+        </div>
+        <div class="ins-card">
+          <div class="ins-l">📅 Revenue · this month</div>
+          <div class="ins-v" id="insRevMo">—</div>
+          <div class="ins-d" id="insRevMoD">vs ₹— last month</div>
+        </div>
+        <div class="ins-card">
+          <div class="ins-l">🔁 Renewal rate · last 90d</div>
+          <div class="ins-v" id="insRenewal">—</div>
+          <div class="ins-d" id="insRenewalD">members who renewed within 7d of expiry</div>
+        </div>
+        <div class="ins-card">
+          <div class="ins-l">⏱ Avg member tenure</div>
+          <div class="ins-v" id="insTenure">—</div>
+          <div class="ins-d">days from first to last enrollment</div>
+        </div>
+      </div>
+
+      <div class="split-2">
+        <div class="ins-card">
+          <div class="ins-l" style="margin-bottom:12px">🏆 Plan popularity (last 90 days)</div>
+          <div id="insPlanPop"></div>
+        </div>
+        <div class="ins-card">
+          <div class="ins-l" style="margin-bottom:12px">👑 Top customers</div>
+          <div id="insTopCust"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Floating action button (mobile-only) -->
+  <button class="fab" onclick="openWalkin()" title="Add walk-in enrollment" aria-label="Add walk-in enrollment">+</button>
+
+  <!-- DETAIL PANEL -->
+  <aside class="detail" id="detail">
+    <div class="detail-hdr">
+      <div class="detail-hdr-l">
+        <div id="dAvatar"></div>
+        <div style="min-width:0;flex:1">
+          <div class="detail-name" id="dName">—</div>
+          <div class="detail-meta" id="dMeta">—</div>
+        </div>
+      </div>
+      <button class="detail-x" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-body" id="dBody"></div>
+  </aside>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// LIBRARY DASHBOARD — purpose-built shopkeeper UI for tenants of
+// Type=Library. Reuses the existing PIN/token auth from dashboard-v2,
+// reads the same Sheets via gviz, and never mutates state directly —
+// destructive actions delegate to dashboard-v2 (which already has the
+// full status-update plumbing).
+// ═══════════════════════════════════════════════════════════════════
+
+var MASTER_SHEET_ID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
+var SHEET_ID='', SCRIPT_URL='', TYPE='Library', SLUG='';
+var config={}, orders=[], products=[], dashToken='';
+var memFilter='all', selectedMember=null;
+var CLOUDINARY={cloud:'storepro',preset:'storepro_products'};
+var GALLERY_MAX=8;
+var galleryUrls=[];      // in-memory gallery, written to Gallery1..GalleryN on save
+var __sliderTimer=null;  // auto-advance for the live slider preview
+
+function $(id){return document.getElementById(id)}
+function E(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function cfg(k,d){var v=config[(k||'').toLowerCase().replace(/\s+/g,'')];return v!=null&&v!==''?String(v):(d!==undefined?d:'')}
+function fnum(s){var n=parseFloat(String(s||'').replace(/[^\d.]/g,''));return isNaN(n)?0:n}
+
+// ─── Tenant resolution (same pattern as library.html) ───
+function resolveTenantSlug(){
+  var qs=new URLSearchParams(location.search);
+  var s=qs.get('store');
+  if(s)return s.toLowerCase();
+  var host=location.hostname.toLowerCase();
+  var m=host.match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+  if(m){
+    var sub=m[1];
+    var reserved={'www':1,'admin':1,'app':1,'api':1,'mail':1};
+    if(!reserved[sub])return sub;
+  }
+  return '';
+}
+
+// gviz JSONP — a single global setResponse is shared across all in-flight
+// requests, so we keep a queue of pending callbacks and dispatch by reqId
+// (which gviz echoes back on the response). Without this, parallel gviz()
+// calls clobber each other's callbacks and one of them never resolves.
+var __gvizQ={}, __gvizSeq=0;
+function gviz(sheetId,sheetName,cb){
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  if(!window.google.visualization.Query.setResponse){
+    window.google.visualization.Query.setResponse=function(r){
+      // r.reqId ties the response back to the request that asked for it.
+      var rid=r&&r.reqId;
+      var entry=rid && __gvizQ[rid];
+      if(!entry){
+        // Fallback — pop the oldest pending callback if reqId is missing
+        // (older gviz responses sometimes omit it).
+        var keys=Object.keys(__gvizQ);
+        if(keys.length){entry=__gvizQ[keys[0]];delete __gvizQ[keys[0]];}
+      }else{
+        delete __gvizQ[rid];
+      }
+      if(entry){clearTimeout(entry.t);try{entry.cb(r)}catch(e){console.warn('[gviz] cb error',e)}}
+    };
+  }
+  var reqId=String(++__gvizSeq);
+  var done=false;
+  __gvizQ[reqId]={cb:function(r){if(done)return;done=true;cb(r)},t:setTimeout(function(){
+    // Per-request 12s safety net so the dashboard never wedges on a flaky tab.
+    if(__gvizQ[reqId]){delete __gvizQ[reqId];if(!done){done=true;console.warn('[gviz] timeout',sheetName);cb(null)}}
+  },12000)};
+  var url='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;reqId:'+reqId+'&sheet='+encodeURIComponent(sheetName)+'&_t='+Date.now();
+  var sc=document.createElement('script');
+  sc.src=url;
+  sc.onerror=function(){
+    if(__gvizQ[reqId]){var e=__gvizQ[reqId];delete __gvizQ[reqId];clearTimeout(e.t);if(!done){done=true;cb(null)}}
+  };
+  document.body.appendChild(sc);
+}
+
+function lookupTenant(slug,cb){
+  // Route through the shared gviz dispatcher so subsequent parallel calls
+  // (Orders + Products) don't clobber callbacks. parseRows() handles both
+  // header-in-cols and header-in-row-0 shapes that gviz returns in the wild.
+  gviz(MASTER_SHEET_ID,'Stores',function(r){
+    if(!r){cb(false);return}
+    var rows=parseRows(r);
+    var sl=String(slug||'').toLowerCase();
+    for(var i=0;i<rows.length;i++){
+      var o=rows[i];
+      var rs=String(o.slug||'').toLowerCase();
+      var rsSub=String(o.subdomain||'').toLowerCase();
+      if(rs===sl||(rsSub&&rsSub===sl)){
+        SHEET_ID=o.sheetid||o.sheet||o.id||'';
+        SCRIPT_URL=o.scripturl||o.script||'';
+        TYPE=String(o.type||o.shoptype||o.category||'Library').toLowerCase().trim();
+        if(SHEET_ID){cb(true);return}
+      }
+    }
+    cb(false);
+  });
+}
+
+function parseRows(r){
+  if(!r||!r.table)return [];
+  var headers=[],rows=r.table.rows||[];
+  if(r.table.cols&&r.table.cols.length){
+    var allLabeled=true;
+    r.table.cols.forEach(function(c){
+      var label=(c.label||'').trim();
+      if(!label)allLabeled=false;
+      headers.push(label.toLowerCase().replace(/\s+/g,''));
+    });
+    if(!allLabeled && rows[0]){
+      var hRow=rows[0];headers=[];
+      if(hRow.c)hRow.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});
+      rows=rows.slice(1);
+    }
+  }
+  // Phone-like columns where Sheets may have helpfully grouped digits with
+  // commas ("919,548,578,080") or applied scientific notation ("9.195E+11").
+  // For these we want the raw v/f as-is, then strip non-essentials.
+  var TEXTLIKE=/^(phone|whatsapp|orderid|order id|id|customername|name|email|address|items|status|payment|ordernotes|notes|shopkeepercomment|comment|plan|startdate|expirydate|idtype|idlast4|dob|guardian|emergency|idphoto)$/;
+  return rows.map(function(row){
+    var o={};
+    if(!row.c)return o;
+    headers.forEach(function(h,j){
+      var c=row.c[j];
+      // Prefer raw value (c.v) for text-like columns so Google Sheets'
+      // pretty-formatting (commas, scientific notation, currency symbols)
+      // can't corrupt phone numbers / IDs. Numeric columns still benefit
+      // from c.f for currency display.
+      var v;
+      if(!c){v=''}
+      else if(TEXTLIKE.test(h)){
+        v = (c.v!=null?String(c.v):(c.f!=null?String(c.f):''));
+        // Strip thousand-separator commas that Sheets may have added when a
+        // pre-existing tenant left the column as Number format. Keeps + and
+        // dots intact for things like "+91" prefixes or decimal IDs.
+        v = v.replace(/,/g,'');
+      }else{
+        v = (c.f!=null?String(c.f):(c.v!=null?String(c.v):''));
+      }
+      o[h]=String(v).trim();
+    });
+    return o;
+  });
+}
+
+// ─── PIN auth ───
+// Same pattern as dashboard-v2: client POSTs PIN to script, gets a token
+// back which it stashes in localStorage and sends with every mutation.
+// Read-only views (gviz) don't need the token, so the dashboard renders
+// even if the PIN is wrong — but it'll show the gate first.
+function tokenKey(){return 'storepro_lib_'+SLUG+'_token'}
+function loadToken(){try{return localStorage.getItem(tokenKey())||''}catch(e){return ''}}
+function saveToken(t){try{if(t)localStorage.setItem(tokenKey(),t);else localStorage.removeItem(tokenKey())}catch(e){}}
+
+function verifyPin(){
+  var pin=String($('pinInput').value||'').trim();
+  if(!/^\d{4,8}$/.test(pin)){
+    $('pinErr').textContent='PIN must be 4-8 digits';
+    $('pinErr').classList.add('show');
+    return;
+  }
+  $('pinErr').classList.remove('show');
+
+  // Server roundtrip first — this is the only path that gets a real token.
+  // The token is required for every mutation (status changes, plan edits,
+  // config updates). Local-only fallback is no longer enough now that the
+  // dashboard does mutations in-place.
+  if(!SCRIPT_URL){
+    $('pinErr').textContent='Script URL not set in registry — cannot verify PIN';
+    $('pinErr').classList.add('show');
+    return;
+  }
+  // GET via <img> is the cross-origin-safe pattern for Apps Script POST. But
+  // for verifyPin we DO need the response body to extract the token, so we
+  // try fetch first (works on most modern browsers thanks to Apps Script's
+  // CORS allow-all) and fall back to local-only if CORS blocks.
+  fetch(SCRIPT_URL+'?action=verifyPin&pin='+encodeURIComponent(pin),{method:'GET',mode:'cors'})
+    .then(function(r){return r.text()})
+    .then(function(t){
+      var ok=false,token='';
+      try{var j=JSON.parse(t);ok=!!j.ok;token=j.token||''}catch(e){}
+      if(ok && token){
+        dashToken=token;
+        saveToken(dashToken);
+        revealApp();
+      }else if(ok){
+        // Server says ok but didn't issue a token (legacy mode). Use the PIN
+        // itself as the token — the server's verifyDashboardToken_ falls
+        // open in legacy mode so mutations still work.
+        dashToken=pin;
+        saveToken(pin);
+        revealApp();
+      }else{
+        $('pinErr').textContent='Wrong PIN — try again';
+        $('pinErr').classList.add('show');
+        $('pinInput').value='';
+        $('pinInput').focus();
+      }
+    })
+    .catch(function(){
+      // CORS fail / network down. Last-resort: compare against Config row
+      // and proceed in legacy-token mode (PIN as token).
+      var cfgPin=String(cfg('dashboardpin','')).trim();
+      if(cfgPin && pin===cfgPin){
+        dashToken=pin;
+        saveToken(pin);
+        revealApp();
+      }else{
+        $('pinErr').textContent='Could not reach the server. Check your connection.';
+        $('pinErr').classList.add('show');
+      }
+    });
+}
+
+function logout(){
+  saveToken('');
+  dashToken='';
+  location.reload();
+}
+
+// ─── sendCmd ─── Token-gated action runner.
+// Apps Script's /exec returns a 302 redirect that fetch can't always follow
+// from the browser; the established pattern in storefronts is fire-and-forget
+// via <img>.src=GET-url. We do the same here. The Apps Script side accepts
+// action=updateStatus/updateConfig/etc. via doGet with the token in params.
+// Returns a promise that resolves when the request has been sent (we don't
+// get the response body from <img>, so a "success" here means "the GET went
+// out"). For confirmation, the caller refetches data and re-renders.
+// Public actions that the storefront calls anonymously — they don't need
+// a dashboard token. Walk-in enrollment posts to the same `newOrder` Apps
+// Script endpoint customers do, so we keep it token-free here too.
+var PUBLIC_ACTIONS={newOrder:1,verifyPin:1,subscribePush:1,unsubscribePush:1};
+
+function sendCmd(action, params, opts){
+  return new Promise(function(resolve, reject){
+    if(!SCRIPT_URL)return reject(new Error('No ScriptURL'));
+    if(!dashToken && !PUBLIC_ACTIONS[action])return reject(new Error('Not authenticated'));
+    var p=Object.assign({action:action},params||{});
+    if(dashToken)p.token=dashToken;
+    var qs=Object.keys(p).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(p[k]==null?'':p[k])}).join('&');
+    var url=SCRIPT_URL+'?'+qs;
+    var img=new Image();
+    var done=false;
+    function finish(err){if(done)return;done=true;err?reject(err):resolve()}
+    img.onload=function(){finish()};
+    img.onerror=function(){finish()}; // expected — Apps Script returns text not image
+    img.src=url;
+    // Most Apps Script writes complete in 300-1500ms. After 2s we assume done.
+    setTimeout(function(){finish()}, (opts&&opts.timeoutMs)||2000);
+  });
+}
+
+// Refresh data + re-render. Called after mutations to show the updated state.
+function refreshData(cb){
+  var pending=2;
+  function done(){if(--pending===0){enrichOrders();render();updateBellBadge();cb&&cb()}}
+  gviz(SHEET_ID,'Orders',function(r2){orders=r2?parseRows(r2):[];done()});
+  gviz(SHEET_ID,'Products',function(r3){products=r3?parseRows(r3):[];done()});
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NEW ENROLLMENT NOTIFICATIONS — bell badge + chime + auto-poll
+// ═══════════════════════════════════════════════════════════════════
+// Why this exists: shopkeepers often leave the dashboard open in a tab
+// while running the front desk. Without a notification surface they miss
+// fresh enrollments coming in via the storefront. This module gives them:
+//   1. A red bell badge in the topbar with the unseen count ("1", "2",
+//      …, capped at "9+") and a soft pulse ring while >0.
+//   2. A two-tone chime (Web Audio, no asset) when count INCREASES during
+//      a session — only fires after the first tick so cold-loads don't
+//      blast the speaker on a long-running library.
+//   3. 30-second auto-poll that pauses when the tab is in the background
+//      (saves Apps Script + battery). Resumes with an immediate refresh
+//      on visibilitychange.
+//
+// Persistence: per-tenant "seen" id set in localStorage. First ever visit
+// auto-marks every existing order as seen so the bell starts at zero.
+
+var __seenIds = null;
+var __lastUnseenCount = 0;
+var __isFirstNotifTick = true; // suppress sound on the very first tick
+var NOTIF_POLL_MS = 30000;
+
+function notifKey(){return 'lib_seen_ids_' + (SLUG || 'default')}
+function notifMuteKey(){return 'lib_seen_mute_' + (SLUG || 'default')}
+function notifIsMuted(){try{return localStorage.getItem(notifMuteKey())==='1'}catch(e){return false}}
+
+function loadSeenIds(){
+  if(__seenIds) return __seenIds;
+  try{
+    var raw = localStorage.getItem(notifKey());
+    if(raw){
+      var arr = JSON.parse(raw);
+      if(Array.isArray(arr)){
+        __seenIds = {};
+        arr.forEach(function(id){if(id) __seenIds[id] = true});
+        return __seenIds;
+      }
+    }
+  }catch(e){}
+  return null;
+}
+
+function saveSeenIds(){
+  try{
+    var keys = __seenIds ? Object.keys(__seenIds) : [];
+    // Cap at ~500 ids so the cache doesn't grow unbounded for very busy libraries.
+    if(keys.length > 500) keys = keys.slice(-500);
+    localStorage.setItem(notifKey(), JSON.stringify(keys));
+  }catch(e){}
+}
+
+// Mark every currently-loaded order as seen — called on FIRST ever visit
+// so a long-standing library doesn't immediately show a "9+" badge for
+// historical rows that the shopkeeper has obviously already processed.
+function bootstrapSeen(){
+  __seenIds = {};
+  orders.forEach(function(o){
+    var id = String(o.orderid || '').trim();
+    if(id) __seenIds[id] = true;
+  });
+  saveSeenIds();
+}
+
+// Returns array of orders the shopkeeper hasn't acknowledged yet. Filtered
+// to non-cancelled enrollments from the last 14 days so a sudden import of
+// historical rows doesn't spam the bell.
+function getUnseenOrders(){
+  var seen = loadSeenIds();
+  if(!seen) return [];
+  var cutoffMs = Date.now() - 14 * 86400000;
+  var out = [];
+  orders.forEach(function(o){
+    if(!o.isEnrollment) return;
+    if(o.isCancelled) return;
+    var id = String(o.orderid || '').trim();
+    if(!id) return;
+    if(seen[id]) return;
+    var when = parseOrderDateMs(o.dateandtime || o['date&time'] || o.date);
+    if(when && when < cutoffMs) return;
+    out.push(o);
+  });
+  return out;
+}
+
+function updateBellBadge(){
+  var bell = document.getElementById('topBell');
+  var badge = document.getElementById('topBellBadge');
+  if(!bell || !badge) return;
+  var unseen = getUnseenOrders();
+  var n = unseen.length;
+  if(n === 0){
+    bell.classList.remove('has-new');
+    badge.style.display = 'none';
+    bell.title = 'No new enrollments';
+  }else{
+    bell.classList.add('has-new');
+    badge.textContent = n > 9 ? '9+' : String(n);
+    bell.title = n + ' new enrollment' + (n === 1 ? '' : 's') + ' — click to view';
+  }
+  // Play sound on count INCREASE during the session (not on the first tick
+  // after init — that fire would be cold-load noise, not a real arrival).
+  if(!__isFirstNotifTick && n > __lastUnseenCount){
+    playEnrollmentChime();
+    var diff = n - __lastUnseenCount;
+    toast('🔔 ' + diff + ' new enrollment' + (diff === 1 ? '' : 's'), 'ok');
+  }
+  __lastUnseenCount = n;
+  __isFirstNotifTick = false;
+}
+
+// Bell click — mark every loaded order as seen, clear the badge, and jump
+// to the Orders pane so the shopkeeper actually SEES what came in.
+// Shift+Click toggles mute (silences the chime; bell badge still works).
+function onBellClick(ev){
+  if(ev && ev.shiftKey){
+    var muted = !notifIsMuted();
+    try{localStorage.setItem(notifMuteKey(), muted ? '1' : '0')}catch(e){}
+    toast(muted ? '🔕 Notification sound muted' : '🔔 Notification sound on', 'ok');
+    return;
+  }
+  if(!__seenIds) __seenIds = {};
+  orders.forEach(function(o){
+    var id = String(o.orderid || '').trim();
+    if(id) __seenIds[id] = true;
+  });
+  saveSeenIds();
+  var hadAny = __lastUnseenCount > 0;
+  __lastUnseenCount = 0;
+  updateBellBadge();
+  if(typeof showPane === 'function') showPane('orders');
+  if(!hadAny) toast('All caught up — no new enrollments','ok');
+}
+
+// Soft 2-tone chime via Web Audio. No external mp3 needed — works
+// identically across browsers. Volume kept low (0.15) so it's pleasant,
+// not jarring. First tone is E5 (660 Hz), second is A5 (880 Hz),
+// 160 ms apart, each ~320 ms with an exponential fade-out.
+function playEnrollmentChime(){
+  try{
+    if(notifIsMuted()) return;
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    var ctx = new Ctx();
+    [{f:660, t:0}, {f:880, t:0.16}].forEach(function(n){
+      var o = ctx.createOscillator();
+      var g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = n.f;
+      var t0 = ctx.currentTime + n.t;
+      g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(0.15, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.32);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t0);
+      o.stop(t0 + 0.34);
+    });
+    setTimeout(function(){try{ctx.close()}catch(_){}}, 800);
+  }catch(e){}
+}
+
+// 30s auto-poll. Pauses when the tab is hidden (background tabs would
+// otherwise burn quota for nothing). Visibility flip → immediate catchup
+// refresh so the count is always fresh when the shopkeeper looks back.
+var __pollTimer = null;
+function startEnrollmentPolling(){
+  stopEnrollmentPolling();
+  __pollTimer = setInterval(function(){
+    if(document.hidden) return;
+    refreshData();
+  }, NOTIF_POLL_MS);
+}
+function stopEnrollmentPolling(){
+  if(__pollTimer){clearInterval(__pollTimer); __pollTimer = null}
+}
+document.addEventListener('visibilitychange', function(){
+  if(!document.hidden && __pollTimer) refreshData();
+});
+
+// Tiny toast — top-right, auto-dismisses. Used for action feedback.
+function toast(msg, kind){
+  var t=document.getElementById('lib_toast');
+  if(!t){
+    t=document.createElement('div');t.id='lib_toast';
+    t.style.cssText='position:fixed;top:80px;right:20px;z-index:9999;padding:13px 18px;border-radius:11px;font:700 13px var(--F);box-shadow:0 12px 32px rgba(15,23,42,.18);transition:transform .25s,opacity .25s;transform:translateX(120%);opacity:0;max-width:360px';
+    document.body.appendChild(t);
+  }
+  t.style.background = kind==='err'?'#fee2e2':kind==='warn'?'#fef3c7':'#0f766e';
+  t.style.color = kind==='err'?'#991b1b':kind==='warn'?'#78350f':'#fff';
+  t.style.border = kind==='err'?'1.5px solid #dc2626':kind==='warn'?'1.5px solid #d97706':'1.5px solid #0a564f';
+  t.textContent = msg;
+  requestAnimationFrame(function(){t.style.transform='translateX(0)';t.style.opacity='1'});
+  clearTimeout(t._h);
+  t._h=setTimeout(function(){t.style.transform='translateX(120%)';t.style.opacity='0'},3000);
+}
+
+// ─── Date / duration helpers ───
+function parseOrderDateMs(s){
+  if(!s)return 0;
+  var t=Date.parse(String(s));
+  if(!isNaN(t))return t;
+  var m=String(s).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m)return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1])).getTime();
+  return 0;
+}
+function parseDurationDays(s){
+  s=String(s||'').toLowerCase();
+  var m=s.match(/(\d+)\s*(day|week|month|year)/);
+  if(m){var n=parseInt(m[1])||1,u=m[2];if(u==='day')return n;if(u==='week')return n*7;if(u==='month')return n*30;if(u==='year')return n*365}
+  if(/daily|day pass/.test(s))return 1;
+  if(/weekly|week pass/.test(s))return 7;
+  if(/annual|yearly|year/.test(s))return 365;
+  if(/quarterly|3.?month/.test(s))return 90;
+  if(/half.?yearly|6.?month/.test(s))return 180;
+  if(/month/.test(s))return 30;
+  return 0;
+}
+function fmtDate(ms){if(!ms)return '—';return new Date(ms).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+function fmtDateShort(ms){if(!ms)return '—';return new Date(ms).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
+
+// ─── Order parsing → derive enrollment metadata ───
+// Each order row becomes a "member" object enriched with computed fields:
+//   active / expired status, days remaining, plan name, start/expiry dates,
+//   verification fields. This is the heart of the dashboard — every view
+//   builds on this enriched data set.
+function enrichOrders(){
+  var nowMs=Date.now();
+  orders.forEach(function(o){
+    var notes=String(o.ordernotes||o.notes||'');
+    // Library dashboard: every order is an enrollment by definition. The
+    // explicit "Enrollment ·" prefix is preferred (newer rows) but legacy
+    // rows / walk-ins / blank-notes rows all still belong to a member, so
+    // treat any row that has a phone as an enrollment.
+    o.isEnrollment=/^enrollment\b/i.test(notes) || !!String(o.phone||'').trim();
+    function nf(k){var rx=new RegExp(k+'=([^·]+?)(?:\\s*·|$)','i');var m=notes.match(rx);return m?m[1].trim():''}
+    // Prefer the dedicated sheet columns (populated by writeEnrollmentColumns_
+    // on the Apps Script side) — they're already structured + readable. Fall
+    // back to parsing the packed notes string for tenants whose Sheet still
+    // uses the old 16-column layout (no enrollment columns yet) or for legacy
+    // rows that pre-date the schema extension.
+    o.planName  = String(o.plan||'').trim()      || nf('plan');
+    o.startDate = String(o.startdate||'').trim() || nf('start');
+    o.idType    = String(o.idtype||'').trim()    || nf('idType');
+    // ID Last 4 column stores "····1234" formatted — strip the bullets when
+    // surfacing as raw digits, but keep a pretty version for display.
+    var rawId4  = String(o.idlast4||'').replace(/[^\d]/g,'') || nf('id4');
+    o.id4       = rawId4;
+    o.dob       = String(o.dob||'').trim()       || nf('dob');
+    o.guardian  = String(o.guardian||'').trim()  || nf('guardian');
+    o.emergency = String(o.emergency||'').trim() || nf('emergency');
+    o.permAddr  = nf('addr'); // address still packed in notes (Address column has the short summary)
+    o.idPhoto   = String(o.idphoto||'').match(/https?:\/\/[^"\s]+/)
+                  ? String(o.idphoto).match(/https?:\/\/[^"\s]+/)[0]
+                  : nf('idPhoto');
+
+    // Plan name fallback to first line of items column
+    if(!o.planName){
+      var firstLine=String(o.items||'').split(/\n/)[0]||'';
+      var pm=firstLine.match(/plan:\s*([^=(]+?)(?:\s*\(|\s*=|$)/i);
+      if(pm)o.planName=pm[1].trim();
+    }
+
+    // Duration / expiry — try items first line
+    var firstLine=String(o.items||'').split(/\n/)[0]||'';
+    var dDays=parseDurationDays(firstLine);
+    if(!dDays && o.planName){
+      // Look up the matching product for duration
+      var p=products.find(function(p){return String(p.name||'').toLowerCase()===o.planName.toLowerCase()});
+      if(p)dDays=parseDurationDays(p.duration||p.unit||'');
+    }
+    o.durationDays=dDays;
+
+    var startMs=o.startDate?Date.parse(o.startDate):0;
+    if(isNaN(startMs))startMs=0;
+    if(!startMs)startMs=parseOrderDateMs(o.dateandtime||o['date&time']||o.date);
+    o.startMs=startMs;
+    // Prefer the dedicated Expiry Date column if the shopkeeper populated it
+    // (or it was auto-written on enrollment). This lets them adjust expiry
+    // manually for mid-cycle pauses or refunds without re-deriving from
+    // start + duration. Falls back to the computed start + duration.
+    var expFromCol=String(o.expirydate||'').trim();
+    var expMsCol=expFromCol?Date.parse(expFromCol):NaN;
+    if(!isNaN(expMsCol)) o.expiryMs=expMsCol;
+    else o.expiryMs=(startMs && dDays)?(startMs+dDays*86400000):0;
+    if(o.expiryMs){
+      o.daysLeft=Math.ceil((o.expiryMs-nowMs)/86400000);
+      o.isExpired=o.daysLeft<=0;
+      o.isExpiringSoon=!o.isExpired && o.daysLeft<=7;
+      o.isExpiringToday=!o.isExpired && o.daysLeft===0;
+    }
+    var status=String(o.status||'').toLowerCase();
+    o.isCancelled=status==='cancelled';
+    o.isPending=status==='new';
+    // "Active" = non-cancelled enrollment within its duration window
+    o.isActive=o.isEnrollment && !o.isCancelled && o.expiryMs && !o.isExpired;
+  });
+  // Sort newest-first (date placed)
+  orders.sort(function(a,b){return parseOrderDateMs(b.dateandtime||b['date&time']||b.date)-parseOrderDateMs(a.dateandtime||a['date&time']||a.date)});
+}
+
+// ─── Group by phone (last-10) → "members" view ───
+// Enrollment dashboards need a per-phone view. One physical person typically
+// has ONE current active enrollment + N historical. We fold them into a
+// "member" record keyed by phone, picking the latest active row as primary.
+function buildMembers(){
+  var byPhone={};
+  orders.forEach(function(o){
+    if(!o.isEnrollment)return;
+    var p=String(o.phone||'').replace(/\D/g,'').slice(-10);
+    // No-phone rows still represent a real enrollment (rare — manual sheet
+    // entries). Bucket them by Order ID so they at least appear in Members.
+    if(!p) p=String(o.orderid||'').trim() || ('row-'+(o._rowIdx||Math.random().toString(36).slice(2,8)));
+    if(!byPhone[p])byPhone[p]={phone:p,orders:[],latest:null,active:null};
+    byPhone[p].orders.push(o);
+    // Track latest non-cancelled order (by start date, falling back to placed
+    // date for rows that have no Start Date populated yet) as primary.
+    if(!o.isCancelled){
+      var oTs=o.startMs||parseOrderDateMs(o.dateandtime||o['date&time']||o.date)||0;
+      var lTs=byPhone[p].latest?(byPhone[p].latest.startMs||parseOrderDateMs(byPhone[p].latest.dateandtime||byPhone[p].latest['date&time']||byPhone[p].latest.date)||0):0;
+      if(!byPhone[p].latest || oTs>lTs){
+        byPhone[p].latest=o;
+      }
+      if(o.isActive){
+        byPhone[p].active=o;
+      }
+    }
+  });
+  return Object.keys(byPhone).map(function(p){
+    var m=byPhone[p];
+    var primary=m.active || m.latest || m.orders[0];
+    return {
+      phone:p,
+      name:primary.customername||primary.name||'—',
+      email:primary.email||'',
+      latest:primary,
+      active:m.active,
+      orders:m.orders,
+      lifetime:m.orders.reduce(function(s,o){return s+(o.isCancelled?0:fnum(o.total))},0)
+    };
+  });
+}
+
+// ─── Main render ───
+function render(){
+  enrichOrders();
+  // Diagnostic — easy way to verify data flow when "members not showing"
+  try{
+    var diag={
+      ordersLoaded:orders.length,
+      productsLoaded:products.length,
+      enrollments:orders.filter(function(o){return o.isEnrollment}).length,
+      withPhone:orders.filter(function(o){return String(o.phone||'').replace(/\D/g,'').length>=10}).length,
+      active:orders.filter(function(o){return o.isActive}).length,
+      cancelled:orders.filter(function(o){return o.isCancelled}).length,
+      pending:orders.filter(function(o){return o.isPending}).length,
+      sampleHeaders:orders[0]?Object.keys(orders[0]):[],
+      sampleRow:orders[0]||null
+    };
+    console.log('[dash-library]',diag);
+    if(orders.length && !diag.enrollments){
+      console.warn('[dash-library] Orders loaded but none flagged as enrollment — check Phone column.');
+    }
+    if(!orders.length){
+      console.warn('[dash-library] No orders found. Check that the Orders sheet has rows and the SheetID is correct.');
+    }
+  }catch(_){}
+  // Header / sidebar — guard each lookup so a markup tweak can't take render() down.
+  var name=cfg('shopname','Library');
+  if($('topName'))$('topName').textContent=name;
+  if($('sbName'))$('sbName').textContent=name;
+  if($('topVisit'))$('topVisit').href='https://'+SLUG+'.storepro.in/';
+  var open=String(cfg('storeopen','yes')||'yes').toLowerCase()!=='no';
+  if($('topStatus')){
+    $('topStatus').className='topbar-status '+(open?'open':'closed');
+    $('topStatus').textContent=open?'Open':'Closed';
+  }
+
+  renderHome();
+  renderMembersTable();
+  renderPlansGrid();
+  renderInsights();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HELPERS — greeting, avatar, count animation, activity feed
+// ═══════════════════════════════════════════════════════════════════
+function greetingByHour(){
+  var h=new Date().getHours();
+  if(h<5)return 'Still up';
+  if(h<12)return 'Good morning';
+  if(h<17)return 'Good afternoon';
+  if(h<21)return 'Good evening';
+  return 'Good night';
+}
+function todayPretty(){
+  var d=new Date();
+  var dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+  var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+  return dn+' · '+d.getDate()+' '+mn+' '+d.getFullYear();
+}
+// Modern avatar palette — paired hues that feel coherent against the
+// indigo/emerald brand. Mix of cool + warm so adjacent member rows
+// remain visually distinct without feeling chaotic.
+var __AV_PALETTE=[
+  'linear-gradient(135deg,#4F46E5,#818CF8)',  /* indigo */
+  'linear-gradient(135deg,#10B981,#34D399)',  /* emerald */
+  'linear-gradient(135deg,#0EA5E9,#38BDF8)',  /* sky */
+  'linear-gradient(135deg,#7C3AED,#A78BFA)',  /* violet */
+  'linear-gradient(135deg,#F59E0B,#FBBF24)',  /* amber */
+  'linear-gradient(135deg,#EC4899,#F472B6)',  /* pink */
+  'linear-gradient(135deg,#06B6D4,#22D3EE)'   /* cyan */
+];
+function avatarColor(seed){
+  var h=0,s=String(seed||'·');
+  for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;
+  return __AV_PALETTE[h%__AV_PALETTE.length];
+}
+function avatarInitials(name){
+  var parts=String(name||'').trim().split(/\s+/).filter(Boolean);
+  if(!parts.length)return '·';
+  if(parts.length===1)return parts[0].slice(0,2).toUpperCase();
+  return ((parts[0][0]||'')+(parts[parts.length-1][0]||'')).toUpperCase();
+}
+function avatarHTML(name,seed,size){
+  var cls=size==='sm'?'avt avt-sm':size==='lg'?'avt avt-lg':'avt';
+  return '<div class="'+cls+'" style="background:'+avatarColor(seed||name||'·')+'">'+E(avatarInitials(name))+'</div>';
+}
+function animateCount(el,to,duration){
+  if(!el)return;
+  duration=duration||650;
+  var fromAttr=el.getAttribute('data-last-val');
+  var from=fromAttr?parseFloat(fromAttr)||0:0;
+  if(from===to){el.textContent=to.toLocaleString('en-IN');el.setAttribute('data-last-val',String(to));return}
+  var start=performance.now();
+  function step(ts){
+    var t=Math.min(1,(ts-start)/duration);
+    var eased=1-Math.pow(1-t,3);
+    el.textContent=Math.round(from+(to-from)*eased).toLocaleString('en-IN');
+    if(t<1)requestAnimationFrame(step);
+    else{el.textContent=to.toLocaleString('en-IN');el.setAttribute('data-last-val',String(to))}
+  }
+  requestAnimationFrame(step);
+}
+
+function renderHero(activeMembers, members, todayOrders, todayRev){
+  if(!$('heroGreet'))return;
+  var name=cfg('shopname','your library');
+  $('heroDate').textContent=todayPretty();
+  $('heroGreet').innerHTML=greetingByHour()+', <b>'+E(name)+'</b>';
+  // Capacity ring
+  var cap=parseInt(cfg('capacity','0'))||parseInt(cfg('seatcapacity','0'))||80;
+  var pct=Math.min(100,Math.round((activeMembers.length/cap)*100));
+  var circ=2*Math.PI*42;
+  var off=circ-(pct/100)*circ;
+  if($('heroRingFg'))$('heroRingFg').setAttribute('stroke-dashoffset',off);
+  if($('heroRingV'))$('heroRingV').textContent=pct+'%';
+  // Subtitle dynamic
+  var expToday=activeMembers.filter(function(m){return m.active.daysLeft===0}).length;
+  var sub;
+  if(expToday>0)sub=expToday+' member'+(expToday===1?' is':'s are')+' set to expire today. Send renewal reminders before the day ends.';
+  else if(activeMembers.length===0)sub='No active members yet. Onboard your first one with the walk-in button — it takes 30 seconds.';
+  else sub='You have '+activeMembers.length+' active member'+(activeMembers.length===1?'':'s')+', '+todayOrders.length+' enrollment'+(todayOrders.length===1?'':'s')+' today, and ₹'+Math.round(todayRev).toLocaleString('en-IN')+' collected.';
+  $('heroSub').textContent=sub;
+  // Chips
+  var chips=[];
+  chips.push('<span class="hero-chip">🪑 <b>'+activeMembers.length+'</b> / '+cap+' seats</span>');
+  chips.push('<span class="hero-chip">📅 <b>'+todayOrders.length+'</b> enrolled today</span>');
+  chips.push('<span class="hero-chip">💰 <b>₹'+Math.round(todayRev).toLocaleString('en-IN')+'</b> today</span>');
+  var openLbl=String(cfg('storeopen','yes')||'yes').toLowerCase()!=='no'?'🟢 Open':'🔴 Closed';
+  chips.push('<span class="hero-chip">'+openLbl+'</span>');
+  $('heroChips').innerHTML=chips.join('');
+}
+
+function renderActivityFeed(){
+  if(!$('activityFeed'))return;
+  var events=[];
+  orders.slice(0,40).forEach(function(o){
+    var d=parseOrderDateMs(o.dateandtime||o['date&time']||o.date);
+    if(!d)return;
+    var name=o.customername||o.name||'Someone';
+    var plan=o.planName||(String(o.items||'').split(/\n/)[0]||'');
+    var s=String(o.status||'').toLowerCase().replace(/\s+/g,'');
+    var icon='🪑',cls='add',text='<b>'+E(name)+'</b> enrolled';
+    if(plan)text+=' for <b>'+E(plan)+'</b>';
+    if(s==='cancelled'){icon='✕';cls='cancel';text='<b>'+E(name)+'</b>\'s enrollment cancelled'}
+    else if(s==='confirmed'){icon='✓';cls='confirm';text='<b>'+E(name)+'</b>\'s enrollment confirmed'}
+    else if(s==='done'||s==='completed'){icon='🎓';cls='done';text='<b>'+E(name)+'</b>\'s plan completed'}
+    events.push({ms:d,icon:icon,cls:cls,text:text,phone:String(o.phone||'').replace(/\D/g,'').slice(-10)});
+  });
+  events.sort(function(a,b){return b.ms-a.ms});
+  events=events.slice(0,8);
+  if(!events.length){
+    $('activityFeed').innerHTML='<div style="padding:30px 18px;text-align:center;color:var(--ink3);font:600 12px var(--F)">No activity yet. New enrollments will show up here.</div>';
+    return;
+  }
+  $('activityFeed').innerHTML=events.map(function(e){
+    var click=e.phone?(' onclick="showDetail(\''+encodeURIComponent(e.phone)+'\')"'):'';
+    return '<div class="act-row"'+click+'>'
+      +'<div class="act-i '+e.cls+'">'+e.icon+'</div>'
+      +'<div class="act-c">'+e.text+'</div>'
+      +'<div class="act-t">'+relAgo(e.ms)+'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function sendRenewalBlast(){
+  var members=buildMembers();
+  var expiring=members.filter(function(m){return m.active && m.active.daysLeft<=7});
+  if(!expiring.length){toast('No members are expiring this week — nothing to send','ok');return}
+  if(!confirm('Open WhatsApp for '+expiring.length+' expiring member'+(expiring.length===1?'':'s')+'?\n\nEach contact will open in a new tab — you tap Send on each.'))return;
+  expiring.forEach(function(m,idx){
+    setTimeout(function(){
+      var d=m.active.daysLeft;
+      var msg=encodeURIComponent('Hi '+(m.name||'there')+', your '+(m.active.planName||'plan')+' at '+cfg('shopname','our library')+' '+(d===0?'expires today':'expires in '+d+' day'+(d===1?'':'s'))+'. Would you like to renew?');
+      window.open('https://wa.me/91'+m.phone+'?text='+msg,'_blank');
+    },idx*250);
+  });
+  toast('Opening '+expiring.length+' renewal message'+(expiring.length===1?'':'s')+'…','ok');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HOME PANE
+// ═══════════════════════════════════════════════════════════════════
+function renderHome(){
+  var members=buildMembers();
+  var nowMs=Date.now();
+
+  var activeMembers=members.filter(function(m){return m.active});
+  var expToday=activeMembers.filter(function(m){return m.active.daysLeft===0});
+  var expWeek=activeMembers.filter(function(m){return m.active.daysLeft>0 && m.active.daysLeft<=7});
+  var pending=orders.filter(function(o){return o.isPending});
+
+  animateCount($('statActive'),activeMembers.length);
+  $('statActiveD').textContent=members.length+' total members';
+  animateCount($('statToday'),expToday.length);
+  animateCount($('statWeek'),expWeek.length);
+
+  // Today's enrollments (orders dated today)
+  var todayStr=new Date().toLocaleDateString('en-IN');
+  var todayOrders=orders.filter(function(o){
+    var d=parseOrderDateMs(o.dateandtime||o['date&time']||o.date);
+    if(!d)return false;
+    return new Date(d).toLocaleDateString('en-IN')===todayStr;
+  });
+  animateCount($('statToday2'),todayOrders.length);
+  var todayRev=todayOrders.reduce(function(s,o){return s+(o.isCancelled?0:fnum(o.total))},0);
+  $('statToday2D').textContent='₹'+Math.round(todayRev).toLocaleString('en-IN')+' collected';
+
+  // Hero (greeting + capacity ring + chips)
+  renderHero(activeMembers, members, todayOrders, todayRev);
+
+  // Sidebar badges
+  $('navMembersB').textContent=activeMembers.length;
+  var pendingTotal=pending.length+expToday.length;
+  if(pendingTotal>0){$('memHdrBadge').textContent=members.length}
+
+  // Enrollments nav badge — pulses red when there are status=New rows
+  // awaiting Confirm/Cancel. Hidden when zero.
+  var navOrdersB=$('navOrdersB');
+  if(navOrdersB){
+    if(pending.length>0){
+      navOrdersB.textContent=pending.length>99?'99+':String(pending.length);
+      navOrdersB.classList.add('urgent');
+      navOrdersB.style.display='';
+    }else{
+      navOrdersB.classList.remove('urgent');
+      navOrdersB.style.display='none';
+    }
+  }
+
+  // Top-of-pane action banner — bright red callout above the hero so the
+  // librarian sees pending work the moment they open the dashboard.
+  var pBanner=$('pendingBanner');
+  if(pBanner){
+    if(pending.length>0){
+      $('pendingBannerT').textContent=pending.length+' new enrollment'+(pending.length===1?'':'s')+' waiting for action';
+      pBanner.classList.add('show');
+    }else{
+      pBanner.classList.remove('show');
+    }
+  }
+
+  // "🆕 Pending new" section badge — pulse-red modifier when >0 so the
+  // section header stays visually loud even when the banner is dismissed.
+  var bp=$('badgePending');
+  if(bp){
+    if(pending.length>0)bp.classList.add('urgent-pulse');
+    else bp.classList.remove('urgent-pulse');
+  }
+
+  // EXPIRING TODAY list
+  $('badgeToday').textContent=expToday.length;
+  if(expToday.length){
+    $('listToday').innerHTML='<div class="dlist">'+expToday.map(memberRow).join('')+'</div>';
+  }else{
+    $('listToday').innerHTML='<div class="empty"><div class="empty-i">✅</div><div class="empty-t">No expirations today</div><div class="empty-s">Nothing urgent — enjoy a calm day</div></div>';
+  }
+
+  // EXPIRING THIS WEEK list
+  $('badgeWeek').textContent=expWeek.length;
+  if(expWeek.length){
+    var sorted=expWeek.slice().sort(function(a,b){return a.active.daysLeft-b.active.daysLeft});
+    $('listWeek').innerHTML='<div class="dlist">'+sorted.map(memberRow).join('')+'</div>';
+  }else{
+    $('listWeek').innerHTML='<div class="empty"><div class="empty-i">🟢</div><div class="empty-t">All members are good for the week</div></div>';
+  }
+
+  // PENDING list
+  $('badgePending').textContent=pending.length;
+  if(pending.length){
+    $('listPending').innerHTML='<div class="dlist">'+pending.slice(0,5).map(pendingRow).join('')+'</div>';
+  }else{
+    $('listPending').innerHTML='<div class="empty"><div class="empty-i">📭</div><div class="empty-t">No pending enrollments</div></div>';
+  }
+
+  // Activity feed
+  renderActivityFeed();
+
+  // 30-day trend sparkline
+  renderTrendSpark(activeMembers);
+}
+
+function memberRow(m){
+  var o=m.active;
+  var days=o.daysLeft;
+  var pillClass=days===0?'urgent':days<=3?'urgent':days<=7?'warn':'fresh';
+  var pillText=days===0?'Expires today':days<0?'Expired':(days+'d left');
+  var phoneDigits=m.phone;
+  var waMsg=encodeURIComponent('Hi '+(m.name||'there')+', your '+(o.planName||'plan')+' at '+cfg('shopname','our library')+' '+(days===0?'expires today':'expires in '+days+' day'+(days===1?'':'s'))+'. Would you like to renew?');
+  return '<div class="drow" onclick="showDetail(\''+encodeURIComponent(m.phone)+'\')">'
+    +avatarHTML(m.name,m.phone)
+    +'<div style="min-width:0"><div class="drow-name">'+E(m.name)+'</div><div class="drow-name-sub">'+E(o.planName||'—')+' · '+phoneDigits+'</div></div>'
+    +'<div class="drow-pill '+pillClass+'">'+pillText+'</div>'
+    +'<div class="drow-amount">₹'+Math.round(fnum(o.total))+'</div>'
+    +'<div class="drow-actions" onclick="event.stopPropagation()">'
+      +'<a class="btn-sm wa" href="https://wa.me/91'+phoneDigits+'?text='+waMsg+'" target="_blank" rel="noopener">💬 Renew</a>'
+      +'<button class="btn-sm ghost" onclick="showDetail(\''+encodeURIComponent(m.phone)+'\')">View</button>'
+    +'</div>'
+  +'</div>';
+}
+
+function pendingRow(o){
+  var ago=relAgo(parseOrderDateMs(o.dateandtime||o['date&time']||o.date));
+  var oid=String(o.orderid||'');
+  var name=o.customername||o.name||'—';
+  return '<div class="drow">'
+    +avatarHTML(name,o.orderid||name)
+    +'<div style="min-width:0"><div class="drow-name">'+E(name)+'</div><div class="drow-name-sub">'+E(o.planName||(String(o.items||'').split(/\n/)[0]))+' · '+ago+'</div></div>'
+    +'<div class="drow-pill fresh">New</div>'
+    +'<div class="drow-amount">₹'+Math.round(fnum(o.total))+'</div>'
+    +'<div class="drow-actions">'
+      +'<button class="btn-sm prim" onclick="confirmOrder(\''+E(oid)+'\')">✓ Confirm</button>'
+      +'<button class="btn-sm danger" onclick="cancelOrder(\''+E(oid)+'\')">✕</button>'
+    +'</div>'
+  +'</div>';
+}
+
+// Jump to the Orders pane and pre-select the "🆕 New" filter pill so the
+// librarian lands directly on the rows that need Confirm/Cancel decisions.
+// Wired up to the top-of-Home pending banner's "Review now" button.
+function reviewPending(){
+  showPane('orders');
+  // showPane swaps the visible section synchronously; the filter pills are
+  // already in the DOM so we can click immediately. Use setTimeout(0) anyway
+  // to let any showPane-triggered re-render finish first.
+  setTimeout(function(){
+    var pill=document.querySelector('#paneOrders .filter-pill[data-of="new"]');
+    if(pill && !pill.classList.contains('on')) pill.click();
+  },0);
+}
+
+// ─── Order status mutations ──────────────────────
+function confirmOrder(orderId){
+  if(!orderId)return;
+  toast('Confirming '+orderId+'…');
+  sendCmd('updateStatus',{orderId:orderId,newStatus:'Confirmed'}).then(function(){
+    toast('✓ Confirmed '+orderId);
+    refreshData();
+  }).catch(function(err){toast('❌ '+(err.message||'Failed'),'err')});
+}
+
+function cancelOrder(orderId){
+  if(!orderId)return;
+  if(!confirm('Cancel order '+orderId+'? This sends a cancellation email to the customer.'))return;
+  var reason=prompt('Reason (optional — sent to customer):','')||'';
+  toast('Cancelling '+orderId+'…');
+  sendCmd('updateStatus',{orderId:orderId,newStatus:'Cancelled',comment:reason}).then(function(){
+    toast('✓ Cancelled '+orderId);
+    refreshData();
+  }).catch(function(err){toast('❌ '+(err.message||'Failed'),'err')});
+}
+
+// Complete-plan = "this member's enrollment ran its course naturally". Renamed
+// from the generic "Mark done" — in a library context, students don't get
+// "delivered". This is for closing out a finished membership without involving
+// a refund or cancellation.
+function markActiveDone(orderId){
+  if(!orderId)return;
+  if(!confirm('Complete enrollment '+orderId+'?\n\nUse this when a member\'s paid plan has run its full course and they\'re no longer studying with you. To stop a plan early, use Cancel instead.'))return;
+  sendCmd('updateStatus',{orderId:orderId,newStatus:'Completed'}).then(function(){
+    toast('🎓 Plan completed','ok');
+    refreshData();
+  }).catch(function(err){toast('❌ '+(err.message||'Failed'),'err')});
+}
+
+function addMemberNote(orderId){
+  if(!orderId)return;
+  var note=prompt('Add a note to this enrollment (visible to the customer in their tracking page):','');
+  if(!note||!note.trim())return;
+  sendCmd('updateStatus',{orderId:orderId,newStatus:'',comment:note.trim()}).then(function(){
+    toast('✓ Note saved');
+    refreshData();
+  }).catch(function(err){toast('❌ '+(err.message||'Failed'),'err')});
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CSV EXPORT — Members + Orders
+// ═══════════════════════════════════════════════════════════════════
+// Quotes a single CSV cell. RFC 4180: wrap in "..." and escape inner " as "".
+// Always quotes when the cell could contain commas, newlines, or quotes.
+function csvCell_(v){
+  var s=String(v==null?'':v);
+  if(/[",\n\r]/.test(s))return '"'+s.replace(/"/g,'""')+'"';
+  return s;
+}
+function csvFromRows_(headers,rows){
+  var out=headers.map(csvCell_).join(',')+'\n';
+  rows.forEach(function(r){out+=r.map(csvCell_).join(',')+'\n'});
+  return out;
+}
+function downloadCSV_(filename,csv){
+  // BOM so Excel auto-detects UTF-8 (handles ₹ and Hindi names correctly).
+  var blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},100);
+}
+function exportMembersCSV(){
+  var members=buildMembers();
+  if(!members.length){toast('No members to export');return}
+  var headers=['Name','Phone','Email','Plan','Started','Expires','Days left','Status','Lifetime ₹','Total orders','Latest order ID'];
+  var rows=members.map(function(m){
+    var o=m.latest||{};
+    var status=m.active?(m.active.daysLeft===0?'Expires today':m.active.daysLeft+'d left'):(o.isCancelled?'Cancelled':'Expired');
+    return [
+      m.name||'',
+      m.phone||'',
+      m.email||'',
+      o.planName||'',
+      o.startMs?new Date(o.startMs).toISOString().slice(0,10):'',
+      o.expiryMs?new Date(o.expiryMs).toISOString().slice(0,10):'',
+      m.active?String(m.active.daysLeft):'',
+      status,
+      Math.round(m.lifetime),
+      m.orders.length,
+      o.orderid||''
+    ];
+  });
+  var fname=(SLUG||'library')+'-members-'+new Date().toISOString().slice(0,10)+'.csv';
+  downloadCSV_(fname, csvFromRows_(headers,rows));
+  toast('✓ Downloaded '+rows.length+' member'+(rows.length===1?'':'s'),'ok');
+}
+function exportOrdersCSV(){
+  if(!orders.length){toast('No orders to export');return}
+  var headers=['Order ID','Date','Customer','Phone','Email','Plan','Start','Expiry','Total ₹','Status','Payment','Notes'];
+  var rows=orders.map(function(o){
+    var d=parseOrderDateMs(o.dateandtime||o['date&time']||o.date);
+    return [
+      o.orderid||'',
+      d?new Date(d).toISOString().replace('T',' ').slice(0,16):'',
+      o.customername||o.name||'',
+      o.phone||'',
+      o.email||'',
+      o.planName||'',
+      o.startDate||'',
+      o.expirydate||(o.expiryMs?new Date(o.expiryMs).toISOString().slice(0,10):''),
+      Math.round(fnum(o.total)),
+      o.status||'',
+      o.payment||'',
+      o.ordernotes||o.notes||''
+    ];
+  });
+  var fname=(SLUG||'library')+'-orders-'+new Date().toISOString().slice(0,10)+'.csv';
+  downloadCSV_(fname, csvFromRows_(headers,rows));
+  toast('✓ Downloaded '+rows.length+' order'+(rows.length===1?'':'s'),'ok');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PRINT — walk-in receipt + member ID card
+// ═══════════════════════════════════════════════════════════════════
+// Tag literals are split with '+' concat so VS Code Live Server's regex
+// injection of script and body close-tags can't land inside the JS string
+// and break parsing. Don't simplify them — they look weird but they
+// protect the file. (And the comment can't mention those tags literally
+// either — Live Server matches the first occurrence anywhere.)
+function openPrintWindow_(title,bodyHTML,extraStyles){
+  var w=window.open('','_blank','width=520,height=720');
+  if(!w){alert('Please allow popups so we can open the print window.');return null}
+  var brand=cfg('brandcolor','#4F46E5');
+  var html=''
+    +'<!DOCTYPE html><html><he'+'ad><meta charset="UTF-8"><title>'+E(title)+'</title>'
+    +'<style>'
+    +'@media print{body{margin:0;padding:0}.no-print{display:none}}'
+    +'body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#FAF8F2;color:#1A1F36;margin:0;padding:24px;font-size:13px;line-height:1.5}'
+    +'.btns{margin:18px auto 0;max-width:520px;display:flex;gap:8px}'
+    +'.btn{flex:1;padding:12px;border:none;border-radius:9px;font:800 12px sans-serif;cursor:pointer;letter-spacing:.04em;text-transform:uppercase}'
+    +'.btn.p{background:'+brand+';color:#fff}'
+    +'.btn.s{background:#fff;color:#1A1F36;border:1.5px solid #EAE7DC}'
+    +(extraStyles||'')
+    +'</style></he'+'ad><bo'+'dy>'
+    +bodyHTML
+    +'<div class="btns no-print">'
+    +  '<button class="btn p" onclick="window.print()">🖨 Print / Save as PDF</button>'
+    +  '<button class="btn s" onclick="window.close()">Close</button>'
+    +'</div>'
+    +'</bo'+'dy></html>';
+  w.document.open();w.document.write(html);w.document.close();
+  setTimeout(function(){try{w.focus();w.print()}catch(e){}},400);
+  return w;
+}
+
+// Receipt for a walk-in enrollment we just saved. Doesn't refetch — the
+// caller already has every field in memory.
+function printWalkinReceipt(info){
+  var brand=cfg('brandcolor','#4F46E5');
+  var shopName=cfg('shopname','Library');
+  var shopAddr=cfg('address','');
+  var shopPhone=cfg('phone','');
+  var cur=cfg('currency','₹');
+  var dateStr=new Date().toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  var body=''
+    +'<div class="r" style="max-width:480px;margin:0 auto;background:#fff;border:1px solid #EAE7DC;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(26,31,54,.08)">'
+    +  '<div style="background:'+brand+';color:#fff;padding:24px 22px;text-align:center">'
+    +    '<div style="font-size:21px;font-weight:800;letter-spacing:-.3px">📚 '+E(shopName)+'</div>'
+    +    '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.85;margin-top:4px">Enrollment Receipt</div>'
+    +  '</div>'
+    +  '<div style="padding:20px 22px">'
+    +    '<div style="text-align:center;margin-bottom:14px"><span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:13px;color:'+brand+';background:#F2EFE5;padding:6px 12px;border-radius:6px;letter-spacing:.04em">'+E(info.orderId)+'</span></div>'
+    +    (shopAddr?'<div style="font-size:11px;color:#7A8190;text-align:center;margin-bottom:6px">📍 '+E(shopAddr)+'</div>':'')
+    +    (shopPhone?'<div style="font-size:11px;color:#7A8190;text-align:center;margin-bottom:14px">📞 '+E(shopPhone)+'</div>':'')
+    +    rcRow_('Member', info.name)
+    +    rcRow_('Phone', info.phone)
+    +    (info.email?rcRow_('Email', info.email):'')
+    +    rcRow_('Plan', info.plan)
+    +    (info.duration?rcRow_('Duration', info.duration):'')
+    +    rcRow_('Start date', info.start)
+    +    rcRow_('Booked', dateStr)
+    +    '<div style="margin-top:14px;padding:13px 16px;background:'+brand+';color:#fff;border-radius:9px;display:flex;justify-content:space-between;align-items:center">'
+    +      '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;opacity:.85">Total paid</div>'
+    +      '<div style="font-size:23px;font-weight:900;letter-spacing:-.5px">'+cur+Math.round(fnum(info.total))+'</div>'
+    +    '</div>'
+    +    '<div style="margin-top:14px;padding-top:12px;border-top:1px solid #EAE7DC;text-align:center;font-size:10px;color:#B0B6C0;line-height:1.6">Thank you for choosing '+E(shopName)+'.<br>Powered by <b>StorePro</b></div>'
+    +  '</div>'
+    +'</div>';
+  openPrintWindow_('Receipt · '+info.orderId, body);
+}
+function rcRow_(label,value){
+  return '<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #EAE7DC;font-size:12px">'
+    +'<span style="color:#7A8190;font-weight:600">'+E(label)+'</span>'
+    +'<span style="color:#1A1F36;font-weight:700;text-align:right">'+E(value||'—')+'</span>'
+  +'</div>';
+}
+
+// Member ID card — A4-printable card with photo, plan, expiry, QR. The QR
+// encodes the member's phone so a scanner at the entry can look them up.
+function printMemberIDCard(phone){
+  var members=buildMembers();
+  var m=members.find(function(x){return x.phone===phone});
+  if(!m){toast('Member not found','err');return}
+  var o=m.active||m.latest||{};
+  var brand=cfg('brandcolor','#4F46E5');
+  var accent='#10B981';
+  var shopName=cfg('shopname','Library');
+  var shopAddr=cfg('address','');
+  var shopPhone=cfg('phone','');
+  var validUntil=o.expiryMs?new Date(o.expiryMs).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+  var memberSince=m.orders.length?(function(){
+    var earliest=m.orders.slice().sort(function(a,b){return (a.startMs||0)-(b.startMs||0)})[0];
+    return earliest.startMs?new Date(earliest.startMs).toLocaleDateString('en-IN',{month:'short',year:'numeric'}):'—';
+  })():'—';
+  var photoSrc=o.idPhoto||'';
+  var initials=avatarInitials(m.name);
+  // QR payload — scanner at entry can look up the member by phone or order ID
+  var qrPayload='STOREPRO:'+(SLUG||'library')+':'+m.phone+':'+(o.orderid||'');
+
+  var body=''
+    +'<div class="card-wrap" style="max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:16px">'
+    // Front of card
+    +'<div class="id-card" style="position:relative;background:linear-gradient(135deg,#1E1B4B 0%,'+brand+' 50%,#818CF8 100%);color:#fff;border-radius:18px;padding:22px;overflow:hidden;box-shadow:0 12px 40px rgba(79,70,229,.28);min-height:260px">'
+    +  '<div style="position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.28),transparent 70%);pointer-events:none"></div>'
+    +  '<div style="position:absolute;left:0;top:0;bottom:0;width:5px;background:'+accent+'"></div>'
+    +  '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;position:relative">'
+    +    '<div>'
+    +      '<div style="font:700 9px sans-serif;text-transform:uppercase;letter-spacing:.18em;color:'+accent+';margin-bottom:4px">Member ID Card</div>'
+    +      '<div style="font:800 17px sans-serif;letter-spacing:-.3px">📚 '+E(shopName)+'</div>'
+    +    '</div>'
+    +    '<div style="font:700 10px sans-serif;background:rgba(255,255,255,.15);padding:5px 10px;border-radius:99px;letter-spacing:.06em;text-transform:uppercase">'+E(o.planName||'Member')+'</div>'
+    +  '</div>'
+    +  '<div style="display:flex;gap:18px;align-items:center;position:relative">'
+    +    (photoSrc
+        ? '<img src="'+E(photoSrc)+'" alt="" style="width:88px;height:88px;border-radius:14px;object-fit:cover;border:3px solid '+accent+';flex-shrink:0">'
+        : '<div style="width:88px;height:88px;border-radius:14px;background:linear-gradient(135deg,'+accent+',#8C6A2B);display:flex;align-items:center;justify-content:center;font:900 32px sans-serif;color:#fff;border:3px solid '+accent+';flex-shrink:0">'+E(initials)+'</div>')
+    +    '<div style="min-width:0;flex:1">'
+    +      '<div style="font:800 19px sans-serif;letter-spacing:-.4px;line-height:1.15">'+E(m.name||'—')+'</div>'
+    +      '<div style="font:600 12px sans-serif;opacity:.7;margin-top:3px">+91 '+E(m.phone)+'</div>'
+    +      '<div style="margin-top:10px;display:flex;flex-direction:column;gap:4px;font:600 11px sans-serif;opacity:.85">'
+    +        '<div>Member since · <b style="color:'+accent+'">'+E(memberSince)+'</b></div>'
+    +        '<div>Valid until · <b style="color:'+accent+'">'+E(validUntil)+'</b></div>'
+    +      '</div>'
+    +    '</div>'
+    +  '</div>'
+    +  '<div style="position:absolute;right:18px;bottom:18px;background:#fff;padding:7px;border-radius:8px;width:78px;height:78px;display:flex;align-items:center;justify-content:center" id="idCardQR"></div>'
+    +  '<div style="position:absolute;left:24px;bottom:18px;font:700 9px sans-serif;text-transform:uppercase;letter-spacing:.12em;opacity:.55">'+E(o.orderid||'')+'</div>'
+    +'</div>'
+    // Back of card — rules / contact
+    +'<div class="id-back" style="background:#fff;border:1px solid #EAE7DC;border-radius:18px;padding:20px 22px;color:#1A1F36;font-size:12px;line-height:1.6">'
+    +  '<div style="font:800 11px sans-serif;text-transform:uppercase;letter-spacing:.1em;color:'+brand+';margin-bottom:10px">If found, please return to:</div>'
+    +  '<div style="font-weight:700">'+E(shopName)+'</div>'
+    +  (shopAddr?'<div style="color:#7A8190;margin-top:3px">'+E(shopAddr)+'</div>':'')
+    +  (shopPhone?'<div style="color:#7A8190;margin-top:3px">📞 '+E(shopPhone)+'</div>':'')
+    +  '<div style="margin-top:14px;padding-top:12px;border-top:1px dashed #EAE7DC;font-size:11px;color:#7A8190">This card is non-transferable. Carry it with you on each visit. Powered by <b style="color:'+brand+'">StorePro</b>.</div>'
+    +'</div>'
+    +'</div>';
+  var w=openPrintWindow_('Member Card · '+m.name, body);
+  if(!w)return;
+  // QR code generation in the popup. qrcodejs is loaded as a CDN script in
+  // the parent — pass it through to the popup so we don't double-load.
+  setTimeout(function(){
+    try{
+      var QR=window.QRCode;
+      if(!QR){toast('QR library still loading — try again','err');return}
+      var holder=w.document.getElementById('idCardQR');
+      if(holder){
+        new QR(holder,{
+          text:qrPayload,width:64,height:64,
+          colorDark:'#000000',colorLight:'#ffffff',
+          correctLevel:QR.CorrectLevel.M
+        });
+      }
+    }catch(e){console.warn('[id-card] qr error',e)}
+  },500);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PAUSE / RESUME MEMBERSHIP
+// ═══════════════════════════════════════════════════════════════════
+// Pause stores PAUSE_START=<iso> in the Shopkeeper Comment column via the
+// existing updateStatus action. Resume calls a dedicated server action
+// (resumeMembership) that calculates days paused, bumps Expiry Date forward
+// by that many days, and clears the pause marker. UI guards both sides.
+function pauseMembership(orderId){
+  if(!orderId)return;
+  if(!confirm('Pause this membership?\n\nThe expiry will be frozen at the current date until you resume. When you resume, days paused are added back to the expiry.'))return;
+  var marker='PAUSE_START='+new Date().toISOString().slice(0,10);
+  toast('Pausing '+orderId+'…');
+  sendCmd('updateStatus',{orderId:orderId,newStatus:'Paused',comment:marker}).then(function(){
+    toast('⏸ Paused — resume any time','ok');refreshData();
+  }).catch(function(err){toast('❌ '+(err.message||'Failed'),'err')});
+}
+function resumeMembership(orderId){
+  if(!orderId)return;
+  if(!confirm('Resume this membership?\n\nThe paid days you missed during the pause will be added back to the expiry date.'))return;
+  toast('Resuming '+orderId+'…');
+  sendCmd('resumeMembership',{orderId:orderId}).then(function(){
+    toast('▶ Resumed — expiry extended','ok');refreshData();
+  }).catch(function(err){toast('❌ '+(err.message||'Failed'),'err')});
+}
+
+function relAgo(ms){
+  if(!ms)return '—';
+  var s=Math.round((Date.now()-ms)/1000);
+  if(s<60)return 'just now';
+  if(s<3600)return Math.floor(s/60)+' min ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+// 30-day active member trend — counts active members PER DAY for the last
+// 30 days by replaying enrollment start/expiry windows. Cheap because we
+// only iterate orders once per day-bucket.
+function renderTrendSpark(activeMembers){
+  var days=30;
+  var counts=new Array(days).fill(0);
+  var now=Date.now();
+  for(var d=0;d<days;d++){
+    var dayMs=now-(days-1-d)*86400000;
+    var dayEnd=dayMs+86400000;
+    var c=0;
+    orders.forEach(function(o){
+      if(!o.isEnrollment || o.isCancelled || !o.startMs || !o.expiryMs)return;
+      if(o.startMs <= dayEnd && o.expiryMs > dayMs)c++;
+    });
+    counts[d]=c;
+  }
+  $('trendV').textContent=counts[counts.length-1];
+  // Build SVG path
+  var max=Math.max.apply(null,counts)||1;
+  var W=300,H=60,P=4;
+  var step=(W-2*P)/(days-1);
+  var pts=counts.map(function(v,i){var x=P+i*step;var y=H-P-(v/max)*(H-2*P);return x+','+y});
+  var path='M '+pts.join(' L ');
+  var fill='M '+P+','+(H-P)+' L '+pts.join(' L ')+' L '+(W-P)+','+(H-P)+' Z';
+  $('trendSvg').innerHTML=
+    '<defs><linearGradient id="trendGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="var(--brand)" stop-opacity=".25"/><stop offset="100%" stop-color="var(--brand)" stop-opacity="0"/></linearGradient></defs>'
+    +'<path d="'+fill+'" fill="url(#trendGrad)"/>'
+    +'<path d="'+path+'" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    +'<circle cx="'+(W-P)+'" cy="'+(H-P-(counts[counts.length-1]/max)*(H-2*P))+'" r="3.5" fill="var(--brand)"/>';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MEMBERS PANE
+// ═══════════════════════════════════════════════════════════════════
+function setMemFilter(btn,f){
+  document.querySelectorAll('.filter-pill').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  memFilter=f;
+  renderMembersTable();
+}
+function filterMembers(f){
+  showPane('members');
+  setTimeout(function(){
+    document.querySelectorAll('.filter-pill').forEach(function(b){b.classList.toggle('on',b.dataset.f===f)});
+    memFilter=f;
+    renderMembersTable();
+  },50);
+}
+
+function renderMembersTable(){
+  var members=buildMembers();
+  var q=String(($('memSearch')&&$('memSearch').value)||'').toLowerCase().trim();
+
+  var filtered=members.filter(function(m){
+    if(q){
+      var hay=(m.name+' '+m.phone+' '+(m.latest&&m.latest.orderid||'')).toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    if(memFilter==='active')return !!m.active;
+    if(memFilter==='expiring-today')return m.active && m.active.daysLeft===0;
+    if(memFilter==='expiring-week')return m.active && m.active.daysLeft>0 && m.active.daysLeft<=7;
+    if(memFilter==='expired')return !m.active && m.latest && !m.latest.isCancelled;
+    if(memFilter==='cancelled')return m.orders.every(function(o){return o.isCancelled});
+    return true;
+  });
+
+  // Sort: active expiring soonest first, else most recent
+  filtered.sort(function(a,b){
+    var ad=a.active?a.active.daysLeft:99999;
+    var bd=b.active?b.active.daysLeft:99999;
+    if(ad!==bd)return ad-bd;
+    return (b.latest&&b.latest.startMs||0)-(a.latest&&a.latest.startMs||0);
+  });
+
+  $('memHdrBadge').textContent=filtered.length;
+
+  if(!filtered.length){
+    var diagMsg='Try a different filter or search term.';
+    if(!orders.length){
+      diagMsg='No rows in the Orders sheet yet. Members will appear here as soon as someone enrolls.';
+    }else if(!members.length){
+      diagMsg='Loaded '+orders.length+' order row(s) from the sheet, but none had a phone number (10 digits). Check the Phone column on your Orders tab.';
+    }else if(q){
+      diagMsg='No member matches "'+E(q)+'". Try clearing the search box.';
+    }else if(memFilter!=='all'){
+      diagMsg='Filter "'+memFilter+'" excludes all '+members.length+' members. Tap "All" above.';
+    }
+    $('memBody').innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-i">🔍</div><div class="empty-t">No members match</div><div class="empty-s">'+diagMsg+'</div></div></td></tr>';
+    return;
+  }
+
+  $('memBody').innerHTML=filtered.map(function(m){
+    var o=m.latest;
+    var status='';
+    var statusClass='';
+    if(m.active && m.active.daysLeft===0){status='🔴 Expires today';statusClass='urgent'}
+    else if(m.active && m.active.daysLeft<=7){status='🟡 '+m.active.daysLeft+'d left';statusClass='warn'}
+    else if(m.active){status='🟢 '+m.active.daysLeft+'d left';statusClass='fresh'}
+    else if(o.isCancelled){status='✕ Cancelled';statusClass=''}
+    else{status='⚪ Expired';statusClass=''}
+    return '<tr onclick="showDetail(\''+encodeURIComponent(m.phone)+'\')">'
+      +'<td><div class="tbl-cell-flex">'+avatarHTML(m.name,m.phone,'sm')+'<div><div class="tbl-name">'+E(m.name)+'</div>'+(m.email?'<div class="tbl-name-sub">'+E(m.email)+'</div>':'')+'</div></div></td>'
+      +'<td data-l="Phone" class="tbl-mono">'+E(m.phone)+'</td>'
+      +'<td data-l="Plan">'+E(o.planName||'—')+'</td>'
+      +'<td data-l="Started">'+(o.startMs?fmtDateShort(o.startMs):'—')+'</td>'
+      +'<td data-l="Expires">'+(o.expiryMs?fmtDateShort(o.expiryMs):'—')+'</td>'
+      +'<td data-l="Status"><span class="drow-pill '+statusClass+'">'+status+'</span></td>'
+      +'<td data-l="Amount" class="tbl-mono">₹'+Math.round(m.lifetime)+'</td>'
+    +'</tr>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ═══════════════════════════════════════════════════════════════════
+function showDetail(phoneEnc){
+  var phone=decodeURIComponent(phoneEnc);
+  var members=buildMembers();
+  var m=members.find(function(x){return x.phone===phone});
+  if(!m)return;
+  selectedMember=m;
+  var o=m.active||m.latest;
+
+  $('dName').textContent=m.name;
+  if($('dAvatar'))$('dAvatar').innerHTML=avatarHTML(m.name,m.phone,'lg');
+  var meta=[];
+  meta.push('<a href="tel:+91'+m.phone+'" style="color:var(--brand);font-weight:700">+91 '+m.phone+'</a>');
+  if(m.email)meta.push(E(m.email));
+  $('dMeta').innerHTML=meta.join(' · ');
+
+  var statusClass='', statusText='';
+  if(m.active && m.active.daysLeft===0){statusClass='warn';statusText='Expires today · '+(o.daysLeft===0?'0':o.daysLeft)+' days remaining'}
+  else if(m.active && m.active.daysLeft<=7){statusClass='warn';statusText='Active · '+m.active.daysLeft+' days remaining'}
+  else if(m.active){statusClass='active';statusText='Active · '+m.active.daysLeft+' days remaining'}
+  else if(o.isCancelled){statusClass='cancelled';statusText='Cancelled'}
+  else{statusClass='expired';statusText='Expired '+Math.abs(o.daysLeft||0)+' days ago'}
+
+  // Build the detail body
+  function kv(emoji,label,value){if(!value)return '';return '<div class="detail-row"><div class="detail-row-i">'+emoji+'</div><div class="detail-row-l">'+label+'</div><div class="detail-row-v">'+E(value)+'</div></div>'}
+
+  var enrollCard='';
+  if(o){
+    enrollCard='<div class="detail-card"><div class="detail-card-t">📚 Current enrollment</div>'
+      +kv('🆔','Order ID',o.orderid||'—')
+      +kv('📚','Plan',o.planName||'—')
+      +kv('📅','Started',o.startMs?fmtDate(o.startMs):'—')
+      +kv('⏳','Expires',o.expiryMs?fmtDate(o.expiryMs):'—')
+      +kv('💰','Amount','₹'+Math.round(fnum(o.total)))
+      +'</div>';
+  }
+
+  var verifyCard='';
+  if(o.idType||o.id4||o.dob||o.guardian||o.emergency||o.permAddr||o.idPhoto){
+    verifyCard='<div class="detail-card"><div class="detail-card-t">🔒 Verification</div>'
+      +(o.idType||o.id4?'<div class="detail-row"><div class="detail-row-i">🪪</div><div class="detail-row-l">ID</div><div class="detail-row-v">'+E(o.idType||'—')+(o.id4?' <span style="color:var(--ink3);font-weight:600">····'+E(o.id4)+'</span>':'')+'</div></div>':'')
+      +kv('🎂','DOB',o.dob)
+      +kv('👨‍👩‍👧','Guardian',o.guardian)
+      +kv('🆘','Emergency',o.emergency)
+      +kv('🏠','Address',o.permAddr)
+      +(o.idPhoto?'<a class="detail-photo" href="'+E(o.idPhoto)+'" target="_blank" rel="noopener"><img src="'+E(o.idPhoto)+'" alt="ID photo"><div class="detail-photo-cap">📷 Tap to open ID photo</div></a>':'')
+      +'</div>';
+  }
+
+  var phoneDigits=m.phone;
+  var waMsg=encodeURIComponent('Hi '+(m.name||'there')+', from '+cfg('shopname','our library'));
+  var waRenewMsg=encodeURIComponent('Hi '+(m.name||'there')+', your '+(o.planName||'plan')+' is ending soon. Would you like to renew?');
+  var oid=String(o.orderid||'');
+  var paused=String(o.status||'').toLowerCase()==='paused';
+  // Pause + Complete only make sense once the enrollment is Confirmed and
+  // running. For status=New rows the librarian still needs to take a
+  // confirm/cancel decision — surface ✓ Confirm prominently and hide the
+  // lifecycle controls until they've made that call.
+  var canManageLifecycle=o.isActive && !o.isPending;
+  var actions='<div class="detail-actions">'
+    +'<a class="btn-sm prim" href="tel:+91'+phoneDigits+'">📞 Call</a>'
+    +'<a class="btn-sm wa" href="https://wa.me/91'+phoneDigits+'?text='+waMsg+'" target="_blank" rel="noopener">💬 WhatsApp</a>'
+    +'<a class="btn-sm wa" href="https://wa.me/91'+phoneDigits+'?text='+waRenewMsg+'" target="_blank" rel="noopener">🔁 Send renewal</a>'
+    +'<button class="btn-sm gold" onclick="printMemberIDCard(\''+encodeURIComponent(m.phone)+'\')">🆔 Print ID card</button>'
+    +'<button class="btn-sm ghost" onclick="addMemberNote(\''+E(oid)+'\')">💬 Add note</button>'
+    +(o.isPending?'<button class="btn-sm prim" onclick="confirmOrder(\''+E(oid)+'\')">✓ Confirm enrollment</button>':'')
+    +(paused
+      ? '<button class="btn-sm prim" onclick="resumeMembership(\''+E(oid)+'\')">▶ Resume</button>'
+      : (canManageLifecycle?'<button class="btn-sm ghost" onclick="pauseMembership(\''+E(oid)+'\')">⏸ Pause</button>':''))
+    +(canManageLifecycle?'<button class="btn-sm ghost" onclick="markActiveDone(\''+E(oid)+'\')">🎓 Complete plan</button>':'')
+    +(!o.isCancelled?'<button class="btn-sm danger" onclick="cancelOrder(\''+E(oid)+'\')">'+(o.isPending?'✕ Reject':'✕ Cancel enrollment')+'</button>':'')
+  +'</div>';
+
+  // Enrollment history
+  var historyHtml='';
+  if(m.orders.length>1){
+    var rows=m.orders.slice().sort(function(a,b){return (b.startMs||0)-(a.startMs||0)}).map(function(oo){
+      var sClass=oo.isCancelled?'cancelled':oo.isActive?'active':oo.isExpired?'expired':'cancelled';
+      var sLabel=oo.isCancelled?'Cancelled':oo.isActive?'Active':oo.isExpired?'Expired':'Done';
+      return '<div class="dh-row">'
+        +'<div class="dh-id">'+E(oo.orderid||'')+'</div>'
+        +'<div class="dh-mid">'+E(oo.planName||'—')+(oo.startMs?' · '+fmtDateShort(oo.startMs):'')+(oo.expiryMs?' → '+fmtDateShort(oo.expiryMs):'')+'</div>'
+        +'<div class="dh-amount">₹'+Math.round(fnum(oo.total))+'</div>'
+        +'<span class="drow-pill '+(sClass==='active'?'fresh':sClass==='warn'?'warn':sClass==='expired'?'urgent':'')+'" style="font-size:9px;padding:3px 7px">'+sLabel+'</span>'
+      +'</div>';
+    }).join('');
+    historyHtml='<div class="detail-history"><div class="detail-card-t" style="margin-top:18px;margin-bottom:0">📜 History ('+m.orders.length+')</div>'+rows+'</div>';
+  }
+
+  $('dBody').innerHTML='<span class="detail-status '+statusClass+'">'+statusText+'</span>'
+    +enrollCard+verifyCard+actions+historyHtml;
+
+  $('detail').classList.add('show');
+}
+
+function closeDetail(){
+  $('detail').classList.remove('show');
+  selectedMember=null;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PLANS PANE
+// ═══════════════════════════════════════════════════════════════════
+function renderPlansGrid(){
+  $('planHdrBadge').textContent=products.length;
+  $('navPlansB').textContent=products.length;
+  if(!products.length){
+    $('plansGrid').innerHTML='<div class="empty"><div class="empty-i">💰</div><div class="empty-t">No plans yet</div><div class="empty-s">Tap "+ Add new plan" above to create your first one.</div></div>';
+    return;
+  }
+  var cur=cfg('currency','₹');
+  // Sales count per plan
+  var salesByPlan={};
+  orders.forEach(function(o){
+    if(!o.isEnrollment || o.isCancelled)return;
+    var name=String(o.planName||'').toLowerCase();
+    if(name)salesByPlan[name]=(salesByPlan[name]||0)+1;
+  });
+  $('plansGrid').innerHTML=products.map(function(p,i){
+    var price=fnum(p.price), mrp=fnum(p.mrp);
+    var popular=String(p.bestseller||'').toLowerCase()==='yes'||String(p.bestseller||'').toLowerCase()==='bestseller';
+    var sales=salesByPlan[String(p.name||'').toLowerCase()]||0;
+    var rev=sales*price;
+    // Plan rows are 1-indexed with header at row 1, so the products[] index
+    // maps to sheet row i+2. We pass that to the editor for updateProduct.
+    var rowNum=i+2;
+    return '<div class="plan-card'+(popular?' popular':'')+'">'
+      +'<div class="plan-card-hdr">'
+        +'<div><div class="plan-name">'+E(p.name||'—')+'</div>'
+        +(p.category?'<div class="plan-cat">'+E(p.category)+'</div>':'')+'</div>'
+        +(popular?'<span class="plan-pop">★ Popular</span>':'')
+      +'</div>'
+      +'<div><span class="plan-prc">'+cur+price.toLocaleString('en-IN')+'</span>'
+        +(mrp>price?'<span class="plan-prc-mrp">'+cur+mrp.toLocaleString('en-IN')+'</span>':'')
+      +'</div>'
+      +(p.duration?'<div class="plan-desc">⏱ '+E(p.duration)+'</div>':'')
+      +(p.description?'<div class="plan-desc">'+E(p.description)+'</div>':'')
+      +'<div class="plan-meta">'
+        +'<div class="plan-stat"><div class="plan-stat-v">'+sales+'</div><div class="plan-stat-l">Enrolled</div></div>'
+        +'<div class="plan-stat"><div class="plan-stat-v">'+cur+Math.round(rev).toLocaleString('en-IN')+'</div><div class="plan-stat-l">Revenue</div></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px;margin-top:12px">'
+        +'<button class="btn-sm ghost" style="flex:1" onclick="openPlanEditor('+rowNum+')">✏️ Edit</button>'
+        +'<button class="btn-sm danger" onclick="deletePlan('+rowNum+',\''+E(p.name||'')+'\')" title="Delete">🗑</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+// ─── ORDERS PANE ─────────────────────────────────
+var ordFilter='all';
+function setOrdFilter(btn,f){
+  document.querySelectorAll('#paneOrders .filter-pill').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  ordFilter=f;
+  renderOrdersTable();
+}
+function renderOrdersTable(){
+  var q=String(($('ordSearch')&&$('ordSearch').value)||'').toLowerCase().trim();
+  var list=orders.filter(function(o){
+    if(q){
+      var hay=((o.customername||'')+' '+(o.phone||'')+' '+(o.orderid||'')+' '+(o.items||'')).toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    var s=String(o.status||'').toLowerCase().replace(/\s+/g,'');
+    if(ordFilter==='new')return s==='new';
+    if(ordFilter==='confirmed')return s==='confirmed';
+    if(ordFilter==='cancelled')return s==='cancelled';
+    if(ordFilter==='done')return s==='done'||s==='completed'||s==='delivered'||s==='pickedup';
+    return true;
+  });
+  $('ordHdrBadge').textContent=list.length;
+  if(!list.length){
+    $('ordBody').innerHTML='<tr><td colspan="8"><div class="empty"><div class="empty-i">📭</div><div class="empty-t">No orders match</div></div></td></tr>';
+    return;
+  }
+  $('ordBody').innerHTML=list.map(function(o){
+    var s=String(o.status||'New').trim();
+    var sk=s.toLowerCase().replace(/\s+/g,'');
+    var pillClass=sk==='cancelled'?'urgent':sk==='confirmed'?'fresh':sk==='new'?'warn':'';
+    var dt=parseOrderDateMs(o.dateandtime||o['date&time']||o.date);
+    var dStr=dt?fmtDateShort(dt):'—';
+    var actions='';
+    if(sk==='new'){
+      actions+='<button class="btn-sm prim" onclick="event.stopPropagation();confirmOrder(\''+E(o.orderid)+'\')">✓ Confirm</button>';
+      actions+='<button class="btn-sm danger" onclick="event.stopPropagation();cancelOrder(\''+E(o.orderid)+'\')">✕</button>';
+    }else if(sk==='confirmed'){
+      actions+='<button class="btn-sm ghost" onclick="event.stopPropagation();markActiveDone(\''+E(o.orderid)+'\')" title="Mark this enrollment as fully completed">🎓 Complete</button>';
+      actions+='<button class="btn-sm danger" onclick="event.stopPropagation();cancelOrder(\''+E(o.orderid)+'\')">✕</button>';
+    }
+    actions+='<button class="btn-sm ghost" onclick="event.stopPropagation();addMemberNote(\''+E(o.orderid)+'\')" title="Add note">💬</button>';
+    var phoneDigitsRow=String(o.phone||'').replace(/\D/g,'').slice(-10);
+    return '<tr onclick="showDetail(\''+encodeURIComponent(phoneDigitsRow)+'\')">'
+      +'<td data-l="ID" class="tbl-mono">'+E(o.orderid||'—')+'</td>'
+      +'<td><div class="tbl-name">'+E(o.customername||'—')+'</div></td>'
+      +'<td data-l="Phone" class="tbl-mono">'+E(o.phone||'—')+'</td>'
+      +'<td data-l="Plan">'+E(o.planName||(String(o.items||'').split(/\n/)[0])||'—')+'</td>'
+      +'<td data-l="Date">'+dStr+'</td>'
+      +'<td data-l="Status"><span class="drow-pill '+pillClass+'">'+E(s)+'</span></td>'
+      +'<td data-l="Amount" class="tbl-mono">₹'+Math.round(fnum(o.total))+'</td>'
+      +'<td data-l="Actions" onclick="event.stopPropagation()">'+actions+'</td>'
+    +'</tr>';
+  }).join('');
+}
+
+// ─── PLAN EDITOR ─────────────────────────────────
+// Opens a modal for new (rowNum=undefined) or existing (rowNum>=2) plan.
+function openPlanEditor(rowNum){
+  var existing=null;
+  if(rowNum>=2)existing=products[rowNum-2];
+  var html=''
+    +'<div class="modal-bg" id="planModal">'
+    +  '<div class="modal-card">'
+    +    '<div class="modal-hdr">'
+    +      '<div><div class="modal-t">'+(existing?'✏️ Edit plan':'+ Add new plan')+'</div>'
+    +      '<div class="modal-s">'+(existing?'Update prices, duration, features':'Create a new membership plan')+'</div></div>'
+    +      '<button class="sheet-x" onclick="closeModal()" aria-label="Close">✕</button>'
+    +    '</div>'
+    +    '<div class="modal-body">'
+    +      '<div class="field"><label class="field-l">Plan name <span class="field-l-req">*</span></label><input class="field-i" id="pe_name" placeholder="e.g. Monthly Standard" value="'+E(existing?existing.name:'')+'"></div>'
+    +      '<div class="field-row">'
+    +        '<div class="field"><label class="field-l">Price (₹) <span class="field-l-req">*</span></label><input class="field-i" id="pe_price" type="number" placeholder="999" value="'+E(existing?existing.price:'')+'"></div>'
+    +        '<div class="field"><label class="field-l">MRP (₹, optional)</label><input class="field-i" id="pe_mrp" type="number" placeholder="1500" value="'+E(existing?existing.mrp:'')+'"></div>'
+    +      '</div>'
+    +      '<div class="field-row">'
+    +        '<div class="field"><label class="field-l">Duration <span class="field-l-req">*</span></label><input class="field-i" id="pe_duration" placeholder="30 days · 1 month · 1 year" value="'+E(existing?existing.duration||existing.unit:'')+'"></div>'
+    +        '<div class="field"><label class="field-l">Category</label><input class="field-i" id="pe_category" placeholder="Monthly · Annual · Day Pass" value="'+E(existing?existing.category:'')+'"></div>'
+    +      '</div>'
+    +      '<div class="field"><label class="field-l">Description</label><textarea class="field-t" id="pe_desc" placeholder="What does this plan include?">'+E(existing?existing.description:'')+'</textarea></div>'
+    +      '<div class="field-row">'
+    +        '<div class="field"><label class="field-l"><input type="checkbox" id="pe_pop" '+(existing&&/yes|bestseller/i.test(existing.bestseller||'')?'checked':'')+' style="margin-right:6px">★ Mark as popular</label></div>'
+    +        '<div class="field"><label class="field-l">Add-ons (optional)</label><input class="field-i" id="pe_addons" placeholder="Locker:100, AC seat:400" value="'+E(existing?existing.addons:'')+'"></div>'
+    +      '</div>'
+    +    '</div>'
+    +    '<div class="modal-foot">'
+    +      (existing?'<button class="btn-sm danger" onclick="deletePlan('+rowNum+',\''+E(existing.name||'')+'\')" style="margin-right:auto">🗑 Delete</button>':'')
+    +      '<button class="btn-sm ghost" onclick="closeModal()">Cancel</button>'
+    +      '<button class="btn-sm prim" onclick="savePlan('+(rowNum||0)+')" id="pe_save">'+(existing?'💾 Save changes':'➕ Add plan')+'</button>'
+    +    '</div>'
+    +  '</div>'
+    +'</div>';
+  showModal(html);
+  setTimeout(function(){var n=$('pe_name');if(n)n.focus()},150);
+}
+function savePlan(rowNum){
+  var name=String(($('pe_name').value||'')).trim();
+  var price=String(($('pe_price').value||'')).trim();
+  var duration=String(($('pe_duration').value||'')).trim();
+  if(!name){toast('Plan name required','warn');return}
+  if(!price||isNaN(parseFloat(price))){toast('Valid price required','warn');return}
+  var data={
+    name:name,
+    price:price,
+    mrp:String(($('pe_mrp').value||'')).trim(),
+    duration:duration,
+    unit:duration,
+    category:String(($('pe_category').value||'')).trim(),
+    description:String(($('pe_desc').value||'')).trim(),
+    bestseller:$('pe_pop').checked?'yes':'no',
+    addons:String(($('pe_addons').value||'')).trim(),
+    stock:'in stock'
+  };
+  $('pe_save').disabled=true;
+  $('pe_save').textContent='Saving…';
+  var action=rowNum>=2?'updateProduct':'addProduct';
+  if(rowNum>=2)data.row=rowNum;
+  sendCmd(action,data).then(function(){
+    toast('✓ Plan saved');
+    closeModal();
+    refreshData();
+  }).catch(function(err){
+    toast('❌ '+(err.message||'Failed'),'err');
+    $('pe_save').disabled=false;
+    $('pe_save').textContent=rowNum>=2?'💾 Save changes':'➕ Add plan';
+  });
+}
+function deletePlan(rowNum, planName){
+  if(!confirm('Delete plan "'+planName+'"? Existing enrollments are not affected — only new sign-ups will hide it.'))return;
+  sendCmd('deleteProduct',{row:rowNum}).then(function(){
+    toast('✓ Plan deleted');
+    closeModal();
+    refreshData();
+  }).catch(function(err){toast('❌ '+(err.message||'Failed'),'err')});
+}
+
+// ─── WALK-IN ENROLLMENT ──────────────────────────
+// Shopkeeper-side flow for in-person registration. Same payload as
+// library.html's customer-facing form, just driven by the dashboard so the
+// shopkeeper can enrol someone who walked in off the street with cash.
+function openWalkin(){
+  if(!products.length){
+    toast('Create at least one plan first','warn');
+    showPane('plans');
+    return;
+  }
+  var cur=cfg('currency','₹');
+  var planOpts=products.map(function(p,i){
+    return '<option value="'+i+'">'+E(p.name)+' · '+cur+fnum(p.price).toLocaleString('en-IN')+(p.duration?' · '+E(p.duration):'')+'</option>';
+  }).join('');
+  var today=new Date().toISOString().slice(0,10);
+  var html=''
+    +'<div class="modal-bg" id="walkinModal">'
+    +  '<div class="modal-card">'
+    +    '<div class="modal-hdr">'
+    +      '<div><div class="modal-t">+ Walk-in enrollment</div>'
+    +      '<div class="modal-s">For customers registering in person — fires the same flow as the online form</div></div>'
+    +      '<button class="sheet-x" onclick="closeModal()" aria-label="Close">✕</button>'
+    +    '</div>'
+    +    '<div class="modal-body">'
+    +      '<div class="field"><label class="field-l">Plan <span class="field-l-req">*</span></label><select class="field-s" id="wi_plan">'+planOpts+'</select></div>'
+    +      '<div class="field-row">'
+    +        '<div class="field"><label class="field-l">Customer name <span class="field-l-req">*</span></label><input class="field-i" id="wi_name" placeholder="Full name"></div>'
+    +        '<div class="field"><label class="field-l">Phone <span class="field-l-req">*</span></label><input class="field-i" id="wi_phone" type="tel" maxlength="10" placeholder="10-digit mobile"></div>'
+    +      '</div>'
+    +      '<div class="field-row">'
+    +        '<div class="field"><label class="field-l">Email (optional)</label><input class="field-i" id="wi_email" type="email" placeholder="for receipt"></div>'
+    +        '<div class="field"><label class="field-l">Start date <span class="field-l-req">*</span></label><input class="field-i" id="wi_start" type="date" value="'+today+'"></div>'
+    +      '</div>'
+    +      '<div class="field-row">'
+    +        '<div class="field"><label class="field-l">ID type</label><select class="field-s" id="wi_idtype"><option value="">— select —</option><option>Aadhaar</option><option>Student ID</option><option>Driving Licence</option><option>Voter ID</option><option>PAN</option><option>Passport</option><option>Other</option></select></div>'
+    +        '<div class="field"><label class="field-l">ID last 4</label><input class="field-i" id="wi_id4" maxlength="4" inputmode="numeric" placeholder="1234"></div>'
+    +      '</div>'
+    +      '<div class="field-row">'
+    +        '<div class="field"><label class="field-l">Guardian name</label><input class="field-i" id="wi_guardian" placeholder="Father / Mother / Spouse"></div>'
+    +        '<div class="field"><label class="field-l">Emergency contact</label><input class="field-i" id="wi_emergency" placeholder="Name + phone"></div>'
+    +      '</div>'
+    +      '<div class="field"><label class="field-l">Notes (optional)</label><textarea class="field-t" id="wi_notes" placeholder="Anything to remember about this member?"></textarea></div>'
+    +    '</div>'
+    +    '<div class="modal-foot">'
+    +      '<button class="btn-sm ghost" onclick="closeModal()">Cancel</button>'
+    +      '<button class="btn-sm prim" onclick="saveWalkin()" id="wi_save">📚 Confirm enrollment</button>'
+    +    '</div>'
+    +  '</div>'
+    +'</div>';
+  showModal(html);
+  setTimeout(function(){var n=$('wi_name');if(n)n.focus()},150);
+}
+function saveWalkin(){
+  var planIdx=parseInt($('wi_plan').value,10);
+  var plan=products[planIdx];
+  if(!plan){toast('Pick a plan','warn');return}
+  var name=String(($('wi_name').value||'')).trim();
+  var phone=String(($('wi_phone').value||'')).replace(/\D/g,'');
+  var start=String(($('wi_start').value||'')).trim();
+  if(!name){toast('Name required','warn');return}
+  if(!/^[6-9]\d{9}$/.test(phone)){toast('Valid 10-digit phone required','warn');return}
+  if(!start){toast('Start date required','warn');return}
+
+  var email=String(($('wi_email').value||'')).trim();
+  var idType=String(($('wi_idtype').value||'')).trim();
+  var id4=String(($('wi_id4').value||'')).replace(/\D/g,'').slice(0,4);
+  var guardian=String(($('wi_guardian').value||'')).trim();
+  var emergency=String(($('wi_emergency').value||'')).trim();
+  var notes=String(($('wi_notes').value||'')).trim();
+
+  var cur=cfg('currency','₹');
+  var price=fnum(plan.price);
+  var lines=['📚 Plan: '+plan.name+(plan.duration?' ('+plan.duration+')':'')+' = '+cur+price];
+  lines.push('📅 Start: '+start);
+  if(idType)lines.push('🪪 ID: '+idType+(id4?' ····'+id4:''));
+  if(guardian)lines.push('👨‍👩‍👧 Guardian: '+guardian);
+  if(emergency)lines.push('🆘 Emergency: '+emergency);
+  if(notes)lines.push('📝 '+notes);
+
+  var notesParts=['Enrollment','plan='+plan.name];
+  if(start)notesParts.push('start='+start);
+  if(idType)notesParts.push('idType='+idType);
+  if(id4)notesParts.push('id4='+id4);
+  if(guardian)notesParts.push('guardian='+guardian);
+  if(emergency)notesParts.push('emergency='+emergency);
+  notesParts.push('walkin=yes');
+  if(notes)notesParts.push(notes);
+
+  var orderId='ENR-W-'+Date.now().toString(36).toUpperCase();
+  var receiptInfo={
+    orderId:orderId,name:name,phone:'+91 '+phone,email:email,
+    plan:plan.name,duration:plan.duration||plan.unit||'',start:start,total:price
+  };
+  $('wi_save').disabled=true;
+  $('wi_save').textContent='Saving…';
+  sendCmd('newOrder',{
+    orderId:orderId,
+    name:name,
+    phone:'91'+phone,
+    email:email,
+    address:'Walk-in · '+(idType||'no ID'),
+    items:lines.join('\n'),
+    total:price,
+    mode:'pickup',
+    payment:'paid-walkin',
+    notes:notesParts.join(' · '),
+    status:'Confirmed'
+  }).then(function(){
+    toast('✓ Enrolled '+name);
+    closeModal();
+    refreshData();
+    // Auto-open print dialog for the walk-in receipt — the shopkeeper hands
+    // it to the member on the way out. They can cancel the dialog if they
+    // prefer not to print.
+    setTimeout(function(){printWalkinReceipt(receiptInfo)},300);
+  }).catch(function(err){
+    toast('❌ '+(err.message||'Failed'),'err');
+    $('wi_save').disabled=false;
+    $('wi_save').textContent='📚 Confirm enrollment';
+  });
+}
+
+// ─── SETTINGS PANE ───────────────────────────────
+// Editable Config rows, organised into logical groups. Each save fires
+// updateConfig with the matching key.
+var SETTINGS_GROUPS=[
+  {title:'🏷 Brand & identity', keys:[
+    {k:'ShopName', label:'Library name', placeholder:'The Study Point Library'},
+    {k:'Tagline', label:'Tagline', placeholder:'Peaceful · Quiet · 24/7'},
+    {k:'BrandColor', label:'Brand colour (hex)', placeholder:'#0f766e'},
+    {k:'About', label:'About text', long:true, placeholder:'A few sentences about your library'}
+  ]},
+  {title:'📍 Contact & location', keys:[
+    {k:'Phone', label:'Phone (with 91)', placeholder:'91XXXXXXXXXX'},
+    {k:'WhatsApp', label:'WhatsApp number', placeholder:'91XXXXXXXXXX'},
+    {k:'Email', label:'Email', placeholder:'hello@library.com'},
+    {k:'Address', label:'Full address', long:true},
+    {k:'MapLink', label:'Google Maps link', placeholder:'https://maps.app.goo.gl/…'}
+  ]},
+  {title:'🕐 Hours & capacity', keys:[
+    {k:'Open24x7', label:'Open 24/7? (yes/no)', placeholder:'yes'},
+    {k:'Timing', label:'Hours (if not 24/7)', placeholder:'9:00-21:00'},
+    {k:'StoreOpen', label:'Accepting enrollments? (yes/no)', placeholder:'yes'},
+    {k:'SeatCapacity', label:'Total seat capacity', placeholder:'80'}
+  ]},
+  {title:'🔒 Verification policy', keys:[
+    {k:'RequireIDDetails', label:'Verification (yes/optional/no)', placeholder:'optional'},
+    {k:'RequireDOB', label:'Require DOB (yes/no)', placeholder:'no'},
+    {k:'RequireGuardian', label:'Require guardian (yes/no)', placeholder:'no'},
+    {k:'RequireEmergencyContact', label:'Require emergency contact (yes/no)', placeholder:'no'},
+    {k:'RequireAddress', label:'Require permanent address (yes/no)', placeholder:'no'}
+  ]},
+  {title:'🔔 Notifications', keys:[
+    {k:'NotificationLanguage', label:'Language (en/hi)', placeholder:'en'}
+  ]}
+];
+
+// ─── Gallery (multi-image slider on storefront) ───
+// Reads Gallery1..GalleryN keys from Config into galleryUrls[], renders an
+// editable tile grid + live carousel preview, and persists changes back to
+// the same numbered keys so library.html's existing renderGallery() picks
+// them up untouched.
+function loadGalleryFromConfig(){
+  galleryUrls=[];
+  for(var i=1;i<=GALLERY_MAX;i++){
+    var u=cfg('gallery'+i,'').trim();
+    if(u)galleryUrls.push(u);
+  }
+}
+
+function uploadGalleryImage_(file,onProgress){
+  return new Promise(function(resolve,reject){
+    var fd=new FormData();
+    fd.append('file',file);
+    fd.append('upload_preset',CLOUDINARY.preset);
+    fd.append('folder','storepro/'+(SLUG||'unknown')+'/gallery');
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST','https://api.cloudinary.com/v1_1/'+CLOUDINARY.cloud+'/image/upload');
+    xhr.upload.onprogress=function(e){if(e.lengthComputable&&onProgress)onProgress(Math.round((e.loaded/e.total)*100))};
+    xhr.onload=function(){
+      try{
+        var r=JSON.parse(xhr.responseText||'{}');
+        if(xhr.status>=200&&xhr.status<300&&r.secure_url)resolve(r.secure_url);
+        else reject(new Error((r.error&&r.error.message)||('Upload failed ('+xhr.status+')')));
+      }catch(e){reject(new Error('Upload failed: bad response'))}
+    };
+    xhr.onerror=function(){reject(new Error('Network error'))};
+    xhr.send(fd);
+  });
+}
+
+function pickGalleryFiles(input){
+  if(!input||!input.files||!input.files.length)return;
+  var files=Array.from(input.files);
+  var slot=$('imgsl_slot');
+  if(slot)slot.innerHTML='<span class="imgsl-add-i">⏳</span><span>Uploading 0 / '+files.length+'…</span>';
+  var done=0,uploaded=[];
+  files.forEach(function(f,idx){
+    if(galleryUrls.length+uploaded.length>=GALLERY_MAX){done++;maybeFinish();return}
+    if(!/^image\//.test(f.type)){toast('Skipped non-image: '+f.name,'err');done++;maybeFinish();return}
+    uploadGalleryImage_(f).then(function(url){
+      uploaded.push(url);done++;
+      if(slot)slot.innerHTML='<span class="imgsl-add-i">⏳</span><span>Uploading '+done+' / '+files.length+'…</span>';
+      maybeFinish();
+    }).catch(function(err){
+      toast('❌ '+f.name+': '+(err.message||'upload failed'),'err');
+      done++;maybeFinish();
+    });
+  });
+  function maybeFinish(){
+    if(done<files.length)return;
+    input.value='';
+    if(!uploaded.length){renderGalleryCard();return}
+    galleryUrls=galleryUrls.concat(uploaded).slice(0,GALLERY_MAX);
+    persistGallery().then(function(){
+      toast('✓ Added '+uploaded.length+' image'+(uploaded.length===1?'':'s'),'ok');
+      renderGalleryCard();
+    }).catch(function(err){
+      toast('Saved locally but couldn\'t sync: '+(err.message||'try again'),'err');
+      renderGalleryCard();
+    });
+  }
+}
+
+function galleryRemove(idx){
+  if(idx<0||idx>=galleryUrls.length)return;
+  if(!confirm('Remove this image from the storefront slider?'))return;
+  galleryUrls.splice(idx,1);
+  persistGallery().then(function(){
+    toast('✓ Removed','ok');renderGalleryCard();
+  }).catch(function(err){toast('❌ '+(err.message||'Save failed'),'err')});
+}
+
+function galleryMove(idx,dir){
+  var to=idx+dir;
+  if(to<0||to>=galleryUrls.length)return;
+  var tmp=galleryUrls[idx];galleryUrls[idx]=galleryUrls[to];galleryUrls[to]=tmp;
+  persistGallery().then(function(){renderGalleryCard()}).catch(function(err){toast('❌ '+(err.message||'Save failed'),'err')});
+}
+
+// Persist the in-memory list to Gallery1..GalleryN. Writes blanks for the
+// freed-up slots so deleting an image actually clears the cell.
+function persistGallery(){
+  var jobs=[];
+  for(var i=1;i<=GALLERY_MAX;i++){
+    var key='Gallery'+i;
+    var val=galleryUrls[i-1]||'';
+    var oldVal=String(cfg('gallery'+i,'')||'').trim();
+    if(val===oldVal)continue;
+    config['gallery'+i]=val;
+    jobs.push(sendCmd('updateConfig',{key:key,value:val}));
+  }
+  return Promise.all(jobs);
+}
+
+function renderGalleryCard(){
+  var host=$('imgsl_host');
+  if(!host)return;
+  var tilesHTML=galleryUrls.map(function(url,i){
+    return '<div class="imgsl-tile" draggable="true" data-i="'+i+'" '
+      +'ondragstart="galleryDrag(event,'+i+')" '
+      +'ondragover="event.preventDefault()" '
+      +'ondrop="galleryDrop(event,'+i+')">'
+      +'<img src="'+E(url)+'" alt="">'
+      +'<div class="imgsl-tile-i">'+(i+1)+'</div>'
+      +'<button class="imgsl-tile-x" onclick="galleryRemove('+i+')" title="Remove">✕</button>'
+    +'</div>';
+  }).join('');
+  var addTile = galleryUrls.length<GALLERY_MAX
+    ? '<label class="imgsl-add" id="imgsl_add"><span class="imgsl-add-i" id="imgsl_slot">📷</span><span>Add photo'+(galleryUrls.length?'s':'')+'</span><input type="file" accept="image/*" multiple style="display:none" onchange="pickGalleryFiles(this)"></label>'
+    : '';
+  var preview;
+  if(galleryUrls.length){
+    preview='<div class="imgsl-preview" id="imgsl_preview">'
+      +galleryUrls.map(function(u,i){return '<div class="imgsl-slide '+(i===0?'on':'')+'" data-i="'+i+'"><img src="'+E(u)+'" alt=""></div>'}).join('')
+      +'<div class="imgsl-dots">'+galleryUrls.map(function(u,i){return '<button class="imgsl-dot '+(i===0?'on':'')+'" data-i="'+i+'" onclick="sliderGo('+i+')"></button>'}).join('')+'</div>'
+    +'</div>';
+  }else{
+    preview='<div class="imgsl-preview"><div class="imgsl-preview-empty"><div style="font-size:36px;opacity:.5">🖼️</div><div style="font:700 13px var(--F);color:var(--ink2);margin-top:6px">No images yet</div><div style="font:500 12px var(--F);margin-top:3px">Add up to '+GALLERY_MAX+' photos that\'ll auto-slide on your storefront homepage.</div></div></div>';
+  }
+  host.innerHTML='<div class="imgsl-wrap">'+tilesHTML+addTile+'</div>'
+    +'<div class="imgsl-help"><span class="imgsl-help-i">💡</span><span>Drag tiles to reorder · click ✕ to remove · drop multiple photos at once. Up to '+GALLERY_MAX+' images.</span></div>'
+    +preview;
+  startSliderTimer();
+}
+
+// Drag-reorder
+var __dragFromIdx=-1;
+function galleryDrag(e,i){__dragFromIdx=i;try{e.dataTransfer.effectAllowed='move'}catch(_){}}
+function galleryDrop(e,toIdx){
+  e.preventDefault();
+  if(__dragFromIdx<0||__dragFromIdx===toIdx)return;
+  var moved=galleryUrls.splice(__dragFromIdx,1)[0];
+  galleryUrls.splice(toIdx,0,moved);
+  __dragFromIdx=-1;
+  persistGallery().then(function(){renderGalleryCard()}).catch(function(err){toast('❌ '+(err.message||'Save failed'),'err')});
+}
+
+// Live slider preview — auto-advances every 4s while the Settings pane is open
+function startSliderTimer(){
+  stopSliderTimer();
+  if(galleryUrls.length<2)return;
+  __sliderTimer=setInterval(function(){
+    var slides=document.querySelectorAll('#imgsl_preview .imgsl-slide');
+    if(!slides.length)return;
+    var cur=-1;
+    slides.forEach(function(s,i){if(s.classList.contains('on'))cur=i});
+    var next=(cur+1)%slides.length;
+    sliderGo(next);
+  },4000);
+}
+function stopSliderTimer(){if(__sliderTimer){clearInterval(__sliderTimer);__sliderTimer=null}}
+function sliderGo(i){
+  document.querySelectorAll('#imgsl_preview .imgsl-slide').forEach(function(s,j){s.classList.toggle('on',j===i)});
+  document.querySelectorAll('#imgsl_preview .imgsl-dot').forEach(function(d,j){d.classList.toggle('on',j===i)});
+}
+
+function renderSettings(){
+  loadGalleryFromConfig();
+  var html='<div class="banner info" style="margin-bottom:18px;grid-column:1 / -1"><div class="banner-icon">💡</div><div class="banner-c"><div class="banner-t">Edit any value, then tap Save</div><div class="banner-d">Changes go straight into the Config tab. Storefront updates within 5 minutes (cache TTL).</div></div></div>';
+
+  // Gallery card — full-width, always first so it\'s easy to find
+  html+='<div class="setg-card span-2">'
+    +'<div class="setg-title">🖼️ Storefront image slider</div>'
+    +'<div class="imgsl"><div id="imgsl_host"></div></div>'
+  +'</div>';
+
+  SETTINGS_GROUPS.forEach(function(g){
+    html+='<div class="setg-card">';
+    html+='<div class="setg-title">'+E(g.title)+'</div>';
+    g.keys.forEach(function(f){
+      var val=cfg(f.k.toLowerCase(),'');
+      var inp=f.long
+        ? '<textarea class="field-t" id="setg_'+f.k+'" placeholder="'+E(f.placeholder||'')+'">'+E(val)+'</textarea>'
+        : '<input class="field-i" id="setg_'+f.k+'" placeholder="'+E(f.placeholder||'')+'" value="'+E(val)+'">';
+      html+='<div class="field"><label class="field-l">'+E(f.label)+' <span style="color:var(--ink4);font-weight:600;font-size:10px;text-transform:none;letter-spacing:0">'+E(f.k)+'</span></label>'+inp+'</div>';
+    });
+    html+='</div>';
+  });
+  html+='<div style="grid-column:1 / -1;display:flex;gap:10px;margin-top:18px;justify-content:flex-end"><button class="btn-sm prim" onclick="saveSettings()" id="setg_save" style="padding:13px 24px;font-size:13px">💾 Save all changes</button></div>';
+  $('setgGrid').innerHTML=html;
+  renderGalleryCard();
+}
+
+function saveSettings(){
+  var changes=[];
+  SETTINGS_GROUPS.forEach(function(g){
+    g.keys.forEach(function(f){
+      var el=$('setg_'+f.k);if(!el)return;
+      var newVal=String(el.value||'').trim();
+      var oldVal=String(cfg(f.k.toLowerCase(),'')||'').trim();
+      if(newVal!==oldVal)changes.push({key:f.k, value:newVal});
+    });
+  });
+  if(!changes.length){toast('No changes to save');return}
+  $('setg_save').disabled=true;
+  $('setg_save').textContent='Saving '+changes.length+' change'+(changes.length>1?'s':'')+'…';
+  // Fire all updates in parallel — Apps Script handles concurrent writes fine
+  Promise.all(changes.map(function(c){
+    // Update local cache instantly so render() reflects the new value
+    config[c.key.toLowerCase().replace(/\s+/g,'')]=c.value;
+    return sendCmd('updateConfig',{key:c.key,value:c.value});
+  })).then(function(){
+    toast('✓ Saved '+changes.length+' change'+(changes.length>1?'s':''));
+    $('setg_save').disabled=false;
+    $('setg_save').textContent='💾 Save all changes';
+    render();
+  }).catch(function(err){
+    toast('❌ '+(err.message||'Some saves may have failed'),'err');
+    $('setg_save').disabled=false;
+    $('setg_save').textContent='💾 Save all changes';
+  });
+}
+
+// ─── Modal helpers ───
+function showModal(html){
+  closeModal();
+  var d=document.createElement('div');d.id='lib_modal_root';d.innerHTML=html;
+  document.body.appendChild(d);
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  var d=document.getElementById('lib_modal_root');
+  if(d)d.remove();
+  document.body.style.overflow='';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INSIGHTS PANE
+// ═══════════════════════════════════════════════════════════════════
+function renderInsights(){
+  var DAY=86400000;
+  var now=Date.now();
+  var rev30=0, rev30Count=0;
+  var revMo=0, revMoPrev=0;
+  var thisMonthStart=new Date();thisMonthStart.setDate(1);thisMonthStart.setHours(0,0,0,0);
+  var lastMonthStart=new Date(thisMonthStart);lastMonthStart.setMonth(lastMonthStart.getMonth()-1);
+  var lastMonthEnd=new Date(thisMonthStart);
+
+  orders.forEach(function(o){
+    if(o.isCancelled || !o.isEnrollment)return;
+    var t=fnum(o.total);
+    var dMs=parseOrderDateMs(o.dateandtime||o['date&time']||o.date);
+    if(!dMs)return;
+    if(dMs >= now-30*DAY){rev30+=t;rev30Count++}
+    if(dMs >= thisMonthStart.getTime())revMo+=t;
+    if(dMs >= lastMonthStart.getTime() && dMs < lastMonthEnd.getTime())revMoPrev+=t;
+  });
+
+  $('insRev30').textContent='₹'+Math.round(rev30).toLocaleString('en-IN');
+  $('insRev30D').textContent='₹'+Math.round(rev30/30).toLocaleString('en-IN')+' / day average';
+  $('insRevMo').textContent='₹'+Math.round(revMo).toLocaleString('en-IN');
+  if(revMoPrev>0){
+    var pct=Math.round(((revMo-revMoPrev)/revMoPrev)*100);
+    $('insRevMoD').innerHTML='vs ₹'+Math.round(revMoPrev).toLocaleString('en-IN')+' last month <span style="color:'+(pct>=0?'var(--brand)':'var(--rose)')+';font-weight:800">('+(pct>=0?'+':'')+pct+'%)</span>';
+  }else{
+    $('insRevMoD').textContent='no last-month comparison yet';
+  }
+
+  // Renewal rate — % of members whose plan expired in last 90 days who
+  // also placed a new enrollment within 7 days of that expiry
+  var renewalEligible=0, renewed=0;
+  var ninetyAgo=now-90*DAY;
+  var members=buildMembers();
+  members.forEach(function(m){
+    var sorted=m.orders.slice().sort(function(a,b){return (a.startMs||0)-(b.startMs||0)});
+    for(var i=0;i<sorted.length;i++){
+      var o=sorted[i];
+      if(o.isCancelled || !o.expiryMs || o.expiryMs >= now || o.expiryMs < ninetyAgo)continue;
+      renewalEligible++;
+      // Look for a follow-on order within 7 days
+      var nextOrder=sorted.slice(i+1).find(function(x){return !x.isCancelled && x.startMs && Math.abs(x.startMs - o.expiryMs) <= 7*DAY});
+      if(nextOrder)renewed++;
+    }
+  });
+  $('insRenewal').textContent=renewalEligible>0?Math.round((renewed/renewalEligible)*100)+'%':'—';
+  $('insRenewalD').textContent=renewed+' of '+renewalEligible+' members renewed';
+
+  // Avg tenure
+  var totalTenure=0, tenureCount=0;
+  members.forEach(function(m){
+    if(m.orders.length<2)return;
+    var sorted=m.orders.slice().sort(function(a,b){return (a.startMs||0)-(b.startMs||0)});
+    var first=sorted[0].startMs;
+    var last=(sorted[sorted.length-1].expiryMs)||sorted[sorted.length-1].startMs;
+    if(first && last){totalTenure+=(last-first);tenureCount++}
+  });
+  $('insTenure').textContent=tenureCount>0?Math.round(totalTenure/tenureCount/DAY)+' days':'—';
+
+  // Plan popularity (last 90 days)
+  var byPlan={};
+  orders.forEach(function(o){
+    if(o.isCancelled || !o.isEnrollment)return;
+    var dMs=parseOrderDateMs(o.dateandtime||o['date&time']||o.date);
+    if(dMs < ninetyAgo)return;
+    var n=o.planName||'(unknown)';
+    if(!byPlan[n])byPlan[n]={count:0,rev:0};
+    byPlan[n].count++;
+    byPlan[n].rev+=fnum(o.total);
+  });
+  var popList=Object.keys(byPlan).map(function(n){return {name:n,count:byPlan[n].count,rev:byPlan[n].rev}}).sort(function(a,b){return b.count-a.count}).slice(0,8);
+  if(popList.length){
+    var maxCount=popList[0].count;
+    $('insPlanPop').innerHTML=popList.map(function(p){
+      var pct=Math.round((p.count/maxCount)*100);
+      return '<div style="margin-bottom:10px"><div class="ins-row"><span class="ins-row-l">'+E(p.name)+'</span><span class="ins-row-v">'+p.count+' · ₹'+Math.round(p.rev).toLocaleString('en-IN')+'</span></div><div class="bar-h"><div class="bar-h-f" style="width:'+pct+'%"></div></div></div>';
+    }).join('');
+  }else{
+    $('insPlanPop').innerHTML='<div class="empty" style="padding:18px"><div class="empty-t">No data yet</div></div>';
+  }
+
+  // Top customers
+  var top=members.slice().sort(function(a,b){return b.lifetime-a.lifetime}).slice(0,8);
+  if(top.length){
+    $('insTopCust').innerHTML=top.map(function(m,i){
+      return '<div class="ins-row" onclick="showDetail(\''+encodeURIComponent(m.phone)+'\')" style="cursor:pointer">'
+        +'<span class="ins-row-l">'+(i+1)+'. '+E(m.name)+'</span>'
+        +'<span class="ins-row-v">₹'+Math.round(m.lifetime).toLocaleString('en-IN')+' · '+m.orders.length+' orders</span>'
+      +'</div>';
+    }).join('');
+  }else{
+    $('insTopCust').innerHTML='<div class="empty" style="padding:18px"><div class="empty-t">No data yet</div></div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PANE SWITCHING
+// ═══════════════════════════════════════════════════════════════════
+function showPane(name){
+  ['Home','Members','Orders','Plans','Insights','Settings'].forEach(function(p){
+    var el=$('pane'+p);if(el)el.classList.toggle('show',p.toLowerCase()===name);
+  });
+  document.querySelectorAll('.snav').forEach(function(b){b.classList.toggle('on',b.dataset.pane===name)});
+  closeDetail();
+  // Lazy-render heavier panes only when first opened
+  if(name==='orders')renderOrdersTable();
+  if(name==='settings')renderSettings();
+  // Stop the slider auto-advance whenever we leave Settings — saves a timer
+  // running in the background. renderGalleryCard restarts it when needed.
+  if(name!=='settings')stopSliderTimer();
+  // Scroll to top on pane switch
+  $('main')&&($('main').scrollTop=0);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// REVEAL APP after auth + data load
+// ═══════════════════════════════════════════════════════════════════
+function revealApp(){
+  $('pinGate').classList.remove('show');
+  $('app').classList.add('show');
+  $('splash').classList.add('hide');
+  // Kick off enrollment polling after auth — covers both the cached-token
+  // path (init done) and PIN-success path (verifyPin). Idempotent — the
+  // polling helper clears any prior interval before scheduling a new one.
+  startEnrollmentPolling();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+var INIT_DONE=false;
+setTimeout(function(){if(!INIT_DONE){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;font-family:DM Sans,system-ui,sans-serif"><div><div style="font-size:54px;margin-bottom:14px">⏱</div><div style="font-size:20px;font-weight:800;margin-bottom:6px">Couldn\'t load</div><div style="font-size:13px;color:#6b7280;margin-bottom:18px">Network or registry hiccup. Try refreshing.</div><a href="'+location.pathname+location.search+'" style="display:inline-block;padding:11px 22px;background:#0f766e;color:#fff;border-radius:10px;font-weight:800;text-decoration:none">↻ Retry</a></div></div>';
+}},14000);
+
+function init(){
+  SLUG=resolveTenantSlug();
+  if(!SLUG){
+    document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;font-family:DM Sans,system-ui,sans-serif"><div><div style="font-size:54px;margin-bottom:14px">📚</div><div style="font-size:20px;font-weight:800;margin-bottom:6px">No store specified</div><div style="font-size:13px;color:#6b7280;margin-bottom:18px">Visit this page via your tenant subdomain or with ?store=&lt;slug&gt;</div></div></div>';
+    return;
+  }
+  $('splashName').textContent='Loading '+SLUG+'…';
+
+  lookupTenant(SLUG,function(found){
+    if(!found){
+      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;font-family:DM Sans,system-ui,sans-serif"><div><div style="font-size:54px;margin-bottom:14px">📚</div><div style="font-size:20px;font-weight:800;margin-bottom:6px">Library not found</div><div style="font-size:13px;color:#6b7280;margin-bottom:18px">"'+E(SLUG)+'" doesn\'t exist or isn\'t set up yet.</div><a href="/" style="display:inline-block;padding:11px 22px;background:#0f766e;color:#fff;border-radius:10px;font-weight:800;text-decoration:none">🏠 Go to StorePro</a></div></div>';
+      return;
+    }
+
+    // Load Config first so PIN gate can compare locally
+    gviz(SHEET_ID,'Config',function(r){
+      if(r&&r.table&&r.table.rows){
+        r.table.rows.forEach(function(row){
+          var c0=row.c&&row.c[0],c1=row.c&&row.c[1];
+          var k=c0?(c0.f!=null?String(c0.f).trim():(c0.v!=null?String(c0.v).trim():'')):'';
+          var v='';if(c1){if(c1.f!=null)v=String(c1.f).trim();else if(c1.v!=null)v=String(c1.v).trim()}
+          if(k && k.toLowerCase()!=='key'){
+            var kn=k.toLowerCase().replace(/\s+/g,'');
+            if(kn)config[kn]=v;
+          }
+        });
+      }
+
+      // Load Orders + Products in parallel
+      var pending=2;
+      function done(){if(--pending===0){INIT_DONE=true;render();
+        // Notification bootstrap — first ever visit on this slug seeds the
+        // seen-ids cache with every existing order so the bell starts at
+        // zero. Subsequent loads reuse the cached set; only IDs that
+        // weren't there last time count as "new".
+        try{if(!localStorage.getItem(notifKey())) bootstrapSeen()}catch(_){}
+        updateBellBadge();
+        var existingToken=loadToken();
+        if(existingToken){
+          // CRITICAL — assign the cached token to the in-memory variable that
+          // sendCmd reads. Without this, returning users get into the app via
+          // revealApp() but every mutation (pause, image upload, settings save)
+          // rejects with "Not authenticated" because dashToken is still ''.
+          dashToken=existingToken;
+          revealApp();
+        }else{
+          $('splash').classList.add('hide');$('pinGate').classList.add('show');
+          setTimeout(function(){$('pinInput').focus()},100);
+        }
+      }}
+      gviz(SHEET_ID,'Orders',function(r2){orders=r2?parseRows(r2):[];done()});
+      gviz(SHEET_ID,'Products',function(r3){products=r3?parseRows(r3):[];done()});
+    });
+  });
+}
+
+// PIN input — submit on Enter
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter' && $('pinGate').classList.contains('show')){verifyPin()}
+  if(e.key==='Escape' && $('detail').classList.contains('show')){closeDetail()}
+});
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+</script>
+
+</body>
+</html>

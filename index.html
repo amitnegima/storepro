@@ -2,6 +2,128 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+// ════════════════════════════════════════════════════════════════════
+// FAST-PATH TENANT ROUTER — runs BEFORE any CSS/font/image loads.
+// ════════════════════════════════════════════════════════════════════
+// Old chain for a subdomain hit was 3 page loads + 1 round-trip:
+//   study-point-library.localhost/  →  index.html  →  store.html
+//   →  master-registry gviz  →  home.html (or library.html / etc.)
+//
+// New chain on a WARM cache (≤1 hour old): one page load + one redirect,
+// total ~10ms — index.html never paints.
+//   study-point-library.localhost/  →  cached redirect  →  home.html
+//
+// New chain on a COLD cache: one page load + one gviz + one redirect.
+// We hit the registry from HERE, skipping the store.html intermediate.
+// Body stays hidden during the brief gviz wait so the visitor doesn't
+// see the directory landing flash.
+// ════════════════════════════════════════════════════════════════════
+(function(){
+  var qs=new URLSearchParams(location.search);
+  var slug=String(qs.get('store')||qs.get('shop')||'').toLowerCase().trim();
+  if(!slug){
+    var m=location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.(?:storepro\.in|localhost)$/);
+    if(m){
+      var sub=m[1];
+      var reserved={www:1,app:1,admin:1,dashboard:1,api:1,mail:1,support:1,cdn:1,push:1,status:1,docs:1,blog:1,help:1,beta:1,staging:1,test:1,dev:1};
+      if(!reserved[sub])slug=sub;
+    }
+  }
+  // file:// fallback (local testing without a server)
+  if(location.protocol==='file:'){
+    var sh=qs.get('shop');
+    if(sh){location.replace('store.html?shop='+sh);return}
+    if(slug)location.replace('https://rawatgroceryconfectionery.vercel.app/?store='+slug);
+    return;
+  }
+  // admin.* → admin.html
+  if(/^admin\.(?:storepro\.in|localhost)$/i.test(location.hostname)){
+    var path=location.pathname;
+    if(path===''||path==='/'||/\/index\.html$/i.test(path)){
+      location.replace('/admin.html'+location.search);return;
+    }
+    return;
+  }
+  if(!slug)return; // Apex domain → render the directory landing
+  // From here we WILL redirect — hide the page so the directory landing
+  // doesn't briefly flash before navigation.
+  document.documentElement.style.visibility='hidden';
+  // Preserve whatever query string the user actually typed; do NOT synthesize
+  // ?store=<slug>. The subdomain already carries the slug, and every target
+  // template re-runs resolveTenantSlug() to read it from the hostname, so
+  // appending the param just clutters the URL bar.
+  var qsOut=location.search||'';
+  // Warm cache — instant redirect, no network at all
+  try{
+    var raw=localStorage.getItem('storepro_route_'+slug);
+    if(raw){
+      var entry=JSON.parse(raw);
+      if(entry&&entry.target&&entry.t&&(Date.now()-entry.t)<3600000){
+        location.replace(entry.target+qsOut);
+        return;
+      }
+    }
+  }catch(e){}
+  // Cold cache — fire master-registry gviz directly. Custom responseHandler
+  // so we don't collide with the directory's own setResponse override.
+  // Walks ALL rows (not just our match) and bulk-populates localStorage so
+  // a cold visit to ANY tenant warms the cache for every other tenant too.
+  // Precedence (highest first):
+  //   1. Page / LoadPage  — explicit "load this exact file" column
+  //   2. HomePage = yes   — marketing splash first
+  //   3. Template / UI    — explicit per-row template
+  //   4. Type keyword     — restaurant/library/etc.
+  //   5. Fallback         — store.html (generic)
+  window.__sproSlugTarget=function(r){
+    var fallbackTarget='store.html'+qsOut;
+    if(!r||!r.table||!r.table.rows){location.replace(fallbackTarget);return}
+    var hdr=r.table.rows[0];if(!hdr||!hdr.c){location.replace(fallbackTarget);return}
+    var cols=[];
+    for(var h=0;h<hdr.c.length;h++){var hc=hdr.c[h];cols.push(hc&&hc.v!=null?String(hc.v).toLowerCase().trim().replace(/\s+/g,''):'')}
+    var matchedTarget=null, now=Date.now();
+    for(var i=1;i<r.table.rows.length;i++){
+      var row=r.table.rows[i];if(!row||!row.c)continue;
+      var o={};
+      for(var j=0;j<cols.length;j++){var c=row.c[j];o[cols[j]]=c&&c.v!=null?String(c.v).trim():''}
+      var rs=String(o.slug||o.store||o.name||'').toLowerCase().trim();
+      var rb=String(o.subdomain||'').toLowerCase().trim();
+      if(!rs&&!rb)continue;
+      var page=String(o.page||o.loadpage||'').trim().toLowerCase();
+      var hp=String(o.homepage||o.home||'').toLowerCase().trim();
+      var ovr=String(o.template||o.ui||'').trim().toLowerCase();
+      var type=String(o.type||o.shoptype||o.category||'').toLowerCase().trim();
+      var rowTarget='store.html';
+      if(page&&/\.html$/.test(page))rowTarget=page;
+      else if(/^(yes|true|1|on|enabled)$/.test(hp))rowTarget='home.html';
+      else if(ovr&&/\.html$/.test(ovr))rowTarget=ovr;
+      else if(/restaurant|cafe|café/.test(type))rowTarget='restaurant.html';
+      else if(/fast.?food|kitchen|tiffin/.test(type))rowTarget='fastfood.html';
+      else if(/dhaba/.test(type))rowTarget='dhaba.html';
+      else if(/meat|fish|chicken|mutton|butcher/.test(type))rowTarget='meatshop.html';
+      else if(/library|study|reading.?room|coaching/.test(type))rowTarget='library.html';
+      // Bulk-cache: every slug + every subdomain alias points at the right page.
+      try{
+        var entry=JSON.stringify({target:rowTarget,t:now});
+        if(rs)localStorage.setItem('storepro_route_'+rs,entry);
+        if(rb&&rb!==rs)localStorage.setItem('storepro_route_'+rb,entry);
+      }catch(_){}
+      if(matchedTarget==null&&(rs===slug||(rb&&rb===slug)))matchedTarget=rowTarget;
+    }
+    if(matchedTarget==null){location.replace(fallbackTarget);return}
+    clearTimeout(fallbackTimer);
+    location.replace(matchedTarget+qsOut);
+  };
+  // 4-second fallback — if gviz hangs, hand off to store.html which has its
+  // own resolution + error UI.
+  var fallbackTimer=setTimeout(function(){location.replace('store.html'+qsOut)},4000);
+  var sc=document.createElement('script');
+  sc.src='https://docs.google.com/spreadsheets/d/1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo/gviz/tq?tqx=out:json;responseHandler:__sproSlugTarget&sheet=Stores&headers=0&_t='+Date.now();
+  sc.onerror=function(){clearTimeout(fallbackTimer);location.replace('store.html'+qsOut)};
+  document.head.appendChild(sc);
+})();
+</script>
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0c831f">
@@ -459,43 +581,10 @@ function resolveTenantSlug(){
   }catch(e){return ''}
 }
 
-// Reserved-subdomain router: handle platform-internal subdomains BEFORE
-// tenant slug routing. admin.storepro.in (or admin.localhost for local dev)
-// → SaaS-owner admin panel. The admin panel itself has its own password gate
-// (ADMIN_PASSWORD via the master registry's Apps Script), so this is just
-// URL navigation, not security.
-(function(){
-  if(/^admin\.(?:storepro\.in|localhost)$/i.test(location.hostname)){
-    var p=location.pathname;
-    if(p===''||p==='/'||/\/index\.html$/i.test(p)){
-      window.location.replace('/admin.html'+location.search);
-      return;
-    }
-  }
-  // Future reserved subdomains (dashboard.*, status.*, docs.*) can be added
-  // here on the same pattern. Today they fall through to the directory
-  // landing page since they\'re flagged "reserved" in resolveTenantSlug().
-})();
-
-// Slug router: if a tenant slug is present (via ?store=, ?shop=, or
-// <slug>.storepro.in subdomain), redirect to store.html which dispatches
-// to the right template based on the registry's "type" column. Subdomain
-// stays in the hostname automatically because we use a relative redirect.
-(function(){
-  var p=new URLSearchParams(window.location.search);
-  var store=p.get('store');var shop=p.get('shop');
-  var subSlug=resolveTenantSlug(); // includes subdomain detection
-  if(store||shop||subSlug){
-    if(window.location.protocol!=='file:'){
-      // Relative redirect — preserves the current hostname (subdomain or
-      // apex) and any existing query string.
-      window.location.replace('store.html'+window.location.search);return;
-    }
-    // file:// fallback for local testing
-    if(shop){window.location.replace('store.html?shop='+shop);return}
-    window.location.replace('https://rawatgroceryconfectionery.vercel.app/?store='+(store||subSlug));
-  }
-})();
+// NOTE: subdomain + slug routing has moved to the inline <script> at the
+// top of <head> for fastest possible redirect (warm-cache hits redirect in
+// ~10ms with zero network calls; cold-cache hits skip the store.html hop).
+// resolveTenantSlug() above is kept for use by other directory code paths.
 
 function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML}
 function $(id){return document.getElementById(id)}
@@ -504,10 +593,10 @@ var allStores=[],allCities=[];
 var state={cat:'all',city:'all',q:'',openNow:false};
 var acIdx=-1; // autocomplete keyboard selection
 
-var TYPE_ICONS={grocery:'🛒',pharmacy:'💊',restaurant:'🍽️',fastfood:'🍔',dhaba:'🥘',meatshop:'🥩',bakery:'🍰',hardware:'🔧',clothing:'👕',electronics:'📱',flowers:'🌸',salon:'💇',cafe:'☕'};
-var TYPE_LABELS={grocery:'Grocery',pharmacy:'Pharmacy',restaurant:'Restaurant',fastfood:'Fast food',dhaba:'Dhaba',meatshop:'Meat shop',bakery:'Bakery',hardware:'Hardware',clothing:'Clothing',electronics:'Electronics',flowers:'Flowers',salon:'Salon',cafe:'Café'};
-var TYPE_PLURAL={grocery:'Grocery & kirana',pharmacy:'Pharmacies',restaurant:'Restaurants',fastfood:'Fast food',dhaba:'Dhabas',meatshop:'Meat shops',bakery:'Bakeries',hardware:'Hardware',clothing:'Clothing',electronics:'Electronics',flowers:'Flowers',salon:'Salons',cafe:'Cafés'};
-var SECTION_ORDER=['restaurant','fastfood','dhaba','meatshop','grocery','bakery','cafe','pharmacy','hardware','clothing','electronics','flowers','salon'];
+var TYPE_ICONS={grocery:'🛒',pharmacy:'💊',restaurant:'🍽️',fastfood:'🍔',dhaba:'🥘',meatshop:'🥩',bakery:'🍰',hardware:'🔧',clothing:'👕',electronics:'📱',flowers:'🌸',salon:'💇',cafe:'☕',library:'📚',study:'📚',coaching:'🎓'};
+var TYPE_LABELS={grocery:'Grocery',pharmacy:'Pharmacy',restaurant:'Restaurant',fastfood:'Fast food',dhaba:'Dhaba',meatshop:'Meat shop',bakery:'Bakery',hardware:'Hardware',clothing:'Clothing',electronics:'Electronics',flowers:'Flowers',salon:'Salon',cafe:'Café',library:'Library',study:'Study space',coaching:'Coaching'};
+var TYPE_PLURAL={grocery:'Grocery & kirana',pharmacy:'Pharmacies',restaurant:'Restaurants',fastfood:'Fast food',dhaba:'Dhabas',meatshop:'Meat shops',bakery:'Bakeries',hardware:'Hardware',clothing:'Clothing',electronics:'Electronics',flowers:'Flowers',salon:'Salons',cafe:'Cafés',library:'Libraries',study:'Study spaces',coaching:'Coaching centres'};
+var SECTION_ORDER=['restaurant','fastfood','dhaba','meatshop','grocery','bakery','cafe','library','study','coaching','pharmacy','hardware','clothing','electronics','flowers','salon'];
 
 function typeIcon(t){return TYPE_ICONS[t]||'🏪'}
 function typeLabel(t){return TYPE_LABELS[t]||'Shop'}

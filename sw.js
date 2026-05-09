@@ -1,4 +1,4 @@
-var CACHE_NAME = 'storepro-v71';
+var CACHE_NAME = 'storepro-v110';
 var SHELL_FILES = [
   '/',
   '/index.html',
@@ -11,7 +11,10 @@ var SHELL_FILES = [
   '/restaurant.html',
   '/dhaba.html',
   '/store.html',
+  '/home.html',
+  '/library.html',
   '/dashboard.html',
+  '/dashboard-library.html',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png'

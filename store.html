@@ -439,6 +439,8 @@ function prefillCustomer(){
 prefillCustomer();
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function cfg(k,d){return config[k.toLowerCase().replace(/\s+/g,'')]||d||''}
+function shadeHex(hex,pct){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=Math.abs(pct)/100;if(pct>0){r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f)}else{r=Math.round(r*(1-f));g=Math.round(g*(1-f));b=Math.round(b*(1-f))}return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}catch(e){return hex}}
+function hexAlpha(hex,a){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return 'rgba('+r+','+g+','+b+','+a+')'}catch(e){return 'rgba(12,131,31,'+a+')'}}
 function getCartQty(name,unit){var it=cart.find(function(c){return c.name===name&&c.unit===unit});return it?it.qty:0}
 function loadSheet(n,cb){
   if(!SHEET_ID){console.error('[StorePro] loadSheet skipped — SHEET_ID is empty. Slug not resolved against master registry.');cb(null);return}
@@ -554,22 +556,33 @@ function resolveStore(callback){
       showStoreNotFound(slug);return;
     }
 
-    // ─── Auto-route to specialized template based on shop type ───
-    // Today every tenant lands on store.html (generic). For shops that have
-    // a dedicated UI (restaurant/fastfood/dhaba/meatshop), redirect to that
-    // template instead so the customer gets a polished category-specific
-    // experience. The map is intentionally permissive (matches "fast food"
-    // / "fastfood" / "kitchen" all to fastfood.html).
+    // ─── Auto-route based on registry config ───
+    // Precedence (highest first):
+    //   1. Page / LoadPage           → explicit final answer ("load this file")
+    //   2. HomePage = yes/true/1/on  → tenant marketing landing page (home.html)
+    //   3. Template / UI override    → forced explicit template
+    //   4. Shop Type                 → auto-pick specialized template
+    // None of the above → stay on store.html (generic template)
     //
-    // Per-tenant override: registry column "Template" or "UI" — set it to
-    // an explicit filename (e.g. "fastfood.html") to force a specific UI
-    // regardless of type, or to "store.html" to opt out of auto-routing.
+    // The Page column is the simplest knob: set it to "home.html" /
+    // "library.html" / etc. and that's what loads, full stop. Use this
+    // when you want full control without the HomePage splash redirect or
+    // Type-keyword guessing. HomePage / Template / Type still work for
+    // legacy rows that don't have the Page column populated.
+    var explicitPage=String((matchedRow.page||matchedRow.loadpage||'')).trim().toLowerCase();
+    var homepageFlag=String((matchedRow.homepage||matchedRow.home||'')).toLowerCase().trim();
     var override=String((matchedRow.template||matchedRow.ui||'')).trim().toLowerCase();
     var type=String((matchedRow.type||matchedRow.shoptype||matchedRow.category||'')).toLowerCase().trim();
+    var here=(location.pathname.split('/').pop()||'store.html').toLowerCase();
     var target='';
-    if(override&&/\.html$/.test(override)){
+
+    if(explicitPage&&/\.html$/.test(explicitPage)){
+      target=explicitPage;
+    }else if(/^(yes|true|1|on|enabled)$/.test(homepageFlag)){
+      target='home.html';
+    }else if(override&&/\.html$/.test(override)){
       target=override;
-    }else if(/restaurant|cafe|café/.test(type)){
+    }else if(/restaurant|cafe|café/.test(type)){
       target='restaurant.html';
     }else if(/fast.?food|kitchen|tiffin/.test(type)){
       target='fastfood.html';
@@ -577,19 +590,49 @@ function resolveStore(callback){
       target='dhaba.html';
     }else if(/meat|fish|chicken|mutton|butcher/.test(type)){
       target='meatshop.html';
+    }else if(/library|study|reading.?room|coaching/.test(type)){
+      target='library.html';
     }
     // Anything else (grocery, bakery, pharmacy, hardware, etc.) keeps
     // store.html — it's already the generic template tuned for those types.
 
-    // Only redirect if the target is a DIFFERENT specialized template AND
-    // we're currently on store.html (avoid redirect loops if user lands
-    // here some other way, e.g., directly visiting /store.html with a slug
-    // that should have stayed put).
-    var here=(location.pathname.split('/').pop()||'store.html').toLowerCase();
+    // Cache the resolved slug→target so the next visit can fast-path from
+    // index.html's <head> router without consulting the registry. 1-hour TTL.
+    // Bulk pass: while we already have the gviz response in hand, compute
+    // every other row's target too. A direct hit on store.html for ANY
+    // tenant therefore warms the cache for every tenant in the registry.
+    try{
+      var nowMs=Date.now();
+      if(target)localStorage.setItem('storepro_route_'+slug,JSON.stringify({target:target||'store.html',t:nowMs}));
+      for(var bi=1;bi<r.table.rows.length;bi++){
+        var brow=r.table.rows[bi];if(!brow||!brow.c)continue;
+        var bo={};cols.forEach(function(k,j){var c=brow.c&&brow.c[j];bo[k]=c&&c.v!=null?String(c.v).trim():''});
+        var bs=String(bo.slug||bo.store||bo.name||'').toLowerCase().trim();
+        var bsub=String(bo.subdomain||'').toLowerCase().trim();
+        if(!bs&&!bsub)continue;
+        var bp=String(bo.page||bo.loadpage||'').trim().toLowerCase();
+        var bhp=String(bo.homepage||bo.home||'').toLowerCase().trim();
+        var bovr=String(bo.template||bo.ui||'').trim().toLowerCase();
+        var btype=String(bo.type||bo.shoptype||bo.category||'').toLowerCase().trim();
+        var btarget='store.html';
+        if(bp&&/\.html$/.test(bp))btarget=bp;
+        else if(/^(yes|true|1|on|enabled)$/.test(bhp))btarget='home.html';
+        else if(bovr&&/\.html$/.test(bovr))btarget=bovr;
+        else if(/restaurant|cafe|café/.test(btype))btarget='restaurant.html';
+        else if(/fast.?food|kitchen|tiffin/.test(btype))btarget='fastfood.html';
+        else if(/dhaba/.test(btype))btarget='dhaba.html';
+        else if(/meat|fish|chicken|mutton|butcher/.test(btype))btarget='meatshop.html';
+        else if(/library|study|reading.?room|coaching/.test(btype))btarget='library.html';
+        var bentry=JSON.stringify({target:btarget,t:nowMs});
+        if(bs)localStorage.setItem('storepro_route_'+bs,bentry);
+        if(bsub&&bsub!==bs)localStorage.setItem('storepro_route_'+bsub,bentry);
+      }
+    }catch(_){ }
+
+    // Only redirect if the target is different from the current page.
     if(target&&target!=='store.html'&&target!==here){
-      console.log('[StorePro] Type "'+type+'" → routing to '+target);
-      // Preserve query string (?store=, ?test=, etc.) and the current
-      // hostname (subdomain stays in URL) by using a relative replace.
+      console.log('[StorePro] Routing → '+target+' (homepage='+(homepageFlag||'(no)')+', type='+type+')');
+      // Preserve query string + subdomain by using a relative replace.
       location.replace(target+location.search);
       return;
     }
@@ -778,19 +821,16 @@ function applyConfig(){var name=cfg('shopname','StorePro Store');document.title=
     window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
     gtag('js',new Date());gtag('config',gaId,{page_title:name,custom_map:{dimension1:'store_slug'}});
   }
-  // ═══ BRAND COLOR + THEME from Config ═══
+  // ═══ BRAND COLOR + THEME from Config (consistent with home.html) ═══
   var brandColor=cfg('brandcolor','');
-  if(brandColor){
-    // Calculate darker shade and light background from brand color
+  if(/^#[0-9a-f]{6}$/i.test(brandColor)){
     var r=document.documentElement.style;
     r.setProperty('--brand',brandColor);
-    // Generate brand-bg (very light version)
-    var hex=brandColor.replace('#','');
-    var rr=parseInt(hex.substring(0,2),16),gg=parseInt(hex.substring(2,4),16),bb=parseInt(hex.substring(4,6),16);
-    r.setProperty('--brand-bg','rgba('+rr+','+gg+','+bb+',.08)');
-    // Generate brand-dk (20% darker)
-    r.setProperty('--brand-dk','rgb('+Math.max(0,rr-40)+','+Math.max(0,gg-40)+','+Math.max(0,bb-40)+')');
-    // Update meta theme-color
+    r.setProperty('--brand-dk',shadeHex(brandColor,-25));
+    r.setProperty('--brand-lt',shadeHex(brandColor,15));
+    r.setProperty('--brand-bg',shadeHex(brandColor,82));
+    r.setProperty('--brand-glow',hexAlpha(brandColor,.35));
+    r.setProperty('--brand2',shadeHex(brandColor,15));
     var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brandColor);
   }
   // Dark theme
