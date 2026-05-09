@@ -1,0 +1,91 @@
+Key,Value
+ShopName,Avian Foods
+ShopType,Meat Shop
+Tagline,Fresh & Hygienic Chicken
+Phone,917777848850
+Phone2,917651001234
+WhatsApp,917777848850
+Email,info@avianfoods.com
+Address,"Vidya Nagar, Sector C, Bhopal 462026, Madhya Pradesh"
+City,Bhopal
+State,Madhya Pradesh
+Pincode,462026
+ShopLat,23.2599
+ShopLng,77.4126
+Currency,₹
+DashboardPIN,2468
+BrandColor,#1e40af
+HeroTagline,Pure Taste · Perfect Hygiene
+HeroTitle2,Bhopal's Trusted Chicken
+EstimatedDeliveryTime,90-120 min
+DeliveryFee,40
+FreeDelivery,1500
+PackingFee,0
+MinOrder,300
+Rating,4.7
+Timing,8:00-21:00
+StoreOpen,yes
+NotificationLanguage,en
+Slug,avian
+Subdomain,avian
+HomePage,yes
+RequireGPS,yes
+DeliveryRadiusKm,12
+Taxes,0
+LogoURL,
+HeroImage,https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=1600
+About,"Welcome to Avian Foods — Bhopal's trusted name in high-quality chicken processing. We deliver fresh, hormone-free chicken with strict cold-chain hygiene. Antibiotic-free, never frozen, vacuum-sealed in three protective layers. Custom cutting available for restaurants, caterers and home customers."
+AboutShort,Bhopal's trusted name in fresh hygienic chicken — antibiotic-free, never frozen.
+YearOpen,2018
+Stat1Label,Tons processed monthly
+Stat1Value,245+
+Stat2Label,Product types
+Stat2Value,18
+Stat3Label,Happy customers
+Stat3Value,5000+
+Chip1,Cold-chain
+Chip2,Antibiotic-free
+Chip3,Vacuum sealed
+Chip4,Custom cut
+Chip5,Same-day delivery
+Review1Name,Chef Rahul
+Review1Stars,5
+Review1Text,The freshness and consistency from Avian Foods is unmatched. Hygiene standards are exactly what our restaurant kitchen needs.
+Review2Name,Anita Sharma
+Review2Stars,5
+Review2Text,Best chicken in Bhopal hands down. Vacuum-packed packaging keeps it fresh until I cook it. Highly recommended.
+Review3Name,Hotel Surya — Catering
+Review3Stars,5
+Review3Text,Reliable bulk supplier for our weddings and parties. Custom cutting saves us hours of prep time.
+Review4Name,Ramesh K
+Review4Stars,4
+Review4Text,Quality is premium. A bit pricier than the local mandi but the difference in taste is real.
+Review5Name,Priya Iyer
+Review5Stars,5
+Review5Text,Switched to Avian a year ago and never looked back. My family can taste the difference.
+Gallery1,https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=900
+Gallery2,https://images.unsplash.com/photo-1606728035253-49e8a23146de?w=900
+Gallery3,https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=900
+Gallery4,https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=900
+Gallery5,https://images.unsplash.com/photo-1611784728558-6a7645e72966?w=900
+Instagram,https://instagram.com/avianfoods
+Facebook,https://facebook.com/avianfoods
+Youtube,https://youtube.com/@AVIANFOODS
+Website,https://avianfoods.com
+HoursMon,8:00-21:00
+HoursTue,8:00-21:00
+HoursWed,8:00-21:00
+HoursThu,8:00-21:00
+HoursFri,8:00-21:00
+HoursSat,8:00-21:00
+HoursSun,8:00-15:00
+DeliveryPolicy,90-120 min for in-stock items · next-day for out-of-stock · cold-chain delivery in insulated bags
+QualityPromise,100% fresh · antibiotic-free · never frozen · vacuum-sealed
+HowItWorks1,Browse our cuts and pick your weight
+HowItWorks2,Tell us how you'd like it cut and packed
+HowItWorks3,We process fresh and deliver in 90-120 min
+ScriptURL,
+PushRelayURL,https://storepro-push.storepro.workers.dev
+PushSecret,REPLACE_WITH_PUSH_SECRET_FROM_REGISTRY
+GooglePlaceID,
+RateUsURL,

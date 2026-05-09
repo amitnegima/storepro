@@ -1,0 +1,35 @@
+Key,Value
+ShopName,HotSpring Hot Pizza Cafe
+ShopType,Cafe
+Phone,919548578080
+Phone2,
+WhatsApp,919548578080
+Address,"Near PRESHA Institute, Dang Dang, Near HNB Birla Campus, Srinagar, Uttarakhand 246174"
+City,Srinagar
+UPI,
+Currency,₹
+DashboardPIN,1234
+BrandColor,#a93226
+HeroTagline,Chinese · Momos · Rolls · Thukpa — fresh & hot
+HeroTitle2,A Taste of Perfection
+EstimatedDeliveryTime,20-30 min
+DeliveryFee,0
+FreeDelivery,200
+PackingFee,0
+MinOrder,150
+Rating,4.5
+RatingCount,84
+Timing,11:00-22:00
+StoreOpen,yes
+NotificationLanguage,en
+OrderScript,
+PushRelayURL,https://storepro-push.storepro.workers.dev
+PushSecret,REPLACE_WITH_PUSH_SECRET_FROM_SCRIPT_PROPERTIES
+Slug,hotspring-cafe-srinagar
+DailySpecial,Chicken Thukpa
+DailySpecialPrice,120
+DailySpecialDesc,Hearty Tibetan-style noodle soup with chicken — best comfort bowl on the menu
+DailySpecialImage,
+SearchHint,Search momos noodles rolls thukpa...
+Website,
+Email,
