@@ -81,6 +81,11 @@ function doGet(e) {
     saveOrderEta_(p.orderId, parseInt(p.minutes, 10) || 0);
     return ok('ETA saved');
   }
+  if (action === 'resumeMembership' && p.orderId) {
+    if (!verifyDashboardToken_(p.token)) return dashboardForbidden_();
+    var msg = resumeMembership_(p.orderId);
+    return ok(msg);
+  }
   if (action === 'addDailyMenu' && p.name) {
     if (!verifyDashboardToken_(p.token)) return dashboardForbidden_();
     addDailyMenuItem(p);
@@ -132,6 +137,7 @@ function doPost(e) {
     if (data.action === 'deleteProduct') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); deleteProduct(parseInt(data.row)); return ok('Product deleted'); }
     if (data.action === 'addProductsBulk') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); var added = addProductsBulk(data.items); return ok('Bulk added ' + added); }
     if (data.action === 'setEta')          { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); saveOrderEta_(data.orderId, parseInt(data.minutes, 10) || 0); return ok('ETA saved'); }
+    if (data.action === 'resumeMembership'){ if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); return ok(resumeMembership_(data.orderId)); }
     if (data.action === 'addDailyMenu')    { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); addDailyMenuItem(data); return ok('Daily menu item added'); }
     if (data.action === 'updateDailyMenu') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); updateDailyMenuItem(data); return ok('Daily menu item updated'); }
     if (data.action === 'deleteDailyMenu') { if (!verifyDashboardToken_(data.token)) return dashboardForbidden_(); deleteDailyMenuItem(parseInt(data.row)); return ok('Daily menu item deleted'); }
@@ -332,8 +338,18 @@ function onOpen() {
       .addItem('Set Store slug…', 'setSlugPrompt_')
       .addItem('Migrate Slug from Config', 'migrateSlug')
       .addSeparator()
+      .addItem('📧 Set shopkeeper email…', 'setShopkeeperEmailPrompt_')
+      .addItem('📧 Send a test order email', 'testShopkeeperOrderEmail')
+      .addSeparator()
       .addItem('📅 Install daily briefings + nag', 'installProactiveBriefings')
       .addItem('🚫 Uninstall daily briefings + nag', 'uninstallProactiveBriefings')
+      .addSeparator()
+      .addItem('🌟 Set Google Place ID…', 'setGooglePlaceIDPrompt_')
+      .addItem('🌟 Set Google Places API key…', 'setGooglePlacesApiKeyPrompt_')
+      .addItem('🌟 Find my Google Place ID…', 'findGooglePlaceIDPrompt_')
+      .addItem('🌟 Refresh Google reviews now', 'refreshGoogleReviews')
+      .addItem('🌟 Install daily Google reviews refresh', 'installGoogleReviewsRefresh')
+      .addItem('🚫 Uninstall Google reviews refresh', 'uninstallGoogleReviewsRefresh')
       .addSeparator()
       .addItem('Show diagnostic info', 'showDashboardDiagnostic_')
       .addToUi();
@@ -660,6 +676,19 @@ function saveOrder(p) {
     return;
   }
 
+  // ─── Enrollment duplicate check (library tenants) ───
+  // Library storefronts mark enrollments with "Enrollment ·" prefix on the
+  // notes field. When we see that, look back through the Orders sheet for
+  // an active row with the same phone + plan, within the plan's duration
+  // window. If found, skip writing — the customer already has this active.
+  // Backed up by client-side gviz pre-check in library.html, but this is
+  // defence in depth against double-tap from a different device or any race
+  // condition the client check can't see.
+  if (isDuplicateEnrollment_(p)) {
+    Logger.log('[saveOrder] duplicate enrollment for phone=' + (p.phone || '') + ' plan-from-notes — skipping (already enrolled)');
+    return;
+  }
+
   var date = p.date || new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'});
   var mode = (p.mode || 'pickup').toUpperCase();
   var name = p.name || '';
@@ -697,8 +726,19 @@ function saveOrder(p) {
     sheet.setColumnWidth(8, 300);
     sheet.setColumnWidth(12, 200);
     sheet.setColumnWidth(15, 220);
+    // Force ENTIRE data area to text format on first creation. Without this,
+    // 12-digit phones like 919548578080 get auto-cast to floats and lose
+    // precision (9.19548578E+11), which breaks gviz reads on the dashboard.
+    sheet.getRange(2, 1, sheet.getMaxRows() - 1, sheet.getMaxColumns()).setNumberFormat('@');
   }
   ensureReviewColumns(sheet);
+  // Belt-and-braces — the column format may have been changed by the
+  // shopkeeper or by an older version of this script. Force text format on
+  // the ROW we're about to write so phone/orderid never get auto-cast.
+  var nextRow = sheet.getLastRow() + 1;
+  try {
+    sheet.getRange(nextRow, 1, 1, sheet.getLastColumn()).setNumberFormat('@');
+  } catch (_) {}
   sheet.appendRow([
     orderId, date, mode, name, phone, email, address,
     items, total, status, payment, notes, ''
@@ -706,7 +746,22 @@ function saveOrder(p) {
   try {
     var lastRow = sheet.getLastRow();
     sheet.getRange(lastRow, 10).setBackground('#e8faed').setFontWeight('bold');
+    // Re-apply text format on the actual row that landed (appendRow can
+    // sometimes pick a row with a stale format from above).
+    sheet.getRange(lastRow, 1, 1, sheet.getLastColumn()).setNumberFormat('@');
   } catch(e) {}
+
+  // Library enrollments — populate dedicated columns so the shopkeeper can
+  // read plan / start / expiry / verification at a glance without parsing the
+  // packed notes string. Auto-extends the schema on the first enrollment;
+  // food/meat/grocery tenants never trigger this so their existing 16-column
+  // layout stays untouched.
+  try {
+    if (/^enrollment\b/i.test(String(notes || ''))) {
+      writeEnrollmentColumns_(sheet, sheet.getLastRow(), notes, items);
+    }
+  } catch(err) { console.log('Enrollment columns error: ' + err); }
+
   // Force commit so the inline burst poll below (which may process a Confirm tap
   // and call updateOrderStatus → sheet read) sees the new row.
   try { SpreadsheetApp.flush(); } catch(e) {}
@@ -715,6 +770,26 @@ function saveOrder(p) {
   try {
     sendPushToShopkeeper(orderId, name, total, shopName);
   } catch(err) { console.log('Push error: ' + err); }
+
+  // Shopkeeper email — opt-in via Script Property SHOPKEEPER_EMAIL.
+  // Telegram + push are the primary fast channels; this is for shopkeepers
+  // who prefer their inbox (or want a paper trail). Auto-detects "Enrollment"
+  // notes and switches to a library-themed template; everything else gets
+  // the classic order template.
+  try {
+    sendShopkeeperOrderEmail_(orderId, name, phone, email, address, items, total, mode, payment, notes, shopName);
+  } catch(err) { console.log('Shopkeeper email error: ' + err); }
+
+  // Customer confirmation email — fires for enrollments where the customer
+  // gave us an email address. Other order types skip this (they get the
+  // existing Confirmed/Delivered emails on status change instead). For
+  // enrollments we want immediate confirmation in the customer's inbox
+  // because it doubles as a fee receipt for parents / scholarships.
+  try {
+    if (email && /^enrollment\b/i.test(String(notes || ''))) {
+      sendCustomerEnrollmentEmail_(orderId, name, email, items, total, notes, shopName);
+    }
+  } catch(err) { console.log('Customer enrollment email error: ' + err); }
 
   // ─── PRIORITY 2: inline burst poll — catches the FIRST tap in ~1-2s ───
   // Polling-mode tenants need this: Apps Script's one-time trigger floor
@@ -2627,15 +2702,21 @@ function buildEtaPickerKeyboard_(orderId, status, mode, phoneDigits, customerNam
 }
 
 // Build the shopkeeper dashboard URL for this tenant.
-// Reads DashboardURL from Config if explicitly set; otherwise constructs
-// https://storepro.in/dashboard-v2.html?store=<slug>.
+// Reads DashboardURL from Config if explicitly set; otherwise picks the
+// right dashboard variant based on Type. Library tenants get the purpose-
+// built dashboard-library.html (member lifecycle view); everyone else gets
+// the classic dashboard-v2.html.
 function getDashboardUrl_() {
   var explicit = getCfgValue('DashboardURL') || getCfgValue('DashboardLink');
   if (explicit && /^https?:\/\//i.test(explicit)) return explicit;
   var slug = getSlug_();
   if (!slug) return '';
   var base = (getCfgValue('SiteURL') || 'https://storepro.in').replace(/\/+$/, '');
-  return base + '/dashboard-v2.html?store=' + encodeURIComponent(slug);
+  var type = String(getCfgValue('Type') || getCfgValue('ShopType') || '').toLowerCase();
+  var path = /library|study|reading.?room|coaching/.test(type)
+    ? '/dashboard-library.html'
+    : '/dashboard-v2.html';
+  return base + path + '?store=' + encodeURIComponent(slug);
 }
 
 // Order-ID dedup. Returns true if we've seen this orderId in the last hour.
@@ -2680,6 +2761,101 @@ function isDuplicateOrderId_(orderId) {
   if (recent.length > 200) recent = recent.slice(-200);
   try { props.setProperty('RECENT_ORDER_IDS', JSON.stringify(recent)); } catch (e) {}
   return false;
+}
+
+// Enrollment duplicate guard — only fires for orders carrying the
+// "Enrollment ·" prefix (set by library.html). For every other tenant /
+// order type this is a no-op so storefronts that allow repeat orders
+// (food, groceries, meat) keep working unchanged.
+//
+// Rule: same phone (last-10) + same plan name + status NOT cancelled,
+// dated within the plan's duration window. Default window 30 days when
+// duration is unparseable. Re-up after expiry stays allowed because the
+// previous enrollment falls outside the lookback.
+function isDuplicateEnrollment_(p) {
+  try {
+    if (!p || !p.notes) return false;
+    var notes = String(p.notes || '');
+    if (!/^enrollment\b/i.test(notes)) return false;
+
+    var phone = String(p.phone || '').replace(/\D/g, '').slice(-10);
+    if (!phone) return false;
+
+    var planMatch = notes.match(/plan=([^·]+?)(?:\s*·|$)/i);
+    if (!planMatch) return false;
+    var planName = planMatch[1].trim().toLowerCase();
+    if (!planName) return false;
+
+    var lockoutDays = parseEnrollmentDurationDays_(notes, p.items);
+    var cutoffMs = Date.now() - (lockoutDays * 86400000);
+
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Orders');
+    if (!sheet || sheet.getLastRow() < 2) return false;
+
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0].map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+    var idCol     = headers.indexOf('orderid'); if (idCol < 0) idCol = 0;
+    var dateCol   = headers.indexOf('date&time'); if (dateCol < 0) dateCol = 1;
+    var phoneCol  = headers.indexOf('phone'); if (phoneCol < 0) phoneCol = 4;
+    var itemsCol  = headers.indexOf('items'); if (itemsCol < 0) itemsCol = 7;
+    var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+    var notesCol  = headers.indexOf('ordernotes'); if (notesCol < 0) notesCol = headers.indexOf('notes'); if (notesCol < 0) notesCol = 11;
+
+    // Walk rows newest-first — the freshest match is the only one that matters.
+    for (var i = data.length - 1; i >= 1; i--) {
+      var row = data[i];
+      var status = String(row[statusCol] || '').toLowerCase();
+      if (status === 'cancelled' || status === 'rejected') continue;
+
+      var rowPhone = String(row[phoneCol] || '').replace(/\D/g, '').slice(-10);
+      if (rowPhone !== phone) continue;
+
+      // Date check first — bails out cheaply on stale rows
+      var dt = row[dateCol];
+      var dMs = dt instanceof Date ? dt.getTime() : Date.parse(String(dt));
+      if (!isNaN(dMs) && dMs < cutoffMs) continue;
+
+      // Plan name match — try notes first, fall back to first line of items
+      var rowNotes = String(row[notesCol] || '');
+      var rowPlan = '';
+      var nm = rowNotes.match(/plan=([^·]+?)(?:\s*·|$)/i);
+      if (nm) rowPlan = nm[1].trim().toLowerCase();
+      if (!rowPlan) {
+        var firstLine = String(row[itemsCol] || '').split(/\r?\n/)[0] || '';
+        var im = firstLine.match(/plan:\s*([^=]+?)(?:\s*\(|\s*=|$)/i);
+        if (im) rowPlan = im[1].trim().toLowerCase();
+      }
+      if (rowPlan && rowPlan === planName) {
+        return true;
+      }
+    }
+  } catch (e) { Logger.log('[isDuplicateEnrollment_] ' + e); }
+  return false;
+}
+
+// Mirrors library.html's parseDurationDays_ — extract a day count from a
+// human duration string ("30 days", "1 month", "1 year"). Library plans
+// either ship the duration on the items line (📚 Plan: ... (30 days)) or
+// pass it through ad-hoc — we accept both.
+function parseEnrollmentDurationDays_(notes, items) {
+  var combined = String(notes || '') + ' ' + String(items || '');
+  var m = combined.match(/(\d+)\s*(day|week|month|year)/i);
+  if (m) {
+    var n = parseInt(m[1]) || 1;
+    var u = m[2].toLowerCase();
+    if (u === 'day') return n;
+    if (u === 'week') return n * 7;
+    if (u === 'month') return n * 30;
+    if (u === 'year') return n * 365;
+  }
+  // Fallback heuristics by plan name keywords
+  var lower = combined.toLowerCase();
+  if (/daily|day pass/.test(lower)) return 1;
+  if (/weekly|week pass/.test(lower)) return 7;
+  if (/annual|yearly|year/.test(lower)) return 365;
+  if (/quarterly|3.?month/.test(lower)) return 90;
+  if (/half.?yearly|6.?month/.test(lower)) return 180;
+  return 30;
 }
 
 // Look up an order row by orderId to recover phone/name/mode/status for
@@ -3725,6 +3901,152 @@ function ensureReviewColumns(sheet) {
   } catch(e) { Logger.log('ensureReviewColumns: ' + e); }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// LIBRARY ENROLLMENT COLUMNS — extend the Orders sheet with structured
+// columns so the shopkeeper sees plan / start / expiry / verification
+// without parsing the packed notes string.
+// ═══════════════════════════════════════════════════════════════════
+// Columns added (each only if not already present):
+//   Plan           — extracted from notes plan=
+//   Start Date     — extracted from notes start=
+//   Expiry Date    — computed from Start Date + plan duration (parsed from items)
+//   ID Type        — Aadhaar / Student ID / DL / etc.
+//   ID Last 4      — masked digits — UIDAI-compliant, never the full number
+//   DOB            — date of birth (optional)
+//   Guardian       — Father's / Guardian's name (optional)
+//   Emergency      — emergency contact name + phone (optional)
+//   ID Photo       — Cloudinary URL → renders as clickable image link
+//
+// Idempotent: safe to call on every enrollment write. Only adds columns
+// that are missing. Other tenants (food / meat / grocery) never have
+// enrollments in their notes prefix, so this function is never called for
+// them — their 16-column layout stays untouched.
+// ═══════════════════════════════════════════════════════════════════
+
+function ensureEnrollmentColumns_(sheet) {
+  try {
+    var lastCol = sheet.getLastColumn();
+    var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0]
+      .map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+    var needed = [
+      {key:'plan',         title:'Plan'},
+      {key:'startdate',    title:'Start Date'},
+      {key:'expirydate',   title:'Expiry Date'},
+      {key:'idtype',       title:'ID Type'},
+      {key:'idlast4',      title:'ID Last 4'},
+      {key:'dob',          title:'DOB'},
+      {key:'guardian',     title:'Guardian'},
+      {key:'emergency',    title:'Emergency'},
+      {key:'idphoto',      title:'ID Photo'}
+    ];
+    var added = [];
+    needed.forEach(function(n) {
+      if (headers.indexOf(n.key) < 0) {
+        lastCol++;
+        sheet.getRange(1, lastCol)
+          .setValue(n.title)
+          .setFontWeight('bold')
+          .setBackground('#0f766e')
+          .setFontColor('#ffffff');
+        added.push({title: n.title, col: lastCol});
+      }
+    });
+    return added;
+  } catch (e) { Logger.log('ensureEnrollmentColumns_: ' + e); return []; }
+}
+
+// Pull the structured fields from the packed notes column and write them to
+// the new dedicated columns on the just-appended row.
+function writeEnrollmentColumns_(sheet, rowNum, notes, items) {
+  if (!sheet || rowNum < 2) return;
+
+  // Make sure the columns exist (auto-extend on first enrollment per tenant)
+  ensureEnrollmentColumns_(sheet);
+
+  // Re-read headers post-extension so we get the new column indexes
+  var lastCol = sheet.getLastColumn();
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0]
+    .map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+
+  function noteField(key) {
+    var rx = new RegExp(key + '=([^·]+?)(?:\\s*·|$)', 'i');
+    var m = String(notes || '').match(rx);
+    return m ? m[1].trim() : '';
+  }
+  function colIdx(key) {
+    var i = headers.indexOf(key);
+    return i >= 0 ? i + 1 : 0; // 1-based for sheet ranges, 0 means missing
+  }
+
+  // Extract from packed notes
+  var planName  = noteField('plan');
+  var startDate = noteField('start');
+  var idType    = noteField('idType');
+  var id4       = noteField('id4');
+  var dob       = noteField('dob');
+  var guardian  = noteField('guardian');
+  var emergency = noteField('emergency');
+  var idPhoto   = noteField('idPhoto');
+
+  // Compute expiry from Start + plan duration (parsed from items first line
+  // e.g. "📚 Plan: Monthly Standard (30 days) = ₹999"). Stored as a plain
+  // dd-mmm-yyyy string so the shopkeeper can read it without formatting; the
+  // dashboard re-parses with Date.parse for "days left" math.
+  var expiryStr = '';
+  if (startDate) {
+    var firstLine = String(items || '').split(/\r?\n/)[0] || '';
+    var dur = firstLine.match(/(\d+)\s*(day|week|month|year)/i);
+    if (dur) {
+      var n = parseInt(dur[1]) || 1;
+      var u = dur[2].toLowerCase();
+      var days = u === 'day' ? n : u === 'week' ? n*7 : u === 'month' ? n*30 : u === 'year' ? n*365 : 0;
+      var sMs = Date.parse(startDate);
+      if (!isNaN(sMs) && days) {
+        var exp = new Date(sMs + days*86400000);
+        // dd-mmm-yyyy (e.g. "8-Jun-2026") — readable + sortable in sheet
+        expiryStr = Utilities.formatDate(exp, Session.getScriptTimeZone() || 'Asia/Kolkata', 'd-MMM-yyyy');
+      }
+    }
+  }
+
+  // Batch-write into the new columns on this row. Skip silently if a column
+  // is missing (e.g. column add failed — better to write what we can than
+  // throw and lose the others).
+  var writes = [
+    {col: colIdx('plan'),       value: planName},
+    {col: colIdx('startdate'),  value: startDate},
+    {col: colIdx('expirydate'), value: expiryStr},
+    {col: colIdx('idtype'),     value: idType},
+    {col: colIdx('idlast4'),    value: id4 ? '····' + id4 : ''},
+    {col: colIdx('dob'),        value: dob},
+    {col: colIdx('guardian'),   value: guardian},
+    {col: colIdx('emergency'),  value: emergency},
+    {col: colIdx('idphoto'),    value: idPhoto}
+  ];
+
+  writes.forEach(function(w) {
+    if (!w.col || !w.value) return;
+    var cell = sheet.getRange(rowNum, w.col);
+    try { cell.setNumberFormat('@'); } catch (e) {}
+    cell.setValue(w.value);
+    // ID Photo column: render as a clickable link so the shopkeeper can tap
+    // and open the photo in a new tab without copy-pasting the URL.
+    if (w.col === colIdx('idphoto') && /^https?:\/\//i.test(w.value)) {
+      try {
+        cell.setFormula('=HYPERLINK("' + w.value.replace(/"/g, '""') + '", "📷 View ID")');
+        cell.setFontColor('#0f766e').setFontWeight('bold');
+      } catch (e) {}
+    }
+  });
+
+  // Tint the start/expiry cells teal so they pop visually
+  try {
+    var startC = colIdx('startdate'), expC = colIdx('expirydate');
+    if (startC) sheet.getRange(rowNum, startC).setBackground('#ccfbf1').setFontWeight('bold');
+    if (expC)   sheet.getRange(rowNum, expC).setBackground('#ccfbf1').setFontWeight('bold').setFontColor('#0a564f');
+  } catch (e) {}
+}
+
 function submitReview(orderId, stars, text) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Orders');
@@ -3850,6 +4172,74 @@ function updateOrderStatus(orderId, newStatus, comment, opts) {
 }
 
 // ═══════════════════════════════════
+// PAUSE / RESUME MEMBERSHIP
+// ═══════════════════════════════════
+// The dashboard pauses by calling updateStatus(Paused, comment='PAUSE_START=YYYY-MM-DD').
+// Resume comes through here: we read the marker, compute days paused, push
+// the Expiry Date column forward by that many days, swap the marker for a
+// PAUSE_RESUMED note, and revert the status to Confirmed. Returns a short
+// human-readable string the dashboard surfaces in its toast.
+function resumeMembership_(orderId) {
+  if (!orderId) return 'No order id';
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Orders');
+  if (!sheet) return 'Orders sheet missing';
+
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h) { return String(h).trim().toLowerCase().replace(/\s+/g, ''); });
+  var idCol = headers.indexOf('orderid'); if (idCol < 0) idCol = 0;
+  var statusCol = headers.indexOf('status'); if (statusCol < 0) statusCol = 9;
+  var commentCol = headers.indexOf('shopkeepercomment'); if (commentCol < 0) commentCol = headers.indexOf('comment');
+  if (commentCol < 0) commentCol = 12;
+  var expiryCol = headers.indexOf('expirydate');
+  if (expiryCol < 0) {
+    // Auto-extend the schema the same way enrollments do, so resume works on
+    // older sheets that pre-date the Expiry Date column.
+    try { ensureEnrollmentColumns_(sheet); } catch (_) {}
+    headers = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0]
+      .map(function(h){return String(h).trim().toLowerCase().replace(/\s+/g,'')});
+    expiryCol = headers.indexOf('expirydate');
+  }
+
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][idCol]).trim() !== String(orderId).trim()) continue;
+    var rowNum = i + 1;
+    var existingComment = String(sheet.getRange(rowNum, commentCol + 1).getValue() || '');
+    var match = existingComment.match(/PAUSE_START=(\d{4}-\d{2}-\d{2})/);
+    if (!match) {
+      // No pause marker — just flip the status back without bumping expiry.
+      sheet.getRange(rowNum, statusCol + 1).setValue('Confirmed');
+      return 'Resumed (no pause window found)';
+    }
+    var pauseStartMs = Date.parse(match[1] + 'T00:00:00');
+    var nowMs = Date.now();
+    var paused = Math.max(0, Math.round((nowMs - pauseStartMs) / 86400000));
+
+    // Bump expiry by `paused` days. Read existing value, parse, add, write.
+    var newExpiryStr = '';
+    if (expiryCol >= 0) {
+      var rawExpiry = sheet.getRange(rowNum, expiryCol + 1).getValue();
+      var expMs = 0;
+      if (rawExpiry instanceof Date) expMs = rawExpiry.getTime();
+      else if (rawExpiry) expMs = Date.parse(String(rawExpiry));
+      if (!expMs) expMs = nowMs; // fallback — start counting from today
+      var newExp = new Date(expMs + paused * 86400000);
+      sheet.getRange(rowNum, expiryCol + 1).setValue(newExp);
+      newExpiryStr = Utilities.formatDate(newExp, Session.getScriptTimeZone() || 'Asia/Kolkata', 'yyyy-MM-dd');
+    }
+
+    // Swap PAUSE_START=… for a PAUSE_RESUMED note so the audit trail stays.
+    var newComment = existingComment.replace(/PAUSE_START=\d{4}-\d{2}-\d{2}/, 'PAUSE_RESUMED='+paused+'d');
+    sheet.getRange(rowNum, commentCol + 1).setValue(newComment);
+    sheet.getRange(rowNum, statusCol + 1).setValue('Confirmed').setBackground('#eff6ff').setFontWeight('bold');
+
+    try { SpreadsheetApp.flush(); } catch (_) {}
+    return 'Resumed — added ' + paused + ' day' + (paused === 1 ? '' : 's') + (newExpiryStr ? ' · new expiry ' + newExpiryStr : '');
+  }
+  return 'Order not found';
+}
+
+// ═══════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════
 function updateConfig(key, value) {
@@ -3863,11 +4253,64 @@ function updateConfig(key, value) {
   var data = sheet.getDataRange().getValues();
   for (var i = 0; i < data.length; i++) {
     if (String(data[i][0]).trim().toLowerCase() === String(key).trim().toLowerCase()) {
-      sheet.getRange(i + 1, 2).setValue(value);
+      // Force value cell to text format so phones/UPI IDs/numeric-looking
+      // strings (e.g. 919548578080) don't get auto-cast to floats.
+      sheet.getRange(i + 1, 2).setNumberFormat('@');
+      sheet.getRange(i + 1, 2).setValue(String(value == null ? '' : value));
       return;
     }
   }
-  sheet.appendRow([key, value]);
+  // New key — force text format on the value cell before writing.
+  var newRow = sheet.getLastRow() + 1;
+  try { sheet.getRange(newRow, 2).setNumberFormat('@'); } catch (_) {}
+  sheet.getRange(newRow, 1, 1, 2).setValues([[key, String(value == null ? '' : value)]]);
+}
+
+// ═══════════════════════════════════
+// REPAIR — one-shot fixer for old sheets where columns weren't text-format
+// ═══════════════════════════════════
+// Run from the Apps Script editor: Select function "fixSheetTextFormats" → ▶
+//
+// Walks Orders, Products, Config and applies @ number-format to every data
+// column. Then re-writes each cell as a string so previously-corrupted
+// numeric values (phone like 9.19548578E+11) get the apostrophe-prefix
+// treatment that pins them as text. Idempotent — safe to run repeatedly.
+//
+// CAVEAT: precision already lost on a column auto-converted to float CANNOT
+// be restored by this function — Sheets only kept the truncated double. For
+// recovering exact phone digits, the shopkeeper has to either retype the
+// affected cells from Order Notes / Telegram alerts, or look at the
+// dashboard's emails which show the original numeric string.
+function fixSheetTextFormats() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var report = [];
+  ['Orders', 'Products', 'Config'].forEach(function(name) {
+    var sh = ss.getSheetByName(name);
+    if (!sh) { report.push(name + ': not found'); return; }
+    var lastRow = sh.getLastRow();
+    var lastCol = sh.getLastColumn();
+    if (lastRow < 2 || lastCol < 1) { report.push(name + ': empty'); return; }
+
+    // Force text format on the entire data area (skip header).
+    sh.getRange(2, 1, lastRow - 1, lastCol).setNumberFormat('@');
+    // Also future-proof: header row stays as-is, but extend format to the
+    // unused rows below so future appends inherit text format.
+    var maxRow = sh.getMaxRows();
+    if (maxRow > lastRow) sh.getRange(lastRow + 1, 1, maxRow - lastRow, lastCol).setNumberFormat('@');
+
+    // Re-write every data cell as a string so existing numeric cells become
+    // text-typed in place. We read the FORMATTED display string (getDisplayValues)
+    // not the raw value — that gives us "919548578080" rather than the float.
+    // Note: a value already mangled to scientific notation will surface here
+    // as "9.19548578E+11"; that string is now pinned as text but the original
+    // 12-digit value can't be restored.
+    var disp = sh.getRange(2, 1, lastRow - 1, lastCol).getDisplayValues();
+    sh.getRange(2, 1, lastRow - 1, lastCol).setValues(disp);
+
+    report.push(name + ': ' + (lastRow - 1) + ' rows × ' + lastCol + ' cols re-typed as text');
+  });
+  Logger.log(report.join('\n'));
+  return report.join('\n');
 }
 
 function getShopName() {
@@ -4212,3 +4655,741 @@ function sendEmail(to, subject, html, fromName) {
   // Fallback — Gmail with branded display name
   MailApp.sendEmail({ to: to, subject: subject, htmlBody: html, name: sender });
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// GOOGLE REVIEWS — pull the 5 latest Google Maps reviews into Config
+// ═══════════════════════════════════════════════════════════════════
+// Why this lives here: the storefront's home.html already renders
+// Review1Name / Review1Stars / Review1Text / Rating / RatingCount from the
+// Config tab. So instead of writing a new client-side fetch (which would
+// expose the API key + need CORS gymnastics), we run a server-side daily
+// refresh that overwrites those exact Config rows. No frontend changes.
+//
+// Setup, one-time per tenant (~3 min):
+//   1. SaaS owner (you) gets a Google Cloud "Places API (New)" key once.
+//      → console.cloud.google.com → enable Places API (New) → create API key
+//      → restrict by IP or referrer if you want; not strictly needed for
+//        Apps Script since calls go from Google's own servers.
+//   2. In the tenant's Apps Script editor:
+//        🔒 Admin → 🌟 Set Google Places API key…   (paste the key)
+//   3. Find the tenant's Place ID. Either:
+//        a) 🔒 Admin → 🌟 Find my Google Place ID…  (search by shop name + city)
+//        b) Manually via developers.google.com/maps/documentation/places/web-service/place-id
+//   4. 🔒 Admin → 🌟 Set Google Place ID…  (paste the ChIJ... string)
+//   5. 🔒 Admin → 🌟 Refresh Google reviews now  (verify it works — Logger.log)
+//   6. 🔒 Admin → 🌟 Install daily Google reviews refresh  (auto-pull every day)
+//
+// What lands in Config after each refresh:
+//   Rating              → e.g. 4.7
+//   RatingCount         → e.g. 132
+//   RateUsURL           → https://search.google.com/local/writereview?placeid=...
+//   ReviewsLastSync     → ISO timestamp of the most recent successful sync
+//   Review1Name … Review5Name
+//   Review1Stars … Review5Stars
+//   Review1Text  … Review5Text
+//   Review1Date  … Review5Date    ("a week ago", "2 months ago" — Google's relative format)
+//   Review1Photo … Review5Photo   (optional reviewer profile photo URL)
+//
+// API cost: Places API (New) details + reviews = ~$17 per 1000 calls. With
+// daily refresh per tenant, 30 tenants × 30 days ≈ 900 calls ≈ $15/mo —
+// well inside Google's $200/mo free credit. If you scale past that, switch
+// to weekly refresh or proxy through the master registry with one cached
+// fetch per tenant.
+// ═══════════════════════════════════════════════════════════════════
+
+function getGooglePlaceID_() {
+  var props = PropertiesService.getScriptProperties();
+  var v = props.getProperty('GOOGLE_PLACE_ID') || '';
+  if (v) return v;
+  var legacy = String(getCfgValue('GooglePlaceID') || getCfgValue('PlaceID') || '').trim();
+  if (legacy) {
+    try { props.setProperty('GOOGLE_PLACE_ID', legacy); } catch (e) {}
+  }
+  return legacy;
+}
+
+function getGooglePlacesApiKey_() {
+  try {
+    return PropertiesService.getScriptProperties().getProperty('GOOGLE_PLACES_API_KEY') || '';
+  } catch (e) { return ''; }
+}
+
+// Main fetcher — one call to Places API (New), writes results into Config.
+// Run from the editor (▶ refreshGoogleReviews) or via the daily trigger.
+// Idempotent — safe to run any number of times. Returns a small status object
+// so the daily trigger can log progress without exceptions crashing it.
+function refreshGoogleReviews() {
+  var placeId = getGooglePlaceID_();
+  var apiKey = getGooglePlacesApiKey_();
+  if (!placeId) {
+    Logger.log('[GoogleReviews] ❌ No GOOGLE_PLACE_ID set. Run "🌟 Set Google Place ID…" first.');
+    return { ok: false, reason: 'no_place_id' };
+  }
+  if (!apiKey) {
+    Logger.log('[GoogleReviews] ❌ No GOOGLE_PLACES_API_KEY set. Run "🌟 Set Google Places API key…" first.');
+    return { ok: false, reason: 'no_api_key' };
+  }
+
+  var url = 'https://places.googleapis.com/v1/places/' + encodeURIComponent(placeId);
+  var fields = 'id,displayName,rating,userRatingCount,reviews,googleMapsUri';
+  var res;
+  try {
+    res = UrlFetchApp.fetch(url, {
+      method: 'get',
+      headers: {
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': fields
+      },
+      muteHttpExceptions: true
+    });
+  } catch (e) {
+    Logger.log('[GoogleReviews] fetch exception: ' + e);
+    return { ok: false, reason: 'fetch_exception', err: String(e) };
+  }
+  var code = res.getResponseCode();
+  var body = res.getContentText();
+  if (code !== 200) {
+    Logger.log('[GoogleReviews] ❌ HTTP ' + code + ': ' + body.slice(0, 400));
+    if (code === 403) Logger.log('   → check the API key is enabled for "Places API (New)" and not just "Places API"');
+    if (code === 404) Logger.log('   → Place ID is invalid. Use "🌟 Find my Google Place ID…" to search.');
+    return { ok: false, reason: 'http_' + code, body: body.slice(0, 400) };
+  }
+  var data;
+  try { data = JSON.parse(body); } catch (e) {
+    Logger.log('[GoogleReviews] JSON parse: ' + e + ' body: ' + body.slice(0, 400));
+    return { ok: false, reason: 'parse' };
+  }
+
+  // Aggregate stats
+  var rating = data.rating != null ? Number(data.rating).toFixed(1) : '';
+  var count = data.userRatingCount != null ? String(data.userRatingCount) : '';
+  var reviewURL = 'https://search.google.com/local/writereview?placeid=' + encodeURIComponent(placeId);
+  // Google Maps URI for "view all reviews" — falls back to the writereview link
+  // if the place doesn't have a public maps URI (rare, but possible).
+  var mapsURI = data.googleMapsUri || ('https://www.google.com/maps/place/?q=place_id:' + encodeURIComponent(placeId));
+
+  // Reviews are an array of up to 5. Each review:
+  //   .rating, .text.text, .relativePublishTimeDescription, .publishTime,
+  //   .authorAttribution.{displayName, photoUri}
+  var reviews = Array.isArray(data.reviews) ? data.reviews.slice(0, 5) : [];
+
+  // Build a single batch of Config writes so we don't pay setValue() overhead 30 times.
+  // updateConfig walks the whole sheet for each key — fine for a few keys, slow for 30.
+  // Instead: do one sheet read, build a row→value plan, and one batch write.
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Config');
+  if (!sheet) {
+    Logger.log('[GoogleReviews] ❌ No Config tab found.');
+    return { ok: false, reason: 'no_config' };
+  }
+  var range = sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 1), 2);
+  var grid = range.getValues();
+  var keyRow = {}; // lower(key) → row index (0-based within grid)
+  for (var i = 0; i < grid.length; i++) {
+    var k = String(grid[i][0]).trim().toLowerCase().replace(/\s+/g, '');
+    if (k) keyRow[k] = i;
+  }
+
+  function plan(plansArr, key, value) {
+    plansArr.push({ key: key, value: value == null ? '' : String(value) });
+  }
+  var plans = [];
+  plan(plans, 'Rating', rating);
+  plan(plans, 'RatingCount', count);
+  plan(plans, 'RateUsURL', reviewURL);
+  plan(plans, 'GoogleMapsURL', mapsURI);
+  plan(plans, 'ReviewsLastSync', new Date().toISOString());
+  for (var ri = 0; ri < 5; ri++) {
+    var n = ri + 1;
+    var r = reviews[ri] || null;
+    var stars = r && r.rating != null ? String(r.rating) : '';
+    var text  = r && r.text && r.text.text ? String(r.text.text) : '';
+    var name  = r && r.authorAttribution && r.authorAttribution.displayName ? String(r.authorAttribution.displayName) : '';
+    var photo = r && r.authorAttribution && r.authorAttribution.photoUri    ? String(r.authorAttribution.photoUri)    : '';
+    var date  = r && r.relativePublishTimeDescription ? String(r.relativePublishTimeDescription) : '';
+    plan(plans, 'Review' + n + 'Name',  name);
+    plan(plans, 'Review' + n + 'Stars', stars);
+    plan(plans, 'Review' + n + 'Text',  text);
+    plan(plans, 'Review' + n + 'Date',  date);
+    plan(plans, 'Review' + n + 'Photo', photo);
+  }
+
+  // Apply: in-place update for existing rows, append for missing.
+  var lastRow = sheet.getLastRow();
+  plans.forEach(function(p) {
+    var k = p.key.toLowerCase().replace(/\s+/g, '');
+    if (k in keyRow) {
+      sheet.getRange(keyRow[k] + 1, 2).setValue(p.value);
+    } else {
+      lastRow++;
+      sheet.appendRow([p.key, p.value]);
+      keyRow[k] = lastRow - 1;
+    }
+  });
+
+  // Bust both Config caches so the very next dashboard / storefront read
+  // sees the new review data.
+  __CFG_CACHE = null;
+  try { PropertiesService.getScriptProperties().deleteProperty('__CFG_JSON'); } catch (e) {}
+
+  Logger.log('[GoogleReviews] ✅ Refreshed: rating ' + rating + ' (' + count + ') · ' + reviews.length + ' review(s) · ' + plans.length + ' Config rows updated/added');
+  return { ok: true, rating: rating, count: count, reviewCount: reviews.length };
+}
+
+// Search Places API by free text — useful for the "find my place" flow when
+// the shopkeeper doesn't know their Place ID. Returns up to 5 candidates
+// and prints them to the log so the shopkeeper picks the right one and pastes
+// it via "🌟 Set Google Place ID…".
+function findGooglePlaceID(query) {
+  var apiKey = getGooglePlacesApiKey_();
+  if (!apiKey) { Logger.log('❌ Set GOOGLE_PLACES_API_KEY first.'); return; }
+  if (!query) {
+    var fallback = getShopName();
+    var city = String(getCfgValue('City') || getCfgValue('Address') || '').split(',')[0];
+    query = (fallback + ' ' + city).trim();
+    Logger.log('No query passed — searching for "' + query + '" (derived from ShopName + City).');
+  }
+
+  var res;
+  try {
+    res = UrlFetchApp.fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'post',
+      contentType: 'application/json',
+      headers: {
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount'
+      },
+      payload: JSON.stringify({ textQuery: query, maxResultCount: 5 }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { Logger.log('searchText exception: ' + e); return; }
+  if (res.getResponseCode() !== 200) {
+    Logger.log('searchText HTTP ' + res.getResponseCode() + ': ' + res.getContentText().slice(0, 400));
+    return;
+  }
+  var data;
+  try { data = JSON.parse(res.getContentText()); } catch (e) { Logger.log('parse: ' + e); return; }
+  var places = (data && data.places) || [];
+  if (!places.length) {
+    Logger.log('No matches found for "' + query + '". Try a more specific search like "Avian Foods Bhopal" or include the locality.');
+    return;
+  }
+  Logger.log('Top ' + places.length + ' matches for "' + query + '":');
+  Logger.log('');
+  places.forEach(function(p, i) {
+    var name = p.displayName && p.displayName.text || '(no name)';
+    var addr = p.formattedAddress || '';
+    var rating = p.rating != null ? p.rating + ' (' + (p.userRatingCount || 0) + ' reviews)' : '— no rating yet';
+    Logger.log((i + 1) + '. ' + name);
+    Logger.log('   ' + addr);
+    Logger.log('   ' + rating);
+    Logger.log('   Place ID: ' + p.id);
+    Logger.log('');
+  });
+  Logger.log('→ Pick the right one, copy its Place ID, then run "🔒 Admin → 🌟 Set Google Place ID…" and paste.');
+}
+
+// Sheet menu helpers
+function setGooglePlaceIDPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var current = getGooglePlaceID_();
+  var resp = ui.prompt(
+    'Set Google Place ID',
+    'The Google Maps Place ID for this shop (looks like "ChIJN1t_tDeuEmsRUsoyG83frY4").\n\n' +
+    'Currently: ' + (current || '(not set)') + '\n\n' +
+    'Don\'t know it? Cancel this and run "🌟 Find my Google Place ID…" instead.',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var v = String(resp.getResponseText() || '').trim();
+  if (!v || !/^[A-Za-z0-9_-]{10,}$/.test(v)) {
+    ui.alert('Invalid Place ID', 'Place IDs are alphanumeric strings (typically 25-30 chars). Example: ChIJN1t_tDeuEmsRUsoyG83frY4', ui.ButtonSet.OK);
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty('GOOGLE_PLACE_ID', v);
+  ui.alert('✅ Place ID saved',
+    'Stored in Script Properties.\n\nNow run "🌟 Refresh Google reviews now" to pull the latest reviews into your Config tab.',
+    ui.ButtonSet.OK);
+}
+
+function setGooglePlacesApiKeyPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var resp = ui.prompt(
+    'Set Google Places API key',
+    'Paste your Google Cloud Places API (New) key.\n\n' +
+    'How to get one (one-time, ~5 min):\n' +
+    '  1. console.cloud.google.com — create a project (or use existing)\n' +
+    '  2. APIs & Services → Library → enable "Places API (New)"\n' +
+    '  3. Credentials → Create credentials → API key → copy',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var v = String(resp.getResponseText() || '').trim();
+  if (!v || v.length < 20) {
+    ui.alert('Invalid API key', 'API keys are typically 39 characters. Try copying again from Google Cloud Console.', ui.ButtonSet.OK);
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty('GOOGLE_PLACES_API_KEY', v);
+  ui.alert('✅ API key saved', 'Stored in Script Properties (not visible to anyone with the Sheet).', ui.ButtonSet.OK);
+}
+
+function findGooglePlaceIDPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var current = getShopName();
+  var city = String(getCfgValue('City') || getCfgValue('Address') || '').split(',')[0];
+  var defaultQ = (current + ' ' + city).trim();
+  var resp = ui.prompt(
+    'Find my Google Place ID',
+    'Type your business name + city (e.g. "Avian Foods Bhopal").\n\nLeave blank to use: ' + defaultQ,
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var q = String(resp.getResponseText() || '').trim() || defaultQ;
+  findGooglePlaceID(q);
+  ui.alert('Search complete',
+    'Top matches were printed to the Apps Script logs.\n\n' +
+    'View → Logs (or Executions tab) — copy the Place ID of the right match,\n' +
+    'then run "🔒 Admin → 🌟 Set Google Place ID…" and paste.',
+    ui.ButtonSet.OK);
+}
+
+// Daily trigger — fires once per day, refreshes the 5 reviews + rating.
+// Idempotent install: re-running deletes any existing trigger first so we
+// never end up with two daily fetches racing each other.
+function installGoogleReviewsRefresh() {
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'refreshGoogleReviews') ScriptApp.deleteTrigger(t);
+  });
+  // 4am script-timezone — well outside business hours, no contention with
+  // the morning briefing trigger (9am) or the evening summary (10pm).
+  ScriptApp.newTrigger('refreshGoogleReviews').timeBased().atHour(4).everyDays(1).create();
+  Logger.log('✅ Daily Google Reviews refresh installed. Fires at 4am ' + Session.getScriptTimeZone() + '.');
+  Logger.log('   First run will be tonight. To pull reviews immediately, run refreshGoogleReviews now.');
+}
+
+function uninstallGoogleReviewsRefresh() {
+  var removed = 0;
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'refreshGoogleReviews') { ScriptApp.deleteTrigger(t); removed++; }
+  });
+  Logger.log('Removed ' + removed + ' Google Reviews trigger(s).');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SHOPKEEPER ORDER EMAIL — sent to the owner's inbox on every new order.
+// ═══════════════════════════════════════════════════════════════════
+// Why exists: Telegram + push are the fast real-time channels, but some
+// shopkeepers want an email paper trail too — for tax records, for sharing
+// with a manager, or simply because email is where they live during the day.
+//
+// Opt-in: set SHOPKEEPER_EMAIL in the tenant's Script Properties (or run
+// 🔒 Admin → 📧 Set shopkeeper email…). If unset, this function no-ops
+// silently. Backward-compatible — existing tenants don't see emails until
+// they configure it.
+//
+// Branding: detects "Enrollment" prefix in the notes field (set by
+// library.html) and renders a library-themed template (purple/teal accents,
+// "New enrollment" header, plan summary). Everything else gets the classic
+// order template (green accents, "New order" header).
+//
+// Send path: Resend (if RESEND_API_KEY is set) → MailApp fallback. Same
+// pattern as sendOrderEmail / sendDeliveredEmail.
+// ═══════════════════════════════════════════════════════════════════
+
+function getShopkeeperEmail_() {
+  try {
+    return PropertiesService.getScriptProperties().getProperty('SHOPKEEPER_EMAIL') || '';
+  } catch (e) { return ''; }
+}
+
+function sendShopkeeperOrderEmail_(orderId, name, phone, customerEmail, address, items, total, mode, payment, notes, shopName) {
+  var to = getShopkeeperEmail_();
+  if (!to) return;
+
+  // Detect enrollment vs regular order — drives subject line + template tone.
+  var isEnrollment = /^enrollment\b/i.test(String(notes || '')) || /^Enrollment\b/.test(String(items || ''));
+  var brand = isEnrollment ? '#0f766e' : '#0c831f';
+  var brandDk = isEnrollment ? '#0a564f' : '#065a14';
+  var brandBg = isEnrollment ? '#ccfbf1' : '#e8faed';
+  var emoji = isEnrollment ? '📚' : '🛒';
+  var heading = isEnrollment ? 'New Enrollment' : 'New Order';
+  var subject = (isEnrollment ? '📚 New enrollment — ' : '🔔 New order — ') +
+                (name || 'Customer') + ' · ' + orderId + ' · ' + shopName;
+
+  // Pull plan / start date / verification fields out of notes if it's an
+  // enrollment, for a cleaner hero callout + dedicated "Verification" block.
+  // notes format from library.html:
+  //   "Enrollment · plan=Monthly Standard · start=2026-05-09 · idType=Aadhaar
+  //    · id4=1234 · dob=2003-04-21 · guardian=Ramesh K · emergency=Mom 9876543210
+  //    · addr=Daang Road · idPhoto=https://res.cloudinary.com/.../id.jpg · …"
+  function noteField_(key) {
+    var rx = new RegExp(key + '=([^·]+?)(?:\\s*·|$)', 'i');
+    var m = String(notes).match(rx);
+    return m ? m[1].trim() : '';
+  }
+  var planLabel = '', startDate = '', idType = '';
+  var id4 = '', dob = '', guardian = '', emergencyContact = '', permAddr = '', idPhotoUrl = '';
+  if (isEnrollment) {
+    planLabel        = noteField_('plan');
+    startDate        = noteField_('start');
+    idType           = noteField_('idType');
+    id4              = noteField_('id4');
+    dob              = noteField_('dob');
+    guardian         = noteField_('guardian');
+    emergencyContact = noteField_('emergency');
+    permAddr         = noteField_('addr');
+    idPhotoUrl       = noteField_('idPhoto');
+  }
+
+  var phoneDigits = String(phone || '').replace(/\D/g, '').slice(-10);
+  var modeLabel = String(mode || '').toUpperCase() === 'DELIVERY' ? '🚚 Delivery'
+                : String(mode || '').toUpperCase() === 'PICKUP'   ? '🏪 Pickup'
+                : isEnrollment ? '🚶 Walk-in' : '🏪 Pickup';
+
+  // Itemised lines — keep formatting from the storefront's items column
+  // (which already has line breaks). Escape and convert newlines to <br>.
+  function E(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  var itemRowsHtml = String(items || '').split(/\r?\n/).map(function(line) {
+    line = line.trim();
+    if (!line) return '';
+    return '<div style="padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:13px;color:#374151;line-height:1.55">' + E(line) + '</div>';
+  }).join('');
+  if (!itemRowsHtml) itemRowsHtml = '<div style="padding:10px 14px;font-size:13px;color:#9ca3af">(no items listed)</div>';
+
+  // Action buttons (Telegram-style "smart row") — open the dashboard, call
+  // the customer, message them on WhatsApp. Each is a wide email-safe button.
+  var dashUrl = (function(){
+    try { return getDashboardUrl_() || ''; } catch (e) { return ''; }
+  })();
+  var actions = '';
+  if (dashUrl) {
+    actions += '<a href="' + E(dashUrl) + '" style="display:block;margin:8px 0;padding:13px 18px;background:' + brand + ';color:#fff;border-radius:10px;text-decoration:none;font-weight:800;font-size:13px;text-align:center;letter-spacing:.02em">📊 Open dashboard</a>';
+  }
+  if (phoneDigits) {
+    actions += '<a href="tel:+91' + phoneDigits + '" style="display:block;margin:8px 0;padding:13px 18px;background:#fff;color:' + brand + ';border:1.5px solid ' + brand + ';border-radius:10px;text-decoration:none;font-weight:700;font-size:13px;text-align:center">📞 Call ' + E(name || 'customer') + '</a>';
+    var waMsg = encodeURIComponent('Hi ' + (name || 'there') + ', regarding your ' + (isEnrollment ? 'enrollment' : 'order') + ' ' + orderId + ' at ' + shopName);
+    actions += '<a href="https://wa.me/91' + phoneDigits + '?text=' + waMsg + '" style="display:block;margin:8px 0;padding:13px 18px;background:#25d366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:13px;text-align:center">💬 WhatsApp ' + E(name || 'customer') + '</a>';
+  }
+
+  var amount = Math.round(parseFloat(total) || 0);
+
+  // The big hero callout differs per template:
+  //   • Enrollment: plan name + start date front and centre, total tucked below
+  //   • Regular:    items + total in classic order layout
+  var heroCallout = '';
+  if (isEnrollment && planLabel) {
+    heroCallout = ''
+      + '<div style="margin:18px 24px;padding:18px 20px;background:linear-gradient(135deg,' + brandBg + ',#fff);border:1.5px solid ' + brand + ';border-radius:14px">'
+      +   '<div style="font-size:11px;font-weight:800;color:' + brandDk + ';letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">📚 Enrolled in</div>'
+      +   '<div style="font-size:18px;font-weight:800;color:#0b1220;letter-spacing:-.3px">' + E(planLabel) + '</div>'
+      +   (startDate ? '<div style="font-size:13px;font-weight:600;color:' + brandDk + ';margin-top:8px">📅 Starts ' + E(startDate) + '</div>' : '')
+      +   (idType ? '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-top:4px">🪪 ID at first visit: ' + E(idType) + '</div>' : '')
+      + '</div>';
+  }
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+    + '<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f5f7fb;color:#0b1220">'
+    + '<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:0">'
+
+    // Header strip
+    + '<div style="background:linear-gradient(135deg,' + brandDk + ' 0%,' + brand + ' 100%);padding:28px 24px;text-align:center;color:#fff">'
+    +   '<div style="font-size:36px;line-height:1;margin-bottom:8px">' + emoji + '</div>'
+    +   '<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85">' + heading + '</div>'
+    +   '<div style="font-size:22px;font-weight:800;letter-spacing:-.3px;margin-top:4px">' + E(shopName || 'Your store') + '</div>'
+    + '</div>'
+
+    // Order ID strip
+    + '<div style="background:' + brandBg + ';padding:14px 20px;text-align:center">'
+    +   '<div style="font-size:11px;font-weight:700;color:' + brandDk + ';letter-spacing:.08em;text-transform:uppercase;opacity:.85">Order ID</div>'
+    +   '<div style="font-size:16px;font-weight:800;color:' + brandDk + ';font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em;margin-top:3px">' + E(orderId) + '</div>'
+    + '</div>'
+
+    + heroCallout
+
+    // Customer block
+    + '<div style="padding:18px 24px 4px">'
+    +   '<div style="font-size:11px;font-weight:800;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">👤 Customer</div>'
+    +   '<div style="background:#fafafa;border:1px solid #f1f3f5;border-radius:12px;padding:14px 16px">'
+    +     '<div style="font-size:15px;font-weight:800;color:#0b1220;letter-spacing:-.2px">' + E(name || 'Customer') + '</div>'
+    +     (phoneDigits ? '<div style="font-size:13px;font-weight:600;color:#374151;margin-top:6px">📞 <a href="tel:+91' + phoneDigits + '" style="color:' + brand + ';text-decoration:none">+91 ' + E(phoneDigits) + '</a></div>' : '')
+    +     (customerEmail ? '<div style="font-size:13px;font-weight:500;color:#374151;margin-top:4px">✉️ ' + E(customerEmail) + '</div>' : '')
+    +     '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-top:8px">' + modeLabel + '</div>'
+    +     (address && !isEnrollment ? '<div style="font-size:12px;color:#374151;margin-top:8px;line-height:1.55">📍 ' + E(address) + '</div>' : '')
+    +   '</div>'
+    + '</div>'
+
+    // Verification block — only renders for enrollments and only when at least
+    // one verification field was provided. Helps the shopkeeper see at a glance
+    // whether they need to ask for ID at first visit or it's already submitted.
+    + (function(){
+        if (!isEnrollment) return '';
+        var hasAny = idType || id4 || dob || guardian || emergencyContact || permAddr || idPhotoUrl;
+        if (!hasAny) return '';
+        var rows = '';
+        if (idType || id4) {
+          rows += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #e5e7eb"><div style="width:22px;text-align:center">🪪</div><div style="flex:1;font-size:12px;color:#6b7280">ID type</div><div style="font-size:13px;font-weight:700;color:#0b1220">' + E(idType || '—') + (id4 ? ' <span style="color:#6b7280;font-weight:600">····' + E(id4) + '</span>' : '') + '</div></div>';
+        }
+        if (dob) {
+          rows += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #e5e7eb"><div style="width:22px;text-align:center">🎂</div><div style="flex:1;font-size:12px;color:#6b7280">Date of birth</div><div style="font-size:13px;font-weight:700;color:#0b1220">' + E(dob) + '</div></div>';
+        }
+        if (guardian) {
+          rows += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #e5e7eb"><div style="width:22px;text-align:center">👨‍👩‍👧</div><div style="flex:1;font-size:12px;color:#6b7280">Guardian</div><div style="font-size:13px;font-weight:700;color:#0b1220">' + E(guardian) + '</div></div>';
+        }
+        if (emergencyContact) {
+          rows += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #e5e7eb"><div style="width:22px;text-align:center">🆘</div><div style="flex:1;font-size:12px;color:#6b7280">Emergency</div><div style="font-size:13px;font-weight:700;color:#0b1220">' + E(emergencyContact) + '</div></div>';
+        }
+        if (permAddr) {
+          rows += '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #e5e7eb"><div style="width:22px;text-align:center">🏠</div><div style="flex:1;font-size:12px;color:#6b7280">Address</div><div style="flex:1;font-size:13px;font-weight:600;color:#0b1220;text-align:right;line-height:1.5">' + E(permAddr) + '</div></div>';
+        }
+        // Last row drops the dashed divider for a cleaner edge
+        rows = rows.replace(/border-bottom:1px dashed #e5e7eb"([^"]*)$/m, 'border-bottom:none"$1');
+        var photoBlock = '';
+        if (idPhotoUrl) {
+          photoBlock = '<a href="' + E(idPhotoUrl) + '" target="_blank" style="display:block;margin-top:10px;text-decoration:none;border:1.5px solid ' + brand + ';border-radius:12px;overflow:hidden;background:#fff">'
+            +  '<img src="' + E(idPhotoUrl) + '" alt="ID photo" style="display:block;max-width:100%;width:100%;max-height:300px;object-fit:contain;background:#000">'
+            +  '<div style="padding:9px 12px;background:' + brandBg + ';color:' + brandDk + ';font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-align:center">📷 Tap to open ID photo</div>'
+            + '</a>';
+        }
+        var notice = '<div style="font-size:11px;color:#6b7280;font-weight:600;margin-top:10px;line-height:1.5">⚠️ Verify the original ID at first visit. Customer\'s last 4 digits / photo are advisory only.</div>';
+        return '<div style="padding:18px 24px 4px">'
+          + '<div style="font-size:11px;font-weight:800;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">🔒 Verification</div>'
+          + '<div style="background:#fafafa;border:1px solid #f1f3f5;border-radius:12px;padding:14px 16px">'
+          +   rows
+          +   photoBlock
+          +   notice
+          + '</div>'
+        + '</div>';
+      })()
+
+    // Items block
+    + '<div style="padding:18px 24px 4px">'
+    +   '<div style="font-size:11px;font-weight:800;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">' + (isEnrollment ? '📋 Details' : '🛒 Items') + '</div>'
+    +   '<div style="background:#fafafa;border:1px solid #f1f3f5;border-radius:12px;overflow:hidden">' + itemRowsHtml + '</div>'
+    + '</div>'
+
+    // Total — big and bold
+    + '<div style="margin:18px 24px;padding:18px 20px;background:' + brand + ';border-radius:14px;text-align:center;color:#fff">'
+    +   '<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85">Total</div>'
+    +   '<div style="font-size:28px;font-weight:900;letter-spacing:-.5px;margin-top:4px">₹' + amount + '</div>'
+    +   (payment ? '<div style="font-size:11px;font-weight:600;opacity:.85;margin-top:5px;text-transform:uppercase;letter-spacing:.06em">' + E(payment) + '</div>' : '')
+    + '</div>'
+
+    // Notes block (only if present and not the auto-prefixed enrollment notes)
+    + (notes && !isEnrollment ? '<div style="padding:0 24px 4px"><div style="background:#fffbeb;border-left:3px solid #d97706;border-radius:0 10px 10px 0;padding:12px 14px;font-size:12px;color:#78350f;line-height:1.55"><b style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#92400e">Customer note</b><br>' + E(notes) + '</div></div>' : '')
+
+    // Action buttons
+    + '<div style="padding:18px 24px 8px">'
+    +   '<div style="font-size:11px;font-weight:800;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">⚡ Quick actions</div>'
+    +   actions
+    + '</div>'
+
+    // Footer
+    + '<div style="padding:18px 24px 24px;text-align:center;border-top:1px solid #f1f3f5;margin-top:8px">'
+    +   '<div style="font-size:11px;color:#9ca3af;line-height:1.6">This alert was sent because <code style="color:' + brand + '">SHOPKEEPER_EMAIL</code> is set in your Apps Script properties.<br>To stop these emails, run <b>🔒 Admin → 📧 Set shopkeeper email…</b> and clear the value.</div>'
+    +   '<div style="font-size:10px;color:#cbd5e1;margin-top:14px;letter-spacing:.04em">' + E(shopName) + ' · powered by <b style="color:' + brand + '">StorePro</b></div>'
+    + '</div>'
+
+    + '</div></body></html>';
+
+  sendEmail(to, subject, html, shopName);
+}
+
+function setShopkeeperEmailPrompt_() {
+  var ui = SpreadsheetApp.getUi();
+  var current = getShopkeeperEmail_();
+  var resp = ui.prompt(
+    'Set shopkeeper email',
+    'Email address to receive a notification on every new order / enrollment.\n\n' +
+    'Currently: ' + (current || '(not set — emails disabled)') + '\n\n' +
+    'Leave blank to DISABLE shopkeeper emails entirely.',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var v = String(resp.getResponseText() || '').trim();
+  var props = PropertiesService.getScriptProperties();
+  if (!v) {
+    props.deleteProperty('SHOPKEEPER_EMAIL');
+    ui.alert('✅ Cleared', 'Shopkeeper email alerts are now OFF for this store.', ui.ButtonSet.OK);
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+    ui.alert('Invalid email', 'That doesn\'t look like a valid email address. Nothing changed.', ui.ButtonSet.OK);
+    return;
+  }
+  props.setProperty('SHOPKEEPER_EMAIL', v);
+  ui.alert('✅ Saved', 'A notification will be emailed to ' + v + ' on every new order. Run "📧 Send a test order email" to verify.', ui.ButtonSet.OK);
+}
+
+function testShopkeeperOrderEmail() {
+  var to = getShopkeeperEmail_();
+  if (!to) {
+    Logger.log('❌ No SHOPKEEPER_EMAIL set. Run 🔒 Admin → 📧 Set shopkeeper email… first.');
+    SpreadsheetApp.getUi().alert('Set the email first', 'Run 🔒 Admin → 📧 Set shopkeeper email… and try again.', SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  // Send a sample enrollment-style email so the shopkeeper sees what real
+  // alerts will look like.
+  var orderId = 'TEST-' + Date.now().toString(36).toUpperCase();
+  sendShopkeeperOrderEmail_(
+    orderId,
+    'Test Customer',
+    '9876543210',
+    '',
+    'Walk-in · Aadhaar',
+    '📚 Plan: Monthly Standard (30 days) = ₹999\n+ Locker = ₹100\n📅 Start: 2026-05-09\n🪪 ID: Aadhaar',
+    1099,
+    'pickup',
+    'pay-at-shop',
+    'Enrollment · plan=Monthly Standard · idType=Aadhaar · start=2026-05-09 · This is a test enrollment',
+    getShopName()
+  );
+  Logger.log('✅ Test email sent to ' + to + ' (subject starts with "📚 New enrollment — Test Customer…")');
+  Logger.log('   If nothing arrives in 1-2 minutes, check your spam folder. If still missing, your sendEmail');
+  Logger.log('   function logged the failure — view → Logs.');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CUSTOMER ENROLLMENT CONFIRMATION EMAIL — sent on placement, not on
+// status change. Doubles as a fee receipt parents/scholarships can attach.
+// ═══════════════════════════════════════════════════════════════════
+// Why this exists: every other order type in StorePro gets the customer's
+// email only on terminal status (Delivered / Cancelled). Libraries are
+// different — the customer paid for a 1-12 month study plan and expects
+// confirmation in their inbox immediately. They also need a clean email to
+// forward to their parent for fee reimbursement.
+//
+// Triggers: only when notes starts with "Enrollment ·" AND the customer
+// provided an email. Non-enrollment orders skip this entirely so existing
+// food/meat/grocery flows are untouched.
+//
+// Send path: Resend (if RESEND_API_KEY) → MailApp fallback. Same plumbing
+// as sendShopkeeperOrderEmail_.
+// ═══════════════════════════════════════════════════════════════════
+
+function sendCustomerEnrollmentEmail_(orderId, name, email, items, total, notes, shopName) {
+  if (!email || !orderId) return;
+
+  function E(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function nf(k) {
+    var rx = new RegExp(k + '=([^·]+?)(?:\\s*·|$)', 'i');
+    var m = String(notes || '').match(rx);
+    return m ? m[1].trim() : '';
+  }
+
+  var planLabel = nf('plan');
+  var startDate = nf('start');
+  var idType    = nf('idType');
+  var id4       = nf('id4');
+
+  // Compute expiry from items column "📚 Plan: Monthly Standard (30 days) = ₹999"
+  var firstLine = String(items || '').split(/\r?\n/)[0] || '';
+  var dur = firstLine.match(/(\d+)\s*(day|week|month|year)/i);
+  var expiryStr = '';
+  if (startDate && dur) {
+    var n = parseInt(dur[1]) || 1;
+    var u = dur[2].toLowerCase();
+    var days = u === 'day' ? n : u === 'week' ? n * 7 : u === 'month' ? n * 30 : u === 'year' ? n * 365 : 0;
+    var sMs = Date.parse(startDate);
+    if (!isNaN(sMs) && days) {
+      var d = new Date(sMs + days * 86400000);
+      expiryStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+  }
+
+  // Itemise the bill — same logic the dashboard / shopkeeper email uses
+  var itemRowsHtml = String(items || '').split(/\r?\n/).map(function(line) {
+    line = line.trim(); if (!line) return '';
+    return '<tr><td style="padding:9px 14px;border-bottom:1px solid #f0f0f0;font-size:12.5px;color:#374151;line-height:1.55">' + E(line) + '</td></tr>';
+  }).join('');
+
+  // Track URL — derives from getDashboardUrl_ pattern but points at the
+  // library template with an order-id query param so the customer lands
+  // on their tracking page directly.
+  var slug = '';
+  try { slug = getSlug_() || ''; } catch (e) {}
+  var trackUrl = '';
+  if (slug) {
+    trackUrl = 'https://' + slug + '.storepro.in/library.html?store=' + encodeURIComponent(slug);
+  }
+
+  var amount = Math.round(parseFloat(total) || 0);
+  var firstName = String(name || 'there').split(/\s+/)[0];
+
+  // What-to-bring callout — drives down "where do I show my ID?" support calls
+  var bringRow = idType
+    ? '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0"><div style="width:18px;text-align:center;font-size:13px">🪪</div><div style="font-size:12px;color:#0b1220"><b>Bring your ' + E(idType) + '</b> on your first visit so we can verify identity in person.</div></div>'
+    : '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0"><div style="width:18px;text-align:center;font-size:13px">🪪</div><div style="font-size:12px;color:#0b1220"><b>Bring any photo ID</b> on your first visit (Aadhaar / Student ID / DL).</div></div>';
+
+  var brand = '#0f766e', brandDk = '#0a564f', brandBg = '#ccfbf1';
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+    + '<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f5f7fb;color:#0b1220">'
+    + '<div style="max-width:560px;margin:0 auto;background:#fff">'
+
+    // Header
+    + '<div style="background:linear-gradient(135deg,' + brandDk + ' 0%,' + brand + ' 100%);padding:32px 24px;text-align:center;color:#fff">'
+    +   '<div style="font-size:42px;line-height:1;margin-bottom:10px">📚</div>'
+    +   '<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85">You\'re enrolled!</div>'
+    +   '<div style="font-size:24px;font-weight:800;letter-spacing:-.4px;margin-top:6px">' + E(shopName || 'Library') + '</div>'
+    + '</div>'
+
+    // Friendly intro
+    + '<div style="padding:24px 24px 8px;text-align:center">'
+    +   '<div style="font-size:15px;color:#0b1220;line-height:1.65">Hi <b>' + E(firstName) + '</b>, your enrollment is confirmed. We\'re excited to have you study with us. 🎉</div>'
+    + '</div>'
+
+    // Order ID
+    + '<div style="padding:0 24px;text-align:center;margin-bottom:8px">'
+    +   '<div style="display:inline-block;background:' + brandBg + ';color:' + brandDk + ';font-size:13px;font-weight:800;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em;padding:8px 18px;border-radius:99px">' + E(orderId) + '</div>'
+    +   '<div style="font-size:10px;color:#9ca3af;margin-top:6px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Save this · use it to track your enrollment</div>'
+    + '</div>'
+
+    // Plan summary card
+    + (planLabel ? '<div style="margin:18px 24px;padding:18px 20px;background:linear-gradient(135deg,' + brandBg + ',#fff);border:1.5px solid ' + brand + ';border-radius:14px">'
+        + '<div style="font-size:11px;font-weight:800;color:' + brandDk + ';letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">📚 Your plan</div>'
+        + '<div style="font-size:18px;font-weight:800;color:#0b1220;letter-spacing:-.3px">' + E(planLabel) + '</div>'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed ' + brand + '">'
+          + (startDate ? '<div><div style="font-size:10px;color:' + brandDk + ';font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.85">Start</div><div style="font-size:13px;font-weight:700;color:#0b1220;margin-top:2px">' + E(startDate) + '</div></div>' : '')
+          + (expiryStr ? '<div style="text-align:right"><div style="font-size:10px;color:' + brandDk + ';font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.85">Valid until</div><div style="font-size:13px;font-weight:700;color:#0b1220;margin-top:2px">' + E(expiryStr) + '</div></div>' : '')
+        + '</div>'
+      + '</div>' : '')
+
+    // Bill
+    + '<div style="padding:0 24px 4px">'
+    +   '<div style="font-size:11px;font-weight:800;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">📋 Receipt</div>'
+    +   '<table style="width:100%;background:#fafafa;border:1px solid #f1f3f5;border-radius:12px;border-collapse:separate;border-spacing:0;overflow:hidden">' + itemRowsHtml + '</table>'
+    + '</div>'
+
+    // Total
+    + '<div style="margin:16px 24px;padding:18px 20px;background:' + brand + ';border-radius:14px;text-align:center;color:#fff">'
+    +   '<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85">Total paid</div>'
+    +   '<div style="font-size:28px;font-weight:900;letter-spacing:-.5px;margin-top:4px">₹' + amount + '</div>'
+    + '</div>'
+
+    // What to bring
+    + '<div style="padding:0 24px 8px">'
+    +   '<div style="font-size:11px;font-weight:800;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">📌 First visit</div>'
+    +   '<div style="background:#fffbeb;border-left:3px solid #d97706;border-radius:0 10px 10px 0;padding:14px 16px">'
+    +     bringRow
+    +     '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0"><div style="width:18px;text-align:center;font-size:13px">🚶</div><div style="font-size:12px;color:#0b1220"><b>Walk in any time</b> — we\'ll show you to your seat.</div></div>'
+    +     (id4 ? '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;font-size:11px;color:#92400e">🔒 We have your ID last 4 digits on file (····' + E(id4) + ') — full ID stays with you.</div>' : '')
+    +   '</div>'
+    + '</div>'
+
+    // Track button
+    + (trackUrl ? '<div style="padding:12px 24px 4px"><a href="' + E(trackUrl) + '" style="display:block;padding:14px 18px;background:' + brand + ';color:#fff;border-radius:11px;text-decoration:none;font-weight:800;font-size:13px;text-align:center;letter-spacing:.02em">📋 Track your enrollment online</a></div>' : '')
+
+    // Footer
+    + '<div style="padding:22px 24px 28px;text-align:center;border-top:1px solid #f1f3f5;margin-top:18px">'
+    +   '<div style="font-size:13px;font-weight:700;color:#0b1220;margin-bottom:4px">Questions? We\'re here.</div>'
+    +   '<div style="font-size:12px;color:#6b7280;line-height:1.6">' + E(shopName) + ' · Reply to this email or contact us via the storefront.</div>'
+    +   '<div style="font-size:10px;color:#cbd5e1;margin-top:14px;letter-spacing:.04em">Powered by <b style="color:' + brand + '">StorePro</b></div>'
+    + '</div>'
+
+    + '</div></body></html>';
+
+  var subject = '✅ Enrollment confirmed · ' + (planLabel ? planLabel + ' · ' : '') + (shopName || 'StorePro');
+  sendEmail(email, subject, html, shopName);
+}
+
+
