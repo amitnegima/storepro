@@ -712,7 +712,7 @@ function lookup(slug,cb){
   var s=document.createElement('script');s.src='https://docs.google.com/spreadsheets/d/'+MID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=0&_t='+Date.now();s.onerror=function(){err('Connection error','Cannot reach registry')};document.body.appendChild(s);
 }
 
-function loadCfg(cb){LS('Config',function(r){if(r&&r.table&&r.table.rows)r.table.rows.forEach(function(row){var a=row.c&&row.c[0],b=row.c&&row.c[1],k='',v='';if(a){k=a.f!=null?String(a.f).trim():a.v!=null?String(a.v).trim():''}if(b){v=b.f!=null?String(b.f).trim():b.v!=null?String(b.v).trim():''}if(k&&k.toLowerCase()!=='key')C[k]=v});if(!SU){SU=G('OrderScript','')||G('ScriptURL','')||G('Script','')||''}applyCfg();cb()})}
+function loadCfg(cb){LS('Config',function(r){if(r&&r.table&&r.table.rows)r.table.rows.forEach(function(row){var a=row.c&&row.c[0],b=row.c&&row.c[1],k='',v='';if(a){k=a.f!=null?String(a.f).trim():a.v!=null?String(a.v).trim():''}if(b){v=b.f!=null?String(b.f).trim():b.v!=null?String(b.v).trim():''}if(k&&k.toLowerCase()!=='key')C[k]=v});if(!SU){SU=G('OrderScript','')||G('ScriptURL','')||G('Script','')||''}try{savedCust=JSON.parse(localStorage.getItem('sp_meat_cust_'+SID)||'{}');orderMode=savedCust.mode||'delivery'}catch(e){}applyCfg();cb()})}
 
 function shadeHex(hex,pct){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255,f=Math.abs(pct)/100;if(pct>0){r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f)}else{r=Math.round(r*(1-f));g=Math.round(g*(1-f));b=Math.round(b*(1-f))}return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}catch(e){return hex}}
 function hexAlpha(hex,a){try{var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;return 'rgba('+r+','+g+','+b+','+a+')'}catch(e){return 'rgba(139,26,26,'+a+')'}}
@@ -867,7 +867,8 @@ function render(){
       h+='<button class="neg-clear" id="negx-'+id+'" onclick="clearNeg(\''+id+'\')" title="Clear">✕</button>';
       h+='</div>';
 
-      h+='<button class="add-btn'+(ic?' done':'')+'" id="b-'+id+'" onclick="add(\''+E(x.name).replace(/'/g,"\\'")+'\',\''+x.em+'\','+x.price+',\''+id+'\')">'+(ic?'✓ Added':'🛒 Add to Cart')+'</button>';
+      var ii=items.indexOf(x);
+      h+='<button class="add-btn'+(ic?' done':'')+'" id="b-'+id+'" onclick="add_i('+ii+')">'+(ic?'✓ Added':'🛒 Add to Cart')+'</button>';
       h+='</div></div>';
     });
   }
@@ -951,6 +952,7 @@ function clearNeg(id){
   if(inp)inp.focus();
 }
 
+function add_i(ii){var x=items[ii];if(!x)return;add(x.name,x.em,x.price,x.name.replace(/[^a-zA-Z0-9]/g,'-'))}
 function add(name,em,price,id){
   var v=parseFloat($('q-'+id).value),u=$('u-'+id).value;if(!v||v<=0){v=1;u='kg'}
   var mx=QL[u]||1000;if(v>mx){$('q-'+id).value=mx;alert('Max '+mx+' '+u);return}
@@ -991,8 +993,8 @@ function updBar(){
 
 function openDr(){drStep='cart';renDr();$('ov').classList.add('open');$('dr').classList.add('open')}
 function closeDr(){$('ov').classList.remove('open');$('dr').classList.remove('open')}
-var savedCust=JSON.parse(localStorage.getItem('sp_meat_cust')||'{}');
-var orderMode=savedCust.mode||'delivery';
+var savedCust={};
+var orderMode='delivery';
 
 function renDr(){
   if(drStep==='checkout'){renCheckout();return}
@@ -1278,7 +1280,7 @@ function submitOrder(method){
 
   // Save customer info + mode
   savedCust={name:name,phone:phone,address:addr,mode:orderMode};
-  try{localStorage.setItem('sp_meat_cust',JSON.stringify(savedCust))}catch(e){}
+  try{localStorage.setItem('sp_meat_cust_'+SID,JSON.stringify(savedCust))}catch(e){}
 
   var shopName=G('shopname','Meat Shop');
   // shopPhone only powers the success-modal's WhatsApp/Call buttons. It is NOT
@@ -1392,9 +1394,9 @@ function submitOrder(method){
     img.src=SU+'?'+params;
     // Cache recent order IDs for tracking
     try{
-      var rec=JSON.parse(localStorage.getItem('sp_meat_recent')||'[]');
+      var rec=JSON.parse(localStorage.getItem('sp_meat_recent_'+SID)||'[]');
       rec.unshift({id:orderId,ts:Date.now(),total:totalEst,name:name});
-      localStorage.setItem('sp_meat_recent',JSON.stringify(rec.slice(0,8)));
+      localStorage.setItem('sp_meat_recent_'+SID,JSON.stringify(rec.slice(0,8)));
     }catch(e){}
   }else{
     console.warn('[Meatshop] No script URL — order will only go via WhatsApp, not saved to sheet.');
@@ -1705,9 +1707,9 @@ function trkSubmitReview(orderId){
     if(btn){btn.innerHTML='✓ Thanks for your review!';btn.classList.add('trk-review-submit-thanks')}
     // Save locally so we can show "already reviewed" instantly on re-track
     try{
-      var rev=JSON.parse(localStorage.getItem('sp_meat_reviews')||'{}');
+      var rev=JSON.parse(localStorage.getItem('sp_meat_reviews_'+SID)||'{}');
       rev[orderId]={stars:_trkStars,text:text,ts:Date.now()};
-      localStorage.setItem('sp_meat_reviews',JSON.stringify(rev));
+      localStorage.setItem('sp_meat_reviews_'+SID,JSON.stringify(rev));
     }catch(e){}
     setTimeout(function(){doTrack()},1200); // re-fetch to show submitted state
   };
@@ -1758,7 +1760,7 @@ function renderTrackHome(prefilledId){
     +'<button class="trk-btn" onclick="doTrack()">Track</button>'
     +'</div>';
   // Recent orders cached in sp_meat_recent
-  var recent=[];try{recent=JSON.parse(localStorage.getItem('sp_meat_recent')||'[]')||[]}catch(e){}
+  var recent=[];try{recent=JSON.parse(localStorage.getItem('sp_meat_recent_'+SID)||'[]')||[]}catch(e){}
   if(recent.length){
     html+='<div class="trk-section-h">📜 Recent Orders</div>';
     html+='<div class="trk-recent">';
