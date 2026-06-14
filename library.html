@@ -396,7 +396,7 @@ a{color:inherit;text-decoration:none}
       <div class="hdr-meta"><span class="open" id="hdrOpen">Open 24/7</span><span id="hdrCity">—</span></div>
     </div>
     <button class="hdr-track" onclick="openTrack()" title="Track my enrollment" aria-label="Track">📋</button>
-    <button class="hdr-cta" onclick="openEnroll()">Enroll</button>
+    <button class="hdr-cta" onclick="window.location='enroll.html?store='+(new URLSearchParams(location.search).get('store'))">Enroll</button>
   </header>
 
   <section class="hero" id="hero">
@@ -1208,13 +1208,13 @@ function saveWaitlist(){
   // filter these out from the regular enrollment counts.
   var params={
     action:'newOrder',
-    orderId:orderId,
-    name:name,
-    phone:'91'+phone,
-    email:email,
+    orderId:String(orderId),
+    name:String(name),
+    phone:String('91'+phone),
+    email:String(email),
     address:'Waitlist signup',
     items:'🪑 Waitlist signup — notify when a seat opens',
-    total:0,
+    total:'0',
     mode:'waitlist',
     payment:'none',
     notes:'Enrollment · plan=Waitlist · waitlist=yes',
@@ -1628,16 +1628,16 @@ function proceedEnroll_(p){
 
   var params={
     action:'newOrder',
-    orderId:orderId,
-    name:p.name,
-    phone:'91'+p.phone,
-    email:p.email,
-    address:addressLine,
-    items:p.lines.join('\n'),
-    total:p.total,
+    orderId:String(orderId),
+    name:String(p.name),
+    phone:String('91'+p.phone),
+    email:String(p.email),
+    address:String(addressLine),
+    items:String(p.lines.join('\n')),
+    total:String(p.total),
     mode:'pickup',
     payment:'pay-at-shop',
-    notes:notesPacked,
+    notes:String(notesPacked),
     status:'New'
   };
 

@@ -232,6 +232,116 @@ a{color:inherit;text-decoration:none}
 .step-d{font:500 11px var(--F);color:var(--muted);margin-top:4px;line-height:1.4}
 
 /* ═══════════════════════════════════════════════════════════════════
+   BILINGUAL HERO NAME — Devanagari sub-line under English
+   ═══════════════════════════════════════════════════════════════════ */
+.hero-name-hi{position:relative;font-family:var(--FH);font:600 18px/1.25 var(--FH);color:rgba(255,255,255,.9);letter-spacing:.2px;margin-top:6px;text-shadow:0 2px 10px rgba(0,0,0,.4);animation:fadeUp .55s .3s var(--EASE) both}
+
+/* ═══════════════════════════════════════════════════════════════════
+   AMENITIES STRIP — Chip1-6 from Config (separate from chips-row)
+   ═══════════════════════════════════════════════════════════════════ */
+.amen-strip{margin:12px 16px 4px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);display:none;animation:fadeUp .5s var(--EASE) both}
+.amen-strip.show{display:block}
+.amen-strip-h{font:800 10px var(--F);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.amen-list{display:flex;gap:8px;flex-wrap:wrap}
+.amen-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;background:var(--brand-bg);color:var(--brand-dk);border-radius:999px;font:700 12px var(--F);letter-spacing:-.01em}
+.amen-chip-i{font-size:14px;line-height:1}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TODAY'S SPECIAL / VIBE — DailySpecial card
+   ═══════════════════════════════════════════════════════════════════ */
+.special-card{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dk) 100%);border-radius:var(--radius-lg);overflow:hidden;color:#fff;display:flex;align-items:stretch;box-shadow:0 12px 32px var(--brand-glow);position:relative}
+.special-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+.special-card-img{width:130px;flex-shrink:0;background-size:cover;background-position:center;background-color:rgba(0,0,0,.2)}
+.special-card-img.empty{display:flex;align-items:center;justify-content:center;font-size:48px;opacity:.55}
+.special-card-body{flex:1;padding:18px 20px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;min-width:0}
+.special-card-eyebrow{font:800 10px var(--F);text-transform:uppercase;letter-spacing:.08em;opacity:.85;display:flex;align-items:center;gap:6px}
+.special-card-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:#fbbf24;animation:pulse 1.6s infinite}
+.special-card-name{font:800 18px/1.2 var(--F);letter-spacing:-.3px;margin-top:6px;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+.special-card-desc{font:500 12.5px var(--F);opacity:.88;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.special-card-foot{margin-top:10px;display:flex;align-items:center;gap:10px}
+.special-card-price{font:800 17px var(--F);background:rgba(255,255,255,.92);color:var(--brand-dk);padding:5px 12px;border-radius:999px;letter-spacing:-.2px}
+.special-card-cta{font:800 11px var(--F);text-transform:uppercase;letter-spacing:.06em;opacity:.85;display:inline-flex;align-items:center;gap:4px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HOURS-PER-DAY GRID — populated from HoursMon-Sun
+   ═══════════════════════════════════════════════════════════════════ */
+.hours-grid{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
+.hours-grid-h{font:800 10px var(--F);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.hours-grid-h .live-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 1.6s infinite;display:inline-block}
+.hours-grid-rows{display:flex;flex-direction:column;gap:2px}
+/* Three-column grid keeps day | time | optional "NOW" pill aligned
+   across every row, even when the time strings vary widely (24/7 vs
+   11:00-22:00 vs Closed). Padding is identical on today vs non-today
+   rows so the day-name column never shifts. */
+.hours-row{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;font:600 13px var(--F);color:var(--text-2)}
+.hours-row.today{background:linear-gradient(90deg,var(--brand-bg) 0%,rgba(0,0,0,0) 100%);color:var(--brand-dk)}
+.hours-day{font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.hours-row.today .hours-day{font-weight:800}
+.hours-time{font:600 12.5px var(--F);font-variant-numeric:tabular-nums;color:var(--text);text-align:right;letter-spacing:-.01em}
+.hours-row.today .hours-time{color:var(--brand-dk);font-weight:800}
+.hours-time.closed{color:#dc2626;font-weight:700}
+.hours-now-tag{display:none;align-items:center;gap:4px;padding:2px 9px;background:var(--brand);color:#fff;border-radius:999px;font:800 9.5px var(--F);text-transform:uppercase;letter-spacing:.06em;line-height:1}
+.hours-now-tag::before{content:'';width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 1.6s infinite}
+.hours-row.today .hours-now-tag{display:inline-flex}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EMBEDDED MAP IFRAME — ShopLat/ShopLng or MapLink
+   ═══════════════════════════════════════════════════════════════════ */
+.map-frame{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px;display:none}
+.map-frame.show{display:block}
+.map-frame-iframe{width:100%;height:200px;border:0;border-radius:var(--radius);background:var(--bg)}
+.map-frame-link{display:flex;align-items:center;gap:6px;padding:10px 0 0;font:700 12px var(--F);color:var(--brand)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FLOATING WHATSAPP FAB — bottom-right circle button
+   ═══════════════════════════════════════════════════════════════════ */
+.fab-wa{position:fixed;right:20px;bottom:104px;width:56px;height:56px;border-radius:50%;background:#25d366;color:#fff;display:none;align-items:center;justify-content:center;font-size:26px;box-shadow:0 10px 28px rgba(37,211,102,.45),0 4px 12px rgba(0,0,0,.18);z-index:80;transition:transform .18s var(--EASE);text-decoration:none}
+.fab-wa.show{display:flex;animation:fadeUp .4s var(--EASE) both}
+.fab-wa:hover{transform:translateY(-2px) scale(1.04)}
+.fab-wa:active{transform:scale(.95)}
+.fab-wa::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(37,211,102,.45);animation:pulse 2.2s infinite;pointer-events:none}
+@media(max-width:480px){.fab-wa{right:14px;bottom:96px;width:52px;height:52px;font-size:24px}}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STATS BAR — extra responsiveness for the config-driven Stat1-3 path
+   ═══════════════════════════════════════════════════════════════════ */
+.stat-v.long{font-size:15px}
+.stat-v.long .star{font-size:13px}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TRUST BAND — single-line micro-signals under the stats strip
+   ═══════════════════════════════════════════════════════════════════ */
+.trust-band{margin:10px 16px 0;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:999px;display:none;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;font:600 11px var(--F);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;animation:fadeUp .5s var(--EASE) both}
+.trust-band.show{display:flex}
+.trust-band-item{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.trust-band-item b{color:var(--text);font-weight:800}
+.trust-band-item .ic{font-size:13px;line-height:1}
+.trust-band-sep{width:3px;height:3px;border-radius:50%;background:var(--line)}
+@media(max-width:380px){.trust-band-sep{display:none}.trust-band{gap:8px}}
+
+/* ═══════════════════════════════════════════════════════════════════
+   QUALITY PROMISE — italic line beneath the hero tagline
+   ═══════════════════════════════════════════════════════════════════ */
+.hero-promise{position:relative;display:none;margin-top:8px;padding:6px 12px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.22);border-radius:999px;font:600 11.5px/1.4 var(--F);font-style:italic;color:rgba(255,255,255,.95);max-width:fit-content;animation:fadeUp .55s .4s var(--EASE) both}
+.hero-promise.show{display:block}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO SHARE BUTTON — alongside the existing hero-actions
+   ═══════════════════════════════════════════════════════════════════ */
+.hero-share{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;transition:transform .15s,background .15s}
+.hero-share:hover{background:rgba(255,255,255,.28);transform:translateY(-1px)}
+.hero-share:active{transform:scale(.95)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOOTER PRIVACY NOTE — small trust line above brand mark
+   ═══════════════════════════════════════════════════════════════════ */
+.foot-privacy{display:none;max-width:340px;margin:14px auto 0;padding:0 24px;font:500 11px/1.55 var(--F);color:var(--muted);text-align:center;font-style:italic}
+.foot-privacy.show{display:block}
+
+/* Rate-us tile inherits .contact-btn structure but uses Google's brand color */
+.contact-btn.rate{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#f59e0b;color:#92400e}
+
+/* ═══════════════════════════════════════════════════════════════════
    CONTACT — large clear action buttons
    ═══════════════════════════════════════════════════════════════════ */
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -314,11 +424,14 @@ a{color:inherit;text-decoration:none}
   <div class="hero" id="hero">
     <div class="hero-pills" id="heroPills"></div>
     <div class="hero-name" id="heroName"></div>
+    <div class="hero-name-hi" id="heroNameHi" style="display:none"></div>
     <div class="hero-tagline" id="heroTagline"></div>
+    <div class="hero-promise" id="heroPromise"></div>
     <div class="hero-actions">
       <a class="btn btn-primary" id="btnOrder" href="#">🛒 Order Online</a>
       <a class="btn btn-secondary" id="btnCall" href="#" style="display:none">📞 Call</a>
       <a class="btn btn-secondary" id="btnDir" href="#" style="display:none">📍 Map</a>
+      <button class="hero-share" id="btnShare" type="button" aria-label="Share this storefront" title="Share">↗</button>
     </div>
   </div>
 
@@ -338,8 +451,41 @@ a{color:inherit;text-decoration:none}
     </div>
   </div>
 
+  <!-- Trust band — micro-signals row that appears under the stats bar.
+       Renders Established YYYY · ✓ Verified · ⭐ Rating from N reviews etc.
+       Auto-hides if there's nothing meaningful to display. -->
+  <div class="trust-band" id="trustBand"></div>
+
   <!-- Quick chips: free delivery, payment, etc. -->
   <div class="chips-row" id="chipsRow"></div>
+
+  <!-- Amenities strip: rendered from Chip1-6 config keys (24/7 access, wifi, lockers etc) -->
+  <div class="amen-strip" id="amenStrip">
+    <div class="amen-strip-h" id="amenStripH">✨ What you'll find here</div>
+    <div class="amen-list" id="amenList"></div>
+  </div>
+
+  <!-- Today's Special / Vibe — populated from DailySpecial* config or skipped if absent -->
+  <div class="section reveal" id="specialSec" style="display:none">
+    <div class="section-h">
+      <div>
+        <div class="section-title" id="specialTitle">Today's <span class="accent">special</span></div>
+        <div class="section-sub" id="specialSub">Highlight of the day</div>
+      </div>
+    </div>
+    <a class="special-card" id="specialCard" href="#" onclick="event.preventDefault();goToOrder()">
+      <div class="special-card-img" id="specialImg"></div>
+      <div class="special-card-body">
+        <div class="special-card-eyebrow" id="specialEyebrow">⭐ Today</div>
+        <div class="special-card-name" id="specialName">—</div>
+        <div class="special-card-desc" id="specialDesc">—</div>
+        <div class="special-card-foot">
+          <span class="special-card-price" id="specialPrice" style="display:none"></span>
+          <span class="special-card-cta">Order now →</span>
+        </div>
+      </div>
+    </a>
+  </div>
 
   <!-- About / story (optional) -->
   <div class="section reveal" id="aboutSec" style="display:none">
@@ -383,6 +529,14 @@ a{color:inherit;text-decoration:none}
         <span class="loc-status-sub" id="openSub"></span>
       </div>
       <div class="loc-body" id="locBody"></div>
+      <div class="hours-grid" id="hoursGrid" style="display:none">
+        <div class="hours-grid-h"><span class="live-dot"></span> This week's schedule</div>
+        <div class="hours-grid-rows" id="hoursGridRows"></div>
+      </div>
+      <div class="map-frame" id="mapFrame">
+        <iframe class="map-frame-iframe" id="mapFrameIframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        <a class="map-frame-link" id="mapFrameLink" href="#" target="_blank" rel="noopener">📍 Open in Google Maps →</a>
+      </div>
     </div>
   </div>
 
@@ -453,6 +607,7 @@ a{color:inherit;text-decoration:none}
   <div class="foot">
     <div class="foot-name" id="footName">StorePro Store</div>
     <div class="foot-tag" id="footTag">Order online · made simple</div>
+    <div class="foot-privacy" id="footPrivacy"></div>
     <div class="foot-line"></div>
     <div class="foot-brand">Powered by <b>StorePro</b></div>
     <div class="foot-love">Made with <span class="heart">♥</span> in India</div>
@@ -467,6 +622,10 @@ a{color:inherit;text-decoration:none}
     <span>→</span>
   </a>
 </div>
+
+<!-- Floating WhatsApp FAB — high-conversion direct-message channel.
+     Hidden when WhatsApp config row is empty. -->
+<a class="fab-wa" id="fabWa" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" title="Chat on WhatsApp">💬</a>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
@@ -610,9 +769,11 @@ function getOrderUrl(){
   else if(/fast.?food|kitchen|tiffin/.test(t)) template='/fastfood.html';
   else if(/dhaba/.test(t)) template='/dhaba.html';
   else if(/meat|fish|chicken|mutton|butcher/.test(t)) template='/meatshop.html';
+  else if(t==='libraryv2') template='/enroll.html';
   else if(/library|study|reading.?room|coaching/.test(t)) template='/library.html';
   return template+location.search;
 }
+function isLibraryV2(){return TYPE==='libraryv2'}
 
 // ─── Config parsing ────────────────────────────────────────────────
 function parseConfig(r){
@@ -678,6 +839,10 @@ function applyConfig(){
   $('hdrName').textContent=name;
   $('heroName').textContent=name;
   if(name.length>20) $('heroName').classList.add('long');
+  // Bilingual hero — Devanagari shop name renders below the English title
+  // when ShopNameHindi is set. Auto-hides for tenants without it.
+  var nameHi=cfg('shopnamehindi','')||cfg('namehindi','');
+  if(nameHi){$('heroNameHi').textContent=nameHi;$('heroNameHi').style.display='block'}
   $('heroTagline').textContent=tagline;
   if(/[ऀ-ॿ]/.test(tagline))$('heroTagline').classList.add('hi'); // Devanagari → Hindi font
   $('footName').textContent=name;
@@ -703,12 +868,19 @@ function applyConfig(){
   // Header meta
   renderHdrMeta();
 
-  // Order CTAs
+  // Order / Enroll CTAs
   var orderUrl=getOrderUrl();
   $('btnOrder').href=orderUrl;
   $('hdrCta').href=orderUrl;
   $('stickyOrder').href=orderUrl;
   $('menuCta').href=orderUrl;
+  if(isLibraryV2()){
+    var enrollLabel='📚 Enroll Now';
+    $('btnOrder').innerHTML=enrollLabel;
+    $('hdrCta').innerHTML=enrollLabel;
+    if($('stickyOrder'))$('stickyOrder').innerHTML=enrollLabel;
+    if($('menuCta'))$('menuCta').innerHTML=enrollLabel;
+  }
 
   // Phone CTA
   var phone=cfg('phone','')||cfg('whatsapp','');
@@ -738,31 +910,413 @@ function applyConfig(){
   // Hours + location card
   renderHoursLocation();
 
+  // Embedded map + per-day hours grid (config-driven, no-op when missing)
+  renderMapEmbed();
+  renderHoursGrid();
+
+  // Amenities strip — Chip1-6 from config
+  renderAmenities();
+
+  // Today's Special / Today's vibe card — DailySpecial* from config
+  renderSpecial();
+
   // Gallery
   renderGallery();
 
-  // How-it-works tweaks based on shop type
+  // How-it-works tweaks based on shop type / config override
   customizeHowItWorks();
 
   // Contact buttons
   renderContact();
 
+  // Floating WhatsApp FAB
+  renderFabWa();
+
+  // Hero quality-promise pill (italic line under tagline)
+  renderHeroPromise();
+
+  // Hero share button (Web Share API → falls back to clipboard)
+  wireHeroShare();
+
+  // Trust band — Established / Verified / Rating-from-N-reviews
+  renderTrustBand();
+
+  // Footer privacy / commitment line (PrivacyNotice config)
+  renderFootPrivacy();
+
+  // SEO: Schema.org JSON-LD for LocalBusiness rich-result
+  injectSchemaLD();
+
   // PWA: per-tenant manifest
   setupManifest(name, brand);
 
-  // Reset stats placeholders to nicer defaults until Orders comes back
-  $('statRatingV').textContent='New';
-  $('statOrdersV').textContent='1st';
-  $('statSinceV').textContent=cfg('established','')||cfg('since','')||cfg('founded','')||computeYearOpen();
+  // Reset stats placeholders to nicer defaults until Orders comes back.
+  // If Stat1Label is set in Config, swap to the explicit overrides instead
+  // (keeps the strip tenant-driven for libraries / coaching / etc).
+  if(cfg('stat1label','')){
+    applyStatsOverride();
+  }else{
+    $('statRatingV').textContent='New';
+    $('statOrdersV').textContent='1st';
+    $('statSinceV').textContent=cfg('established','')||cfg('since','')||cfg('founded','')||computeYearOpen();
+  }
+
+  // Re-tick the open-now pulse every minute so the badge stays accurate
+  // even if the visitor leaves the tab open across an open/close boundary.
+  if(!window.__openTickStarted){
+    window.__openTickStarted=true;
+    setInterval(function(){renderHeroPills();renderHdrMeta();renderHoursLocation()},60000);
+  }
+}
+
+// Override the 3 stats slots with explicit Stat1-3 values from Config.
+// Used by libraries / coaching / non-transactional tenants where "Rating /
+// Orders / Since" doesn't tell the right story. Stat1-3 = "24/7 / 40+
+// seats / 150+ students" reads far better for a study library.
+function applyStatsOverride(){
+  var slots=[
+    {labelEl:'.stat:nth-child(1) .stat-l',valueEl:'statRatingV',label:cfg('stat1label',''),value:cfg('stat1value','—')},
+    {labelEl:'.stat:nth-child(2) .stat-l',valueEl:'statOrdersV',label:cfg('stat2label',''),value:cfg('stat2value','—')},
+    {labelEl:'.stat:nth-child(3) .stat-l',valueEl:'statSinceV',label:cfg('stat3label',''),value:cfg('stat3value','—')}
+  ];
+  // Hide the gold star — it's only meaningful for the Rating slot
+  var star=document.querySelector('#statRating .star');if(star)star.style.display='none';
+  slots.forEach(function(s){
+    if(!s.label)return;
+    var lbl=document.querySelector(s.labelEl);if(lbl)lbl.textContent=s.label;
+    var val=$(s.valueEl);
+    if(val){
+      val.textContent=s.value;
+      // Long values get the smaller font variant
+      if(String(s.value).length>5)val.classList.add('long');
+    }
+  });
+}
+
+// Amenities — Chip1-6 read into a clean rounded chip strip with auto-icons.
+// Falls back gracefully when no chips are configured (whole strip hides).
+function renderAmenities(){
+  var chips=[];
+  for(var i=1;i<=8;i++){
+    var v=cfg('chip'+i,'');
+    if(v)chips.push(v);
+  }
+  if(!chips.length){$('amenStrip').classList.remove('show');return}
+  // Auto-icon: pick the most relevant emoji for each chip text. Falls back
+  // to ✨ for unknown amenities.
+  function iconFor(text){
+    var t=String(text).toLowerCase();
+    if(/24[\/\s]?7|always.*open/.test(t))return '🕒';
+    if(/wifi|wi[- ]fi/.test(t))return '📶';
+    if(/power|outlet|charging/.test(t))return '🔌';
+    if(/locker|storage/.test(t))return '🔒';
+    if(/ac\b|cool|air[- ]?cond/.test(t))return '❄️';
+    if(/seat|chair|comfort/.test(t))return '🪑';
+    if(/calm|quiet|peace|silent/.test(t))return '🤫';
+    if(/water|hydration/.test(t))return '💧';
+    if(/coffee|tea|drink/.test(t))return '☕';
+    if(/food|snack|meal/.test(t))return '🍱';
+    if(/parking|park/.test(t))return '🅿️';
+    if(/wash|toilet|restroom/.test(t))return '🚻';
+    if(/pet|dog/.test(t))return '🐾';
+    if(/wheelchair|access/.test(t))return '♿';
+    if(/cctv|secure|camera/.test(t))return '📹';
+    if(/study|books|library/.test(t))return '📚';
+    return '✨';
+  }
+  $('amenList').innerHTML=chips.map(function(c){
+    return '<span class="amen-chip"><span class="amen-chip-i">'+iconFor(c)+'</span> '+E(c)+'</span>';
+  }).join('');
+  $('amenStrip').classList.add('show');
+}
+
+// Today's Special / Today's vibe — pulls DailySpecial* config row. For
+// food tenants the link tap → primary order template. For libraries we
+// reframe the eyebrow as "Today's vibe" but keep the same surface.
+function renderSpecial(){
+  var name=cfg('dailyspecial','')||cfg('todayspecial','');
+  if(!name){$('specialSec').style.display='none';return}
+  var price=cfg('dailyspecialprice','')||cfg('todayspecialprice','');
+  var desc=cfg('dailyspecialdesc','')||cfg('todayspecialdesc','')||cfg('aboutshort','');
+  var img=cfg('dailyspecialimage','')||cfg('todayspecialimage','');
+  var isLibrary=/library|study|reading|coaching/i.test(TYPE);
+  $('specialTitle').innerHTML=isLibrary?'Today\'s <span class="accent">vibe</span>':'Today\'s <span class="accent">special</span>';
+  $('specialSub').textContent=isLibrary?'How it feels right now':'Highlight of the day · best of the menu';
+  $('specialEyebrow').textContent=isLibrary?'☀️ Today\'s vibe':'⭐ Today\'s special';
+  $('specialName').textContent=name;
+  if(desc){$('specialDesc').textContent=desc;$('specialDesc').style.display=''}
+  else $('specialDesc').style.display='none';
+  if(price){$('specialPrice').textContent='₹'+E(price);$('specialPrice').style.display=''}
+  else $('specialPrice').style.display='none';
+  var imgEl=$('specialImg');
+  if(img){
+    imgEl.style.backgroundImage='url('+cldThumb(primaryImage(img),520,'fill')+')';
+    imgEl.classList.remove('empty');
+    imgEl.textContent='';
+  }else{
+    // Pleasant emoji placeholder when no image is configured
+    imgEl.style.backgroundImage='';
+    imgEl.classList.add('empty');
+    imgEl.textContent=isLibrary?'📖':typeEmoji(TYPE)||'⭐';
+  }
+  $('specialSec').style.display='block';
+}
+
+// Per-day hours grid — renders HoursMon … HoursSun rows, highlighting
+// today and showing 24/7 cleanly when applicable. Hidden if no per-day
+// keys are present (still shows the single-line Hours from locBody).
+function renderHoursGrid(){
+  var days=[
+    {key:'hoursmon',short:'Mon',idx:1},
+    {key:'hourstue',short:'Tue',idx:2},
+    {key:'hourswed',short:'Wed',idx:3},
+    {key:'hoursthu',short:'Thu',idx:4},
+    {key:'hoursfri',short:'Fri',idx:5},
+    {key:'hourssat',short:'Sat',idx:6},
+    {key:'hourssun',short:'Sun',idx:0}
+  ];
+  // Skip rendering if NONE of the per-day keys are populated
+  var anyDay=days.some(function(d){return cfg(d.key,'')});
+  if(!anyDay){$('hoursGrid').style.display='none';return}
+  var todayIdx=new Date().getDay();
+  var rows=days.map(function(d){
+    var v=cfg(d.key,'')||'Closed';
+    var raw=v.trim();
+    var isClosed=/^(closed|—|-)$/i.test(raw);
+    var isToday=d.idx===todayIdx;
+    // Light formatting — "11:00-22:00" reads better as "11:00 – 22:00",
+    // and a bare "24/7" stays as-is. Closed days get a pill-styled label.
+    var display=isClosed?'Closed':raw.replace(/\s*-\s*/,' – ');
+    return '<div class="hours-row'+(isToday?' today':'')+'">'
+      +'<span class="hours-day">'+d.short+'</span>'
+      +'<span class="hours-time'+(isClosed?' closed':'')+'">'+E(display)+'</span>'
+      +'<span class="hours-now-tag">Now</span>'
+    +'</div>';
+  }).join('');
+  $('hoursGridRows').innerHTML=rows;
+  $('hoursGrid').style.display='block';
+}
+
+// Embedded Google Maps preview — uses the lat/lng from Config when set,
+// otherwise falls back to a query-string search of the Address. Skipped
+// entirely if no address/coords are available.
+function renderMapEmbed(){
+  var lat=parseFloat(cfg('shoplat',''));
+  var lng=parseFloat(cfg('shoplng',''));
+  var addr=cfg('address','');
+  var mapLink=cfg('maplink','')||cfg('googlemapsurl','');
+  if((!lat||!lng||isNaN(lat)||isNaN(lng))&&!addr){
+    $('mapFrame').classList.remove('show');return;
+  }
+  // Free embed URL — no API key needed. Uses the standard /maps/embed
+  // pattern that Google offers for all public locations. lat,lng centers
+  // the map; otherwise we query by address text.
+  var src;
+  if(lat && lng && !isNaN(lat) && !isNaN(lng)){
+    src='https://maps.google.com/maps?q='+lat+','+lng+'&z=16&output=embed';
+  }else{
+    src='https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&z=15&output=embed';
+  }
+  $('mapFrameIframe').src=src;
+  // Tap-to-open link → use the explicit MapLink if present (often a maps.app.goo.gl
+  // short link with the proper place pin), otherwise fall through to a search URL.
+  var openHref=mapLink||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr||(lat+','+lng)));
+  $('mapFrameLink').href=openHref;
+  $('mapFrame').classList.add('show');
+}
+
+// Floating WhatsApp FAB — only shows when WhatsApp config row is set.
+// Pre-typed greeting includes the shop name so the customer's first
+// message has context for the shopkeeper.
+function renderFabWa(){
+  var wa=cfg('whatsapp','')||cfg('phone','');
+  if(!wa){$('fabWa').classList.remove('show');return}
+  var digits=String(wa).replace(/\D/g,'');
+  var name=cfg('shopname','');
+  var greeting='Hi'+(name?' '+name:'')+', I have a question.';
+  $('fabWa').href='https://wa.me/'+digits+'?text='+encodeURIComponent(greeting);
+  $('fabWa').classList.add('show');
+}
+
+// Schema.org JSON-LD — emits LocalBusiness / Library / Restaurant rich
+// data based on Type so Google can show stars + hours + address right
+// in the search snippet. Re-injects on every applyConfig pass.
+function injectSchemaLD(){
+  try{
+    var prev=document.getElementById('storepro-home-ldjson');
+    if(prev)prev.remove();
+    var sType='LocalBusiness';
+    if(/library|study|reading.?room/i.test(TYPE))sType='LibraryOrganization';
+    else if(/coaching|tutorial/i.test(TYPE))sType='EducationalOrganization';
+    else if(/restaurant|cafe|fast.?food|kitchen|dhaba|tiffin/i.test(TYPE))sType='Restaurant';
+    else if(/bakery/i.test(TYPE))sType='Bakery';
+    else if(/pharmacy/i.test(TYPE))sType='Pharmacy';
+    else if(/hardware/i.test(TYPE))sType='HardwareStore';
+    var data={
+      '@context':'https://schema.org',
+      '@type':sType,
+      name:cfg('shopname','Store'),
+      description:cfg('about','')||cfg('aboutshort','')||cfg('tagline',''),
+      url:location.origin+location.pathname
+    };
+    var phone=cfg('phone','');if(phone)data.telephone='+'+String(phone).replace(/\D/g,'');
+    var addr=cfg('address','');
+    if(addr){
+      data.address={'@type':'PostalAddress',streetAddress:addr,addressLocality:cfg('city','')||'',addressRegion:cfg('state','')||'',postalCode:cfg('pincode','')||'',addressCountry:'IN'};
+    }
+    var lat=parseFloat(cfg('shoplat','')),lng=parseFloat(cfg('shoplng',''));
+    if(!isNaN(lat) && !isNaN(lng)){
+      data.geo={'@type':'GeoCoordinates',latitude:lat,longitude:lng};
+    }
+    var rating=parseFloat(cfg('rating',''));
+    var ratingCount=parseInt(cfg('ratingcount','0'))||0;
+    if(rating && rating>0){
+      data.aggregateRating={'@type':'AggregateRating',ratingValue:rating,reviewCount:Math.max(1,ratingCount)};
+    }
+    if(cfg('open24x7','').toLowerCase()==='yes' || cfg('open24x7','').toLowerCase()==='true'){
+      data.openingHoursSpecification={'@type':'OpeningHoursSpecification',dayOfWeek:['Mo','Tu','We','Th','Fr','Sa','Su'],opens:'00:00',closes:'23:59'};
+    }else{
+      var t=cfg('timing','');
+      if(t){
+        var m=String(t).match(/(\d{1,2})(?::?(\d{2}))?\s*[-–to]+\s*(\d{1,2})(?::?(\d{2}))?/i);
+        if(m){
+          var p=function(h,mm){return (h.length<2?'0':'')+h+':'+(mm||'00')};
+          data.openingHoursSpecification={'@type':'OpeningHoursSpecification',dayOfWeek:['Mo','Tu','We','Th','Fr','Sa','Su'],opens:p(m[1],m[2]),closes:p(m[3],m[4])};
+        }
+      }
+    }
+    var s=document.createElement('script');s.id='storepro-home-ldjson';s.type='application/ld+json';
+    s.textContent=JSON.stringify(data);
+    document.head.appendChild(s);
+  }catch(e){}
+}
+
+// Open the order template (storefront) for the current tenant. Used by
+// the "Today's Special" tap-to-order action — we already know the slug
+// from SLUG, and the type-→-template mapping mirrors store.html's logic.
+function goToOrder(){
+  var template='store.html';
+  if(/restaurant|cafe|café/i.test(TYPE))template='restaurant.html';
+  else if(/fast.?food|kitchen|tiffin/i.test(TYPE))template='fastfood.html';
+  else if(/dhaba/i.test(TYPE))template='dhaba.html';
+  else if(/meat|fish|chicken|mutton|butcher/i.test(TYPE))template='meatshop.html';
+  else if(/library|study|reading.?room|coaching/i.test(TYPE))template='library.html';
+  location.href=template;
+}
+
+// Hero quality-promise pill — uses QualityPromise config (or falls back
+// to AboutShort, which often reads as a tagline-ish summary). Italic,
+// frosted-glass background. Hidden when nothing's configured.
+function renderHeroPromise(){
+  var p=cfg('qualitypromise','')||cfg('promise','');
+  var el=$('heroPromise');if(!el)return;
+  if(!p){el.classList.remove('show');return}
+  el.textContent='“'+String(p).replace(/^["“]+|["”]+$/g,'')+'”';
+  el.classList.add('show');
+}
+
+// Trust band — single-line micro-signals row that combines:
+//   Established YYYY  ·  ✓ Verified  ·  ⭐ X.X from N reviews  ·  Type label
+// Built from existing config values; auto-hides if there's nothing to say.
+function renderTrustBand(){
+  var el=$('trustBand');if(!el)return;
+  var bits=[];
+  var year=cfg('yearopen','')||cfg('established','')||cfg('since','')||cfg('founded','');
+  if(year && /\d{4}/.test(String(year))){
+    bits.push('<span class="trust-band-item"><span class="ic">📅</span> Established <b>'+E(year)+'</b></span>');
+  }
+  if(/^(yes|true|1)$/i.test(cfg('verified','')||cfg('trusted',''))){
+    bits.push('<span class="trust-band-item"><span class="ic">✓</span> Verified</span>');
+  }
+  var rating=parseFloat(cfg('rating',''));
+  var ratingCount=parseInt(cfg('ratingcount','0'))||0;
+  if(rating && rating>0){
+    var label='<span class="ic">⭐</span> <b>'+rating.toFixed(1)+'</b>';
+    if(ratingCount>0)label+=' from <b>'+ratingCount+'</b> review'+(ratingCount===1?'':'s');
+    bits.push('<span class="trust-band-item">'+label+'</span>');
+  }
+  // Type label — small visual anchor for what kind of place this is
+  var t=typeLabel(TYPE);
+  if(t){
+    bits.push('<span class="trust-band-item"><span class="ic">'+typeEmoji(TYPE)+'</span> '+E(t)+'</span>');
+  }
+  if(bits.length<2){el.classList.remove('show');return}
+  // Insert dot separators between items
+  el.innerHTML=bits.join('<span class="trust-band-sep"></span>');
+  el.classList.add('show');
+}
+
+// Hero share button — uses the native Web Share API when available
+// (Safari iOS, Android Chrome). Falls back to copying the URL to the
+// clipboard with a tiny inline toast on the button itself.
+function wireHeroShare(){
+  var btn=$('btnShare');if(!btn)return;
+  btn.addEventListener('click',function(){
+    var data={
+      title:cfg('shopname','')||document.title,
+      text:cfg('tagline','')||cfg('herotagline','')||'',
+      url:location.href.split('#')[0]
+    };
+    if(navigator.share){
+      navigator.share(data).catch(function(){});
+      return;
+    }
+    // Clipboard fallback
+    var url=data.url;
+    var done=function(){
+      var prev=btn.textContent;
+      btn.textContent='✓';
+      btn.style.background='rgba(34,197,94,.35)';
+      setTimeout(function(){btn.textContent=prev;btn.style.background=''},1400);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done).catch(done);
+    }else{
+      // Last-resort: temp textarea + execCommand
+      var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);
+      ta.select();try{document.execCommand('copy')}catch(e){}
+      document.body.removeChild(ta);done();
+    }
+  });
+}
+
+// Footer privacy / commitment note — rendered from PrivacyNotice config.
+// Common library use: "We only ask for what we need. ID stays with you."
+function renderFootPrivacy(){
+  var el=$('footPrivacy');if(!el)return;
+  var p=cfg('privacynotice','')||cfg('privacy','');
+  if(!p){el.classList.remove('show');return}
+  el.textContent=p;
+  el.classList.add('show');
 }
 
 function renderHeroPills(){
   var pills=[];
-  // Open / closed status
-  var hours=cfg('businesshours','')||cfg('hours','')||cfg('timing','');
-  if(hours){
-    var ok=isOpenNow(hours);
-    pills.push('<span class="hero-pill '+(ok?'live':'closed')+'"><span class="dot"></span>'+(ok?'Open now':'Closed')+'</span>');
+  // Open / closed status — Open24x7=yes always reads "Open 24/7" so the
+  // badge matches reality for libraries / studios on a round-the-clock
+  // schedule. Otherwise we parse Timing and show "Open now" with the
+  // closing time inferred from the parse.
+  var open247=/^(yes|true|1|on|enabled)$/i.test(cfg('open24x7','')||cfg('alwaysopen',''));
+  if(open247){
+    pills.push('<span class="hero-pill live"><span class="dot"></span>Open 24/7</span>');
+  }else{
+    var hours=cfg('businesshours','')||cfg('hours','')||cfg('timing','');
+    if(hours){
+      var ok=isOpenNow(hours);
+      // Try to surface the close-time as a subtle suffix when known —
+      // "Open now · until 10pm" is more informative than just "Open now".
+      var suffix='';
+      if(ok){
+        var m=String(hours).match(/[-–to]+\s*(\d{1,2})(?::?(\d{2}))?/i);
+        if(m){
+          var hh=parseInt(m[1])||0, mm=parseInt(m[2]||'0')||0;
+          var ampm=hh>=12?'pm':'am';
+          var disp=((hh%12)||12)+(mm?':'+(mm<10?'0':'')+mm:'');
+          suffix=' · until '+disp+ampm;
+        }
+      }
+      pills.push('<span class="hero-pill '+(ok?'live':'closed')+'"><span class="dot"></span>'+(ok?'Open now'+suffix:'Closed')+'</span>');
+    }
   }
   // Verified
   var verified=cfg('verified','')||cfg('trusted','');
@@ -882,7 +1436,35 @@ function renderGallery(){
 }
 
 function customizeHowItWorks(){
-  // Step-3 microcopy adapts to shop type
+  // Honor explicit HowItWorks1/2/3 config rows when set — gives shopkeepers
+  // full control over the 3-step microcopy. Each row supports a "Title /
+  // Description" split via " · " (or "|") so a single Config cell can
+  // hold both. Falls back to the type-specific defaults below otherwise.
+  var hw1=cfg('howitworks1',''), hw2=cfg('howitworks2',''), hw3=cfg('howitworks3','');
+  function applyStep(idx,raw){
+    if(!raw)return false;
+    var parts=String(raw).split(/\s*[·|]\s*/);
+    var t=parts[0], d=parts.slice(1).join(' · ');
+    var stepEls=document.querySelectorAll('.steps .step');
+    if(stepEls && stepEls[idx-1]){
+      var tEl=stepEls[idx-1].querySelector('.step-t');
+      var dEl=stepEls[idx-1].querySelector('.step-d');
+      if(tEl)tEl.textContent=t.trim();
+      if(d && dEl)dEl.textContent=d.trim();
+    }
+    return true;
+  }
+  var anyOverride=false;
+  if(applyStep(1,hw1))anyOverride=true;
+  if(applyStep(2,hw2))anyOverride=true;
+  if(applyStep(3,hw3))anyOverride=true;
+  if(anyOverride){
+    // Update the section subhead too if a tenant has fully customised
+    var sub=document.querySelector('#howSec .section-sub');
+    if(sub && /library|study|reading|coaching/i.test(TYPE))sub.textContent='Three steps to your seat';
+    return;
+  }
+  // No overrides — fall back to type-driven step 3 microcopy
   if(/restaurant|cafe|fast.?food|kitchen|dhaba|tiffin/i.test(TYPE)){
     $('step3T').textContent='Eat well';
     $('step3D').textContent='Delivery or pickup';
@@ -930,6 +1512,14 @@ function renderContact(){
   if(fb){
     var fUrl=fb.indexOf('http')===0?fb:'https://facebook.com/'+fb;
     bits.push('<a class="contact-btn fb" href="'+attr(fUrl)+'" target="_blank"><span class="contact-icon">👍</span><span>Facebook</span></a>');
+  }
+  // Rate us on Google — surfaces a high-conversion review-collection tile
+  // alongside the contact actions. The full "Rate us" CTA also appears
+  // inside the reviews section, but plenty of visitors never scroll that
+  // far; pinning it in the contact grid catches them either way.
+  var rateUsUrl=cfg('rateusurl','');
+  if(rateUsUrl){
+    bits.push('<a class="contact-btn rate" href="'+attr(rateUsUrl)+'" target="_blank" rel="noopener"><span class="contact-icon">⭐</span><span>Rate us on Google</span></a>');
   }
   if(!bits.length){$('contactSec').style.display='none';return}
   $('contactGrid').innerHTML=bits.join('');
@@ -1032,6 +1622,13 @@ function parseOrders(r){
 }
 
 function renderStats(){
+  // If Stat1Label is set, the strip is fully Config-driven (Stat1-3) —
+  // applyStatsOverride() already painted it, and Orders-derived counts
+  // would just clobber the tenant's chosen story. Skip in that case.
+  if(cfg('stat1label','')){
+    applyStatsOverride();
+    return;
+  }
   // Rating — Config override (e.g. Google rating) wins, else Orders-derived
   var displayRating = cfgRatingOverride!=null ? cfgRatingOverride : ratingAvg;
   var displayCount  = cfgRatingCountOverride!=null ? cfgRatingCountOverride : ratingCount;
