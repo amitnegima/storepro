@@ -803,14 +803,13 @@ function parseRows(r){
   if(!r||!r.table)return [];
   var headers=[],rows=r.table.rows||[];
   if(r.table.cols&&r.table.cols.length){
-    var labeled=true, looksAuto=true;
+    var looksAuto=true;
     r.table.cols.forEach(function(c){
       var l=(c.label||'').trim();
-      if(!l) labeled=false;
-      if(!/^[A-Z]+$/.test(l)) looksAuto=false;
+      if(l&&!/^[A-Z]+$/.test(l)) looksAuto=false;
       headers.push(l.toLowerCase().replace(/\s+/g,''));
     });
-    if((!labeled || looksAuto) && rows[0]){
+    if(looksAuto && rows[0]){
       var hr=rows[0];headers=[];
       if(hr.c)hr.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});
       rows=rows.slice(1);
@@ -1593,7 +1592,7 @@ function openMemberSheet(memberId){
 
   var aadharCard='';
   var aadharNum=m.aadhar||'';
-  var aadharPhoto=m.photourl||'';
+  var aadharPhoto=m.aadharphotourl||'';
   var notesPhotoMatch=(m.notes||'').match(/AadharPhoto:\s*(https?:\/\/\S+)/);
   if(notesPhotoMatch)aadharPhoto=notesPhotoMatch[1];
   if(aadharNum||aadharPhoto){
@@ -1611,16 +1610,7 @@ function openMemberSheet(memberId){
       '</div></div>';
   }
 
-  var studyTags='';
-  if(m.preparation)studyTags+='<span class="m-tag">📚 '+E(m.preparation)+'</span>';
-  if(m.examdetails){
-    String(m.examdetails).split(/[,·|]+/).map(function(s){return s.trim()}).filter(Boolean).forEach(function(t){
-      studyTags+='<span class="m-tag">🎯 '+E(t)+'</span>';
-    });
-  }
-  var study=studyTags
-    ? '<div class="m-section"><div class="m-section-title">Preparing for</div><div class="m-tags">'+studyTags+'</div></div>'
-    : '';
+  var study='';
 
   var notesText=(m.notes||'').replace(/AadharPhoto:\s*https?:\/\/\S+/g,'').trim();
   var notes=notesText

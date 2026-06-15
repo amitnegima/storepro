@@ -262,28 +262,17 @@
     </label>
   </div>
 
-  <div class="card" id="cardPrep">
-    <h2>Preparation</h2>
-    <div class="help">Select an option or type your exam — all fields are optional.</div>
-    <div class="opts" id="prepOpts"></div>
 
-    <label id="fExam" style="margin-top:10px">
-      <span class="lbl">Exam details (eg. Bank / SSC / UPSC…) <span class="req" id="reqExam" style="display:none">*</span></span>
-      <input type="text" id="iExam" placeholder="Eg. SSC CGL, Bank PO, Constable, etc.">
-      <span class="err-msg">Please add at least one exam.</span>
-    </label>
-  </div>
-
-  <div class="card" id="cardPlan">
-    <h2>Choose plan</h2>
-    <div class="help" id="planHelp">Pick the plan you want to enroll for.</div>
-    <div class="plans" id="planList"></div>
-  </div>
-
-  <div class="card" id="cardShift" style="display:none">
+  <div class="card" id="cardShift">
     <h2>Choose shift</h2>
     <div class="help">Each seat is single-shift unless you pick Full Day.</div>
     <div class="shifts" id="shiftList"></div>
+  </div>
+
+  <div class="card" id="cardPlan" style="display:none">
+    <h2>Choose plan</h2>
+    <div class="help" id="planHelp">Pick the plan you want to enroll for.</div>
+    <div class="plans" id="planList"></div>
   </div>
 
   <div class="card" id="cardSeat" style="display:none">
@@ -399,18 +388,18 @@ function parseRows(r){
   if(!r||!r.table)return [];
   var headers=[],rows=r.table.rows||[];
   if(r.table.cols&&r.table.cols.length){
-    var labeled=true, looksAuto=true;
+    var looksAuto=true;
     r.table.cols.forEach(function(c){
       var l=(c.label||'').trim();
-      if(!l) labeled=false;
-      // gviz's auto-labels are single capital letters: A, B, C, …, AA, AB …
-      if(!/^[A-Z]+$/.test(l)) looksAuto=false;
+      // Only check non-empty labels — empty label means the column has no header,
+      // which is fine (e.g. a new column added to the right of existing data).
+      if(l&&!/^[A-Z]+$/.test(l)) looksAuto=false;
       headers.push(l.toLowerCase().replace(/\s+/g,''));
     });
-    // Fall back to row[0] as headers when either the labels are missing OR they're
-    // gviz's auto-generated A/B/C placeholders (which happens whenever the sheet
-    // wasn't read with explicit headers, or the first row wasn't bold/styled).
-    if((!labeled || looksAuto) && rows[0]){
+    // Fall back to row[0] only when gviz returned auto-generated A/B/C labels
+    // (happens with headers=0). With headers=1, at least some labels will be
+    // proper names, so looksAuto will be false and we keep the col labels.
+    if(looksAuto && rows[0]){
       var hr=rows[0];headers=[];
       if(hr.c)hr.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});
       rows=rows.slice(1);
@@ -508,11 +497,10 @@ function render(){
     var rs=document.documentElement.style;rs.setProperty('--brand',brand);
     var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brand);
   }
-  var maxMB=parseInt(cfg('maxphotomb','4'),10)||4;$('maxMB').textContent=maxMB;$('maxMB2').textContent=maxMB;
+  var maxMB=parseInt(cfg('maxphotomb','6'),10)||6;$('maxMB').textContent=maxMB;$('maxMB2').textContent=maxMB;
   $('privacy').textContent=cfg('privacynotice','Your details stay private with the library owner.');
 
   applyFieldVisibility();
-  renderPrep();
   renderPlans();
   renderShiftCounter();
   renderShifts();
@@ -532,27 +520,9 @@ function applyFieldVisibility(){
   apply('requiredob','fDob',$('reqDob'),'yes');
   apply('requireemail','fEmail',$('reqEmail'),'yes');
   apply('requireaadhar','fAadhar',$('reqAadhar'),'optional');
-  $('cardPrep').style.display='block';
-  apply('requireexamdetails','fExam',$('reqExam'),'optional');
 }
 
 // ─── Preparation options ───
-function renderPrep(){
-  var opts=[];
-  for(var i=1;i<=4;i++){var p=cfg('preparationtype'+i,'');if(p)opts.push(p)}
-  if(!opts.length)opts=['Central exam','State exam','Both centre and state exam'];
-  $('prepOpts').innerHTML=opts.map(function(o,i){
-    return '<label class="opt" onclick="pickPrep('+i+',\''+E(o).replace(/'/g,"\\'")+'\')">'+
-           '<input type="radio" name="prep" id="prep'+i+'">'+
-           '<span class="txt">'+E(o)+'</span></label>';
-  }).join('');
-}
-function pickPrep(i,val){
-  selectedPrep=val;
-  document.querySelectorAll('#prepOpts .opt').forEach(function(el,j){el.classList.toggle('sel',j===i)});
-  var inp=document.getElementById('prep'+i);if(inp)inp.checked=true;
-  $('cardPrep').classList.remove('err');
-}
 
 // ─── Plans ───
 function renderPlans(){
@@ -576,9 +546,9 @@ function pickPlan(i){
   document.querySelectorAll('#planList .plan').forEach(function(el,j){el.classList.toggle('sel',j===i)});
   recomputeTotal();
   // Reset downstream picks when plan changes — shift caps may differ.
-  selectedShift=null;selectedSeat='';
-  renderShifts();renderSeatMap();
-  $('cardShift').style.display=isYes('enableshifts')?'block':'none';
+  selectedSeat='';
+  renderSeatMap();
+  $('cardSeat').style.display=selectedShift?'block':'none';
 }
 
 // ─── Live shift counts ───
@@ -663,7 +633,7 @@ function shiftIcon_(i,label){
   return{em:'⏰',cls:'default'};
 }
 function renderShifts(){
-  if(!isYes('enableshifts')){$('cardShift').style.display='none';return}
+  if(!isYes('enableshifts')){$('cardShift').style.display='none';$('cardPlan').style.display='block';return}
   var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
   var html='';
   for(var i=1;i<=n;i++){
@@ -688,7 +658,7 @@ function pickShift(k){
   if(!shiftLeft(k))return;
   selectedShift=k;selectedSeat='';
   renderShifts();
-  $('cardSeat').style.display='block';
+  $('cardPlan').style.display='block';
   renderSeatMap();
 }
 
@@ -738,21 +708,10 @@ function pickSeat(id){
 // ─── Photo upload (≤ 1 MB by default, configurable) ───
 function onPhoto(input){
   var f=input.files&&input.files[0];if(!f)return;
-  var maxMB=parseInt(cfg('maxphotomb','4'),10)||4;
+  var maxMB=parseInt(cfg('maxphotomb','6'),10)||6;
   if(!/^image\//.test(f.type||'')){toast('Pick an image file','err');input.value='';return}
   if(f.size>maxMB*1024*1024){toast('Photo too large (max '+maxMB+' MB)','err');input.value='';return}
-
-  // Cheap min-resolution check so the dashboard isn't full of blurry 200x200 selfies.
-  var minW=parseInt(cfg('photominwidth','400'),10)||0,minH=parseInt(cfg('photominheight','400'),10)||0;
-  var imgCheck=new Image();
-  imgCheck.onload=function(){
-    if((minW&&imgCheck.naturalWidth<minW)||(minH&&imgCheck.naturalHeight<minH)){
-      toast('Photo too small — at least '+minW+'×'+minH,'err');input.value='';return;
-    }
-    doUpload(f);
-  };
-  imgCheck.onerror=function(){toast('Could not read image','err');input.value=''};
-  var reader=new FileReader();reader.onload=function(){imgCheck.src=reader.result};reader.readAsDataURL(f);
+  doUpload(f);
 }
 function doUpload(f){
   var z=$('photoZone'),pic=$('photoPic'),bar=$('photoBar'),fill=$('photoFill'),ctrls=$('photoCtrls');
@@ -860,9 +819,6 @@ function validate(){
   var aad=$('iAadhar').value.replace(/\D/g,'');
   if(isYes('requireaadhar'))need('fAadhar',/^\d{12}$/.test(aad));
   else if(aad)need('fAadhar',/^\d{12}$/.test(aad));
-  if(isYes('requirepreparation')&&$('cardPrep').style.display!=='none'){
-    flag('cardPrep',!selectedPrep);if(!selectedPrep)ok=false;
-  }
   if(!selectedPlan){toast('Pick a plan','err');ok=false}
   if(isYes('enableshifts')&&!selectedShift){toast('Pick a shift','err');ok=false}
 
@@ -910,8 +866,6 @@ function submitForm(){
     email:String($('iEmail').value.trim()),
     aadhar:String($('iAadhar').value.replace(/\D/g,'')),
     aadharPhotoURL:String(aadharPhotoURL),
-    preparation:String(selectedPrep||''),
-    examDetails:String($('iExam').value.trim()),
     photoURL:String(photoURL),
     plan:String(selectedPlan.name),
     startDate:String(startDate),
