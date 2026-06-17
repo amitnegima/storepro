@@ -47,36 +47,33 @@
   .pinSpinner{display:none;width:20px;height:20px;border:2px solid var(--line-dk);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;margin:8px auto 0}
 
   /* ─── Header (hero) ─── */
-  .hdr{position:sticky;top:0;z-index:30;background:var(--brand-dk);color:#fff;padding:16px 16px 68px;transition:padding .25s ease}
-  .hdr.compact{padding:12px 16px 60px}
-  .hdr::after{content:"";position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.08))}
-  .hdr-row{display:flex;align-items:center;gap:12px;max-width:720px;margin:0 auto;position:relative;z-index:2}
-  .hdr-logo{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.15);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.15)}
-  .hdr.compact .hdr-logo{width:34px;height:34px;border-radius:9px}
+  /* ── Clean topbar ── */
+  .hdr{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .hdr-row{display:flex;align-items:center;gap:12px;max-width:720px;margin:0 auto;padding:10px 16px;position:relative}
+  .hdr-logo{width:38px;height:38px;border-radius:10px;background:var(--brand);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;flex-shrink:0}
   .hdr-info{flex:1;min-width:0}
-  .hdr-greeting{font-size:11px;opacity:.7;font-weight:400;margin-bottom:1px;transition:opacity .2s}
-  .hdr.compact .hdr-greeting{opacity:0;height:0;margin:0;overflow:hidden}
-  .hdr-name{font-weight:600;font-size:16px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .2s}
-  .hdr.compact .hdr-name{font-size:14px}
-  .hdr-meta{font-size:11.5px;opacity:.7;margin-top:1px;font-weight:400}
-  .hdr-btn{appearance:none;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .15s;position:relative}
-  .hdr-btn:active{background:rgba(255,255,255,.2)}
-  .hdr-btn .badge{position:absolute;top:-4px;right:-4px;background:var(--err);color:#fff;font-size:9px;font-weight:700;min-width:17px;height:17px;border-radius:99px;padding:0 4px;display:flex;align-items:center;justify-content:center;border:2px solid var(--brand-dk)}
-  .hdr-btn.has-pending{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.35)}
+  .hdr-greeting{font-size:11px;color:var(--ink-3);font-weight:400;margin-bottom:1px}
+  .hdr-name{font-weight:700;font-size:15px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .hdr-meta{font-size:11px;color:var(--ink-3);margin-top:1px}
+  .hdr-btn{appearance:none;border:1px solid var(--line-dk);background:#fff;color:var(--ink-2);border-radius:9px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:background .15s;position:relative}
+  .hdr-btn:hover{background:var(--bg);color:var(--ink)}
+  .hdr-btn:active{background:var(--line)}
+  .hdr-btn .badge{position:absolute;top:-4px;right:-4px;background:var(--err);color:#fff;font-size:9px;font-weight:700;min-width:17px;height:17px;border-radius:99px;padding:0 4px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+  .hdr-btn.has-pending{border-color:var(--hold);background:var(--hold-bg);color:var(--hold-dk)}
   .hdr-btn.has-pending .badge{animation:pulse-badge 2s ease-in-out infinite}
   @keyframes pulse-badge{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 
-  /* Occupancy strip ON the header */
-  .occ{display:flex;gap:6px;margin-top:12px;max-width:720px;margin-left:auto;margin-right:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;position:relative;z-index:2;scrollbar-width:none}
+  /* Shift counter strip — light bar below topbar */
+  .occ{display:flex;gap:6px;max-width:720px;margin:0 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 16px;scrollbar-width:none;background:#fff;border-bottom:1px solid var(--line)}
   .occ::-webkit-scrollbar{display:none}
-  .occ-pill{flex:0 0 auto;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 10px;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:6px;white-space:nowrap}
-  .occ-pill .pill-label{opacity:.8}
-  .occ-pill .num{background:rgba(255,255,255,.92);color:var(--brand-dk);border-radius:5px;padding:1px 7px;font-weight:700;font-size:11px}
-  .occ-pill.warn .num{color:var(--warn-dk)}
-  .occ-pill.err .num{color:var(--err-dk)}
+  .occ-pill{flex:0 0 auto;background:var(--bg);color:var(--ink-2);border:1px solid var(--line-dk);border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .occ-pill .pill-label{color:var(--ink-3)}
+  .occ-pill .num{background:var(--brand);color:#fff;border-radius:5px;padding:1px 7px;font-weight:700;font-size:11px}
+  .occ-pill.warn .num{background:var(--warn);color:#fff}
+  .occ-pill.err .num{background:var(--err);color:#fff}
 
-  /* Content area */
-  main{position:relative;z-index:5;max-width:720px;margin:-44px auto 88px;padding:0 16px}
+  /* Content area — no negative margin */
+  main{position:relative;z-index:5;max-width:720px;margin:0 auto 88px;padding:16px 16px 0}
 
   /* Sticky pending strip */
 
@@ -132,43 +129,67 @@
   .seats-head h3{margin:0;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
   .seats-head .util{font-size:11.5px;color:var(--ink-3);font-weight:600;background:var(--bg);padding:5px 12px;border-radius:8px;border:1px solid var(--line)}
   .seat-grid{display:grid;gap:8px}
-  .seat-cell{aspect-ratio:1/1.25;border:1.5px solid var(--line-dk);border-radius:12px;display:flex;flex-direction:column;cursor:pointer;background:#fff;color:var(--ink-3);transition:all .2s ease;position:relative;overflow:hidden;padding:6px 5px 5px;min-height:0}
-  .seat-cell:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
-  .seat-cell:active{transform:scale(.97);box-shadow:none}
-  .seat-cell.locked{position:relative}
-  .seat-cell.locked::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0,transparent 6px,rgba(0,0,0,.025) 6px,rgba(0,0,0,.025) 8px);pointer-events:none;border-radius:11px}
-  .seat-cell .lock-mark{position:absolute;top:0;right:0;background:var(--ink-3);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-bottom-left-radius:8px;line-height:1;z-index:2}
-  .seat-cell.expired .lock-mark{background:var(--err)}
-  .seat-cell.pending .lock-mark{background:var(--hold)}
+  /* ── Split-shift seat card ── */
+  .seat-cell{aspect-ratio:1/1.9;border:1.5px solid #d1d5db;border-radius:11px;display:flex;flex-direction:column;cursor:pointer;background:#fff;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s;min-height:0}
+  .seat-cell:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.1);border-color:var(--brand)}
+  .seat-cell:active{transform:scale(.96)}
 
-  .seat-cell.free{align-items:center;justify-content:center;padding:0;background:var(--bg);border-style:dashed;border-color:var(--line-dk)}
-  .seat-cell.free:hover{background:#fff;border-color:var(--brand);border-style:solid}
-  .seat-cell.free .sid{font-size:12px;color:var(--ink-4);font-weight:600}
-  .seat-cell.free .sc-top,.seat-cell.free .sc-mid,.seat-cell.free .sc-name{display:none}
+  /* Seat ID — brand-coloured pill header */
+  .sc-id{font-size:10px;font-weight:800;color:#fff;text-align:center;padding:4px 2px;background:linear-gradient(135deg,var(--brand),#0d9488);letter-spacing:.04em;line-height:1.2;flex-shrink:0}
 
-  .seat-cell.occupied{background:linear-gradient(135deg,var(--ok-bg) 0%,#dcfce7 100%);border-color:var(--ok);color:var(--ok-dk)}
-  .seat-cell.pending{background:linear-gradient(135deg,var(--hold-bg) 0%,#ede9fe 100%);border-color:var(--hold);color:var(--hold-dk)}
-  .seat-cell.expiring{background:linear-gradient(135deg,var(--warn-bg) 0%,#ffedd5 100%);border-color:var(--warn);color:var(--warn-dk)}
-  .seat-cell.expired{background:linear-gradient(135deg,var(--err-bg) 0%,#fee2e2 100%);border-color:var(--err);color:var(--err-dk)}
+  /* Shift halves */
+  .sc-halves{display:flex;flex:1;min-height:0}
+  .sc-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;border-right:1px solid #e5e7eb;position:relative;min-width:0;overflow:hidden;gap:0}
+  .sc-half:last-child{border-right:none}
 
-  .seat-cell .sc-top{display:flex;justify-content:space-between;align-items:center;line-height:1;padding:0 1px}
+  /* Coloured shift label band inside each half */
+  .sh-band{width:100%;display:flex;align-items:center;justify-content:center;gap:3px;padding:3px 2px 2px;font-size:9px;font-weight:700;line-height:1;flex-shrink:0}
+  .sc-half.s1 .sh-band{background:#fef9c3;color:#92400e;border-bottom:1px solid #fde68a}
+  .sc-half.s2 .sh-band{background:#eef2ff;color:#3730a3;border-bottom:1px solid #c7d2fe}
+  .sc-half.fd .sh-band{background:linear-gradient(90deg,#fef9c3,#fef3c7);color:#92400e;border-bottom:1px solid #fde68a}
+
+  /* Content area of each half */
+  .sh-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 3px 5px;gap:3px;width:100%}
+
+  /* Status tint on the body */
+  .sc-half.occupied .sh-body{background:linear-gradient(180deg,#f0fdf4,#dcfce7 90%)}
+  .sc-half.pending  .sh-body{background:linear-gradient(180deg,#faf5ff,#ede9fe 90%)}
+  .sc-half.expiring .sh-body{background:linear-gradient(180deg,#fffbeb,#fef3c7 90%)}
+  .sc-half.expired  .sh-body{background:linear-gradient(180deg,#fff1f2,#fee2e2 90%)}
+  .sc-half.free     .sh-body{background:#f9fafb}
+
+  /* Avatar */
+  .sh-av{width:28px;height:28px;border-radius:50%;background-size:cover;background-position:center;background-color:#e5e7eb;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#6b7280;flex-shrink:0}
+  .sc-half.occupied .sh-av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--ok)}
+  .sc-half.pending  .sh-av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--hold)}
+  .sc-half.expired  .sh-av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--err)}
+  .sc-half.expiring .sh-av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--warn)}
+
+  /* Empty state circle */
+  .sh-empty{width:26px;height:26px;border-radius:50%;border:1.5px dashed #d1d5db;display:flex;align-items:center;justify-content:center;color:#d1d5db;font-size:14px;font-weight:300;flex-shrink:0}
+  .sc-half.free:hover .sh-empty{border-color:var(--brand);color:var(--brand)}
+
+  /* Name label */
+  .sh-name{font-size:8.5px;font-weight:600;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;line-height:1.2;padding:0 2px}
+  .sc-half.occupied .sh-name{color:var(--ok-dk)}
+  .sc-half.pending  .sh-name{color:var(--hold-dk)}
+  .sc-half.expired  .sh-name{color:var(--err-dk)}
+  .sc-half.expiring .sh-name{color:#92400e}
+  .sc-half.free     .sh-name{color:#9ca3af;font-weight:500}
+
+  /* Blocked seat */
+  .seat-cell.blocked{background:repeating-linear-gradient(45deg,#f9fafb 0px,#f9fafb 5px,#e5e7eb 5px,#e5e7eb 10px);border-color:#d1d5db;align-items:center;justify-content:center;padding:8px 4px}
+  .seat-cell.blocked .blk-id{font-size:10px;font-weight:800;color:#9ca3af;display:block;margin-bottom:3px;text-align:center}
+  .seat-cell.blocked .blk-lbl{font-size:9px;font-weight:600;color:#6b7280;text-align:center;line-height:1.3;padding:0 3px}
+
+  /* Fully free seat */
+  .seat-cell.fully-free{align-items:center;justify-content:center;background:#f9fafb;border-style:dashed;border-color:#d1d5db}
+  .seat-cell.fully-free:hover{background:#fff;border-color:var(--brand);border-style:solid}
+  .seat-cell.fully-free .sc-ff-id{font-size:11px;font-weight:700;color:#9ca3af}
+
+  /* Legacy */
+  .sc-name{font-size:9.5px;font-weight:600;line-height:1.1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;color:inherit;opacity:.85}
   .seat-cell .sid{font-size:10px;font-weight:800;opacity:.7}
-  .seat-cell .shf{font-size:13px;background:rgba(255,255,255,.7);border-radius:5px;padding:2px 4px;font-weight:700;line-height:1;color:inherit;letter-spacing:1px;backdrop-filter:blur(4px)}
-  .seat-cell.pending .shf{background:rgba(255,255,255,.6)}
-  .seat-cell.expired .shf{background:rgba(255,255,255,.6)}
-  .seat-cell .shf.full{background:rgba(255,255,255,.7);padding:2px 5px;font-size:13px}
-  .seat-cell.expired .shf.full{background:rgba(255,255,255,.5)}
-
-  .seat-cell .sc-mid{flex:1;display:flex;align-items:center;justify-content:center;margin:3px 0;position:relative;z-index:1}
-  .seat-cell .av{width:55%;aspect-ratio:1/1;max-width:34px;max-height:34px;border-radius:50%;background-size:cover;background-position:center;background-color:#fff;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:inherit;position:relative}
-  .seat-cell .av .av-extra{position:absolute;bottom:-3px;right:-3px;background:#fff;border:1.5px solid currentColor;color:currentColor;border-radius:99px;padding:0 3px;font-size:7px;font-weight:800;line-height:1.4;min-width:13px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.1)}
-
-  .seat-cell.occupied .av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--ok)}
-  .seat-cell.pending .av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--hold)}
-  .seat-cell.expired .av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--err)}
-  .seat-cell.expiring .av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--warn)}
-
-  .seat-cell .sc-name{font-size:9.5px;font-weight:600;line-height:1.1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;color:inherit;opacity:.85}
   .seat-cell .sc-name.locked-name{font-weight:800;letter-spacing:.02em;text-transform:uppercase;font-size:8.5px;opacity:1}
 
   .seat-legend{display:flex;gap:10px;font-size:11px;color:var(--ink-3);margin-top:14px;flex-wrap:wrap;font-weight:500;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--line)}
@@ -391,6 +412,31 @@
   .m-danger{display:flex;justify-content:center;margin-top:12px;padding-bottom:6px}
   .m-danger button{appearance:none;background:#fff;border:1.5px solid rgba(220,38,38,.15);color:var(--err-dk);font-size:12.5px;font-weight:600;padding:11px 22px;border-radius:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.03)}
   .m-danger button:active{background:var(--err);color:#fff;border-color:var(--err);transform:scale(.96)}
+  .m-edit-btn{position:absolute;top:16px;right:16px;z-index:10;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.32);color:#fff;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;gap:5px;transition:.15s}
+  .m-edit-btn:active{background:rgba(255,255,255,.3);transform:scale(.95)}
+  .m-edit-form{padding-bottom:24px}
+  .m-edit-form .ef-title{font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.3px;margin:18px 0 16px;padding:0 2px}
+  .m-edit-form .ef-field{margin-bottom:14px}
+  .m-edit-form .ef-label{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+  .m-edit-form input,.m-edit-form select,.m-edit-form textarea{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;font:500 14px var(--F);color:var(--ink);background:#fff;outline:none;transition:border-color .15s;box-sizing:border-box}
+  .m-edit-form input:focus,.m-edit-form select:focus,.m-edit-form textarea:focus{border-color:var(--brand)}
+  .m-edit-form textarea{resize:vertical;min-height:72px}
+  .m-edit-form .ef-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .m-edit-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+  .m-edit-actions .ef-save{background:var(--brand);color:#fff;border:none;border-radius:14px;padding:14px;font:700 14px var(--F);cursor:pointer;transition:.15s}
+  .m-edit-actions .ef-save:active{transform:scale(.96)}
+  .m-edit-actions .ef-cancel{background:#fff;color:var(--ink-2);border:1.5px solid var(--line);border-radius:14px;padding:14px;font:700 14px var(--F);cursor:pointer;transition:.15s}
+  .m-edit-actions .ef-cancel:active{background:var(--bg)}
+  .ef-photo-row{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding:14px;background:var(--bg);border-radius:14px;border:1.5px solid var(--line)}
+  .ef-photo-thumb{width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,var(--brand-bg),#ccfbf1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font:700 20px var(--F);color:var(--brand);background-size:cover;background-position:center;overflow:hidden;position:relative}
+  .ef-photo-thumb img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+  .ef-photo-info{flex:1;min-width:0}
+  .ef-photo-info .ef-label{margin-bottom:4px}
+  .ef-photo-hint{font-size:11px;color:var(--ink-3);margin-top:2px}
+  .ef-photo-btn{padding:8px 14px;background:#fff;border:1.5px solid var(--brand);color:var(--brand);border-radius:10px;font:700 12px var(--F);cursor:pointer;white-space:nowrap;transition:.15s}
+  .ef-photo-btn:active{background:var(--brand-bg)}
+  .ef-upload-bar{height:3px;background:var(--line);border-radius:2px;margin-top:6px;display:none}
+  .ef-upload-bar .ef-upload-fill{height:100%;background:var(--brand);border-radius:2px;transition:width .2s}
 
   .m-pending-acts{display:grid;grid-template-columns:1.2fr .8fr;gap:10px;margin-bottom:18px}
   .m-pending-acts button{appearance:none;border:none;border-radius:14px;padding:15px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:-.01em;transition:all .2s;box-shadow:0 4px 14px rgba(0,0,0,.1)}
@@ -578,6 +624,65 @@
   @keyframes ef-upload-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
   .ef-photo-zone.uploading{border-color:var(--brand);border-style:solid;animation:ef-upload-pulse 1.2s ease-in-out infinite;pointer-events:none}
   .ef-upload-spinner{display:inline-block;width:20px;height:20px;border:2px solid #e2e8f0;border-top-color:var(--brand);border-radius:50%;animation:ef-upload-spin .7s linear infinite;margin-right:6px;vertical-align:middle}
+
+  /* ── Desktop 3-column layout ── */
+  @media(min-width:1120px){
+    body{overflow-x:hidden}
+    .ds-left,.ds-right{display:block!important;position:fixed;top:0;width:280px;height:100vh;overflow-y:auto;padding:12px 14px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:#fafafa;border-right:1px solid var(--line)}
+    .ds-left{left:0;padding-top:100px;border-left:none}
+    .ds-right{right:0;border-right:none;border-left:1px solid var(--line);padding-top:100px}
+    #main{margin-left:280px;margin-right:280px;max-width:none!important}
+    .hdr-row,.occ{max-width:none!important;margin-left:280px!important;margin-right:280px!important}
+  }
+  @media(min-width:1400px){
+    .ds-left,.ds-right{width:300px}
+    #main{margin-left:300px;margin-right:300px}
+    .hdr-row,.occ{margin-left:300px!important;margin-right:300px!important}
+  }
+
+  .ds-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;margin-bottom:12px}
+  .ds-card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+  .ds-card-title a{font-size:10px;text-transform:none;letter-spacing:0;color:var(--brand);cursor:pointer;font-weight:600}
+
+  /* Occupancy mini ring */
+  .ds-occ{display:flex;align-items:center;gap:12px}
+  .ds-ring{position:relative;width:64px;height:64px;flex-shrink:0}
+  .ds-ring svg{transform:rotate(-90deg)}
+  .ds-ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--ink);line-height:1}
+  .ds-ring-pct{font-size:9px;font-weight:600;color:var(--ink-3)}
+  .ds-occ-stats{flex:1;display:flex;flex-direction:column;gap:4px}
+  .ds-stat-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
+  .ds-stat-row .lbl{color:var(--ink-3)}
+  .ds-stat-row .val{font-weight:700;color:var(--ink)}
+  .ds-stat-row .val.ok{color:var(--ok-dk)}
+  .ds-stat-row .val.warn{color:#d97706}
+  .ds-stat-row .val.err{color:var(--err-dk)}
+
+  /* Sidebar member rows */
+  .ds-member{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;transition:background .1s}
+  .ds-member:last-child{border-bottom:none;padding-bottom:0}
+  .ds-member:hover{background:var(--bg);margin:0 -14px;padding-left:14px;padding-right:14px;border-radius:8px}
+  .ds-av{width:30px;height:30px;border-radius:50%;background:var(--brand-bg);color:var(--brand);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background-size:cover;background-position:center;overflow:hidden}
+  .ds-info{flex:1;min-width:0}
+  .ds-name{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ds-meta{font-size:10px;color:var(--ink-3);margin-top:1px}
+  .ds-pill{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+  .ds-pill.warn{background:#fef3c7;color:#92400e}
+  .ds-pill.err{background:#fee2e2;color:var(--err-dk)}
+  .ds-pill.ok{background:#dcfce7;color:var(--ok-dk)}
+  .ds-pill.hold{background:#ede9fe;color:#5b21b6}
+
+  /* Quick approve/reject in sidebar */
+  .ds-acts{display:flex;gap:5px;flex-shrink:0}
+  .ds-approve{background:var(--ok);color:#fff;border:none;border-radius:7px;width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .ds-reject{background:var(--err-bg);color:var(--err-dk);border:1px solid var(--err);border-radius:7px;width:26px;height:26px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+  /* Sidebar search */
+  .ds-search{width:100%;padding:9px 12px;border:1.5px solid var(--line-dk);border-radius:10px;font:500 13px var(--F);color:var(--ink);outline:none;background:#fff;box-sizing:border-box}
+  .ds-search:focus{border-color:var(--brand)}
+  #dsSearchResults{margin-top:8px}
+
+  .ds-empty{font-size:11px;color:var(--ink-4);text-align:center;padding:10px 0}
 </style>
 </head>
 <body>
@@ -625,6 +730,21 @@
 
 
 
+<!-- ─── Desktop sidebars ─── -->
+<aside class="ds-left" id="dsLeft" style="display:none">
+  <div class="ds-card" id="dsOccCard"></div>
+  <div class="ds-card" id="dsPendingCard"></div>
+  <div class="ds-card" id="dsAlertCard"></div>
+</aside>
+<aside class="ds-right" id="dsRight" style="display:none">
+  <div class="ds-card ds-search-card">
+    <input class="ds-search" id="dsSearch" type="search" placeholder="🔍  Search members…" oninput="dsMemberSearch(this.value)">
+    <div id="dsSearchResults"></div>
+  </div>
+  <div class="ds-card" id="dsExpiringCard"></div>
+  <div class="ds-card" id="dsRecentCard"></div>
+</aside>
+
 <!-- ─── Content ─── -->
 <main id="main" style="display:none">
 
@@ -642,6 +762,7 @@
         <span><span class="sw expiring"></span>Expiring ≤3d</span>
         <span><span class="sw expired"></span>Expired</span>
         <span><span class="sw"></span>Free</span>
+        <span><span class="sw" style="background:repeating-linear-gradient(45deg,#f8fafc 0px,#f8fafc 3px,#e2e8f0 3px,#e2e8f0 6px);border-color:#cbd5e1"></span>Blocked</span>
       </div>
       <div class="shift-key" id="shiftKey">
         <span><span class="sk-icon">🔆</span>Morning</span>
@@ -962,7 +1083,7 @@ function silentRefresh(){
     var pendAfter=pendingMembers().length;
     console.log('[dash] pending before:',pendBefore,'after:',pendAfter);
     if(pendAfter>pendBefore){chime();flashSticky()}
-    renderOccupancy();renderSeats();renderPending();renderSticky();
+    renderOccupancy();renderSeats();renderPending();renderSticky();renderDesktopSidebars();
     if(currentTab==='Active')renderActive();
     if(currentTab==='Insights')renderInsights();
   });
@@ -991,6 +1112,7 @@ function render(){
   else {$('hdrPendingBtn').style.display='none';$('hdrPendingBtn').classList.remove('has-pending');$('tabActiveDot').classList.remove('show');$('tabSeatsDot').classList.remove('show')}
 
   renderOccupancy();renderSeatsHero();renderSeats();renderActiveHero();renderActive();renderPending();renderSticky();renderInsights();renderSettings();renderHistoryBlock();
+  if(window.innerWidth>=1120){$('dsLeft').style.display='block';$('dsRight').style.display='block';renderDesktopSidebars()}
   lastPendingCount=pendingMembers().length;
   startPolling();
 
@@ -1129,6 +1251,35 @@ function isSeatFullyBooked(list){
   return true;
 }
 
+function blockedSeats(){
+  var map={};
+  (cfg('blockedseats','')||'').split(',').forEach(function(part){
+    var p=part.trim();if(!p)return;
+    var col=p.indexOf(':');
+    var seat=col>=0?p.slice(0,col).trim().toUpperCase():p.toUpperCase();
+    var label=col>=0?p.slice(col+1).trim():'Not available';
+    if(seat)map[seat]=label||'Not available';
+  });
+  return map;
+}
+function toggleBlockSeat(id){
+  var blocked=blockedSeats();
+  var isBlocked=!!(blocked[id.toUpperCase()]);
+  if(isBlocked){
+    var newVal=Object.keys(blocked).filter(function(k){return k!==id.toUpperCase()}).map(function(k){return k+':'+blocked[k]}).join(',');
+    sendCmd({action:'updateConfig',key:'BlockedSeats',value:newVal},function(){
+      config['blockedseats']=newVal;renderSeats();toast('Seat '+id+' unblocked','ok');closeSheet();
+    });
+  }else{
+    var label=prompt('Label for seat '+id+' (e.g. Reserved, Staff, Maintenance):','Reserved');
+    if(!label)return;
+    var existing=Object.keys(blocked).map(function(k){return k+':'+blocked[k]}).join(',');
+    var newVal2=(existing?existing+',':'')+id.toUpperCase()+':'+label.trim();
+    sendCmd({action:'updateConfig',key:'BlockedSeats',value:newVal2},function(){
+      config['blockedseats']=newVal2;renderSeats();toast('Seat '+id+' blocked as "'+label+'"','ok');closeSheet();
+    });
+  }
+}
 function renderSeats(){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var cols=Math.max(2,Math.min(12,parseInt(cfg('seatgridcols','8'),10)||8));
@@ -1147,47 +1298,77 @@ function renderSeats(){
   var bySeat={};
   holdingMembers().forEach(function(m){if(m.seat)(bySeat[m.seat]=bySeat[m.seat]||[]).push(m)});
 
+  var blocked=blockedSeats();
+
+  // Shift labels from config
+  var lbl1=cfg('shift1label','Morning'),lbl2=cfg('shift2label','Evening');
+  var fullLbl=cfg('fulldaylabel','Full Day');
+
+  function halfStatus(m){
+    var d=daysToExpiry(m),st=(m.status||'').toLowerCase();
+    if(st==='pending')return 'pending';
+    if(d!=null&&d<0)return 'expired';
+    if(d!=null&&d<=7)return 'expiring';
+    return 'occupied';
+  }
+  // shiftCls: 's1' | 's2' | 'fd'  — controls the band colour
+  function halfHtml(m,sym,bandLabel,shiftCls){
+    var st=halfStatus(m);
+    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+    return '<div class="sc-half '+st+' '+(shiftCls||'')+'" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\')" title="'+E(m.name)+'">'+
+      '<div class="sh-band"><span>'+sym+'</span><span>'+E(bandLabel)+'</span></div>'+
+      '<div class="sh-body">'+
+        '<div class="sh-av" style="'+av+'">'+(m.photourl?'':'<span>'+E(ini(m.name))+'</span>')+'</div>'+
+        '<div class="sh-name">'+E(shortName(m.name))+'</div>'+
+      '</div>'+
+    '</div>';
+  }
+  function freeHalfHtml(sym,bandLabel,seatId,shiftCls){
+    return '<div class="sc-half free '+(shiftCls||'')+'" onclick="event.stopPropagation();openSeatSheet(\''+seatId+'\')" title="Free — tap to assign">'+
+      '<div class="sh-band"><span>'+sym+'</span><span>'+E(bandLabel)+'</span></div>'+
+      '<div class="sh-body">'+
+        '<div class="sh-empty">+</div>'+
+        '<div class="sh-name">Free</div>'+
+      '</div>'+
+    '</div>';
+  }
+
   var html='';
   for(var i=1;i<=cap;i++){
     var id=prefix+i,list=bySeat[id]||[];
-    if(!list.length){
-      html+='<div class="seat-cell free" onclick="openSeatSheet(\''+id+'\')"><span class="sid">'+id+'</span></div>';
+
+    if(blocked[id.toUpperCase()]){
+      html+='<div class="seat-cell blocked" onclick="toggleBlockSeat(\''+id+'\')" title="Click to unblock">'+
+        '<span class="blk-id">'+id+'</span>'+
+        '<span class="blk-lbl">'+E(blocked[id.toUpperCase()])+'</span>'+
+      '</div>';
       continue;
     }
-    var order=['expired','expiring','pending','occupied'];
-    var pickStatus=order.filter(function(s){return list.some(function(m){return memberSeatStatus(m)===s})})[0]||'occupied';
-    var fullyBooked=isSeatFullyBooked(list);
-    var m=list[0];
-    var isFullDay=list.some(function(x){return (x.shift||'').toUpperCase()==='FULL'});
-    // Collect all distinct shift icons for this seat
-    var shfHtml='';
-    if(isFullDay){
-      shfHtml='<span class="shf full" title="Full day — all shifts">☀️</span>';
-    }else{
-      var seenShifts={};
-      var shfIcons='';
-      list.forEach(function(x){
-        var sk=(x.shift||'').toUpperCase();
-        if(!sk||seenShifts[sk])return;
-        seenShifts[sk]=true;
-        var si=parseInt(sk.slice(1),10)||1;
-        shfIcons+=shiftIcon_(si,cfg('shift'+sk.slice(1)+'label',''));
-      });
-      if(shfIcons)shfHtml='<span class="shf" title="'+Object.keys(seenShifts).join(', ')+'">'+shfIcons+'</span>';
+
+    if(!list.length){
+      html+='<div class="seat-cell fully-free" onclick="openSeatSheet(\''+id+'\')">'+
+        '<div class="sc-ff-id">'+id+'</div>'+
+      '</div>';
+      continue;
     }
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
-    var extra=list.length>1?'<span class="av-extra">+'+(list.length-1)+'</span>':'';
-    // Name strip: when the whole seat is locked, show "FULL" with count so the
-    // shopkeeper instantly knows nothing more can fit here.
-    var nameStr=fullyBooked
-      ? (list.length>1 ? 'FULL · ✕'+list.length : shortName(m.name))
-      : shortName(m.name);
-    var nameCls=(fullyBooked && list.length>1) ? 'sc-name locked-name' : 'sc-name';
-    html+='<div class="seat-cell '+pickStatus+(fullyBooked?' locked':'')+'" onclick="openSeatSheet(\''+id+'\')" title="'+E(m.name)+(fullyBooked?' — all shifts booked':'')+'">'+
-      (fullyBooked?'<span class="lock-mark">🔒</span>':'')+
-      '<div class="sc-top"><span class="sid">'+id+'</span>'+shfHtml+'</div>'+
-      '<div class="sc-mid"><div class="av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+extra+'</div></div>'+
-      '<div class="'+nameCls+'">'+E(nameStr)+'</div>'+
+
+    var byShift={};
+    list.forEach(function(m){byShift[(m.shift||'').toUpperCase()]=m});
+
+    // Short label for the band: take first word before space/bracket
+    function shortLbl(l){return (l||'').split(/[\s(]/)[0]||l}
+    var halvesHtml='<div class="sc-halves">';
+    if(byShift['FULL']){
+      halvesHtml+=halfHtml(byShift['FULL'],'☀️',shortLbl(fullLbl),'fd');
+    }else{
+      halvesHtml+=(byShift['S1']?halfHtml(byShift['S1'],'🌅',shortLbl(lbl1),'s1'):freeHalfHtml('🌅',shortLbl(lbl1),id,'s1'));
+      halvesHtml+=(byShift['S2']?halfHtml(byShift['S2'],'🌆',shortLbl(lbl2),'s2'):freeHalfHtml('🌆',shortLbl(lbl2),id,'s2'));
+    }
+    halvesHtml+='</div>';
+
+    html+='<div class="seat-cell" onclick="openSeatSheet(\''+id+'\')">'+
+      '<div class="sc-id">'+id+'</div>'+
+      halvesHtml+
     '</div>';
   }
   $('seatGrid').innerHTML=html;
@@ -1340,6 +1521,135 @@ function renderActive(){
   }).join('');
 }
 
+// ─── Desktop sidebars ───
+function renderDesktopSidebars(){
+  if(window.innerWidth<1120)return;
+  renderDsOcc();renderDsPending();renderDsAlerts();renderDsExpiring();renderDsRecent();
+}
+function renderDsOcc(){
+  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var act=activeMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  // Count unique seats occupied — same logic as the middle hero card
+  var seatSet={};
+  holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0})
+    .forEach(function(m){if(m.seat)seatSet[m.seat]=true});
+  var occ=Object.keys(seatSet).length;
+  var pct=cap?Math.round(occ/cap*100):0;
+  var free=Math.max(0,cap-occ);
+  var expSoon=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=0&&d<=7}).length;
+  var expired=activeMembers().filter(function(m){var d=daysToExpiry(m);return d!=null&&d<0}).length;
+  var C=2*Math.PI*26,fill=Math.max(0,Math.min(C,(pct/100)*C));
+  var col=pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--ok)';
+  $('dsOccCard').innerHTML='<div class="ds-card-title">Occupancy</div>'+
+    '<div class="ds-occ">'+
+      '<div class="ds-ring">'+
+        '<svg width="64" height="64" viewBox="0 0 64 64">'+
+          '<circle cx="32" cy="32" r="26" fill="none" stroke="var(--line)" stroke-width="7"/>'+
+          '<circle cx="32" cy="32" r="26" fill="none" stroke="'+col+'" stroke-width="7" stroke-dasharray="'+fill+' '+(C-fill)+'" stroke-linecap="round"/>'+
+        '</svg>'+
+        '<div class="ds-ring-num">'+pct+'<span class="ds-ring-pct">%</span></div>'+
+      '</div>'+
+      '<div class="ds-occ-stats">'+
+        '<div class="ds-stat-row"><span class="lbl">Occupied</span><span class="val">'+occ+' / '+cap+'</span></div>'+
+        '<div class="ds-stat-row"><span class="lbl">Free seats</span><span class="val ok">'+free+'</span></div>'+
+        (expSoon?'<div class="ds-stat-row"><span class="lbl">Expiring ≤7d</span><span class="val warn">'+expSoon+'</span></div>':'')+
+        (expired?'<div class="ds-stat-row"><span class="lbl">Expired</span><span class="val err">'+expired+'</span></div>':'')+
+      '</div>'+
+    '</div>';
+}
+function renderDsPending(){
+  var pend=pendingMembers();
+  var el=$('dsPendingCard');
+  if(!pend.length){el.innerHTML='';return}
+  el.innerHTML='<div class="ds-card-title">Pending approval <span style="background:var(--hold-bg);color:var(--hold-dk);padding:1px 7px;border-radius:99px;font-size:10px">'+pend.length+'</span></div>'+
+    pend.slice(0,5).map(function(m){
+      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+      return '<div class="ds-member">'+
+        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
+        '<div class="ds-acts">'+
+          '<button class="ds-approve" onclick="event.stopPropagation();approveMember(\''+E(m.memberid)+'\')" title="Approve">✓</button>'+
+          '<button class="ds-reject" onclick="event.stopPropagation();rejectMember(\''+E(m.memberid)+'\')" title="Reject">✕</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+}
+function renderDsAlerts(){
+  var act=activeMembers();
+  var today=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d===0});
+  var tomorrow=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d===1});
+  var el=$('dsAlertCard');
+  if(!today.length&&!tomorrow.length){el.innerHTML='';return}
+  var rows=today.concat(tomorrow).slice(0,4).map(function(m){
+    var d=daysToExpiry(m);
+    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+    return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
+      '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+      '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
+      '<span class="ds-pill '+(d===0?'err':'warn')+'">'+(d===0?'Today':'Tomorrow')+'</span>'+
+    '</div>';
+  }).join('');
+  el.innerHTML='<div class="ds-card-title">⚠️ Expiring today/tomorrow</div>'+rows;
+}
+function renderDsExpiring(){
+  var act=activeMembers();
+  var soon=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=2&&d<=14})
+    .sort(function(a,b){return (daysToExpiry(a)||0)-(daysToExpiry(b)||0)});
+  var el=$('dsExpiringCard');
+  if(!soon.length){el.innerHTML='<div class="ds-card-title">Expiring soon</div><div class="ds-empty">No members expiring in 14 days</div>';return}
+  el.innerHTML='<div class="ds-card-title">Expiring soon <a onclick="goTab(\'Active\');setFilter(\'expiring\')">View all →</a></div>'+
+    soon.slice(0,6).map(function(m){
+      var d=daysToExpiry(m);
+      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+      var ph=(m.phone||'').replace(/\D/g,'');var waPh=ph.length===10?'91'+ph:ph;
+      return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
+        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.seat||'—')+' · '+E(m.plan||'—')+'</div></div>'+
+        '<span class="ds-pill '+(d<=3?'err':'warn')+'">'+d+'d</span>'+
+      '</div>';
+    }).join('');
+}
+function renderDsRecent(){
+  var all=members.filter(function(m){var s=(m.status||'').toLowerCase();return s==='active'||s==='pending'});
+  var recent=all.slice().sort(function(a,b){
+    var ta=a.enrolledat?new Date(a.enrolledat).getTime():0;
+    var tb=b.enrolledat?new Date(b.enrolledat).getTime():0;
+    return tb-ta;
+  }).slice(0,5);
+  var el=$('dsRecentCard');
+  el.innerHTML='<div class="ds-card-title">Recent enrollments</div>'+
+    (recent.length?recent.map(function(m){
+      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+      var st=(m.status||'').toLowerCase();
+      return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
+        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
+        '<span class="ds-pill '+(st==='pending'?'hold':'ok')+'">'+(st==='pending'?'Pending':'Active')+'</span>'+
+      '</div>';
+    }).join(''):'<div class="ds-empty">No members yet</div>');
+}
+function dsMemberSearch(q){
+  var el=$('dsSearchResults');
+  if(!q||q.length<2){el.innerHTML='';return}
+  q=q.toLowerCase();
+  var res=members.filter(function(m){
+    return (m.name+' '+m.phone+' '+m.aadhar+' '+m.seat).toLowerCase().indexOf(q)>=0;
+  }).slice(0,6);
+  if(!res.length){el.innerHTML='<div class="ds-empty">No matches</div>';return}
+  el.innerHTML=res.map(function(m){
+    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+    var st=(m.status||'').toLowerCase();
+    var d=daysToExpiry(m);
+    var pill=st==='pending'?'hold':d!=null&&d<0?'err':d!=null&&d<=7?'warn':'ok';
+    var pillTxt=st==='pending'?'Pending':d!=null&&d<0?(Math.abs(d)+'d ago'):d!=null?(d+'d'):'—';
+    return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
+      '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+      '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.seat||'—')+' · '+E(m.plan||'—')+'</div></div>'+
+      '<span class="ds-pill '+pill+'">'+pillTxt+'</span>'+
+    '</div>';
+  }).join('');
+}
+
 // ─── Insights ───
 function renderInsights(){
   var act=activeMembers(),pend=pendingMembers();
@@ -1484,7 +1794,10 @@ function openSeatSheet(seatId){
   var body='<div class="seat-sheet-head"><h3>'+E(seatId)+'</h3><div class="sub">'+(occ.length?occ.length+' member'+(occ.length>1?'s':'')+' on this seat':'This seat is currently free')+
     '</div>'+occChips+'</div>';
   if(!occ.length){
-    body+='<div class="seat-empty-action"><span class="big">🪑</span><div>No one is assigned to this seat yet.<br>Enroll a member or reassign an existing one here.</div></div>';
+    body+='<div class="seat-empty-action"><span class="big">🪑</span><div>No one is assigned to this seat yet.<br>Enroll a member or reassign an existing one here.</div></div>'+
+      '<div style="margin:16px 0 8px;display:flex;justify-content:center">'+
+        '<button onclick="toggleBlockSeat(\''+E(seatId)+'\');closeSheet()" style="background:#fff;border:1.5px solid var(--line);color:var(--ink-2);padding:10px 18px;border-radius:12px;font:600 13px var(--F);cursor:pointer;display:flex;align-items:center;gap:6px">🚫 Block this seat</button>'+
+      '</div>';
   } else {
     body+=occ.map(function(m){
       var d=daysToExpiry(m);
@@ -1524,14 +1837,16 @@ function openMemberSheet(memberId){
   var phoneRaw=(m.phone||'').replace(/\D/g,'');
   var waPh=phoneRaw.length===10?'91'+phoneRaw:phoneRaw;
 
-  var hero='<div class="m-hero"><div class="m-hero-deco"></div><div class="m-hero-inner">'+
-    '<div class="m-avatar-wrap">'+(m.photourl?'<img src="'+E(m.photourl)+'" alt="">':'<span class="m-initials">'+E(ini(m.name))+'</span>')+'</div>'+
-    '<div class="m-hero-text">'+
-      '<h3>'+E(m.name||'—')+'</h3>'+
-      '<div class="pid">'+E(m.memberid||'—')+(m.phone?' · '+E(m.phone):'')+'</div>'+
-      '<div class="badge '+badgeCls+'"><span class="b-dot"></span>'+E(badgeLabel)+'</div>'+
-    '</div>'+
-  '</div></div>';
+  var hero='<div class="m-hero"><div class="m-hero-deco"></div>'+
+    '<button class="m-edit-btn" onclick="openEditMember(\''+E(memberId)+'\')">✏️ Edit</button>'+
+    '<div class="m-hero-inner">'+
+      '<div class="m-avatar-wrap">'+(m.photourl?'<img src="'+E(m.photourl)+'" alt="">':'<span class="m-initials">'+E(ini(m.name))+'</span>')+'</div>'+
+      '<div class="m-hero-text">'+
+        '<h3>'+E(m.name||'—')+'</h3>'+
+        '<div class="pid">'+E(m.memberid||'—')+(m.phone?' · '+E(m.phone):'')+'</div>'+
+        '<div class="badge '+badgeCls+'"><span class="b-dot"></span>'+E(badgeLabel)+'</div>'+
+      '</div>'+
+    '</div></div>';
 
   var expCls=d!=null&&d<0?'err':d!=null&&d<=7?'warn':'';
   var expStatusBadge='';
@@ -1621,7 +1936,7 @@ function openMemberSheet(memberId){
   if(status==='active'){
     moreActs='<div class="m-section"><div class="m-section-title">Manage</div>'+
       '<div class="m-secondary">'+
-        '<button onclick="extendPrompt()">＋ Extend 30 days</button>'+
+        '<button onclick="openExtendDate()">📅 Set expiry date</button>'+
         '<button onclick="reassignPrompt()">🪑 Reassign seat</button>'+
       '</div>'+
       '<div class="m-danger"><button onclick="deleteMember()">🗑 Delete member</button></div>'+
@@ -1649,6 +1964,126 @@ function iconRow(icon,lbl,val,href){
 }
 
 function currentMember(){return members.filter(function(m){return m.memberid===openMemberId})[0]}
+
+var _editPhotoURL='';
+function openEditMember(memberId){
+  var m=members.filter(function(x){return x.memberid===memberId})[0];
+  if(!m)return;
+  openMemberId=memberId;
+  _editPhotoURL=m.photourl||'';
+  var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var shiftOpts='';
+  for(var i=1;i<=n;i++){var k='S'+i;shiftOpts+='<option value="'+k+'"'+(m.shift===k?' selected':'')+'>'+E(cfg('shift'+i+'label','Shift '+i))+'</option>'}
+  if(isYes('enablefullday'))shiftOpts+='<option value="FULL"'+(m.shift==='FULL'?' selected':'')+'>☀️ '+E(cfg('fulldaylabel','Full Day'))+'</option>';
+  var planOpts=plans.map(function(p){return '<option value="'+E(p.name)+'"'+(m.plan===p.name?' selected':'')+'>'+E(p.name)+'</option>'}).join('');
+  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var pfx=cfg('seatprefix','S');
+  var seatOpts='<option value="">— Unassigned —</option>';
+  for(var s=1;s<=cap;s++){var sid=pfx+s;seatOpts+='<option value="'+sid+'"'+(m.seat===sid?' selected':'')+'>'+sid+'</option>'}
+  var thumbStyle=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+  var thumbInner=m.photourl?'<img src="'+E(m.photourl)+'" alt="">':E(ini(m.name));
+  var cur=cfg('currency','₹');
+
+  $('sheetBody').innerHTML=
+    '<div class="m-edit-form">'+
+      '<div class="ef-title">Edit Member</div>'+
+
+      '<div class="ef-photo-row">'+
+        '<div class="ef-photo-thumb" id="efThumb" style="'+thumbStyle+'">'+thumbInner+'</div>'+
+        '<div class="ef-photo-info">'+
+          '<div class="ef-label">Profile photo</div>'+
+          '<div class="ef-photo-hint">JPEG / PNG · max 6 MB</div>'+
+          '<div class="ef-upload-bar" id="efPhotoBar"><div class="ef-upload-fill" id="efPhotoFill"></div></div>'+
+        '</div>'+
+        '<button class="ef-photo-btn" onclick="$('+"'efPhotoInput'"+').click()">📷 Change</button>'+
+        '<input type="file" id="efPhotoInput" accept="image/*" style="display:none" onchange="onEfProfilePhoto(this)">'+
+      '</div>'+
+
+      '<div class="ef-field"><div class="ef-label">Full name *</div><input id="ef-name" value="'+E(m.name||'')+'"></div>'+
+      '<div class="ef-row">'+
+        '<div class="ef-field"><div class="ef-label">Phone</div><input id="ef-phone" type="tel" value="'+E(m.phone||'')+'"></div>'+
+        '<div class="ef-field"><div class="ef-label">Date of birth</div><input id="ef-dob" type="date" value="'+E(m.dob||'')+'"></div>'+
+      '</div>'+
+      '<div class="ef-field"><div class="ef-label">Email</div><input id="ef-email" type="email" value="'+E(m.email||'')+'"></div>'+
+      '<div class="ef-row">'+
+        '<div class="ef-field"><div class="ef-label">Father\'s name</div><input id="ef-father" value="'+E(m.fathername||'')+'"></div>'+
+        '<div class="ef-field"><div class="ef-label">Aadhar no.</div><input id="ef-aadhar" value="'+E(m.aadhar||'')+'"></div>'+
+      '</div>'+
+      '<div class="ef-row">'+
+        '<div class="ef-field"><div class="ef-label">Plan</div><select id="ef-plan">'+planOpts+'</select></div>'+
+        '<div class="ef-field"><div class="ef-label">Shift</div><select id="ef-shift">'+shiftOpts+'</select></div>'+
+      '</div>'+
+      '<div class="ef-row">'+
+        '<div class="ef-field"><div class="ef-label">Seat</div><select id="ef-seat">'+seatOpts+'</select></div>'+
+        '<div class="ef-field"><div class="ef-label">Amount paid ('+cur+')</div><input id="ef-paid" type="number" min="0" value="'+E(m.totalpaid||'0')+'"></div>'+
+      '</div>'+
+      '<div class="ef-field"><div class="ef-label">Notes</div><textarea id="ef-notes">'+E(m.notes||'')+'</textarea></div>'+
+      '<div class="m-edit-actions">'+
+        '<button class="ef-cancel" onclick="openMemberSheet(\''+E(memberId)+'\')">Cancel</button>'+
+        '<button class="ef-save" onclick="saveEditMember(\''+E(memberId)+'\')">Save changes</button>'+
+      '</div>'+
+    '</div>';
+}
+
+function onEfProfilePhoto(input){
+  var f=input.files&&input.files[0];if(!f)return;
+  if(!/^image\//.test(f.type||'')){toast('Pick an image file','err');input.value='';return}
+  if(f.size>6*1024*1024){toast('Photo too large (max 6 MB)','err');input.value='';return}
+  var bar=$('efPhotoBar'),fill=$('efPhotoFill'),thumb=$('efThumb');
+  if(bar)bar.style.display='block';
+  var reader=new FileReader();
+  reader.onload=function(){if(thumb)thumb.style.backgroundImage='url('+JSON.stringify(reader.result)+')';};
+  reader.readAsDataURL(f);
+  var url='https://api.cloudinary.com/v1_1/storepro/image/upload';
+  var fd=new FormData();fd.append('file',f);fd.append('upload_preset','storepro_products');
+  fd.append('folder','storepro/'+(SLUG||'unknown')+'/student-photos');
+  var x=new XMLHttpRequest();x.open('POST',url);
+  x.upload.onprogress=function(e){if(e.lengthComputable&&fill)fill.style.width=Math.round(e.loaded/e.total*100)+'%'};
+  x.onload=function(){
+    try{
+      var resp=JSON.parse(x.responseText||'{}');
+      if(x.status>=200&&x.status<300&&resp.secure_url){
+        _editPhotoURL=resp.secure_url;
+        if(bar)bar.style.display='none';
+        if(thumb){thumb.innerHTML='<img src="'+E(resp.secure_url)+'" alt="">';thumb.style.backgroundImage=''}
+        toast('Photo uploaded ✓','ok');
+      }else throw new Error((resp.error&&resp.error.message)||('HTTP '+x.status));
+    }catch(e){if(bar)bar.style.display='none';toast('Upload failed: '+e.message,'err')}
+  };
+  x.onerror=function(){if(bar)bar.style.display='none';toast('Network error','err')};
+  x.send(fd);
+}
+
+function saveEditMember(memberId){
+  var name=($('ef-name').value||'').trim();
+  if(!name){toast('Name is required','err');return}
+  var btn=document.querySelector('.ef-save');if(btn){btn.disabled=true;btn.textContent='Saving…'}
+  var params={
+    action:'updateMember',
+    memberId:String(memberId),
+    name:String(name),
+    phone:String(($('ef-phone').value||'').replace(/\D/g,'')),
+    email:String(($('ef-email').value||'').trim()),
+    fatherName:String(($('ef-father').value||'').trim()),
+    dob:String($('ef-dob').value||''),
+    aadhar:String(($('ef-aadhar').value||'').replace(/\D/g,'')),
+    plan:String($('ef-plan').value||''),
+    shift:String($('ef-shift').value||''),
+    seat:String($('ef-seat').value||''),
+    totalPaid:String(($('ef-paid').value||'0').trim()),
+    photoURL:String(_editPhotoURL||''),
+    notes:String(($('ef-notes').value||'').trim())
+  };
+  sendCmd(params,function(res){
+    if(res&&res.error){toast(res.hint||'Save failed','err');if(btn){btn.disabled=false;btn.textContent='Save changes'}return}
+    toast('Saved ✓','ok');
+    gviz(SHEET_ID,'Members',function(rm){
+      if(rm)members=parseRows(rm);
+      renderActive();renderPending();renderOccupancy();renderSeats();
+      openMemberSheet(memberId);
+    });
+  });
+}
 
 function approveMember(id){
   var mid=id||openMemberId;
@@ -1690,9 +2125,49 @@ function waRenew(memberId){
   if(waGroup)msg+='\n\nJoin our group: '+waGroup;
   open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
 }
-function extendPrompt(){
-  var d=prompt('Extend expiry by how many days?','30');var days=parseInt(d,10);if(!days)return;
-  sendCmd({action:'extendMember',memberId:openMemberId,days:String(days)},function(){toast('Extended ✓','ok');closeSheet();reloadAll()});
+function openExtendDate(){
+  var m=currentMember();if(!m)return;
+  var today=new Date();
+  var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  var minDate=todayStr;
+  var curExp=m.expirydate?m.expirydate.slice(0,10):'';
+  var defaultDate=curExp&&curExp>todayStr?curExp:todayStr;
+  var cur=cfg('currency','₹');
+  var curExpFmt=curExp?fmtDate(curExp):'—';
+  $('sheetBody').innerHTML=
+    '<div style="padding:18px 2px 24px">'+
+      '<div style="font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.3px;margin-bottom:18px">Set expiry date</div>'+
+      '<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">'+
+        '<div style="font-size:12px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Current expiry</div>'+
+        '<div style="font-size:14px;font-weight:700;color:var(--ink)">'+E(curExpFmt)+'</div>'+
+      '</div>'+
+      '<div style="margin-bottom:6px;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em">New expiry date</div>'+
+      '<input type="date" id="extDatePicker" min="'+minDate+'" value="'+defaultDate+'" '+
+        'style="width:100%;padding:13px 14px;border:1.5px solid var(--brand);border-radius:12px;font:600 15px var(--F);color:var(--ink);background:#fff;outline:none;box-sizing:border-box;-webkit-appearance:none">'+
+      '<div style="font-size:11px;color:var(--ink-3);margin-top:8px">Membership will expire at 11:59 PM on the selected date.</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px">'+
+        '<button onclick="openMemberSheet(\''+E(m.memberid)+'\')" style="background:#fff;border:1.5px solid var(--line);color:var(--ink-2);padding:14px;border-radius:14px;font:700 14px var(--F);cursor:pointer">Cancel</button>'+
+        '<button onclick="saveExtendDate(\''+E(m.memberid)+'\')" style="background:var(--brand);color:#fff;border:none;padding:14px;border-radius:14px;font:700 14px var(--F);cursor:pointer">Save date</button>'+
+      '</div>'+
+    '</div>';
+}
+function saveExtendDate(memberId){
+  var inp=$('extDatePicker');if(!inp)return;
+  var val=inp.value;
+  if(!val){toast('Pick a date first','err');return}
+  var today=new Date();today.setHours(0,0,0,0);
+  var picked=new Date(val+'T00:00:00');
+  if(picked<today){toast('Date must be today or in the future','err');return}
+  var expiryDate=val+' 23:59:59';
+  sendCmd({action:'updateMember',memberId:String(memberId),expiryDate:expiryDate},function(res){
+    if(res&&res.error){toast(res.hint||'Save failed','err');return}
+    toast('Expiry updated ✓','ok');
+    gviz(SHEET_ID,'Members',function(rm){
+      if(rm)members=parseRows(rm);
+      renderActive();renderPending();renderOccupancy();renderSeats();
+      openMemberSheet(memberId);
+    });
+  });
 }
 // ─── Reassign seat (proper visual picker, replaces the old prompt() pair) ──
 var _rsMemberId='',_rsSeat='',_rsShift='';

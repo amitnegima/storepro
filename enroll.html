@@ -114,6 +114,7 @@
   .seat.full-taken{background:#fef3c7;color:#92400e;cursor:not-allowed;pointer-events:none}
   .seat.sel{background:var(--hold);color:#fff;border-color:var(--hold-dk);transform:scale(1.06);box-shadow:0 4px 12px rgba(245,158,11,.35)}
   .seat.pending{background:var(--hold-bg);color:var(--hold-dk);border-color:var(--hold);cursor:not-allowed;pointer-events:none}
+  .seat.blocked{background:repeating-linear-gradient(45deg,#f1f5f9 0px,#f1f5f9 4px,#e2e8f0 4px,#e2e8f0 8px);color:#94a3b8;border-color:#cbd5e1;cursor:not-allowed;pointer-events:none;font-size:9px;text-align:center;padding:2px;line-height:1.2}
   .seat-legend{display:flex;gap:10px;font-size:11px;color:var(--ink-2);margin-top:8px;flex-wrap:wrap}
   .seat-legend span{display:inline-flex;align-items:center;gap:5px}
   .seat-legend .sw{width:11px;height:11px;border-radius:3px;border:1px solid var(--line)}
@@ -122,6 +123,7 @@
   .sw.full-taken{background:#fef3c7}
   .sw.sel{background:var(--hold)}
   .sw.pending{background:var(--hold-bg);border-color:var(--hold)}
+  .sw.blocked{background:repeating-linear-gradient(45deg,#f1f5f9 0px,#f1f5f9 3px,#e2e8f0 3px,#e2e8f0 6px)}
 
   .hold-banner{background:var(--hold-bg);border:1px solid var(--hold);color:var(--hold-dk);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-top:10px;display:none;align-items:center;gap:8px}
   .hold-banner.show{display:flex}
@@ -281,10 +283,11 @@
     <div class="seatmap" id="seatMap"></div>
     <div class="seat-legend">
       <span><span class="sw free"></span>Free</span>
-      <span><span class="sw sel"></span>Your pick (on hold)</span>
-      <span><span class="sw pending"></span>Awaiting approval</span>
-      <span><span class="sw taken"></span>Taken (this shift)</span>
+      <span><span class="sw sel"></span>Your pick</span>
+      <span><span class="sw pending"></span>Pending</span>
+      <span><span class="sw taken"></span>Taken</span>
       <span><span class="sw full-taken"></span>Full-day taken</span>
+      <span><span class="sw blocked"></span>Not available</span>
     </div>
     <div class="hold-banner" id="holdBanner"><span class="dot"></span><span>Your seat <b id="holdSeat"></b> is held — the shopkeeper will confirm it shortly.</span></div>
   </div>
@@ -681,15 +684,32 @@ function seatStatus(seatId){
   if(!same.length)return 'free';
   return same.every(function(m){return (m.status||'').toLowerCase()==='pending'})?'pending':'taken';
 }
+function blockedSeats(){
+  var map={};
+  (cfg('blockedseats','')||'').split(',').forEach(function(part){
+    var p=part.trim();if(!p)return;
+    var col=p.indexOf(':');
+    var seat=col>=0?p.slice(0,col).trim().toUpperCase():p.toUpperCase();
+    var label=col>=0?p.slice(col+1).trim():'Not available';
+    if(seat)map[seat]=label||'Not available';
+  });
+  return map;
+}
 function renderSeatMap(){
   if(!selectedShift){$('cardSeat').style.display='none';return}
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var cols=Math.max(2,Math.min(12,parseInt(cfg('seatgridcols','8'),10)||8));
   var prefix=cfg('seatprefix','S');
+  var blocked=blockedSeats();
   $('seatMap').style.gridTemplateColumns='repeat('+cols+',1fr)';
   var html='';
   for(var i=1;i<=cap;i++){
-    var id=prefix+i,st=seatStatus(id);
+    var id=prefix+i;
+    if(blocked[id.toUpperCase()]){
+      html+='<div class="seat blocked" title="'+E(blocked[id.toUpperCase()])+'">'+id+'<br><span style="font-size:8px">'+E(blocked[id.toUpperCase()])+'</span></div>';
+      continue;
+    }
+    var st=seatStatus(id);
     var cls='seat '+st+(selectedSeat===id?' sel':'');
     html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')">'+id+'</div>';
   }
@@ -697,7 +717,7 @@ function renderSeatMap(){
 }
 function pickSeat(id){
   var el=document.querySelector('#seatMap .seat[onclick*="\''+id+'\'"]');
-  if(el&&(el.classList.contains('taken')||el.classList.contains('full-taken')||el.classList.contains('pending')))return;
+  if(el&&(el.classList.contains('taken')||el.classList.contains('full-taken')||el.classList.contains('pending')||el.classList.contains('blocked')))return;
   selectedSeat=(selectedSeat===id)?'':id;
   renderSeatMap();
   var hb=$('holdBanner');
