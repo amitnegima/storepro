@@ -46,6 +46,7 @@ function doGet(e) {
 
   if (!verifyDashboardToken_(p.token)) return forbidden_();
 
+  if (a === 'updateMember')       return ok(updateMember_(p));
   if (a === 'updateMemberStatus') return ok(updateMemberStatus_(p.memberId, p.newStatus || ''));
   if (a === 'deleteMember')       return ok(updateMemberStatus_(p.memberId, 'Deleted'));
   if (a === 'restoreMember')      return ok(updateMemberStatus_(p.memberId, 'Active'));
@@ -270,6 +271,36 @@ function updateMemberStatus_(memberId, newStatus) {
       sh.getRange(i + 2, statusCol + 1).setValue(newStatus);
       return 'updated';
     }
+  }
+  return 'not-found';
+}
+
+function updateMember_(p) {
+  if (!p.memberId) return 'missing-memberId';
+  var sh = getMembersSheet_();
+  var info = membersIndex_(sh);
+  var idCol = info.idx['MemberID'];
+  for (var i = 0; i < info.rows.length; i++) {
+    if (String(info.rows[i][idCol] || '').trim() !== p.memberId) continue;
+    var row = i + 2;
+    var set = function(key, val) {
+      var col = info.idx[key];
+      if (col != null && val != null) sh.getRange(row, col + 1).setValue(String(val));
+    };
+    if (p.name)       set('Name',        p.name);
+    if (p.phone)      set('Phone',       p.phone);
+    if (p.email != null) set('Email',    p.email);
+    if (p.fatherName != null) set('FatherName', p.fatherName);
+    if (p.dob != null)    set('DOB',     p.dob);
+    if (p.aadhar != null) set('Aadhar',  p.aadhar);
+    if (p.plan)              set('Plan',       p.plan);
+    if (p.shift)             set('Shift',      p.shift);
+    if (p.seat != null)      set('Seat',       p.seat);
+    if (p.totalPaid != null) set('TotalPaid',  p.totalPaid);
+    if (p.photoURL != null)  set('PhotoURL',   p.photoURL);
+    if (p.notes != null)     set('Notes',      p.notes);
+    if (p.expiryDate)        set('ExpiryDate', ensureEndOfDay_(p.expiryDate));
+    return 'updated';
   }
   return 'not-found';
 }
