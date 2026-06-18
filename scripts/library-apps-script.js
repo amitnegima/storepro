@@ -410,8 +410,18 @@ function dailyExpiryReminders() {
   var channel = String(getCfg_('ReminderChannel', 'both')).toLowerCase();
   var hoursBefore = parseInt(getCfg_('ReminderHoursBefore', '24'), 10) || 24;
   var smsTpl = getCfg_('SMSTemplate', 'Hi {name}, your {plan} expires on {expiry}.');
-  var waTpl  = getCfg_('WhatsAppTemplate', 'Hi {name}, your {plan} expires on {expiry} (Seat {seat}). Renew: {renewLink}');
-  var emailSubTpl = getCfg_('EmailSubject', 'Your {plan} at {shop} expires on {expiry}');
+  var waTpl  = getCfg_('WhatsAppTemplate',
+    '📚 *Library Fee Reminder*\n' +
+    '*{shop}*\n\n' +
+    'Dear *{name}*,\n\n' +
+    'This is a reminder to please pay your library fee within *2 days* from your joining date so that your library membership can continue. ' +
+    'If we do not receive the fee in this time, we may have to offer your seat to another student.\n\n' +
+    'प्रिय *{name}*, कृपया जॉइनिंग डेट से *2 दिन* के अंदर लाइब्रेरी फीस जमा कर दें, ताकि आपकी सदस्यता जारी रहे। ' +
+    'अगर फीस समय पर नहीं मिलती, तो हमें आपकी सीट किसी दूसरे विद्यार्थी को देनी पड़ सकती है।\n\n' +
+    '📋 Plan: {plan}\n🪑 Seat: {seat}\n⏰ Expires: {expiry}\n\n' +
+    'धन्यवाद,\n{shop}'
+  );
+  var emailSubTpl = getCfg_('EmailSubject', 'Library Fee Reminder — {shop}');
   var emailBodyTpl = getCfg_('EmailTemplate', 'Dear {name},\n\nYour {plan} membership at {shop} is expiring on {expiry}.\n\nSeat: {seat}\n\nPlease pay the renewal amount at the earliest to continue your seat without interruption.\n\nRenew: {renewLink}\n\nThank you,\n{shop} Team');
   var shop = getCfg_('ShopName', 'Library');
   var renewLink = getCfg_('RenewLink', '');
@@ -462,7 +472,17 @@ function dailyExpiryReminders() {
     }
     if (useEmail && email) {
       try {
-        sendEmail_(email, applyTpl_(emailSubTpl, subs), applyTpl_(emailBodyTpl, subs), shop);
+        var emailSubs = {
+          name: subs.name, plan: subs.plan, expiry: subs.expiry,
+          seat: subs.seat, shop: subs.shop, renewLink: subs.renewLink, amount: ''
+        };
+        var plainTxt =
+          'Dear ' + subs.name + ',\n\n' +
+          'This is a reminder to please pay your library fee within 2 days from your joining date so that your library membership can continue. ' +
+          'If we do not receive the fee in this time, we may have to offer your seat to another student.\n\n' +
+          'Plan: ' + subs.plan + '\nSeat: ' + subs.seat + '\nExpires: ' + subs.expiry + '\n\n' +
+          'Regards,\n' + shop;
+        sendEmail_(email, applyTpl_(emailSubTpl, emailSubs), plainTxt, shop, buildRenewalHtml_(emailSubs));
         results.emailSent++;
       } catch (e) {
         results.emailErrors++;
@@ -598,16 +618,20 @@ function sendRenewalEmail_(memberId, customMsg) {
     renewLink: renewLink,
     amount: price ? (cur + price) : ''
   };
-  var subTpl = getCfg_('EmailSubject', 'Your {plan} at {shop} — renewal reminder');
+  var subTpl = getCfg_('EmailSubject', 'Library Fee Reminder — {shop}');
 
-  var plainBody = 'Dear ' + memberName + ',\n\n' +
-    'Your ' + planName + ' membership at ' + shop + ' is expiring on ' + expiryStr + '.\n\n' +
-    'Seat: ' + subs.seat + '\n' +
-    (price ? 'Renewal amount: ' + cur + price + '\n\n' : '\n') +
-    'Please pay the renewal amount at the earliest to continue your seat without interruption.\n\n' +
-    'Thank you,\n' + shop + ' Team';
+  var plainBody =
+    'Dear ' + memberName + ',\n\n' +
+    'This is a reminder to please pay your library fee within 2 days from your joining date so that your library membership can continue. If we do not receive the fee in this time, we may have to offer your seat to another student.\n\n' +
+    'प्रिय ' + memberName + ', कृपया जॉइनिंग डेट से 2 दिन के अंदर लाइब्रेरी फीस जमा कर दें, ताकि आपकी सदस्यता जारी रहे। अगर फीस समय पर नहीं मिलती, तो हमें आपकी सीट किसी दूसरे विद्यार्थी को देनी पड़ सकती है।\n\n' +
+    '━━━━━━━━━━━━━━━━━━━━\n' +
+    'Plan  : ' + planName + '\n' +
+    'Seat  : ' + subs.seat + '\n' +
+    'Expiry: ' + expiryStr + '\n' +
+    '━━━━━━━━━━━━━━━━━━━━\n\n' +
+    'Regards / धन्यवाद,\n' + shop;
 
-  var htmlBody = buildRenewalHtml_(subs, upiId, price, cur);
+  var htmlBody = buildRenewalHtml_(subs);
 
   try {
     sendEmail_(email, applyTpl_(subTpl, subs), plainBody, shop, htmlBody);
@@ -637,86 +661,70 @@ function planPrice_(planName) {
   return 0;
 }
 
-function buildRenewalHtml_(subs, upiId, price, cur) {
-  var upiSection = '';
-  if (upiId && price) {
-    var upiUrl = 'upi://pay?pa=' + encodeURIComponent(upiId) +
-      '&pn=' + encodeURIComponent(subs.shop) +
-      '&am=' + encodeURIComponent(String(price)) +
-      '&cu=INR' +
-      '&tn=' + encodeURIComponent(subs.plan + ' renewal - ' + subs.name);
-    var qrImgUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(upiUrl);
-    upiSection =
-      '<div style="text-align:center;margin:24px 0;padding:20px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">' +
-        '<div style="font-size:14px;color:#166534;font-weight:600;margin-bottom:4px">Scan to pay via UPI</div>' +
-        '<div style="font-size:24px;font-weight:700;color:#15803d;margin-bottom:12px">' + cur + price + '</div>' +
-        '<img src="' + qrImgUrl + '" alt="UPI QR Code" width="200" height="200" style="border-radius:8px;border:1px solid #e5e7eb">' +
-        '<div style="font-size:12px;color:#6b7280;margin-top:8px">UPI ID: ' + upiId + '</div>' +
-      '</div>';
-  } else if (price) {
-    upiSection =
-      '<div style="text-align:center;margin:24px 0;padding:16px;background:#fefce8;border-radius:12px;border:1px solid #fde68a">' +
-        '<div style="font-size:14px;color:#854d0e;font-weight:600">Renewal amount</div>' +
-        '<div style="font-size:24px;font-weight:700;color:#a16207;margin-top:4px">' + cur + price + '</div>' +
-      '</div>';
-  }
-
-  var renewBtn = '';
-
+function buildRenewalHtml_(subs) {
   var waGroupLink = getCfg_('WhatsAppGroupLink', '');
-  var waGroupSection = waGroupLink
-    ? '<div style="text-align:center;margin:20px 0"><a href="' + waGroupLink + '" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px">' +
-      '\uD83D\uDCAC Join our WhatsApp Group</a></div>'
+  var waSection = waGroupLink
+    ? '<div style="text-align:center;margin:20px 0">'+
+        '<a href="' + waGroupLink + '" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;background:#25d366;color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:13px">' +
+        '\uD83D\uDCAC Join our WhatsApp Group</a></div>'
     : '';
 
-  return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>' +
-    '<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#f8fafc">' +
-    '<div style="max-width:480px;margin:0 auto;padding:24px">' +
+  return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">'+
+    '<style>body{margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}</style></head>'+
+    '<body>'+
+    '<div style="max-width:520px;margin:32px auto;padding:0 16px">'+
 
-      '<div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)">' +
+      '<div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)">'+
 
-        '<div style="background:linear-gradient(135deg,#0d9488,#0f766e);padding:28px 24px;text-align:center">' +
-          '<div style="font-size:22px;font-weight:700;color:#fff">' + subs.shop + '</div>' +
-          '<div style="font-size:13px;color:#ccfbf1;margin-top:4px">Membership Renewal</div>' +
-        '</div>' +
+        '<div style="background:linear-gradient(135deg,#0f766e 0%,#0d9488 100%);padding:24px 28px;display:flex;align-items:center;gap:14px">'+
+          '<div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">\uD83D\uDCDA</div>'+
+          '<div>'+
+            '<div style="font-size:18px;font-weight:700;color:#fff;line-height:1.2">'+subs.shop+'</div>'+
+            '<div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:2px">Library Fee Reminder</div>'+
+          '</div>'+
+        '</div>'+
 
-        '<div style="padding:24px">' +
-          '<div style="font-size:15px;color:#334155;line-height:1.6">' +
-            'Dear <strong>' + subs.name + '</strong>,' +
-          '</div>' +
-          '<div style="font-size:15px;color:#334155;line-height:1.6;margin-top:12px">' +
-            'Your <strong>' + subs.plan + '</strong> membership is expiring on <strong>' + subs.expiry + '</strong>.' +
-          '</div>' +
+        '<div style="padding:28px">'+
 
-          '<div style="margin:20px 0;padding:16px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">' +
-            '<table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;color:#475569">' +
-              '<tr><td style="padding:4px 0">Plan</td><td style="padding:4px 0;text-align:right;font-weight:600;color:#0f172a">' + subs.plan + '</td></tr>' +
-              '<tr><td style="padding:4px 0">Seat</td><td style="padding:4px 0;text-align:right;font-weight:600;color:#0f172a">' + subs.seat + '</td></tr>' +
-              '<tr><td style="padding:4px 0">Expires</td><td style="padding:4px 0;text-align:right;font-weight:600;color:#dc2626">' + subs.expiry + '</td></tr>' +
-              (price ? '<tr><td style="padding:8px 0;border-top:1px solid #e2e8f0;font-weight:600">Amount</td><td style="padding:8px 0;border-top:1px solid #e2e8f0;text-align:right;font-weight:700;font-size:16px;color:#15803d">' + cur + price + '</td></tr>' : '') +
-            '</table>' +
-          '</div>' +
+          '<p style="margin:0 0 6px;font-size:15px;color:#0f172a;font-weight:500">Dear <strong>'+subs.name+'</strong>,</p>'+
 
-          upiSection +
+          '<p style="margin:14px 0;font-size:15px;color:#334155;line-height:1.7">'+
+            'This is a reminder to please <strong>pay your library fee within 2 days</strong> from your joining date so that your library membership can continue. '+
+            'If we do not receive the fee in this time, we may have to offer your seat to another student.'+
+          '</p>'+
 
-          '<div style="font-size:15px;color:#334155;line-height:1.6;margin-top:16px">' +
-            'Please pay the renewal amount at the earliest to continue your seat without interruption.' +
-          '</div>' +
+          '<div style="background:#fefce8;border:1px solid #fde047;border-radius:10px;padding:14px 16px;margin:18px 0">'+
+            '<p style="margin:0;font-size:14px;color:#713f12;line-height:1.8;font-family:\'Noto Sans Devanagari\',sans-serif">'+
+              '\u092A\u094D\u0930\u093F\u092F <strong>'+subs.name+'</strong>, \u0915\u0943\u092A\u092F\u093E \u091C\u0949\u0907\u0928\u093F\u0902\u0917 \u0921\u0947\u091F \u0938\u0947 <strong>2 \u0926\u093F\u0928 \u0915\u0947 \u0905\u0902\u0926\u0930</strong> \u0932\u093E\u0907\u092C\u094D\u0930\u0947\u0930\u0940 \u092B\u0940\u0938 \u091C\u092E\u093E \u0915\u0930 \u0926\u0947\u0902, '+
+              '\u0924\u093E\u0915\u093F \u0906\u092A\u0915\u0940 \u0938\u0926\u0938\u094D\u092F\u0924\u093E \u091C\u093E\u0930\u0940 \u0930\u0939\u0947\u0964 \u0905\u0917\u0930 \u092B\u0940\u0938 \u0938\u092E\u092F \u092A\u0930 \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u0924\u0940, \u0924\u094B \u0939\u092E\u0947\u0902 \u0906\u092A\u0915\u0940 \u0938\u0940\u091F \u0915\u093F\u0938\u0940 \u0926\u0942\u0938\u0930\u0947 \u0935\u093F\u0926\u094D\u092F\u093E\u0930\u094D\u0925\u0940 \u0915\u094B \u0926\u0947\u0928\u0940 \u092A\u0921\u093C \u0938\u0915\u0924\u0940 \u0939\u0948\u0964'+
+            '</p>'+
+          '</div>'+
 
-          renewBtn +
+          '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin:18px 0">'+
+            '<table width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;color:#64748b">'+
+              '<tr><td style="padding:4px 0;width:90px">Plan</td><td style="padding:4px 0;font-weight:600;color:#0f172a">'+subs.plan+'</td></tr>'+
+              '<tr><td style="padding:4px 0">Seat</td><td style="padding:4px 0;font-weight:600;color:#0f172a">'+subs.seat+'</td></tr>'+
+              '<tr><td style="padding:4px 0">Expires</td><td style="padding:4px 0;font-weight:600;color:#b91c1c">'+subs.expiry+'</td></tr>'+
+            '</table>'+
+          '</div>'+
 
-          waGroupSection +
+          waSection+
 
-        '</div>' +
+          '<p style="margin:20px 0 0;font-size:14px;color:#64748b;line-height:1.6">'+
+            'Regards / \u0927\u0928\u094D\u092F\u0935\u093E\u0926,<br>'+
+            '<strong style="color:#0f172a">'+subs.shop+'</strong>'+
+          '</p>'+
 
-        '<div style="padding:16px 24px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#94a3b8">' +
-          'Thank you for being part of ' + subs.shop + '<br>' +
-          '<span style="color:#cbd5e1">Sent via StorePro</span>' +
-        '</div>' +
+        '</div>'+
 
-      '</div>' +
-    '</div>' +
+        '<div style="padding:14px 28px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8;text-align:center">'+
+          'Sent via StorePro \u00B7 To unsubscribe contact the library directly'+
+        '</div>'+
+
+      '</div>'+
+    '</div>'+
     '</body></html>';
+
 }
 
 // ─── Config + auth (same hashing/token shape as store-apps-script.js) ──
