@@ -18,112 +18,273 @@
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:var(--brand);text-decoration:none}
 
-  .top{background:var(--brand);color:#fff;padding:18px 18px 14px;position:sticky;top:0;z-index:30;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .top h1{margin:0;font-size:18px;font-weight:700;letter-spacing:.2px}
-  .top .sub{font-size:12px;opacity:.85;margin-top:2px}
+  /* ── Clean topbar ── */
+  .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .top-row{display:flex;align-items:center;gap:12px;padding:10px 18px;max-width:560px;margin:0 auto}
+  .top-logo{width:36px;height:36px;border-radius:9px;background:var(--brand);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center}
+  .top-info{flex:1;min-width:0}
+  .top h1{margin:0;font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top .sub{font-size:11px;color:var(--ink-3);margin-top:1px}
 
-  .counter{margin-top:12px;padding-bottom:2px}
-  .counter-total{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .counter-total .ct-label{font-size:12px;font-weight:600;opacity:.85;flex-shrink:0}
-  .counter-total .ct-bar{flex:1;height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden;min-width:60px}
+  /* Shift counter strip — below topbar */
+  .counter{background:#fff;border-bottom:1px solid var(--line);padding:6px 18px 7px}
+  .counter-inner{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:8px}
+  .counter-total{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .counter-total .ct-label{font-size:11px;font-weight:600;color:var(--ink-3);white-space:nowrap}
+  .counter-total .ct-bar{width:60px;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
   .counter-total .ct-fill{height:100%;border-radius:99px;transition:width .4s ease}
-  .counter-total .ct-fill.ok{background:#34d399}
-  .counter-total .ct-fill.warn{background:#fbbf24}
-  .counter-total .ct-fill.err{background:#f87171}
-  .counter-total .ct-num{font-size:13px;font-weight:800;letter-spacing:-.02em;flex-shrink:0}
-  .counter-shifts{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .counter-total .ct-fill.ok{background:var(--brand)}
+  .counter-total .ct-fill.warn{background:#f59e0b}
+  .counter-total .ct-fill.err{background:var(--err)}
+  .counter-total .ct-num{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+  .counter-div{width:1px;height:16px;background:var(--line);flex-shrink:0}
+  .counter-shifts{display:flex;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1}
   .counter-shifts::-webkit-scrollbar{display:none}
-  .pill{flex:0 0 auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap}
-  .pill .num{background:#fff;color:var(--brand-dk);border-radius:999px;padding:1px 7px;font-weight:800;font-size:11px}
-  .pill.full{background:rgba(255,255,255,.05);opacity:.55}
+  .pill{flex:0 0 auto;background:var(--bg);border:1px solid var(--line-dk);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap;color:var(--ink-2)}
+  .pill .num{background:var(--brand);color:#fff;border-radius:999px;padding:1px 7px;font-weight:700;font-size:10.5px}
+  .pill.full{opacity:.5}
+  .pill.warn .num{background:#f59e0b}
+  .pill.err .num{background:var(--err)}
 
-  .wrap{max-width:560px;margin:0 auto;padding:14px 14px 120px}
+  .wrap{max-width:560px;margin:0 auto;padding:16px 14px 120px}
 
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
-  .card h2{margin:0 0 4px;font-size:15px;color:var(--brand-dk);font-weight:700}
-  .card .help{color:var(--ink-2);font-size:12px;margin-bottom:12px}
+  /* ── Desktop 2-column (right sidebar — plans only) ── */
+  @media(min-width:1100px){
+    .top-row,.counter-inner{max-width:none!important;margin-left:0!important;margin-right:0!important;padding-right:calc(300px + 20px)}
+    .wrap{margin-right:300px;max-width:none}
+    .submit-bar{right:300px}
+    .es-right{display:flex!important;flex-direction:column;gap:12px;position:fixed;top:0;right:0;width:300px;height:100vh;overflow-y:auto;padding:88px 16px 20px;background:#fafafa;scrollbar-width:thin;scrollbar-color:#e2e8f0 transparent;border-left:1px solid var(--line)}
+  }
+  @media(min-width:1440px){
+    .top-row,.counter-inner{padding-right:calc(320px + 20px)}
+    .wrap{margin-right:320px}
+    .submit-bar{right:320px}
+    .es-right{width:320px}
+  }
+  .es-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px}
+  .es-card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:10px}
+  .es-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line-soft);font-size:12px;color:var(--ink-2)}
+  .es-row:last-child{border-bottom:none;padding-bottom:0}
+  .es-row .es-ic{font-size:14px;flex-shrink:0;width:18px;text-align:center}
+  .es-row .es-val{flex:1;color:var(--ink)}
+  .es-plan{padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:6px;cursor:default}
+  .es-plan:last-child{margin-bottom:0}
+  .es-plan .ep-name{font-size:13px;font-weight:700;color:var(--ink)}
+  .es-plan .ep-dur{font-size:11px;color:var(--ink-3);margin-top:1px}
+  .es-plan .ep-price{font-size:16px;font-weight:800;color:var(--brand-dk);margin-top:4px}
+  .es-plan .ep-mrp{font-size:11px;color:var(--ink-3);text-decoration:line-through}
+  .es-plan .ep-save{font-size:10px;font-weight:700;color:var(--ok-dk);background:var(--ok-bg);padding:1px 6px;border-radius:99px;margin-left:4px}
+  .es-shift{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--line);margin-bottom:6px}
+  .es-shift:last-child{margin-bottom:0}
+  .es-shift .es-sl{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink)}
+  .es-shift .es-sc{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+  .es-shift .es-sc.ok{background:var(--ok-bg);color:var(--ok-dk)}
+  .es-shift .es-sc.warn{background:#fef3c7;color:#92400e}
+  .es-shift .es-sc.err{background:var(--err-bg);color:var(--err-dk)}
 
-  label{display:block;margin-bottom:14px}
-  label .lbl{font-weight:600;font-size:13px;color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:4px}
+  /* ── Cards ── */
+  .card{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04)}
+  .card h2{margin:0 0 2px;font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+  .card h2::before{content:'';width:3px;height:18px;border-radius:2px;background:linear-gradient(180deg,var(--brand),var(--brand-lt));flex-shrink:0}
+  .card .help{color:var(--ink-3);font-size:12px;margin-bottom:14px;margin-top:3px;padding-left:11px}
+
+  /* ── Inputs ── */
+  label{display:block;margin-bottom:16px}
+  label .lbl{font-weight:700;font-size:12px;color:var(--ink-2);margin-bottom:6px;display:flex;align-items:center;gap:4px;letter-spacing:.02em;text-transform:uppercase}
   label .req{color:var(--err)}
   label input[type=text],label input[type=email],label input[type=tel],label input[type=date],label input[type=number],label select,label textarea{
-    width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;color:var(--ink);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s
+    width:100%;border:2px solid #f1f5f9;border-radius:12px;padding:12px 14px;
+    font:inherit;font-size:14px;color:var(--ink);background:#f8fafc;outline:none;
+    transition:border-color .18s,background .18s,box-shadow .18s;box-sizing:border-box
   }
-  label input:focus,label select:focus,label textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}
-  label .err-msg{color:var(--err);font-size:12px;margin-top:5px;display:none}
-  label.err input,label.err select,label.err textarea{border-color:var(--err)}
+  label input:focus,label select:focus,label textarea:focus{
+    border-color:var(--brand);background:#fff;
+    box-shadow:0 0 0 4px rgba(15,118,110,.1)
+  }
+  label input:not(:placeholder-shown),label select:not([value=""]),label textarea:not(:placeholder-shown){background:#fff;border-color:#e2e8f0}
+  label .err-msg{color:var(--err);font-size:12px;margin-top:5px;display:none;font-weight:500}
+  label.err input,label.err select,label.err textarea{border-color:var(--err);background:#fff5f5}
   label.err .err-msg{display:block}
-  textarea{resize:vertical;min-height:64px}
+  textarea{resize:vertical;min-height:72px}
 
-  .photo-zone{display:flex;flex-direction:column;align-items:center;gap:8px;border:2px dashed var(--line);border-radius:12px;padding:18px;background:#fafbff;transition:border-color .15s;cursor:pointer}
-  .photo-zone:hover{border-color:var(--brand-lt)}
-  .photo-zone .pic{width:120px;height:120px;border-radius:10px;background:#eef2f7 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:32px;border:1px solid var(--line)}
-  .photo-zone.has .pic{border-color:var(--brand)}
+  /* ── Photo upload ── */
+  .photo-zone{display:flex;flex-direction:column;align-items:center;gap:10px;border:2px dashed #e2e8f0;border-radius:16px;padding:22px 16px;background:#f8fafc;transition:all .2s;cursor:pointer}
+  .photo-zone:hover{border-color:var(--brand);background:#f0fdf9}
+  .photo-zone .pic{width:100px;height:100px;border-radius:50%;background:#e2e8f0 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:36px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.1);position:relative}
+  .photo-zone.has .pic{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,118,110,.15),0 2px 8px rgba(0,0,0,.1)}
   .photo-zone .ctrls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-  .pbtn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
-  .pbtn:hover{border-color:var(--brand-lt)}
+  .pbtn{appearance:none;border:1.5px solid #e2e8f0;background:#fff;border-radius:99px;padding:7px 14px;font:inherit;font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:.15s}
+  .pbtn:hover{border-color:var(--brand);color:var(--brand)}
   .pbtn.danger{color:var(--err);border-color:#fecaca}
-  .photo-meta{font-size:11px;color:var(--ink-2)}
-  .photo-bar{width:100%;height:5px;background:#e2e8f0;border-radius:99px;overflow:hidden;display:none}
+  .photo-meta{font-size:11px;color:var(--ink-3)}
+  .photo-bar{width:100%;height:4px;background:#e2e8f0;border-radius:99px;overflow:hidden;display:none}
   .photo-bar .fill{height:100%;background:linear-gradient(90deg,var(--brand),#2dd4bf,var(--brand));background-size:200% 100%;width:0%;transition:width .2s;animation:bar-shimmer 1.5s linear infinite}
   @keyframes bar-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   @keyframes upload-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.97)}}
   @keyframes upload-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
   .photo-zone.uploading{border-color:var(--brand);border-style:solid;animation:upload-pulse 1.2s ease-in-out infinite;pointer-events:none}
-  .photo-zone.uploading .pic::after{content:'';position:absolute;inset:0;border-radius:inherit;background:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center}
   .photo-zone .pic{position:relative}
   .upload-spinner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2}
   .upload-spinner::after{content:'';width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:var(--brand);border-radius:50%;animation:upload-spin .7s linear infinite}
 
-  .opts{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-  .opt{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;transition:border-color .15s,background .15s}
-  .opt:hover{border-color:var(--brand-lt)}
-  .opt input{margin:0;accent-color:var(--brand);transform:scale(1.1)}
-  .opt.sel{border-color:var(--brand);background:var(--brand-bg)}
-  .opt .txt{font-size:13px}
+  /* ── Shift picker ── */
+  .shifts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .shift{border:2px solid #f1f5f9;border-radius:16px;padding:14px;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);text-align:left;position:relative;background:#f8fafc;overflow:hidden}
+  .shift::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.5),transparent);pointer-events:none}
+  .shift:hover{border-color:#cbd5e1;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.06);transform:translateY(-1px)}
+  .shift.sel{border-color:var(--brand);background:linear-gradient(135deg,var(--brand-bg),#fff);box-shadow:0 0 0 4px rgba(15,118,110,.12),0 4px 14px rgba(0,0,0,.06);transform:translateY(-1px)}
+  .shift.sel::before{content:'✓';position:absolute;top:10px;right:12px;width:20px;height:20px;background:var(--brand);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .shift.full{opacity:.35;pointer-events:none;background:#f1f5f9}
+  .shift .sn{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .shift .sn .shift-icon{width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .shift .sn .shift-icon.morning{background:linear-gradient(135deg,#fef3c7,#fde68a);box-shadow:0 2px 6px rgba(251,191,36,.3)}
+  .shift .sn .shift-icon.evening{background:linear-gradient(135deg,#ede9fe,#ddd6fe);box-shadow:0 2px 6px rgba(167,139,250,.3)}
+  .shift .sn .shift-icon.night{background:linear-gradient(135deg,#dbeafe,#bfdbfe);box-shadow:0 2px 6px rgba(96,165,250,.3)}
+  .shift .sn .shift-icon.fullday{background:linear-gradient(135deg,#d1fae5,#a7f3d0);box-shadow:0 2px 6px rgba(52,211,153,.3)}
+  .shift .sn .shift-icon.default{background:#f1f5f9}
+  .shift .st{font-size:11px;color:var(--ink-3);margin-left:40px;font-weight:500}
+  .shift .sa{font-size:11px;font-weight:600;margin-top:6px;margin-left:40px;display:inline-flex;align-items:center;gap:4px}
+  .shift .sa::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
+  .shift.full .sa{color:var(--err)}
+  .shift.full .sa::before{background:var(--err)}
 
-  .plans{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-  .plan{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;transition:border-color .15s,background .15s}
-  .plan:hover{border-color:var(--brand-lt)}
-  .plan.sel{border-color:var(--brand);background:var(--brand-bg)}
-  .plan .pn{font-weight:700;font-size:14px}
-  .plan .pd{font-size:11px;color:var(--ink-2);margin-top:1px}
-  .plan .pp{margin-left:auto;font-weight:800;color:var(--brand-dk)}
-
-  .shifts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-  .shift{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s;text-align:left;position:relative}
-  .shift:hover{border-color:var(--brand-lt);box-shadow:0 2px 8px rgba(0,0,0,.04)}
-  .shift.sel{border-color:var(--brand);background:var(--brand-bg);box-shadow:0 0 0 3px rgba(15,118,110,.1)}
-  .shift.full{opacity:.4;pointer-events:none;background:#f1f5f9}
-  .shift .sn{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
-  .shift .sn .shift-icon{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-  .shift .sn .shift-icon.morning{background:#fef3c7;color:#d97706}
-  .shift .sn .shift-icon.evening{background:#ede9fe;color:#7c3aed}
-  .shift .sn .shift-icon.night{background:#e0e7ff;color:#3730a3}
-  .shift .sn .shift-icon.fullday{background:#ecfdf5;color:#059669}
-  .shift .sn .shift-icon.default{background:#f1f5f9;color:#475569}
+  /* ── Plan picker ── */
+  .plans{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .plan{display:flex;align-items:center;gap:14px;border:2px solid #f1f5f9;border-radius:14px;padding:14px;cursor:pointer;background:#f8fafc;transition:all .2s;position:relative;overflow:hidden}
+  .plan:hover{border-color:#cbd5e1;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
+  .plan.sel{border-color:var(--brand);background:linear-gradient(135deg,var(--brand-bg),#fff);box-shadow:0 0 0 3px rgba(15,118,110,.1),0 4px 14px rgba(0,0,0,.06);transform:translateY(-1px)}
+  .plan.sel::after{content:'✓';position:absolute;top:10px;right:12px;width:22px;height:22px;background:var(--brand);color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .plan-ic{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand-bg),#ccfbf1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .plan .pn{font-weight:700;font-size:14px;color:var(--ink);letter-spacing:-.01em}
+  .plan .pd{font-size:11px;color:var(--ink-3);margin-top:2px}
+  .plan .pp{margin-left:auto;text-align:right;flex-shrink:0;padding-right:28px}
+  .plan .pp-val{font-weight:800;font-size:16px;color:var(--brand-dk);letter-spacing:-.02em}
+  .plan .pp-mrp{font-size:11px;color:var(--ink-4);text-decoration:line-through;margin-top:1px}
   .shift .st{font-size:11px;color:var(--ink-2);margin-top:3px;padding-left:34px}
   .shift .sa{font-size:11px;color:var(--ok);font-weight:600;margin-top:4px;padding-left:34px}
   .shift.full .sa{color:var(--err)}
 
-  .seatmap{display:grid;gap:6px;margin-top:6px}
-  .seat{aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:var(--ink-2);transition:transform .1s,border-color .1s,background .1s}
-  .seat:hover{transform:scale(1.05);border-color:var(--brand-lt)}
-  .seat.free{color:var(--ink)}
-  .seat.taken{background:#fde7e7;color:#9b1c1c;cursor:not-allowed;pointer-events:none}
-  .seat.full-taken{background:#fef3c7;color:#92400e;cursor:not-allowed;pointer-events:none}
-  .seat.sel{background:var(--hold);color:#fff;border-color:var(--hold-dk);transform:scale(1.06);box-shadow:0 4px 12px rgba(245,158,11,.35)}
-  .seat.pending{background:var(--hold-bg);color:var(--hold-dk);border-color:var(--hold);cursor:not-allowed;pointer-events:none}
-  .seat.blocked{background:repeating-linear-gradient(45deg,#f1f5f9 0px,#f1f5f9 4px,#e2e8f0 4px,#e2e8f0 8px);color:#94a3b8;border-color:#cbd5e1;cursor:not-allowed;pointer-events:none;font-size:9px;text-align:center;padding:2px;line-height:1.2}
-  .seat-legend{display:flex;gap:10px;font-size:11px;color:var(--ink-2);margin-top:8px;flex-wrap:wrap}
-  .seat-legend span{display:inline-flex;align-items:center;gap:5px}
-  .seat-legend .sw{width:11px;height:11px;border-radius:3px;border:1px solid var(--line)}
-  .sw.free{background:#fff}
-  .sw.taken{background:#fde7e7}
-  .sw.full-taken{background:#fef3c7}
-  .sw.sel{background:var(--hold)}
-  .sw.pending{background:var(--hold-bg);border-color:var(--hold)}
-  .sw.blocked{background:repeating-linear-gradient(45deg,#f1f5f9 0px,#f1f5f9 3px,#e2e8f0 3px,#e2e8f0 6px)}
+  /* ── Seat map ── */
+  .seatmap-wrap{margin-top:12px}
+  .seatmap-front{
+    text-align:center;font-size:10px;font-weight:600;color:var(--ink-3);
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;
+    display:flex;align-items:center;gap:10px
+  }
+  .seatmap-front::before,.seatmap-front::after{
+    content:'';flex:1;height:1px;
+    background:linear-gradient(90deg,transparent,#cbd5e1,transparent)
+  }
+  .seatmap{display:grid;gap:5px}
+
+  /* Base seat — all states inherit this */
+  .seat{
+    aspect-ratio:1/1;border-radius:9px;
+    border:1.5px solid #e2e8f0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;cursor:pointer;
+    background:#fff;color:#94a3b8;
+    transition:all .18s cubic-bezier(.4,0,.2,1);
+    position:relative;user-select:none;gap:1px
+  }
+
+  /* ── Seat state colours ──────────────────────────────────────
+     Free        → Mint green      (inviting, come on in)
+     Selected    → Deep violet     (your confident choice)
+     Taken       → Rose red        (stop, occupied)
+     Full-day    → Warm amber      (full sun, all day)
+     Pending     → Sky blue        (waiting, in-progress)
+     Partial     → Peach orange    (half available — dashed)
+     Restricted  → Lime green      (bookable as full day)
+     Blocked     → Cool gray       (admin reserved, stay away)
+  ─────────────────────────────────────────────────────────── */
+
+  /* Free — pulsing glow makes available seats instantly obvious */
+  @keyframes seat-pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0);border-color:#bbf7d0}
+    50%{box-shadow:0 0 0 4px rgba(34,197,94,.2);border-color:#4ade80}
+  }
+  .seat.free{
+    background:#f0fdf4;color:#16a34a;border-color:#bbf7d0;
+    animation:seat-pulse 2.2s ease-in-out infinite
+  }
+  .seat.free:hover{
+    background:#dcfce7;color:#166534;border-color:#4ade80;
+    transform:scale(1.1);box-shadow:0 4px 14px rgba(34,197,94,.3);
+    animation:none
+  }
+
+  /* Selected — deep violet */
+  .seat.sel{
+    background:#4f46e5;color:#fff;border-color:#3730a3;
+    transform:scale(1.13);
+    box-shadow:0 0 0 3px rgba(79,70,229,.3),0 6px 16px rgba(79,70,229,.4)
+  }
+  .seat.sel::after{
+    content:'✓';position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:17px;font-weight:900;opacity:.22
+  }
+
+  /* Taken — rose red */
+  .seat.taken{
+    background:#fff1f2;color:#be123c;border-color:#fda4af;
+    cursor:not-allowed;pointer-events:none
+  }
+
+  /* Full-day — warm amber */
+  .seat.full-taken{
+    background:#fffbeb;color:#b45309;border-color:#fcd34d;
+    cursor:not-allowed;pointer-events:none
+  }
+
+  /* Pending — sky blue */
+  .seat.pending{
+    background:#f0f9ff;color:#0369a1;border-color:#7dd3fc;
+    cursor:not-allowed;pointer-events:none
+  }
+
+  /* Admin-blocked — gray stripes */
+  .seat.blocked{
+    background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 4px,#e2e8f0 4px,#e2e8f0 8px);
+    color:#cbd5e1;border-color:#e2e8f0;cursor:not-allowed;pointer-events:none;font-size:9px
+  }
+
+  /* Half-available — peach orange, dashed border */
+  .seat.half-available{
+    background:#fff7ed;color:#c2410c;border-color:#fdba74;border-style:dashed;cursor:pointer
+  }
+  .seat.half-available:hover{
+    background:#ffedd5;border-color:#f97316;border-style:solid;
+    transform:scale(1.1);box-shadow:0 4px 14px rgba(249,115,22,.3)
+  }
+  .seat.half-available .seat-num{font-size:11px;font-weight:700;line-height:1.1}
+  .seat.half-available .seat-hint{font-size:8px;font-weight:500;opacity:.75;line-height:1}
+
+  /* Restricted / Full Day only — lime green */
+  .seat.restricted{
+    background:#f7fee7;color:#3f6212;border-color:#bef264;cursor:pointer;pointer-events:auto
+  }
+  .seat.restricted:hover{
+    background:#ecfccb;border-color:#84cc16;
+    transform:scale(1.1);box-shadow:0 4px 14px rgba(132,204,22,.3)
+  }
+  .seat.restricted .seat-num{font-size:11px;font-weight:700;line-height:1.1}
+  .seat.restricted .seat-hint{font-size:8px;font-weight:500;opacity:.75;line-height:1}
+
+  /* Legend */
+  .seat-legend{
+    display:flex;gap:6px;margin-top:14px;flex-wrap:wrap;
+    background:#f8fafc;border-radius:10px;padding:10px 12px;border:1px solid #f1f5f9
+  }
+  .seat-legend span{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#64748b;white-space:nowrap}
+  .seat-legend .sw{width:12px;height:12px;border-radius:3px;border:1.5px solid #e2e8f0;flex-shrink:0}
+  .sw.free{background:#f0fdf4;border-color:#bbf7d0}
+  .sw.taken{background:#fff1f2;border-color:#fda4af}
+  .sw.full-taken{background:#fffbeb;border-color:#fcd34d}
+  .sw.sel{background:#4f46e5;border-color:#3730a3}
+  .sw.pending{background:#f0f9ff;border-color:#7dd3fc}
+  .sw.blocked{background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 2px,#e2e8f0 2px,#e2e8f0 4px);border-color:#e2e8f0}
 
   .hold-banner{background:var(--hold-bg);border:1px solid var(--hold);color:var(--hold-dk);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-top:10px;display:none;align-items:center;gap:8px}
   .hold-banner.show{display:flex}
@@ -189,10 +350,23 @@
 </div>
 
 <div class="top">
-  <h1 id="shopTitle">Library Enrollment</h1>
-  <div class="sub" id="shopSub">Please fill the details below</div>
-  <div class="counter" id="counter" style="display:none"></div>
+  <div class="top-row">
+    <div class="top-logo" id="topLogo">📚</div>
+    <div class="top-info">
+      <h1 id="shopTitle">Library Enrollment</h1>
+      <div class="sub" id="shopSub">Fill the details below to enroll</div>
+    </div>
+  </div>
+  <div class="counter" id="counter" style="display:none">
+    <div class="counter-inner" id="counterInner"></div>
+  </div>
 </div>
+
+<!-- Desktop sidebars -->
+<aside class="es-right" id="esRight" style="display:none">
+  <div class="es-card" id="esPlanCard"></div>
+  <div class="es-card" id="esNoteCard" style="display:none"></div>
+</aside>
 
 <form class="wrap" id="form" onsubmit="return false">
 
@@ -279,17 +453,22 @@
 
   <div class="card" id="cardSeat" style="display:none">
     <h2>Pick a seat <span style="color:var(--ink-3);font-weight:400;font-size:12px">(optional)</span></h2>
-    <div class="help" id="seatHelp">Tap any green seat. Skip to let the shopkeeper assign it.</div>
-    <div class="seatmap" id="seatMap"></div>
+    <div class="help" id="seatHelp">Tap a teal seat to select. You can skip — shopkeeper will assign one.</div>
+    <div class="seatmap-wrap">
+      <div class="seatmap-front">🖥️ Board / Front</div>
+      <div class="seatmap" id="seatMap"></div>
+    </div>
     <div class="seat-legend">
       <span><span class="sw free"></span>Free</span>
       <span><span class="sw sel"></span>Your pick</span>
-      <span><span class="sw pending"></span>Pending</span>
       <span><span class="sw taken"></span>Taken</span>
-      <span><span class="sw full-taken"></span>Full-day taken</span>
-      <span><span class="sw blocked"></span>Not available</span>
+      <span><span class="sw full-taken"></span>Full-day</span>
+      <span><span class="sw pending"></span>Pending</span>
+      <span><span class="sw" style="background:#fff7ed;border:1.5px dashed #fdba74"></span>Partial free</span>
+      <span><span class="sw" style="background:#f7fee7;border-color:#bef264"></span>Full Day only</span>
+      <span><span class="sw blocked"></span>Reserved</span>
     </div>
-    <div class="hold-banner" id="holdBanner"><span class="dot"></span><span>Your seat <b id="holdSeat"></b> is held — the shopkeeper will confirm it shortly.</span></div>
+    <div class="hold-banner" id="holdBanner"><span class="dot"></span><span>Seat <b id="holdSeat"></b> held for you — shopkeeper will confirm shortly.</span></div>
   </div>
 
   <div class="card">
@@ -492,9 +671,13 @@ function loadAll(){
 }
 
 function render(){
-  document.title=cfg('shopname','Library')+' · Enrollment';
-  $('shopTitle').textContent=cfg('shopname','Library Enrollment');
+  var name=cfg('shopname','Library');
+  document.title=name+' · Enrollment';
+  $('shopTitle').textContent=name;
   $('shopSub').textContent='Fill the details below to enroll';
+  var logo=cfg('logourl','');
+  var logoEl=$('topLogo');
+  if(logoEl){if(logo){logoEl.style.backgroundImage='url('+JSON.stringify(logo)+')';logoEl.textContent=''}else{logoEl.textContent=(name.match(/[A-Z]/g)||['L']).slice(0,2).join('')}}
   var brand=cfg('brandcolor','');
   if(/^#[0-9a-f]{6}$/i.test(brand)){
     var rs=document.documentElement.style;rs.setProperty('--brand',brand);
@@ -507,7 +690,106 @@ function render(){
   renderPlans();
   renderShiftCounter();
   renderShifts();
+  if(window.innerWidth>=1100)renderDesktopSidebars();
   $('splash').classList.add('hide');
+}
+
+function renderDesktopSidebars(){
+  $('esRight').style.display='flex';
+  renderEsPlans();renderEsNotes();
+}
+
+function renderEsLib(){
+  var name=cfg('shopname','Library');
+  var timing=cfg('timing','');
+  var phone=cfg('phone','')||cfg('whatsapp','');
+  var address=cfg('address','');
+  var tagline=cfg('tagline','')||cfg('herotagline','');
+  var logo=cfg('logourl','');
+  var rows='';
+  if(timing)rows+='<div class="es-row"><span class="es-ic">🕐</span><span class="es-val">'+E(timing)+'</span></div>';
+  if(phone){var p=String(phone).replace(/\D/g,'');rows+='<div class="es-row"><span class="es-ic">📞</span><a class="es-val" href="tel:'+p+'" style="color:var(--brand);font-weight:600">'+E(phone)+'</a></div>';}
+  if(address)rows+='<div class="es-row"><span class="es-ic">📍</span><span class="es-val">'+E(address)+'</span></div>';
+  var waGroup=cfg('whatsappgrouplink','');
+  if(waGroup)rows+='<div class="es-row"><span class="es-ic">💬</span><a class="es-val" href="'+E(waGroup)+'" target="_blank" style="color:var(--brand);font-weight:600">Join WhatsApp group</a></div>';
+  $('esLibCard').innerHTML=
+    '<div class="es-card-title">About this library</div>'+
+    (logo?'<img src="'+E(logo)+'" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:8px;margin-bottom:10px">':'')+
+    '<div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px">'+E(name)+'</div>'+
+    (tagline?'<div style="font-size:11px;color:var(--ink-3);margin-bottom:8px;line-height:1.5">'+E(tagline)+'</div>':'')+
+    rows;
+}
+
+function renderEsShifts(){
+  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var rows='';
+  if(isYes('enableshifts')){
+    var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+    for(var i=1;i<=n;i++){
+      var lbl=cfg('shift'+i+'label','Shift '+i),time=cfg('shift'+i+'time','');
+      var left=shiftLeftCounter_('S'+i,hold);
+      var pct=cap?Math.round((cap-left)/cap*100):0;
+      var cls=left<=0?'err':pct>=80?'warn':'ok';
+      var ic=shiftIcon_(i,lbl).em;
+      rows+='<div class="es-shift"><div class="es-sl">'+ic+' <span>'+E(lbl)+(time?' <span style="color:var(--ink-3);font-weight:400;font-size:10px">('+E(time)+')</span>':'')+'</span></div>'+
+        '<span class="es-sc '+cls+'">'+(left<=0?'Full':left+' left')+'</span></div>';
+    }
+    if(isYes('enablefullday')){
+      var fl=shiftLeftCounter_('FULL',hold);
+      var fcls=fl<=0?'err':fl<=5?'warn':'ok';
+      rows+='<div class="es-shift"><div class="es-sl">☀️ <span>'+E(cfg('fulldaylabel','Full Day'))+'</span></div>'+
+        '<span class="es-sc '+fcls+'">'+(fl<=0?'Full':fl+' left')+'</span></div>';
+    }
+  }else{
+    var total=cap-hold.length;
+    var cls2=total<=0?'err':total<=cap*0.2?'warn':'ok';
+    rows='<div class="es-shift"><div class="es-sl">🪑 Total seats</div><span class="es-sc '+cls2+'">'+(total<=0?'Full':total+' left')+'</span></div>';
+  }
+  $('esShiftCard').innerHTML='<div class="es-card-title">Seat availability</div>'+rows;
+}
+
+function renderEsAmen(){
+  var items=[];
+  for(var i=1;i<=6;i++){var c=cfg('chip'+i,'');if(c)items.push(c);}
+  var about=cfg('about','')||cfg('description','');
+  var el=$('esAmenCard');
+  if(!items.length&&!about){el.style.display='none';return}
+  el.style.display='block';
+  el.innerHTML='<div class="es-card-title">Facilities</div>'+
+    (about?'<div style="font-size:12px;color:var(--ink-2);line-height:1.6;margin-bottom:10px">'+E(about)+'</div>':'')+
+    items.map(function(c){return '<div class="es-row"><span class="es-ic">✓</span><span class="es-val">'+E(c)+'</span></div>'}).join('');
+}
+
+function renderEsPlans(){
+  if(!plans.length){$('esPlanCard').innerHTML='';return}
+  var cur=cfg('currency','₹');
+  var rows=plans.map(function(p){
+    var price=parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0;
+    var mrp=parseFloat(String(p.mrp||'0').replace(/[^\d.]/g,''))||0;
+    var save=mrp>price?Math.round((mrp-price)/mrp*100):0;
+    return '<div class="es-plan">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'+
+        '<div><div class="ep-name">'+E(p.name)+'</div><div class="ep-dur">'+E(p.duration||p.unit||'')+(p.description?' · '+E(p.description.slice(0,50)):'')+'</div></div>'+
+        '<div style="text-align:right;flex-shrink:0">'+
+          '<div class="ep-price">'+cur+price+'</div>'+
+          (mrp&&mrp>price?'<div><span class="ep-mrp">'+cur+mrp+'</span><span class="ep-save">-'+save+'%</span></div>':'')+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  $('esPlanCard').innerHTML='<div class="es-card-title">Available plans</div>'+rows;
+}
+
+function renderEsNotes(){
+  var privacy=cfg('privacynotice','');
+  var policy=cfg('enrollpolicy','');
+  var el=$('esNoteCard');
+  if(!privacy&&!policy){el.style.display='none';return}
+  el.style.display='block';
+  el.innerHTML='<div class="es-card-title">Important notes</div>'+
+    (policy&&policy.toLowerCase()!=='open'?'<div class="es-row"><span class="es-ic">ℹ️</span><span class="es-val">'+E(policy)+'</span></div>':'')+
+    (privacy?'<div style="font-size:11px;color:var(--ink-3);line-height:1.5;margin-top:6px">'+E(privacy)+'</div>':'');
 }
 
 function applyFieldVisibility(){
@@ -528,19 +810,44 @@ function applyFieldVisibility(){
 // ─── Preparation options ───
 
 // ─── Plans ───
+function plansForShift(shiftKey){
+  if(!shiftKey)return plans;
+  var sk=(shiftKey||'').toUpperCase();
+  return plans.filter(function(p){
+    var ps=String(p.shift||'').trim();
+    if(!ps)return true;                          // no restriction → show always
+    var parts=ps.toUpperCase().split(/[|,\s]+/);
+    return parts.indexOf(sk)>=0;
+  });
+}
 function renderPlans(){
   if(!plans.length){
     $('planList').innerHTML='<div style="color:var(--ink-3);font-size:13px;line-height:1.55">'+
-      'No plans configured yet. <br>The shopkeeper needs to add rows to the <b>Products</b> tab of the library sheet '+
-      '(see <i>templates/library-v2-plans.csv</i> for the format). Once added, refresh this page.</div>';
+      'No plans configured yet. Add rows to the <b>Products</b> tab of the library sheet.</div>';
     return;
   }
-  $('planList').innerHTML=plans.map(function(p,i){
+  var visible=plansForShift(selectedShift);
+  if(!visible.length){
+    $('planList').innerHTML='<div style="color:var(--ink-3);font-size:13px">No plans available for this shift.</div>';
+    return;
+  }
+  $('planList').innerHTML=visible.map(function(p){
+    var i=plans.indexOf(p);
     var price=fnum(p.price),mrp=fnum(p.mrp);
     var dur=p.duration||p.unit||'';
-    return '<div class="plan" onclick="pickPlan('+i+')" data-i="'+i+'">'+
-      '<div><div class="pn">'+E(p.name||'Plan')+'</div>'+(dur?'<div class="pd">'+E(dur)+(p.description?' · '+E(p.description).slice(0,60):'')+'</div>':'')+'</div>'+
-      '<div class="pp">'+cfg('currency','₹')+price+(mrp&&mrp>price?' <s style="color:var(--ink-3);font-weight:400;font-size:11px">'+cfg('currency','₹')+mrp+'</s>':'')+'</div>'+
+    var isSel=selectedPlan&&selectedPlan.name===p.name;
+    var durNum=parseInt((dur||'').match(/\d+/)||0);
+    var ic=durNum>=365?'🏆':durNum>=180?'🥇':durNum>=90?'⭐':'📅';
+    return '<div class="plan'+(isSel?' sel':'')+'" onclick="pickPlan('+i+')" data-i="'+i+'">'+
+      '<div class="plan-ic">'+ic+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="pn">'+E(p.name||'Plan')+'</div>'+
+        (dur?'<div class="pd">'+E(dur)+(p.description?' · '+E(p.description).slice(0,50):'')+'</div>':'')+
+      '</div>'+
+      '<div class="pp">'+
+        '<div class="pp-val">'+cfg('currency','₹')+price+'</div>'+
+        (mrp&&mrp>price?'<div class="pp-mrp">'+cfg('currency','₹')+mrp+'</div>':'')+
+      '</div>'+
     '</div>';
   }).join('');
 }
@@ -569,17 +876,8 @@ function shiftCount(shiftKey){
   return activeHold.filter(function(m){return (m.shift||'').toUpperCase()===shiftKey}).length;
 }
 function shiftLeft(shiftKey){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
-  var activeHold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
-  if(shiftKey==='FULL'){
-    var taken=0,seen={};
-    activeHold.forEach(function(m){var s=String(m.seat||'').trim();if(s&&!seen[s]){seen[s]=1;taken++}});
-    var noSeat=activeHold.filter(function(m){return !m.seat}).length;
-    return Math.max(0,cap-taken-noSeat);
-  }
-  var s1Count=activeHold.filter(function(m){return (m.shift||'').toUpperCase()===shiftKey}).length;
-  var fullCount=activeHold.filter(function(m){return (m.shift||'').toUpperCase()==='FULL'}).length;
-  return Math.max(0,cap-s1Count-fullCount);
+  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  return shiftLeftCounter_(shiftKey,hold);
 }
 function renderShiftCounter(){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
@@ -608,19 +906,62 @@ function renderShiftCounter(){
       shiftHtml+='<span class="pill'+(fl<=0?' full':'')+'">☀️ '+E(cfg('fulldaylabel','Full Day'))+' <span class="num">'+fl+'</span></span>';
     }
   }
-  $('counter').innerHTML=totalHtml+(shiftHtml?'<div class="counter-shifts">'+shiftHtml+'</div>':'');
+  var inner=totalHtml+(shiftHtml?'<div class="counter-div"></div><div class="counter-shifts">'+shiftHtml+'</div>':'');
+  var ci=$('counterInner');if(ci)ci.innerHTML=inner;else $('counter').innerHTML=inner;
   $('counter').style.display='block';
 }
 function shiftLeftCounter_(shiftKey,hold){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var reservedCount=Object.keys(blockedSeats()).length;
+  cap=Math.max(0,cap-reservedCount);
+  var highOcc=isHighOccupancy();
+
   if(shiftKey==='FULL'){
+    var blocked1=blockedSeats();
+    if(highOcc){
+      // Only fully-free non-blocked seats count for Full Day
+      var occupiedSeats={};
+      hold.forEach(function(m){if(m.seat&&!blocked1[m.seat.toUpperCase()])occupiedSeats[m.seat.toUpperCase()]=true});
+      var noSeat=hold.filter(function(m){return !m.seat}).length;
+      return Math.max(0,cap-Object.keys(occupiedSeats).length-noSeat);
+    }
     var taken=0,seen={};
-    hold.forEach(function(m){var s=String(m.seat||'').trim();if(s&&!seen[s]){seen[s]=1;taken++}});
-    var noSeat=hold.filter(function(m){return !m.seat}).length;
-    return Math.max(0,cap-taken-noSeat);
+    hold.forEach(function(m){var s=String(m.seat||'').trim().toUpperCase();if(s&&!seen[s]&&!blocked1[s]){seen[s]=1;taken++}});
+    var noSeat2=hold.filter(function(m){return !m.seat}).length;
+    return Math.max(0,cap-taken-noSeat2);
   }
-  var cnt=hold.filter(function(m){return (m.shift||'').toUpperCase()===shiftKey}).length;
-  var fullCnt=hold.filter(function(m){return (m.shift||'').toUpperCase()==='FULL'}).length;
+
+  if(highOcc){
+    // Single shift at >50%: only half-occupied seats where THIS shift is still free.
+    // Exclude blocked seats — a blocked seat with a Morning member must NOT count
+    // as available for Evening.
+    var blocked2=blockedSeats();
+    var bySeat={};
+    hold.forEach(function(m){
+      if(!m.seat)return;
+      var s=m.seat.toUpperCase();
+      if(blocked2[s])return;  // skip blocked seats entirely
+      bySeat[s]=bySeat[s]||[];
+      bySeat[s].push((m.shift||'').toUpperCase());
+    });
+    var count=0;
+    Object.keys(bySeat).forEach(function(seat){
+      var shifts=bySeat[seat];
+      var thisShiftFree=shifts.indexOf(shiftKey)<0&&shifts.indexOf('FULL')<0;
+      var hasOtherOccupant=shifts.some(function(s){return s!==shiftKey&&s!=='FULL'});
+      if(thisShiftFree&&hasOtherOccupant)count++;
+    });
+    return count;
+  }
+
+  // <= 50% occupancy: also exclude members on blocked seats from the count
+  var blocked3=blockedSeats();
+  var cnt=hold.filter(function(m){
+    return (m.shift||'').toUpperCase()===shiftKey && !blocked3[String(m.seat||'').toUpperCase()];
+  }).length;
+  var fullCnt=hold.filter(function(m){
+    return (m.shift||'').toUpperCase()==='FULL' && !blocked3[String(m.seat||'').toUpperCase()];
+  }).length;
   return Math.max(0,cap-cnt-fullCnt);
 }
 
@@ -660,27 +1001,63 @@ function renderShifts(){
 function pickShift(k){
   if(!shiftLeft(k))return;
   selectedShift=k;selectedSeat='';
-  renderShifts();
+  // If the previously selected plan doesn't apply to the new shift, reset it
+  if(selectedPlan&&plansForShift(k).indexOf(selectedPlan)<0){
+    selectedPlan=null;recomputeTotal();
+  }
+  renderShifts();renderPlans();
   $('cardPlan').style.display='block';
   renderSeatMap();
 }
 
 // ─── Seat map ───
+function isHighOccupancy(){
+  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var reserved=Object.keys(blockedSeats()).length;
+  var effective=Math.max(1,cap-reserved);
+  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var seen={};hold.forEach(function(m){if(m.seat)seen[m.seat]=true});
+  var occ=Object.keys(seen).length+hold.filter(function(m){return !m.seat}).length;
+  return (occ/effective)>0.5;
+}
+function freeShiftsForSeat(seatId){
+  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var free=[];
+  for(var i=1;i<=n;i++){
+    var k='S'+i;
+    var taken=hold.some(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()===k});
+    if(!taken)free.push(k);
+  }
+  return free;
+}
 function seatStatus(seatId){
   var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
-  // Differentiate "already-active occupant" from "pending hold by someone else"
-  // so the colour code on the seat-map tells the student which is which.
   function occupants(filter){return hold.filter(filter)}
-  var fullActive=occupants(function(m){return m.seat===seatId && (m.shift||'').toUpperCase()==='FULL' && (m.status||'').toLowerCase()==='active'});
+
+  // Full-day occupant always blocks everything
+  var fullActive=occupants(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()==='FULL'&&(m.status||'').toLowerCase()==='active'});
   if(fullActive.length)return 'full-taken';
-  var fullPending=occupants(function(m){return m.seat===seatId && (m.shift||'').toUpperCase()==='FULL' && (m.status||'').toLowerCase()==='pending'});
+  var fullPending=occupants(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()==='FULL'&&(m.status||'').toLowerCase()==='pending'});
   if(fullPending.length)return 'pending';
+
+  var anyHold=occupants(function(m){return m.seat===seatId});
+  var isSeatFree=anyHold.length===0;
+  var fs=freeShiftsForSeat(seatId);   // shifts not yet booked on this seat
+  var highOcc=isHighOccupancy();
+
   if(selectedShift==='FULL'){
-    var anyHold=occupants(function(m){return m.seat===seatId});
-    if(!anyHold.length)return 'free';
+    if(isSeatFree)return 'free';                         // fully free → OK for Full Day
+    if(highOcc&&fs.length>0)return 'half-available';     // partially taken → show free shift
     return anyHold.every(function(m){return (m.status||'').toLowerCase()==='pending'})?'pending':'taken';
   }
-  var same=occupants(function(m){return m.seat===seatId && (m.shift||'').toUpperCase()===selectedShift});
+
+  // Single-shift selected
+  if(highOcc&&isSeatFree){
+    // Fully free seat at >50% occupancy: must be booked as Full Day only
+    return 'restricted';
+  }
+  var same=occupants(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()===selectedShift});
   if(!same.length)return 'free';
   return same.every(function(m){return (m.status||'').toLowerCase()==='pending'})?'pending':'taken';
 }
@@ -706,17 +1083,48 @@ function renderSeatMap(){
   for(var i=1;i<=cap;i++){
     var id=prefix+i;
     if(blocked[id.toUpperCase()]){
-      html+='<div class="seat blocked" title="'+E(blocked[id.toUpperCase()])+'">'+id+'<br><span style="font-size:8px">'+E(blocked[id.toUpperCase()])+'</span></div>';
+      html+='<div class="seat blocked" title="'+E(blocked[id.toUpperCase()])+'">'+
+        '<span class="seat-num">'+id+'</span>'+
+        '<span class="seat-hint">'+E(blocked[id.toUpperCase()])+'</span>'+
+      '</div>';
       continue;
     }
     var st=seatStatus(id);
-    var cls='seat '+st+(selectedSeat===id?' sel':'');
-    html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')">'+id+'</div>';
+    var isSel=selectedSeat===id;
+    var cls='seat '+st+(isSel?' sel':'');
+    if(st==='half-available'){
+      var fs2=freeShiftsForSeat(id);
+      var freeLabels=fs2.map(function(k){
+        var si=parseInt(k.slice(1),10)||1;
+        return shiftIcon_(si,cfg('shift'+si+'label','')).em;
+      }).join('');
+      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Only '+E(freeLabels)+' shift available">'+
+        '<span class="seat-num">'+id+'</span>'+
+        '<span class="seat-hint">'+freeLabels+' free</span>'+
+      '</div>';
+    }else if(st==='restricted'){
+      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Must book as Full Day (>50% full)">'+
+        '<span class="seat-num">'+id+'</span>'+
+        '<span class="seat-hint">☀️ only</span>'+
+      '</div>';
+    }else{
+      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')">'+id+'</div>';
+    }
   }
   $('seatMap').innerHTML=html;
 }
 function pickSeat(id){
   var el=document.querySelector('#seatMap .seat[onclick*="\''+id+'\'"]');
+  if(el&&el.classList.contains('restricted')){
+    toast('Library is >50% full — seat '+id+' must be booked as Full Day. Please select Full Day shift.','err');
+    return;
+  }
+  if(el&&el.classList.contains('half-available')){
+    var fs3=freeShiftsForSeat(id);
+    var freeLabels=fs3.map(function(k){var si=parseInt(k.slice(1),10)||1;return cfg('shift'+si+'label','Shift '+si)}).join(' or ');
+    toast('Seat '+id+': only '+freeLabels+' is available — please select that shift.','err');
+    return;
+  }
   if(el&&(el.classList.contains('taken')||el.classList.contains('full-taken')||el.classList.contains('pending')||el.classList.contains('blocked')))return;
   selectedSeat=(selectedSeat===id)?'':id;
   renderSeatMap();
