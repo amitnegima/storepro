@@ -18,49 +18,40 @@
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:var(--brand);text-decoration:none}
 
-  /* ── Clean topbar ── */
-  .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-  .top-row{display:flex;align-items:center;gap:12px;padding:10px 18px;max-width:560px;margin:0 auto}
-  .top-logo{width:36px;height:36px;border-radius:9px;background:var(--brand);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center}
-  .top-info{flex:1;min-width:0}
-  .top h1{margin:0;font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .top .sub{font-size:11px;color:var(--ink-3);margin-top:1px}
+  /* ── Hero ── */
+  .top{background:linear-gradient(160deg,#0f766e 0%,#0d9488 60%,#14b8a6 100%);position:relative;padding:28px 20px 40px;text-align:center}
+  .top::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='28' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3C/svg%3E") repeat;pointer-events:none}
+  .top-wave{position:absolute;bottom:-1px;left:0;right:0;line-height:0}
+  .top-wave svg{display:block;width:100%}
+  .top-logo{width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;overflow:hidden;background-size:cover;background-position:center;border:2px solid rgba(255,255,255,.4);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+  .top h1{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.2}
+  .top .sub{font-size:13px;color:rgba(255,255,255,.75);margin:0 0 18px}
+  .top-contact{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;position:relative;z-index:1}
+  .top-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:99px;padding:6px 13px;font-size:11.5px;font-weight:600;color:#fff;text-decoration:none;white-space:nowrap;transition:background .15s;backdrop-filter:blur(6px)}
+  .top-chip:active{background:rgba(255,255,255,.28)}
 
-  /* Shift counter strip — below topbar */
-  .counter{background:#fff;border-bottom:1px solid var(--line);padding:6px 18px 7px}
-  .counter-inner{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:8px}
-  .counter-total{display:flex;align-items:center;gap:8px;flex-shrink:0}
-  .counter-total .ct-label{font-size:11px;font-weight:600;color:var(--ink-3);white-space:nowrap}
-  .counter-total .ct-bar{width:60px;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+  /* ── Seat availability strip — sticky ── */
+  .counter{background:#fff;border-bottom:1px solid var(--line);padding:8px 18px 9px;position:sticky;top:0;z-index:30;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .counter-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:8px}
+  .counter-total{display:flex;align-items:center;gap:7px;flex-shrink:0}
+  .counter-total .ct-label{font-size:10.5px;font-weight:600;color:var(--ink-3);white-space:nowrap}
+  .counter-total .ct-bar{width:44px;height:4px;background:var(--line);border-radius:99px;overflow:hidden}
   .counter-total .ct-fill{height:100%;border-radius:99px;transition:width .4s ease}
   .counter-total .ct-fill.ok{background:var(--brand)}
   .counter-total .ct-fill.warn{background:#f59e0b}
   .counter-total .ct-fill.err{background:var(--err)}
-  .counter-total .ct-num{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
-  .counter-div{width:1px;height:16px;background:var(--line);flex-shrink:0}
+  .counter-total .ct-num{font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap}
+  .counter-div{width:1px;height:16px;background:var(--line-dk);flex-shrink:0}
   .counter-shifts{display:flex;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1}
   .counter-shifts::-webkit-scrollbar{display:none}
-  .pill{flex:0 0 auto;background:var(--bg);border:1px solid var(--line-dk);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap;color:var(--ink-2)}
-  .pill .num{background:var(--brand);color:#fff;border-radius:999px;padding:1px 7px;font-weight:700;font-size:10.5px}
-  .pill.full{opacity:.5}
+  .pill{flex:0 0 auto;background:var(--bg);border:1.5px solid var(--line-dk);border-radius:999px;padding:4px 10px 4px 8px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap;color:var(--ink-2)}
+  .pill .num{background:var(--brand);color:#fff;border-radius:999px;padding:2px 7px;font-weight:700;font-size:10px;min-width:20px;text-align:center}
+  .pill.full .num{background:#94a3b8}
+  .pill.full{opacity:.55}
   .pill.warn .num{background:#f59e0b}
   .pill.err .num{background:var(--err)}
 
-  .wrap{max-width:560px;margin:0 auto;padding:16px 14px 120px}
-
-  /* ── Desktop 2-column (right sidebar — plans only) ── */
-  @media(min-width:1100px){
-    .top-row,.counter-inner{max-width:none!important;margin-left:0!important;margin-right:0!important;padding-right:calc(300px + 20px)}
-    .wrap{margin-right:300px;max-width:none}
-    .submit-bar{right:300px}
-    .es-right{display:flex!important;flex-direction:column;gap:12px;position:fixed;top:0;right:0;width:300px;height:100vh;overflow-y:auto;padding:88px 16px 20px;background:#fafafa;scrollbar-width:thin;scrollbar-color:#e2e8f0 transparent;border-left:1px solid var(--line)}
-  }
-  @media(min-width:1440px){
-    .top-row,.counter-inner{padding-right:calc(320px + 20px)}
-    .wrap{margin-right:320px}
-    .submit-bar{right:320px}
-    .es-right{width:320px}
-  }
+  .wrap{max-width:960px;margin:0 auto;padding:16px 20px 120px}
   .es-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px}
   .es-card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:10px}
   .es-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line-soft);font-size:12px;color:var(--ink-2)}
@@ -82,8 +73,14 @@
   .es-shift .es-sc.warn{background:#fef3c7;color:#92400e}
   .es-shift .es-sc.err{background:var(--err-bg);color:var(--err-dk)}
 
+  @keyframes card-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
   /* ── Cards ── */
-  .card{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04)}
+  .card{background:#fff;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.05),0 6px 20px rgba(0,0,0,.05);animation:card-in .35s ease both}
+  .card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.15s}.card:nth-child(4){animation-delay:.2s}.card:nth-child(5){animation-delay:.25s}
+  .card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .step-badge{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--brand),#0d9488);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 8px rgba(15,118,110,.3)}
+  .card-header-text h2{margin:0;font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+  .card-header-text .help{color:var(--ink-3);font-size:12px;margin-top:2px}
   .card h2{margin:0 0 2px;font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
   .card h2::before{content:'';width:3px;height:18px;border-radius:2px;background:linear-gradient(180deg,var(--brand),var(--brand-lt));flex-shrink:0}
   .card .help{color:var(--ink-3);font-size:12px;margin-bottom:14px;margin-top:3px;padding-left:11px}
@@ -153,13 +150,30 @@
   .plan{display:flex;align-items:center;gap:14px;border:2px solid #f1f5f9;border-radius:14px;padding:14px;cursor:pointer;background:#f8fafc;transition:all .2s;position:relative;overflow:hidden}
   .plan:hover{border-color:#cbd5e1;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.06);transform:translateY(-1px)}
   .plan.sel{border-color:var(--brand);background:linear-gradient(135deg,var(--brand-bg),#fff);box-shadow:0 0 0 3px rgba(15,118,110,.1),0 4px 14px rgba(0,0,0,.06);transform:translateY(-1px)}
-  .plan.sel::after{content:'✓';position:absolute;top:10px;right:12px;width:22px;height:22px;background:var(--brand);color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .plan.sel::after{display:none}
+  .plan.locked{cursor:not-allowed;background:#f8fafc;border-color:#e2e8f0;border-style:dashed}
+  .plan.locked:hover{transform:none;box-shadow:none;border-color:#e2e8f0;background:#f8fafc}
+  .plan.locked::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent,transparent 6px,rgba(0,0,0,.025) 6px,rgba(0,0,0,.025) 7px);pointer-events:none}
+  .plan.locked .plan-ic{filter:grayscale(1);opacity:.4}
+  .plan.locked .pn{color:#94a3b8;text-decoration:line-through;text-decoration-color:#cbd5e1}
+  .plan.locked .pd{color:#cbd5e1}
+  .plan.locked .pp-val{color:#94a3b8}
+  .plan.locked .pp-mrp{color:#cbd5e1}
+  .plan-locked-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#64748b;background:#e2e8f0;border-radius:20px;padding:3px 9px;letter-spacing:.02em}
+  .plan-locked-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px dashed #e2e8f0}
+  .plan-locked-reason{font-size:11px;color:#94a3b8;font-style:italic}
   .plan-ic{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand-bg),#ccfbf1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
   .plan .pn{font-weight:700;font-size:14px;color:var(--ink);letter-spacing:-.01em}
-  .plan .pd{font-size:11px;color:var(--ink-3);margin-top:2px}
-  .plan .pp{margin-left:auto;text-align:right;flex-shrink:0;padding-right:28px}
+  .plan .pd{font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.4}
+  .plan .pd-dur{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:10.5px;font-weight:600;color:var(--ink-2);margin-right:4px}
+  .plan .pp{display:flex;align-items:center;gap:8px;flex-shrink:0;text-align:right}
   .plan .pp-val{font-weight:800;font-size:16px;color:var(--brand-dk);letter-spacing:-.02em}
   .plan .pp-mrp{font-size:11px;color:var(--ink-4);text-decoration:line-through;margin-top:1px}
+  .plan .pp-check{display:none;width:22px;height:22px;background:var(--brand);color:#fff;border-radius:50%;font-size:12px;font-weight:700;align-items:center;justify-content:center;flex-shrink:0}
+  .plan.sel .pp-check{display:flex}
+  .plan-timing{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+  .plan-timing .pt-sep{color:var(--line-dk);align-self:center}
+  .plan-timing{font-size:11px;color:var(--ink-2);line-height:1.5}
   .shift .st{font-size:11px;color:var(--ink-2);margin-top:3px;padding-left:34px}
   .shift .sa{font-size:11px;color:var(--ok);font-weight:600;margin-top:4px;padding-left:34px}
   .shift.full .sa{color:var(--err)}
@@ -177,114 +191,95 @@
   }
   .seatmap{display:grid;gap:5px}
 
-  /* Base seat — all states inherit this */
+  /* Base seat */
   .seat{
-    aspect-ratio:1/1;border-radius:9px;
-    border:1.5px solid #e2e8f0;
+    aspect-ratio:1/1;border-radius:12px;border:2px solid #e2e8f0;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    font-size:11px;font-weight:700;cursor:pointer;
+    font-size:12px;font-weight:800;cursor:pointer;
     background:#fff;color:#94a3b8;
     transition:all .18s cubic-bezier(.4,0,.2,1);
-    position:relative;user-select:none;gap:1px
+    position:relative;user-select:none;gap:2px
   }
+  .seat-num{font-size:12px;font-weight:800;line-height:1}
+  .seat-lbl{font-size:8.5px;font-weight:600;letter-spacing:.02em;line-height:1;opacity:.85;text-transform:uppercase}
 
-  /* ── Seat state colours ──────────────────────────────────────
-     Free        → Mint green      (inviting, come on in)
-     Selected    → Deep violet     (your confident choice)
-     Taken       → Rose red        (stop, occupied)
-     Full-day    → Warm amber      (full sun, all day)
-     Pending     → Sky blue        (waiting, in-progress)
-     Partial     → Peach orange    (half available — dashed)
-     Restricted  → Lime green      (bookable as full day)
-     Blocked     → Cool gray       (admin reserved, stay away)
-  ─────────────────────────────────────────────────────────── */
-
-  /* Free — pulsing glow makes available seats instantly obvious */
   @keyframes seat-pulse{
-    0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0);border-color:#bbf7d0}
-    50%{box-shadow:0 0 0 4px rgba(34,197,94,.2);border-color:#4ade80}
+    0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}
+    50%{box-shadow:0 0 0 5px rgba(22,163,74,.2)}
   }
+  /* Free — bright green */
   .seat.free{
-    background:#f0fdf4;color:#16a34a;border-color:#bbf7d0;
-    animation:seat-pulse 2.2s ease-in-out infinite
+    background:#22c55e;color:#fff;border-color:#16a34a;
+    box-shadow:0 2px 8px rgba(34,197,94,.3);
+    animation:seat-pulse 2s ease-in-out infinite
   }
   .seat.free:hover{
-    background:#dcfce7;color:#166534;border-color:#4ade80;
-    transform:scale(1.1);box-shadow:0 4px 14px rgba(34,197,94,.3);
-    animation:none
+    background:#16a34a;border-color:#15803d;
+    transform:scale(1.1);box-shadow:0 4px 16px rgba(22,163,74,.45);animation:none
   }
 
-  /* Selected — deep violet */
+  /* Selected — vivid indigo */
   .seat.sel{
-    background:#4f46e5;color:#fff;border-color:#3730a3;
-    transform:scale(1.13);
-    box-shadow:0 0 0 3px rgba(79,70,229,.3),0 6px 16px rgba(79,70,229,.4)
-  }
-  .seat.sel::after{
-    content:'✓';position:absolute;inset:0;
-    display:flex;align-items:center;justify-content:center;
-    font-size:17px;font-weight:900;opacity:.22
+    background:#6366f1;color:#fff;border-color:#4338ca;
+    transform:scale(1.12);
+    box-shadow:0 0 0 3px rgba(99,102,241,.35),0 6px 18px rgba(99,102,241,.45)
   }
 
-  /* Taken — rose red */
+  /* Taken — bright red */
   .seat.taken{
-    background:#fff1f2;color:#be123c;border-color:#fda4af;
-    cursor:not-allowed;pointer-events:none
+    background:#ef4444;color:#fff;border-color:#dc2626;
+    cursor:not-allowed;pointer-events:none;opacity:.75
   }
 
-  /* Full-day — warm amber */
+  /* Full-day taken — amber */
   .seat.full-taken{
-    background:#fffbeb;color:#b45309;border-color:#fcd34d;
-    cursor:not-allowed;pointer-events:none
+    background:#f59e0b;color:#fff;border-color:#d97706;
+    cursor:not-allowed;pointer-events:none;opacity:.75
   }
 
   /* Pending — sky blue */
   .seat.pending{
-    background:#f0f9ff;color:#0369a1;border-color:#7dd3fc;
-    cursor:not-allowed;pointer-events:none
+    background:#38bdf8;color:#fff;border-color:#0284c7;
+    cursor:not-allowed;pointer-events:none;opacity:.8
   }
 
   /* Admin-blocked — gray stripes */
   .seat.blocked{
-    background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 4px,#e2e8f0 4px,#e2e8f0 8px);
-    color:#cbd5e1;border-color:#e2e8f0;cursor:not-allowed;pointer-events:none;font-size:9px
+    background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 4px,#cbd5e1 4px,#cbd5e1 8px);
+    color:#94a3b8;border-color:#cbd5e1;cursor:not-allowed;pointer-events:none
   }
 
-  /* Half-available — peach orange, dashed border */
+  /* Half-available — orange, dashed */
   .seat.half-available{
-    background:#fff7ed;color:#c2410c;border-color:#fdba74;border-style:dashed;cursor:pointer
+    background:#fb923c;color:#fff;border-color:#ea580c;border-style:dashed;cursor:pointer
   }
   .seat.half-available:hover{
-    background:#ffedd5;border-color:#f97316;border-style:solid;
-    transform:scale(1.1);box-shadow:0 4px 14px rgba(249,115,22,.3)
+    background:#ea580c;border-style:solid;
+    transform:scale(1.1);box-shadow:0 4px 14px rgba(234,88,12,.4)
   }
-  .seat.half-available .seat-num{font-size:11px;font-weight:700;line-height:1.1}
-  .seat.half-available .seat-hint{font-size:8px;font-weight:500;opacity:.75;line-height:1}
 
-  /* Restricted / Full Day only — lime green */
+  /* Restricted — lime green */
   .seat.restricted{
-    background:#f7fee7;color:#3f6212;border-color:#bef264;cursor:pointer;pointer-events:auto
+    background:#a3e635;color:#365314;border-color:#84cc16;cursor:pointer
   }
   .seat.restricted:hover{
-    background:#ecfccb;border-color:#84cc16;
-    transform:scale(1.1);box-shadow:0 4px 14px rgba(132,204,22,.3)
+    background:#84cc16;color:#1a2e05;border-color:#65a30d;
+    transform:scale(1.1);box-shadow:0 4px 14px rgba(132,204,22,.4)
   }
-  .seat.restricted .seat-num{font-size:11px;font-weight:700;line-height:1.1}
-  .seat.restricted .seat-hint{font-size:8px;font-weight:500;opacity:.75;line-height:1}
 
   /* Legend */
   .seat-legend{
-    display:flex;gap:6px;margin-top:14px;flex-wrap:wrap;
-    background:#f8fafc;border-radius:10px;padding:10px 12px;border:1px solid #f1f5f9
+    display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;
+    background:#f8fafc;border-radius:10px;padding:10px 14px;border:1px solid #f1f5f9
   }
-  .seat-legend span{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#64748b;white-space:nowrap}
-  .seat-legend .sw{width:12px;height:12px;border-radius:3px;border:1.5px solid #e2e8f0;flex-shrink:0}
-  .sw.free{background:#f0fdf4;border-color:#bbf7d0}
-  .sw.taken{background:#fff1f2;border-color:#fda4af}
-  .sw.full-taken{background:#fffbeb;border-color:#fcd34d}
-  .sw.sel{background:#4f46e5;border-color:#3730a3}
-  .sw.pending{background:#f0f9ff;border-color:#7dd3fc}
-  .sw.blocked{background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 2px,#e2e8f0 2px,#e2e8f0 4px);border-color:#e2e8f0}
+  .seat-legend span{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#64748b;white-space:nowrap}
+  .seat-legend .sw{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+  .sw.free{background:#22c55e}
+  .sw.taken{background:#ef4444}
+  .sw.full-taken{background:#f59e0b}
+  .sw.sel{background:#6366f1}
+  .sw.pending{background:#38bdf8}
+  .sw.blocked{background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 2px,#cbd5e1 2px,#cbd5e1 4px);border:1px solid #cbd5e1}
 
   .hold-banner{background:var(--hold-bg);border:1px solid var(--hold);color:var(--hold-dk);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-top:10px;display:none;align-items:center;gap:8px}
   .hold-banner.show{display:flex}
@@ -292,7 +287,7 @@
   @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 7px rgba(245,158,11,0)}}
 
   .submit-bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);z-index:30}
-  .submit-bar .row{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .submit-bar .row{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:10px}
   .submit-bar .ttl{font-size:13px;color:var(--ink-2)}
   .submit-bar .ttl b{color:var(--brand-dk);font-size:16px}
   .submit-bar button{margin-left:auto;appearance:none;border:none;background:var(--brand);color:#fff;font-weight:700;font-size:15px;padding:13px 22px;border-radius:11px;cursor:pointer;display:flex;align-items:center;gap:8px}
@@ -349,30 +344,29 @@
   <div class="msg" id="splashMsg">Loading library…</div>
 </div>
 
-<div class="top">
-  <div class="top-row">
-    <div class="top-logo" id="topLogo">📚</div>
-    <div class="top-info">
-      <h1 id="shopTitle">Library Enrollment</h1>
-      <div class="sub" id="shopSub">Fill the details below to enroll</div>
-    </div>
-  </div>
-  <div class="counter" id="counter" style="display:none">
-    <div class="counter-inner" id="counterInner"></div>
-  </div>
+<div class="top" id="heroTop">
+  <div class="top-logo" id="topLogo">📚</div>
+  <h1 id="shopTitle">Library Enrollment</h1>
+  <div class="sub" id="shopSub">Fill the details below to enroll</div>
+  <div class="top-contact" id="topContact"></div>
+  <div class="top-wave"><svg viewBox="0 0 1440 32" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,32 C360,0 1080,0 1440,32 L1440,32 L0,32 Z" fill="#f5f7fb"/></svg></div>
+</div>
+<div class="counter" id="counter" style="display:none">
+  <div class="counter-inner" id="counterInner"></div>
 </div>
 
 <!-- Desktop sidebars -->
-<aside class="es-right" id="esRight" style="display:none">
-  <div class="es-card" id="esPlanCard"></div>
-  <div class="es-card" id="esNoteCard" style="display:none"></div>
-</aside>
 
 <form class="wrap" id="form" onsubmit="return false">
 
   <div class="card">
-    <h2>Personal details</h2>
-    <div class="help">Fields marked <span style="color:var(--err)">*</span> are required.</div>
+    <div class="card-header">
+      <div class="step-badge">1</div>
+      <div class="card-header-text">
+        <h2>Personal details</h2>
+        <div class="help" style="margin:0">Fields marked <span style="color:var(--err)">*</span> are required.</div>
+      </div>
+    </div>
 
     <label id="fName">
       <span class="lbl">Name <span class="req">*</span></span>
@@ -440,20 +434,35 @@
 
 
   <div class="card" id="cardShift">
-    <h2>Choose shift</h2>
-    <div class="help">Each seat is single-shift unless you pick Full Day.</div>
+    <div class="card-header">
+      <div class="step-badge">2</div>
+      <div class="card-header-text">
+        <h2>Choose shift</h2>
+        <div class="help" style="margin:0">Each seat is single-shift unless you pick Full Day.</div>
+      </div>
+    </div>
     <div class="shifts" id="shiftList"></div>
   </div>
 
   <div class="card" id="cardPlan" style="display:none">
-    <h2>Choose plan</h2>
-    <div class="help" id="planHelp">Pick the plan you want to enroll for.</div>
+    <div class="card-header">
+      <div class="step-badge">3</div>
+      <div class="card-header-text">
+        <h2>Choose plan</h2>
+        <div class="help" id="planHelp" style="margin:0">Pick the plan you want to enroll for.</div>
+      </div>
+    </div>
     <div class="plans" id="planList"></div>
   </div>
 
   <div class="card" id="cardSeat" style="display:none">
-    <h2>Pick a seat <span style="color:var(--ink-3);font-weight:400;font-size:12px">(optional)</span></h2>
-    <div class="help" id="seatHelp">Tap a teal seat to select. You can skip — shopkeeper will assign one.</div>
+    <div class="card-header">
+      <div class="step-badge">4</div>
+      <div class="card-header-text">
+        <h2>Pick a seat <span style="font-size:11px;font-weight:500;color:var(--ink-3);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:1px 8px;margin-left:4px">optional</span></h2>
+        <div class="help" id="seatHelp" style="margin:0">Tap a green seat to select. You can skip — shopkeeper will assign one.</div>
+      </div>
+    </div>
     <div class="seatmap-wrap">
       <div class="seatmap-front">🖥️ Board / Front</div>
       <div class="seatmap" id="seatMap"></div>
@@ -487,8 +496,15 @@
 
 <div class="submit-bar">
   <div class="row">
-    <div class="ttl">Total <b id="ttl">—</b></div>
-    <button type="button" id="btnSubmit" onclick="submitForm()">Submit enrollment</button>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:10px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em">Total</div>
+      <div style="font-size:18px;font-weight:800;color:var(--brand-dk);line-height:1.1" id="ttl">—</div>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:1px" id="submitMeta"></div>
+    </div>
+    <div style="flex-shrink:0;text-align:right">
+      <button type="button" id="btnSubmit" onclick="submitForm()">📋 Submit to <span id="btnShopName">Library</span></button>
+      <div style="font-size:10.5px;color:var(--ink-3);margin-top:5px;max-width:160px;line-height:1.4">Visit the owner to complete your enrollment</div>
+    </div>
   </div>
 </div>
 
@@ -631,6 +647,8 @@ function tryLoadProducts(names,idx,cb){
       p.mrp=pick(p,['mrp','listprice','retailprice'])||p.mrp||'';
       p.duration=pick(p,['duration','validity','days','period','unit'])||p.duration||'';
       p.description=pick(p,['description','desc','details','about'])||p.description||'';
+      var lockedRaw=pick(p,['locked','lock','disabled','unavailable']).toLowerCase().trim();
+      p.locked=(lockedRaw==='yes'||lockedRaw==='true'||lockedRaw==='1'||lockedRaw==='locked');
       return true;
     });
     console.log('[enroll] kept '+plans.length+' plans after filter');
@@ -674,14 +692,24 @@ function render(){
   var name=cfg('shopname','Library');
   document.title=name+' · Enrollment';
   $('shopTitle').textContent=name;
-  $('shopSub').textContent='Fill the details below to enroll';
+  $('shopSub').textContent=cfg('tagline','')||'Fill the details below to enroll';
+  var bsn=$('btnShopName');if(bsn)bsn.textContent=name;
   var logo=cfg('logourl','');
   var logoEl=$('topLogo');
   if(logoEl){if(logo){logoEl.style.backgroundImage='url('+JSON.stringify(logo)+')';logoEl.textContent=''}else{logoEl.textContent=(name.match(/[A-Z]/g)||['L']).slice(0,2).join('')}}
+  var phone=cfg('phone','')||cfg('whatsapp','');
+  var address=cfg('address','');
+  var timing=cfg('timing','');
+  var chips='';
+  if(phone){var ph=String(phone).replace(/\D/g,'');chips+='<a href="tel:'+ph+'" class="top-chip">📞 '+E(phone)+'</a>';}
+  if(address)chips+='<span class="top-chip">📍 '+E(address)+'</span>';
+  if(timing)chips+='<span class="top-chip">🕐 '+E(timing)+'</span>';
+  var tc=$('topContact');if(tc)tc.innerHTML=chips;
   var brand=cfg('brandcolor','');
   if(/^#[0-9a-f]{6}$/i.test(brand)){
-    var rs=document.documentElement.style;rs.setProperty('--brand',brand);
-    var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',brand);
+    document.documentElement.style.setProperty('--brand',brand);
+    var tmeta=document.querySelector('meta[name="theme-color"]');if(tmeta)tmeta.setAttribute('content',brand);
+    var heroEl=$('heroTop');if(heroEl)heroEl.style.background='linear-gradient(160deg,'+brand+' 0%,'+brand+'cc 60%,'+brand+'99 100%)';
   }
   var maxMB=parseInt(cfg('maxphotomb','6'),10)||6;$('maxMB').textContent=maxMB;$('maxMB2').textContent=maxMB;
   $('privacy').textContent=cfg('privacynotice','Your details stay private with the library owner.');
@@ -690,13 +718,11 @@ function render(){
   renderPlans();
   renderShiftCounter();
   renderShifts();
-  if(window.innerWidth>=1100)renderDesktopSidebars();
   $('splash').classList.add('hide');
 }
 
 function renderDesktopSidebars(){
   $('esRight').style.display='flex';
-  renderEsPlans();renderEsNotes();
 }
 
 function renderEsLib(){
@@ -836,24 +862,62 @@ function renderPlans(){
     var price=fnum(p.price),mrp=fnum(p.mrp);
     var dur=p.duration||p.unit||'';
     var isSel=selectedPlan&&selectedPlan.name===p.name;
+    var isLocked=!!p.locked;
     var durNum=parseInt((dur||'').match(/\d+/)||0);
     var ic=durNum>=365?'🏆':durNum>=180?'🥇':durNum>=90?'⭐':'📅';
-    return '<div class="plan'+(isSel?' sel':'')+'" onclick="pickPlan('+i+')" data-i="'+i+'">'+
+    var cls='plan'+(isSel&&!isLocked?' sel':'')+(isLocked?' locked':'');
+    var handler=isLocked?'planLockedToast()':'pickPlan('+i+')';
+    var cur2=cfg('currency','₹');
+    var shiftTimingHtml='';
+    if(isYes('enableshifts')&&selectedShift){
+      var timingParts=[];
+      if(selectedShift==='FULL'){
+        var ft=cfg('fulldaytime','');
+        if(ft)timingParts.push('☀️ <b>'+E(cfg('fulldaylabel','Full Day'))+'</b>: '+E(ft));
+      } else {
+        var sIdx=parseInt((selectedShift||'S1').slice(1),10)||1;
+        var slbl=cfg('shift'+sIdx+'label','Shift '+sIdx);
+        var stime=cfg('shift'+sIdx+'time','');
+        var sico=shiftIcon_(sIdx,slbl).em;
+        if(stime)timingParts.push(sico+' <b>'+E(slbl)+'</b>: '+E(stime));
+      }
+      if(timingParts.length)shiftTimingHtml='<div class="plan-timing">'+timingParts.join('')+'</div>';
+    }
+    return '<div class="'+cls+'" onclick="'+handler+'" data-i="'+i+'">'+
       '<div class="plan-ic">'+ic+'</div>'+
       '<div style="flex:1;min-width:0">'+
-        '<div class="pn">'+E(p.name||'Plan')+'</div>'+
-        (dur?'<div class="pd">'+E(dur)+(p.description?' · '+E(p.description).slice(0,50):'')+'</div>':'')+
-      '</div>'+
-      '<div class="pp">'+
-        '<div class="pp-val">'+cfg('currency','₹')+price+'</div>'+
-        (mrp&&mrp>price?'<div class="pp-mrp">'+cfg('currency','₹')+mrp+'</div>':'')+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'+
+          '<div style="flex:1;min-width:0">'+
+            '<div class="pn">'+E(p.name||'Plan')+'</div>'+
+            '<div class="pd">'+
+              (dur?'<span class="pd-dur">'+E(dur)+'</span>':'')+
+              (p.description?'<span>'+E(p.description).slice(0,60)+'</span>':'')+
+            '</div>'+
+            shiftTimingHtml+
+          '</div>'+
+          '<div class="pp">'+
+            '<div style="text-align:right">'+
+              '<div class="pp-val">'+cur2+price+'</div>'+
+              (mrp&&mrp>price?'<div class="pp-mrp">'+cur2+mrp+'</div>':'')+
+            '</div>'+
+            '<div class="pp-check">✓</div>'+
+          '</div>'+
+        '</div>'+
+        (isLocked?
+          '<div class="plan-locked-row">'+
+            '<span class="plan-locked-reason">Not available for new enrollment</span>'+
+            '<span class="plan-locked-badge">🔒 Locked</span>'+
+          '</div>'
+        :'')+
       '</div>'+
     '</div>';
   }).join('');
 }
+function planLockedToast(){toast('This plan is currently not available for enrollment.','err')}
 function pickPlan(i){
+  if(plans[i]&&plans[i].locked){planLockedToast();return}
   selectedPlan=plans[i];
-  document.querySelectorAll('#planList .plan').forEach(function(el,j){el.classList.toggle('sel',j===i)});
+  document.querySelectorAll('#planList .plan').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.i,10)===i)});
   recomputeTotal();
   // Reset downstream picks when plan changes — shift caps may differ.
   selectedSeat='';
@@ -1085,30 +1149,31 @@ function renderSeatMap(){
     if(blocked[id.toUpperCase()]){
       html+='<div class="seat blocked" title="'+E(blocked[id.toUpperCase()])+'">'+
         '<span class="seat-num">'+id+'</span>'+
-        '<span class="seat-hint">'+E(blocked[id.toUpperCase()])+'</span>'+
+        '<span class="seat-lbl">Reserved</span>'+
       '</div>';
       continue;
     }
     var st=seatStatus(id);
     var isSel=selectedSeat===id;
     var cls='seat '+st+(isSel?' sel':'');
+    var lbl={free:'Available',taken:'Taken','full-taken':'Full',pending:'Pending',sel:'Yours',restricted:'☀️ Only','half-available':'Partial',blocked:'Reserved'}[isSel?'sel':st]||'';
     if(st==='half-available'){
       var fs2=freeShiftsForSeat(id);
-      var freeLabels=fs2.map(function(k){
-        var si=parseInt(k.slice(1),10)||1;
-        return shiftIcon_(si,cfg('shift'+si+'label','')).em;
-      }).join('');
+      var freeLabels=fs2.map(function(k){var si=parseInt(k.slice(1),10)||1;return shiftIcon_(si,cfg('shift'+si+'label','')).em}).join('');
       html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Only '+E(freeLabels)+' shift available">'+
         '<span class="seat-num">'+id+'</span>'+
-        '<span class="seat-hint">'+freeLabels+' free</span>'+
+        '<span class="seat-lbl">'+freeLabels+' free</span>'+
       '</div>';
     }else if(st==='restricted'){
-      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Must book as Full Day (>50% full)">'+
+      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Full Day only">'+
         '<span class="seat-num">'+id+'</span>'+
-        '<span class="seat-hint">☀️ only</span>'+
+        '<span class="seat-lbl">☀️ Only</span>'+
       '</div>';
     }else{
-      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')">'+id+'</div>';
+      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')">'+
+        '<span class="seat-num">'+id+'</span>'+
+        '<span class="seat-lbl">'+(isSel?'✓ Yours':lbl)+'</span>'+
+      '</div>';
     }
   }
   $('seatMap').innerHTML=html;
@@ -1128,6 +1193,7 @@ function pickSeat(id){
   if(el&&(el.classList.contains('taken')||el.classList.contains('full-taken')||el.classList.contains('pending')||el.classList.contains('blocked')))return;
   selectedSeat=(selectedSeat===id)?'':id;
   renderSeatMap();
+  recomputeTotal();
   var hb=$('holdBanner');
   if(selectedSeat){$('holdSeat').textContent=selectedSeat;hb.classList.add('show')}
   else hb.classList.remove('show');
@@ -1215,8 +1281,16 @@ function clearAadharPhoto(){
 
 // ─── Totals + submit ───
 function recomputeTotal(){
-  if(!selectedPlan){$('ttl').textContent='—';return}
+  var meta=$('submitMeta');
+  if(!selectedPlan){$('ttl').textContent='—';if(meta)meta.textContent='';return}
   $('ttl').textContent=cfg('currency','₹')+fnum(selectedPlan.price);
+  if(meta){
+    var parts=[];
+    if(selectedPlan.name)parts.push(selectedPlan.name);
+    if(selectedSeat)parts.push('Seat '+selectedSeat);
+    else parts.push('Seat TBD');
+    meta.textContent=parts.join(' · ');
+  }
 }
 
 function flag(elId,on){var el=$(elId);if(el)el.classList.toggle('err',!!on)}
@@ -1300,7 +1374,7 @@ function submitForm(){
     expiryDate:String(expiryDate),
     seat:String(selectedSeat||''),
     shift:String(selectedShift||''),
-    total:String(fnum(selectedPlan.price)),
+    total:'0',
     status:String(wantedStatus),
     notes:String($('iNotes').value.trim())
   };
@@ -1328,8 +1402,7 @@ function showDone(memberId){
   var checkBg=needsApproval?'var(--hold)':'var(--ok)';
   var heading=needsApproval?'Enrollment received':'Enrollment submitted';
   var confirmBtn=needsApproval?
-    '<button class="confirm-cta" onclick="openConfirm()">📲 Hand phone to shopkeeper to confirm →</button>'+
-    '<div class="small" style="margin-top:10px;font-size:11.5px;color:var(--ink-3)">Or wait — the shopkeeper will see this on their dashboard within seconds.</div>':'';
+    '<div class="small" style="margin-top:10px;font-size:13px;color:var(--ink-3);background:var(--hold-bg);border:1px solid var(--hold);border-radius:10px;padding:12px 14px;">⏳ Your enrollment is awaiting approval. The shopkeeper will review it shortly.</div>':'';
 
   document.body.innerHTML='<div class="top" style="background:'+cfg('brandcolor','#0f766e')+';color:#fff;padding:18px;text-align:center"><h1 style="margin:0;font-size:18px">'+E(cfg('shopname','Library'))+'</h1></div>'+
     '<div class="done"><div class="check" style="background:'+checkBg+'">'+(needsApproval?'⏳':'✓')+'</div>'+

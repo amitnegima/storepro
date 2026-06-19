@@ -210,7 +210,11 @@
   .sh-days.hold{background:rgba(139,92,246,.12);color:var(--hold-dk)}
 
   /* Plan name */
-  .sh-plan{font-size:8px;color:var(--ink-3);font-weight:500;text-align:center;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;padding:0 3px}
+  .sh-plan{font-size:8.5px;color:var(--ink-3);font-weight:600;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;padding:0 3px}
+  /* Fee status */
+  .sh-fee{font-size:8px;font-weight:700;padding:1px 5px;border-radius:99px;white-space:nowrap;line-height:1.4;letter-spacing:.02em}
+  .sh-fee.due{background:rgba(220,38,38,.1);color:#dc2626}
+  .sh-fee.paid{background:rgba(22,163,74,.1);color:#15803d}
 
   /* Blocked */
   .seat-cell.blocked{
@@ -346,7 +350,9 @@
   .mb .meta .tag.shift{background:#eef2ff;color:#4338ca}
   .mb .meta .tag.shift.full-day{background:#fef3c7;color:#92400e}
   .mb .meta .tag.warn{background:var(--hold-bg);color:var(--hold-dk)}
-  .mb .meta .plan-name{font-size:11px;font-weight:600;color:var(--ink-2);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+  .mb .meta .plan-name{font-size:11px;font-weight:700;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;padding:1px 6px}
+  .plan-detail-row{margin-top:4px}
+  .plan-detail{font-size:10.5px;font-weight:500;color:var(--ink-2);background:#f8fafc;border:1px solid var(--line);border-radius:5px;padding:1px 7px;display:inline-flex;align-items:center;gap:3px}
   .mb .submeta{font-size:10.5px;color:var(--ink-3);display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;align-items:center}
   .mb .submeta .date-range{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:10.5px;font-weight:500;color:var(--ink-2)}
   .mb .submeta .date-range .sep{color:var(--ink-3);font-size:11px;margin:0 1px}
@@ -354,8 +360,14 @@
   .mb .submeta .date-range.err{background:var(--err-bg);border-color:var(--err);color:var(--err-dk)}
   .mb .submeta .ph-chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:10.5px;font-weight:500;color:var(--ink-2);font-variant-numeric:tabular-nums}
   .mb .meta .tag.paid{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-weight:700}
+  .mb .meta .tag.fee-due{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;font-weight:700}
+  .fee-due-badge{display:inline-flex;align-items:center;padding:2px 8px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;font-size:11.5px;font-weight:700}
+  .fee-paid-badge{display:inline-flex;align-items:center;padding:2px 8px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;font-size:11.5px;font-weight:700}
+  .mark-paid-btn{appearance:none;border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:3px 10px;border-radius:8px;font-size:11.5px;font-weight:600;cursor:pointer;transition:.12s}
+  .mark-paid-btn:active{background:var(--bg)}
   .new-badge{font-size:9px;font-weight:700;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:.02em}
   .renew-cta{appearance:none;border:none;background:linear-gradient(135deg,var(--warn),#f59e0b);color:#fff;font:700 10.5px var(--F);padding:4px 9px;border-radius:7px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(245,158,11,.3);transition:.15s}
+  .renew-cta.renew-exp{background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 2px 6px rgba(22,163,74,.3)}
   .renew-cta:active{transform:scale(.95)}
 
   /* ── View toggle button ── */
@@ -482,35 +494,41 @@
 
   /* ─── Member-sheet sections ─── */
 
-  .m-keystrip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px}
-  .m-keystrip .kt{background:#fff;border-radius:16px;padding:15px 12px;position:relative;overflow:hidden;min-width:0;border:1px solid var(--line);transition:transform .15s,box-shadow .15s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-  .m-keystrip .kt:active{transform:scale(.96);box-shadow:0 1px 2px rgba(0,0,0,.06)}
-  .m-keystrip .kt .lbl{font-size:9px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;line-height:1}
-  .m-keystrip .kt .val{font-size:18px;font-weight:800;color:var(--ink);margin-top:7px;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums;word-break:break-word;overflow:hidden;text-overflow:ellipsis}
-  .m-keystrip .kt .sub{font-size:10px;color:var(--ink-3);font-weight:400;margin-top:4px;line-height:1}
-  .m-keystrip .kt::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:var(--brand);opacity:.18;border-radius:3px 3px 0 0}
-  .m-keystrip .kt.warn{background:var(--warn-bg);border-color:rgba(234,88,12,.12)}.m-keystrip .kt.warn::before{background:var(--warn);opacity:1}.m-keystrip .kt.warn .val{color:var(--warn-dk)}
-  .m-keystrip .kt.err{background:var(--err-bg);border-color:rgba(220,38,38,.1)}.m-keystrip .kt.err::before{background:var(--err);opacity:1}.m-keystrip .kt.err .val{color:var(--err-dk)}
-  .m-keystrip .kt-badge{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:20px;margin-top:6px;line-height:1;text-transform:uppercase}
-  .m-keystrip .kt-badge.ok{background:var(--ok-bg);color:var(--ok-dk)}
-  .m-keystrip .kt-badge.warn{background:var(--warn);color:#fff}
-  .m-keystrip .kt-badge.err{background:var(--err);color:#fff}
+  .m-keystrip{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+  .m-keystrip .kt{border-radius:18px;padding:16px 14px;position:relative;overflow:hidden;min-width:0;border:1px solid var(--line);transition:all .2s;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .m-keystrip .kt:active{transform:scale(.96)}
+  .m-keystrip .kt .lbl{font-size:9px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.09em;line-height:1;display:flex;align-items:center;gap:5px}
+  .m-keystrip .kt .val{font-size:20px;font-weight:800;color:var(--ink);margin-top:8px;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums;word-break:break-word}
+  .m-keystrip .kt .sub{font-size:10px;color:var(--ink-3);font-weight:500;margin-top:5px;line-height:1.3}
+  .m-keystrip .kt::after{content:'';position:absolute;bottom:0;right:0;width:60px;height:60px;border-radius:50%;opacity:.06;transform:translate(20px,20px)}
+  .m-keystrip .kt.plan-kt{background:linear-gradient(135deg,#f0fdf9,#e8f7f4);border-color:#99f6e4}.m-keystrip .kt.plan-kt .lbl{color:#0d9488}.m-keystrip .kt.plan-kt .val{color:#0f766e}.m-keystrip .kt.plan-kt::after{background:#0d9488}
+  .m-keystrip .kt.seat-kt{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-color:#7dd3fc}.m-keystrip .kt.seat-kt .lbl{color:#0284c7}.m-keystrip .kt.seat-kt .val{color:#0369a1}.m-keystrip .kt.seat-kt::after{background:#0284c7}
+  .m-keystrip .kt.warn{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-color:#fde68a}.m-keystrip .kt.warn .lbl{color:#b45309}.m-keystrip .kt.warn .val{color:#d97706}.m-keystrip .kt.warn::after{background:#f59e0b}
+  .m-keystrip .kt.err{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border-color:#fca5a5}.m-keystrip .kt.err .lbl{color:#dc2626}.m-keystrip .kt.err .val{color:#dc2626}.m-keystrip .kt.err::after{background:#ef4444}
+  .m-keystrip .kt.ok{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac}.m-keystrip .kt.ok .lbl{color:#15803d}.m-keystrip .kt.ok .val{color:#16a34a}.m-keystrip .kt.ok::after{background:#22c55e}
+  .m-keystrip .kt-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:20px;margin-top:7px;line-height:1;text-transform:uppercase}
+  .m-keystrip .kt-badge.ok{background:rgba(22,163,74,.12);color:#15803d}
+  .m-keystrip .kt-badge.warn{background:rgba(245,158,11,.15);color:#b45309}
+  .m-keystrip .kt-badge.err{background:rgba(220,38,38,.12);color:#dc2626}
 
-  .m-primary{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+  .m-primary{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
   .qa-email{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-  .m-primary .contact-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .m-primary .msg-group{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px 14px}
-  .m-primary .msg-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:10px;padding-left:2px}
-  .m-primary .msg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .m-primary button{appearance:none;border:none;border-radius:12px;padding:13px 10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:-.01em;transition:all .2s}
-  .m-primary .wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 3px 10px rgba(37,211,102,.25)}
+  .m-primary button{appearance:none;border:none;border-radius:14px;padding:14px 12px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.01em;transition:all .2s;width:100%}
+  .m-primary button:active{transform:scale(.97)}
+  .m-primary .call{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3);font-size:15px;padding:16px}
+  .m-quick-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .m-primary .wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 3px 12px rgba(37,211,102,.3)}
   .m-primary .wa:active{transform:scale(.96)}
-  .m-primary .call{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 3px 10px rgba(22,163,74,.2)}
-  .m-primary .call:active{transform:scale(.96)}
-  .m-primary .wa-fee{background:#fff;border:1.5px solid #dcfce7 !important;color:#15803d;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-  .m-primary .wa-renew{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:12px;box-shadow:0 2px 8px rgba(22,163,74,.2)}
-  .m-primary .em-fee{background:#fff;border:1.5px solid #e0e7ff !important;color:#4f46e5;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-  .m-primary .em-renew{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-size:12px;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+  .m-msg-card{background:#f8fafc;border:1px solid #e8edf2;border-radius:16px;padding:14px 16px}
+  .m-msg-card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .m-msg-card-title::before{content:'';width:3px;height:10px;border-radius:2px;flex-shrink:0}
+  .m-msg-card.wa-card .m-msg-card-title::before{background:#25d366}
+  .m-msg-card.em-card .m-msg-card-title::before{background:#6366f1}
+  .m-msg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .m-primary .wa-fee{background:#fff;border:1.5px solid #bbf7d0;color:#15803d;font-size:12.5px}
+  .m-primary .wa-renew{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:12.5px;box-shadow:0 2px 8px rgba(34,197,94,.25)}
+  .m-primary .em-fee{background:#fff;border:1.5px solid #c7d2fe;color:#4f46e5;font-size:12.5px}
+  .m-primary .em-renew{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-size:12.5px;box-shadow:0 2px 8px rgba(99,102,241,.25)}
   .m-primary .wa-fee:active,.m-primary .wa-renew:active,.m-primary .em-fee:active,.m-primary .em-renew:active{transform:scale(.96)}
 
   .m-section{margin-bottom:20px}
@@ -719,8 +737,7 @@
   details > div{padding:0 16px 14px;border-top:1px solid var(--line)}
 
   @media (max-width:380px){
-    .m-keystrip{grid-template-columns:1fr 1fr;gap:6px}
-    .m-keystrip .kt:first-child{grid-column:1/-1}
+    .m-keystrip{gap:6px}
     .tab{min-width:50px;padding:7px 6px}
   }
 
@@ -753,6 +770,8 @@
   .ef-plans{display:flex;flex-direction:column;gap:6px}
   .ef-plan{display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--line-dk);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s;background:var(--bg)}
   .ef-plan.sel{border-color:var(--brand);background:var(--brand-bg)}
+  .rnw-plan{display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--line-dk);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s;background:var(--bg)}
+  .rnw-plan.sel{border-color:var(--brand);background:var(--brand-bg);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
   .ef-plan .pn{font-size:13px;font-weight:600;color:var(--ink-1)}
   .ef-plan .pd{font-size:11px;color:var(--ink-3);margin-top:1px}
   .ef-plan .pp{font-size:14px;font-weight:700;color:var(--brand-dk);white-space:nowrap}
@@ -959,6 +978,7 @@
     <details><summary>Enrollment fields &amp; approval</summary><div id="setEnroll"></div></details>
     <details><summary>Expiry reminders</summary><div id="setReminders"></div></details>
     <details><summary>History &amp; archive</summary><div id="setHistory"></div></details>
+    <details><summary>🔐 Dashboard PIN</summary><div id="setPinSection"></div></details>
 
     <h2>Tests &amp; tools</h2>
     <div class="card" style="padding:12px">
@@ -1179,7 +1199,12 @@ function loadAll(){
     });
     console.log('[dash] config:',Object.keys(config).length,'keys');
     gviz(SHEET_ID,'Products',function(rp){
-      plans=parseRows(rp);console.log('[dash] products:',plans.length);
+      plans=parseRows(rp);
+      plans.forEach(function(p){
+        var raw=String(p.locked||p.lock||p.disabled||p.unavailable||'').toLowerCase().trim();
+        p.locked=(raw==='yes'||raw==='true'||raw==='1'||raw==='locked');
+      });
+      console.log('[dash] products:',plans.length);
       var done=false;
       var timer=setTimeout(function(){if(done)return;done=true;console.warn('[dash] Members timed out');members=[];render()},6000);
       gviz(SHEET_ID,'Members',function(rm){if(done)return;done=true;clearTimeout(timer);members=parseRows(rm);console.log('[dash] members:',members.length);if(members.length>0)console.log('[dash] first member:',members[0]);render()});
@@ -1613,6 +1638,8 @@ function renderSeats(){
     var daysTxt=st==='expired'?'⚠ '+Math.abs(d)+'d ago':st==='pending'?'Pending':d==null?'—':d+'d left';
     var daysCls=st==='expired'?'err':st==='pending'?'hold':d!=null&&d<=7?'warn':'ok';
     var planShort=String(m.plan||'').split(/[\s\-–]/)[0];
+    var paid=parseFloat(m.totalpaid||'0')||0;
+    var feeHtml='<div class="sh-fee '+(paid?'paid':'due')+'">'+(paid?'✅ Paid':'❌ Due')+'</div>';
     return '<div class="sc-half '+st+' '+(shiftCls||'')+'" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\')" title="'+E(m.name)+'">'+
       '<div class="sh-band"><span>'+sym+'</span><span>'+E(bandLabel)+'</span></div>'+
       '<div class="sh-body">'+
@@ -1620,6 +1647,7 @@ function renderSeats(){
         '<div class="sh-name">'+E(shortName(m.name))+'</div>'+
         '<div class="sh-days '+daysCls+'">'+daysTxt+'</div>'+
         (planShort?'<div class="sh-plan">'+E(planShort)+'</div>':'')+
+        feeHtml+
       '</div>'+
     '</div>';
   }
@@ -1823,7 +1851,7 @@ function renderActiveList(rows){
       ? '<button class="lt-approve" onclick="event.stopPropagation();approveMember(\''+E(m.memberid)+'\')" title="Approve">✓</button>'+
         '<button class="lt-reject" onclick="event.stopPropagation();rejectMember(\''+E(m.memberid)+'\')" title="Reject">✕</button>'
       : renewUrgent
-        ? '<button class="lt-renew" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="Renew">Renew</button>'+
+        ? '<button class="lt-renew" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')" title="Send WhatsApp renewal reminder">📲 Remind</button>'+
           (phone?'<button onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'" title="Call">📞</button>':'')
         : (phone?'<button onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'" title="Call">📞</button>'+
             '<button onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="WhatsApp">📲</button>':'');
@@ -1837,8 +1865,8 @@ function renderActiveList(rows){
           '<div class="lt-name">'+E(m.name)+(isNew?' <span class="new-badge">New</span>':'')+'</div>'+
           '<div style="font-size:10.5px;color:var(--ink-3);margin-top:1px;display:flex;gap:5px;align-items:center">'+
             (shiftEmoji?'<span>'+shiftEmoji+'</span>':'')+
-            (m.plan?'<span>'+E(m.plan)+'</span>':'')+
-            (paid?'<span style="color:#15803d;font-weight:600">'+cur+paid+'</span>':'')+
+            (m.plan?'<span style="color:#1d4ed8;font-weight:700">📚 '+E(m.plan)+'</span>':'')+
+            (paid?'<span style="color:#15803d;font-weight:600">✅ '+cur+paid+'</span>':'<span style="color:#dc2626;font-weight:600">❌ Fee Due</span>')+
           '</div>'+
         '</div>'+
       '</div></td>'+
@@ -1886,6 +1914,10 @@ function renderActive(){
     var paid=parseFloat(m.totalpaid||'0')||0;
     var daysEnrolled=m.enrolledat?(Math.floor((Date.now()-new Date(m.enrolledat).getTime())/(86400000))):null;
     var renewUrgent=!isExpired&&!isPending&&d!=null&&d<=3;
+    var planObj=m.plan?plans.filter(function(p){return (p.name||p.plan||'')=== m.plan})[0]:null;
+    var planPrice=planObj?parseFloat(String(planObj.price||'0').replace(/[^\d.]/g,''))||0:0;
+    var planDur=planObj?(planObj.duration||planObj.unit||''):'';
+    var planDetail=(planDur||planPrice)?('<span class="plan-detail">'+(planDur?'⏱ '+E(planDur):'')+(planDur&&planPrice?' · ':'' )+(planPrice?cur+planPrice:'')+'</span>'):'';
     return '<div class="mb '+cardCls+'" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
       '<div class="avatar '+(isExpired?'expired':isPending?'pending':'')+'" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'<span class="status-dot"></span></div>'+
       '<div class="body">'+
@@ -1893,9 +1925,10 @@ function renderActive(){
         '<div class="meta">'+
           (m.seat?'<span class="tag seat">🪑 '+E(m.seat)+'</span>':'')+
           (shiftLbl?'<span class="tag shift'+(isFullShift?' full-day':'')+'">'+E(shiftLbl)+'</span>':'')+
-          (m.plan?'<span class="plan-name">'+E(m.plan)+'</span>':'')+
-          (paid?'<span class="tag paid">'+cur+paid+'</span>':'')+
+          (m.plan?'<span class="plan-name">📚 '+E(m.plan)+'</span>':'')+
+          (paid?'<span class="tag paid">✅ '+cur+paid+'</span>':'<span class="tag fee-due">❌ Fee Due</span>')+
         '</div>'+
+        (planDetail?'<div class="plan-detail-row">'+planDetail+'</div>':'')+
         '<div class="submeta">'+
           '<span class="date-range '+(isExpired?'err':d!=null&&d<=7?'warn':'')+'" title="Start → Expiry">📅 '+E(startTxt)+'<span class="sep">→</span>'+E(expiryTxt)+'</span>'+
           (phone?'<span class="ph-chip" title="Phone">📞 '+E(m.phone)+'</span>':'')+
@@ -1903,10 +1936,11 @@ function renderActive(){
       '</div>'+
       '<div class="right">'+
         '<div class="days-pill '+pillCls+'">'+dTxt+'</div>'+
-        (renewUrgent?'<button class="renew-cta" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="Send renewal reminder">Renew now</button>':'')+
-        (phone&&!renewUrgent?'<div class="mb-quick">'+
+        (isExpired?'<button class="renew-cta renew-exp" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\');setTimeout(function(){openRenewMember(\''+E(m.memberid)+'\')},120)" title="Renew membership">🔄 Renew</button>':'')+
+        (renewUrgent?'<button class="renew-cta" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')" title="Send WhatsApp renewal reminder">📲 Remind</button>':'')+
+        (phone&&!renewUrgent&&!isExpired?'<div class="mb-quick">'+
           '<button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">📞</button>'+
-          '<button class="qa-wa" title="WhatsApp" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')">📲</button>'+
+          '<button class="qa-wa" title="WhatsApp" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')">📲</button>'+
         '</div>':'')+
         (phone&&renewUrgent?'<div class="mb-quick"><button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">📞</button></div>':'')+
       '</div>'+
@@ -2141,6 +2175,46 @@ function renderSettings(){
     num('ArchiveAfterDays','Auto-archive after (days)','Members deleted/expired more than this many days ago move to Members_Archive when you tap Archive.','365');
 
   $('archDays').textContent=cfg('archiveafterdays','365');
+
+  $('setPinSection').innerHTML=
+    '<div style="padding:14px 0 6px">'+
+      '<div style="font-size:12px;color:var(--ink-3);margin-bottom:16px;line-height:1.55">'+
+        'Your PIN is stored as a secure hash inside the Apps Script — it is <b>never readable from the sheet</b>. '+
+        'Change it here anytime.'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:10px;max-width:320px">'+
+        '<div><div style="font-size:11px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Current PIN</div>'+
+          '<input type="password" id="pinOld" placeholder="Enter current PIN" maxlength="8" inputmode="numeric" style="width:100%;border:1.5px solid var(--line-dk);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;outline:none;transition:.15s" onfocus="this.style.borderColor=\'var(--brand)\'" onblur="this.style.borderColor=\'var(--line-dk)\'">'+
+        '</div>'+
+        '<div><div style="font-size:11px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">New PIN</div>'+
+          '<input type="password" id="pinNew" placeholder="4–8 digits" maxlength="8" inputmode="numeric" style="width:100%;border:1.5px solid var(--line-dk);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;outline:none;transition:.15s" onfocus="this.style.borderColor=\'var(--brand)\'" onblur="this.style.borderColor=\'var(--line-dk)\'">'+
+        '</div>'+
+        '<div><div style="font-size:11px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Confirm New PIN</div>'+
+          '<input type="password" id="pinConfirm" placeholder="Repeat new PIN" maxlength="8" inputmode="numeric" style="width:100%;border:1.5px solid var(--line-dk);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;outline:none;transition:.15s" onfocus="this.style.borderColor=\'var(--brand)\'" onblur="this.style.borderColor=\'var(--line-dk)\'">'+
+        '</div>'+
+        '<button onclick="changePinFn()" style="appearance:none;border:none;background:var(--brand);color:#fff;padding:12px;border-radius:12px;font:700 14px var(--F);cursor:pointer;transition:.15s">🔐 Update PIN</button>'+
+        '<div id="pinMsg" style="font-size:12px;min-height:18px"></div>'+
+      '</div>'+
+    '</div>';
+}
+
+function changePinFn(){
+  var oldPin=($('pinOld').value||'').trim();
+  var newPin=($('pinNew').value||'').trim();
+  var conf=($('pinConfirm').value||'').trim();
+  var msg=$('pinMsg');
+  if(!oldPin||!newPin||!conf){msg.style.color='var(--err)';msg.textContent='All three fields are required.';return}
+  if(!/^\d{4,8}$/.test(newPin)){msg.style.color='var(--err)';msg.textContent='New PIN must be 4–8 digits.';return}
+  if(newPin!==conf){msg.style.color='var(--err)';msg.textContent='New PIN and confirmation do not match.';return}
+  msg.style.color='var(--ink-3)';msg.textContent='Updating…';
+  sendCmd({action:'changePin',oldPin:oldPin,newPin:newPin},function(res){
+    if(res&&res.ok){
+      msg.style.color='var(--ok)';msg.textContent='✓ PIN updated. You will need to re-login next time.';
+      $('pinOld').value='';$('pinNew').value='';$('pinConfirm').value='';
+    } else {
+      msg.style.color='var(--err)';msg.textContent=res&&res.error?res.error:'Failed — check your current PIN.';
+    }
+  });
 }
 
 function toggleCfg(key,el){
@@ -2246,29 +2320,40 @@ function openMemberSheet(memberId){
   if(d!=null && d<0) expStatusBadge='<span class="kt-badge err">⚠ Expired</span>';
   else if(d!=null && d<=7) expStatusBadge='<span class="kt-badge warn">⚠ Expiring soon</span>';
   else if(d!=null && d<=30) expStatusBadge='<span class="kt-badge ok">Active</span>';
+  var cur2=cfg('currency','₹');
+  var paid3=parseFloat(m.totalpaid||'0')||0;
+  var planObj2=m.plan?plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0]:null;
+  var planPrice2=planObj2?parseFloat(String(planObj2.price||'0').replace(/[^\d.]/g,''))||0:0;
+  var planDur2=planObj2?(planObj2.duration||planObj2.unit||''):'';
+  var feeCls=paid3===0?'err':planPrice2&&paid3<planPrice2?'warn':'ok';
+  var feeVal=paid3===0?'Due':cur2+paid3;
+  var feeSub=planPrice2?(paid3>=planPrice2?'full payment':(paid3===0?'not paid':cur2+(planPrice2-paid3)+' remaining')):'';
+  var feeBadge=paid3===0?'<span class="kt-badge err">❌ Unpaid</span>':(planPrice2&&paid3<planPrice2?'<span class="kt-badge warn">Partial</span>':'<span class="kt-badge ok">✅ Paid</span>');
   var keystrip='<div class="m-keystrip">'+
-    '<div class="kt"><div class="lbl">Plan</div><div class="val">'+E(m.plan||'—')+'</div><div class="sub">'+E(shiftLbl)+'</div></div>'+
-    '<div class="kt"><div class="lbl">Seat</div><div class="val">'+E(m.seat||'—')+'</div><div class="sub">'+(m.seat?'assigned':'unassigned')+'</div></div>'+
-    '<div class="kt '+expCls+'"><div class="lbl">Expires</div><div class="val">'+E(dTxt)+'</div><div class="sub">'+E(fmtDate(m.expirydate))+'</div>'+expStatusBadge+'</div>'+
+    '<div class="kt plan-kt"><div class="lbl">📚 Plan</div><div class="val" style="font-size:15px;line-height:1.2">'+E(m.plan||'—')+'</div><div class="sub">'+E(planDur2||(shiftLbl||''))+'</div></div>'+
+    '<div class="kt seat-kt"><div class="lbl">🪑 Seat</div><div class="val">'+E(m.seat||'—')+'</div><div class="sub">'+(m.seat?E(shiftLbl)||'assigned':'unassigned')+'</div></div>'+
+    '<div class="kt '+expCls+'"><div class="lbl">⏰ Expires</div><div class="val">'+E(dTxt)+'</div><div class="sub">'+E(fmtDate(m.expirydate))+'</div>'+expStatusBadge+'</div>'+
+    '<div class="kt '+feeCls+'"><div class="lbl">💰 Paid</div><div class="val">'+E(feeVal)+'</div>'+(feeSub?'<div class="sub">'+E(feeSub)+'</div>':'')+feeBadge+'</div>'+
   '</div>';
 
   var primary='';
   if(status==='active' && hasPhone){
     primary='<div class="m-primary">'+
-      '<div class="contact-row">'+
-        '<button class="call" onclick="location.href=\'tel:'+phoneRaw+'\'" style="grid-column:1/-1">📞 Call</button>'+
+      '<div class="m-quick-row">'+
+        '<button class="call" onclick="location.href=\'tel:'+phoneRaw+'\'">📞 Call</button>'+
+        '<button class="wa" onclick="location.href=\'https://wa.me/\'+(\''+phoneRaw+'\'.replace(/\\D/g,\'\').length===10?\'91\':\'\')+\''+phoneRaw+'\'.replace(/\\D/g,\'\')">💬 WhatsApp</button>'+
       '</div>'+
-      '<div class="msg-group">'+
-        '<div class="msg-group-label">WhatsApp Message</div>'+
-        '<div class="msg-row">'+
+      '<div class="m-msg-card wa-card">'+
+        '<div class="m-msg-card-title">WhatsApp Message</div>'+
+        '<div class="m-msg-row">'+
           '<button class="wa-fee" onclick="waRenew(\''+E(memberId)+'\')">📋 Fee Reminder</button>'+
           '<button class="wa-renew" onclick="waRenewal(\''+E(memberId)+'\')">🎓 Renewal</button>'+
         '</div>'+
       '</div>'+
       (m.email?
-        '<div class="msg-group">'+
-          '<div class="msg-group-label">Send Email</div>'+
-          '<div class="msg-row">'+
+        '<div class="m-msg-card em-card">'+
+          '<div class="m-msg-card-title">Send Email</div>'+
+          '<div class="m-msg-row">'+
             '<button class="em-fee" onclick="sendFeeReminderEmail(\''+E(memberId)+'\')">📧 Fee Reminder</button>'+
             '<button class="em-renew" onclick="sendRenewalEmail(\''+E(memberId)+'\')">🎓 Renewal</button>'+
           '</div>'+
@@ -2277,9 +2362,9 @@ function openMemberSheet(memberId){
     '</div>';
   } else if(status==='active' && m.email){
     primary='<div class="m-primary">'+
-      '<div class="msg-group">'+
-        '<div class="msg-group-label">Send Email</div>'+
-        '<div class="msg-row">'+
+      '<div class="m-msg-card em-card">'+
+        '<div class="m-msg-card-title">Send Email</div>'+
+        '<div class="m-msg-row">'+
           '<button class="em-fee" onclick="sendFeeReminderEmail(\''+E(memberId)+'\')">📧 Fee Reminder</button>'+
           '<button class="em-renew" onclick="sendRenewalEmail(\''+E(memberId)+'\')">🎓 Renewal</button>'+
         '</div>'+
@@ -2300,13 +2385,24 @@ function openMemberSheet(memberId){
   }
 
   var expRowSuffix=d!=null?(d<0?' · '+Math.abs(d)+' days ago':' · '+d+' days left'):'';
+  var paid2=parseFloat(m.totalpaid||'0')||0;
+  var feeRow='<div class="m-row">'+
+    '<div class="m-ic">💰</div>'+
+    '<div class="m-text">'+
+      '<div class="m-lbl">'+(paid2?'Total paid':'Fee status')+'</div>'+
+      '<div class="m-val" style="display:flex;align-items:center;gap:8px">'+
+        (paid2?'<span class="fee-paid-badge">'+cfg('currency','₹')+paid2+'</span>':'<span class="fee-due-badge">Due</span>')+
+        (status==='active'?'<button class="mark-paid-btn" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+( paid2?'Update':'💰 Mark Paid')+'</button>':'')+
+      '</div>'+
+    '</div>'+
+  '</div>';
   var membership='<div class="m-section">'+
     '<div class="m-section-title">Membership</div>'+
     '<div class="m-list">'+
       iconRow('💳','Plan',m.plan)+
       iconRow('📅','Start date',fmtDate(m.startdate))+
       iconRow('⏰','Expires on',m.expirydate?fmtDate(m.expirydate)+expRowSuffix:'')+
-      iconRow('💰','Total paid',cfg('currency','₹')+(m.totalpaid||'0'))+
+      feeRow+
       (m.lastremindersent?iconRow('🔔','Last reminder',m.lastremindersent):'')+
     '</div>'+
   '</div>';
@@ -2348,9 +2444,11 @@ function openMemberSheet(memberId){
     : '';
 
   var moreActs='';
-  if(status==='active'){
+  if(status==='active'||status==='expired'){
+    var isExp=status==='expired';
     moreActs='<div class="m-section"><div class="m-section-title">Manage</div>'+
       '<div class="m-secondary">'+
+        '<button onclick="openRenewMember(\''+E(memberId)+'\')">🔄 Renew membership</button>'+
         '<button onclick="openExtendDate()">📅 Set expiry date</button>'+
         '<button onclick="reassignPrompt()">🪑 Reassign seat</button>'+
       '</div>'+
@@ -2390,7 +2488,13 @@ function openEditMember(memberId){
   var shiftOpts='';
   for(var i=1;i<=n;i++){var k='S'+i;shiftOpts+='<option value="'+k+'"'+(m.shift===k?' selected':'')+'>'+E(cfg('shift'+i+'label','Shift '+i))+'</option>'}
   if(isYes('enablefullday'))shiftOpts+='<option value="FULL"'+(m.shift==='FULL'?' selected':'')+'>☀️ '+E(cfg('fulldaylabel','Full Day'))+'</option>';
-  var planOpts=plans.map(function(p){return '<option value="'+E(p.name)+'"'+(m.plan===p.name?' selected':'')+'>'+E(p.name)+'</option>'}).join('');
+  var planOpts=plans.map(function(p){
+    var nm=p.name||p.plan||'';if(!nm)return '';
+    var price=parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0;
+    var dur=p.duration||p.unit||'';
+    var label=nm+(dur?' · '+dur:'')+(price?' — '+cfg('currency','₹')+price:'');
+    return '<option value="'+E(nm)+'"'+(m.plan===nm?' selected':'')+'>'+E(label)+'</option>';
+  }).join('');
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var pfx=cfg('seatprefix','S');
   var seatOpts='<option value="">— Unassigned —</option>';
@@ -2500,6 +2604,25 @@ function saveEditMember(memberId){
   });
 }
 
+function quickMarkPaid(memberId){
+  var m=members.filter(function(x){return x.memberid===memberId})[0];if(!m)return;
+  var cur=cfg('currency','₹');
+  var existing=parseFloat(m.totalpaid||'0')||0;
+  var val=prompt((existing?'Update payment amount (current: '+cur+existing+'):':'Enter amount received:'),'');
+  if(val===null)return;
+  var amt=parseFloat(val.replace(/[^\d.]/g,''));
+  if(isNaN(amt)||amt<0){toast('Invalid amount','err');return}
+  sendCmd({action:'updateMember',memberId:String(memberId),totalPaid:String(amt)},function(res){
+    if(res&&res.error){toast(res.hint||'Save failed','err');return}
+    toast('Payment updated ✓','ok');
+    gviz(SHEET_ID,'Members',function(rm){
+      if(rm)members=parseRows(rm);
+      renderActive();renderPending();renderOccupancy();renderSeats();
+      openMemberSheet(memberId);
+    });
+  });
+}
+
 function approveMember(id){
   var mid=id||openMemberId;
   toast('Approving…');
@@ -2579,6 +2702,108 @@ function waRenewal(memberId){
   if(waGroup)msg+='\n\n💬 Group: '+waGroup;
   open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
 }
+var _rnwPlan='';
+
+function openRenewMember(memberId){
+  var m=members.filter(function(x){return x.memberid===memberId})[0];if(!m)return;
+  _rnwPlan=m.plan||'';
+  var todayISO_=todayISO();
+  var cur=cfg('currency','₹');
+  var planCards=plans.map(function(p,i){
+    var nm=p.name||p.plan||'';if(!nm)return '';
+    var price=parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0;
+    var mrp=parseFloat(String(p.mrp||'0').replace(/[^\d.]/g,''))||0;
+    var dur=p.duration||p.unit||'';
+    var sel=_rnwPlan===nm;
+    var isLocked=!!p.locked;
+    return '<div class="rnw-plan'+(sel?' sel':'')+(isLocked?' rnw-locked':'')+'" onclick="rnwPickPlan('+i+')" style="'+(isLocked?'opacity:.6':'')+'">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:5px">'+E(nm)+(isLocked?'<span style="font-size:10px;background:#fee2e2;color:#dc2626;border-radius:4px;padding:1px 5px;font-weight:700">🔒 Locked</span>':'')+'</div>'+
+        (dur?'<div style="font-size:11px;color:var(--ink-3);margin-top:2px">'+E(dur)+'</div>':'')+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+
+        '<div style="font-size:13px;font-weight:700;color:var(--brand);white-space:nowrap">'+cur+price+(mrp&&mrp>price?' <s style="font-weight:400;color:var(--ink-3);font-size:11px">'+cur+mrp+'</s>':'')+'</div>'+
+        '<button onclick="event.stopPropagation();togglePlanLock('+i+')" title="'+(isLocked?'Unlock plan':'Lock plan — hides from enrollment')+'" style="appearance:none;border:1px solid var(--line-dk);background:'+(isLocked?'#fee2e2':'#f1f5f9')+';border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer;color:'+(isLocked?'#dc2626':'var(--ink-3)')+';">'+(isLocked?'🔒':'🔓')+'</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  var selPlanObj=_rnwPlan?plans.filter(function(p){return (p.name||p.plan||'')===_rnwPlan})[0]:null;
+  var defExpiry=selPlanObj?efComputeExpiry_(todayISO_,selPlanObj):'';
+  $('sheetBody').innerHTML=
+    '<div style="padding:18px 2px 24px">'+
+      '<div style="font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.3px;margin-bottom:4px">🔄 Renew Membership</div>'+
+      '<div style="font-size:12px;color:var(--ink-2);margin-bottom:16px">'+E(m.name)+'</div>'+
+      '<div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Select plan</div>'+
+      '<div id="rnwPlanCards" style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px">'+planCards+'</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px">'+
+        '<div>'+
+          '<div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">New start date</div>'+
+          '<input type="date" id="rnwStart" value="'+todayISO_+'" onchange="rnwRecalc()" '+
+            'style="width:100%;padding:11px 12px;border:1.5px solid var(--brand);border-radius:12px;font:600 14px var(--F);color:var(--ink);background:#fff;outline:none;box-sizing:border-box;-webkit-appearance:none">'+
+        '</div>'+
+        '<div>'+
+          '<div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">New expiry date</div>'+
+          '<input type="date" id="rnwExpiry" value="'+defExpiry+'" '+
+            'style="width:100%;padding:11px 12px;border:1.5px solid var(--line-dk);border-radius:12px;font:600 14px var(--F);color:var(--ink);background:#fff;outline:none;box-sizing:border-box;-webkit-appearance:none">'+
+        '</div>'+
+      '</div>'+
+      '<div style="font-size:11px;color:var(--ink-3);margin-bottom:22px">Expiry auto-fills from plan duration — edit freely if needed.</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+        '<button onclick="openMemberSheet(\''+E(memberId)+'\')" style="background:#fff;border:1.5px solid var(--line);color:var(--ink-2);padding:14px;border-radius:14px;font:700 14px var(--F);cursor:pointer">Cancel</button>'+
+        '<button onclick="saveRenewMember(\''+E(memberId)+'\')" style="background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;padding:14px;border-radius:14px;font:700 14px var(--F);cursor:pointer">🔄 Renew</button>'+
+      '</div>'+
+    '</div>';
+}
+
+function rnwPickPlan(i){
+  var p=plans[i];if(!p)return;
+  var nm=p.name||p.plan||'';
+  _rnwPlan=nm;
+  document.querySelectorAll('.rnw-plan').forEach(function(el,idx){
+    el.classList.toggle('sel',idx===i);
+  });
+  rnwRecalc();
+}
+
+function rnwRecalc(){
+  var start=$('rnwStart').value;if(!start)return;
+  var planObj=_rnwPlan?plans.filter(function(p){return (p.name||p.plan||'')===_rnwPlan})[0]:null;
+  if(planObj){$('rnwExpiry').value=efComputeExpiry_(start,planObj)}
+}
+
+function saveRenewMember(memberId){
+  var start=$('rnwStart').value;
+  var expiry=$('rnwExpiry').value;
+  if(!start){toast('Pick a start date','err');return}
+  if(!expiry){toast('Pick an expiry date','err');return}
+  if(expiry<=start){toast('Expiry must be after start date','err');return}
+  var params={action:'updateMember',memberId:String(memberId),startDate:start,expiryDate:expiry+' 23:59:59',status:'Active'};
+  if(_rnwPlan)params.plan=_rnwPlan;
+  sendCmd(params,function(res){
+    if(res&&res.error){toast(res.hint||'Save failed','err');return}
+    toast('Renewed ✓','ok');
+    gviz(SHEET_ID,'Members',function(rm){
+      if(rm)members=parseRows(rm);
+      renderActive();renderPending();renderOccupancy();renderSeats();
+      openMemberSheet(memberId);
+    });
+  });
+}
+
+function togglePlanLock(i){
+  var p=plans[i];if(!p)return;
+  var nm=p.name||p.plan||'';if(!nm)return;
+  var newLocked=!p.locked;
+  sendCmd({action:'lockPlan',planName:nm,locked:newLocked?'yes':'no'},function(res){
+    if(res&&res.error){toast(res.hint||'Failed','err');return}
+    p.locked=newLocked;
+    toast((newLocked?'🔒 '+nm+' locked':'🔓 '+nm+' unlocked'),'ok');
+    var mid=openMemberId;
+    var m=members.filter(function(x){return x.memberid===mid})[0];
+    if(m)openRenewMember(mid);
+  });
+}
+
 function openExtendDate(){
   var m=currentMember();if(!m)return;
   var today=new Date();
@@ -2893,7 +3118,6 @@ function pickEnrollPlan(i){
   var nm=p.name||p.plan||'';
   _efPlan=(_efPlan===nm)?'':nm;
   var f=_efSaveFields();
-  if(_efPlan&&p.price){f.paid=String(parseFloat(String(p.price).replace(/[^\d.]/g,''))||'')}
   if(_efPlan){f.expiry=efComputeExpiry_(f.start||todayISO(),p)}
   else{f.expiry=''}
   $('sheetBody').innerHTML=renderEnrollForm_();
