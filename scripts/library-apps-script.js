@@ -61,6 +61,8 @@ function doGet(e) {
   if (a === 'sendTestEmail')      return jsonOut_(sendTestEmail_(p.email || '', p.message || ''));
   if (a === 'sendFeeReminderEmail') return jsonOut_(sendFeeReminderEmail_(p.memberId || ''));
   if (a === 'sendRenewalEmail')     return jsonOut_(sendRenewalEmail_(p.memberId || '', p.customMsg || ''));
+  if (a === 'lockPlan')             return ok(lockPlan_(p.planName || '', p.locked || ''));
+  if (a === 'changePin')            return jsonOut_(changePin_(p.oldPin || '', p.newPin || ''));
 
   return ok('Library v2 API active.');
 }
@@ -300,7 +302,9 @@ function updateMember_(p) {
     if (p.totalPaid != null) set('TotalPaid',  p.totalPaid);
     if (p.photoURL != null)  set('PhotoURL',   p.photoURL);
     if (p.notes != null)     set('Notes',      p.notes);
+    if (p.startDate)         set('StartDate',  p.startDate);
     if (p.expiryDate)        set('ExpiryDate', ensureEndOfDay_(p.expiryDate));
+    if (p.status)            set('Status',     p.status);
     return 'updated';
   }
   return 'not-found';
@@ -350,6 +354,31 @@ function reassignSeat_(memberId, seat, shift) {
     }
   }
   return 'not-found';
+}
+
+function lockPlan_(planName, locked) {
+  if (!planName) return 'missing-planName';
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName('Products') || ss.getSheetByName('Menu');
+  if (!sh) return 'no-products-sheet';
+  var vals = sh.getDataRange().getValues();
+  var hdr = vals[0].map(function(h){ return String(h||'').trim().toLowerCase().replace(/\s+/g,''); });
+  var ni = hdr.indexOf('name');
+  if (ni < 0) return 'no-name-column';
+  var li = hdr.indexOf('locked');
+  if (li < 0) {
+    var lastCol = sh.getLastColumn() + 1;
+    sh.getRange(1, lastCol).setValue('Locked');
+    li = lastCol - 1;
+  }
+  var val = (locked === 'yes' || locked === 'true' || locked === '1') ? 'yes' : 'no';
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][ni]||'').trim().toLowerCase() === String(planName).trim().toLowerCase()) {
+      sh.getRange(i + 1, li + 1).setValue(val);
+      return val === 'yes' ? 'locked' : 'unlocked';
+    }
+  }
+  return 'plan-not-found';
 }
 
 function updateConfig_(key, value) {
@@ -855,13 +884,45 @@ function verifyDashboardPin_(pin) {
   var props = PropertiesService.getScriptProperties();
   var stored = props.getProperty('DASHBOARD_PIN_HASH') || '';
   if (stored) return constantTimeEq_(sha256Hex_(pin), stored);
+  // Legacy: PIN still in Config sheet — migrate it to script properties and wipe from sheet
   var legacy = String(getCfg_('DashboardPIN', '') || '').trim();
   if (!legacy) return false;
   var match = constantTimeEq_(String(pin).trim(), legacy);
   if (match) {
-    try { props.setProperty('DASHBOARD_PIN_HASH', sha256Hex_(legacy)); } catch (e) {}
+    try {
+      props.setProperty('DASHBOARD_PIN_HASH', sha256Hex_(legacy));
+      clearPinFromConfig_();
+    } catch (e) {}
   }
   return match;
+}
+
+function clearPinFromConfig_() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sh = ss.getSheetByName('Config'); if (!sh) return;
+    var vals = sh.getDataRange().getValues();
+    var norm = function(s){ return String(s||'').toLowerCase().replace(/\s+/g,''); };
+    for (var i = 1; i < vals.length; i++) {
+      if (norm(vals[i][0]) === 'dashboardpin') {
+        sh.getRange(i + 1, 2).setValue('');
+        return;
+      }
+    }
+  } catch (e) {}
+}
+
+function changePin_(oldPin, newPin) {
+  if (!oldPin || !newPin) return { ok: false, error: 'missing-args' };
+  var newTrimmed = String(newPin).trim();
+  if (!/^\d{4,8}$/.test(newTrimmed)) return { ok: false, error: 'PIN must be 4–8 digits' };
+  if (!verifyDashboardPin_(oldPin)) return { ok: false, error: 'Current PIN is incorrect' };
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty('DASHBOARD_PIN_HASH', sha256Hex_(newTrimmed));
+  // Invalidate existing session tokens so re-login is required
+  props.deleteProperty('DASHBOARD_TOKEN');
+  clearPinFromConfig_();
+  return { ok: true };
 }
 
 function getDashboardToken_() {
@@ -886,7 +947,41 @@ function migrateDashboardPin() {
   var legacy = String(getCfg_('DashboardPIN', '') || '').trim();
   if (!legacy) return 'no-legacy-pin';
   props.setProperty('DASHBOARD_PIN_HASH', sha256Hex_(legacy));
+  clearPinFromConfig_();
   return 'migrated';
+}
+
+/**
+ * ─── FIRST-TIME PIN SETUP ──────────────────────────────────────────
+ * Run this function ONCE from the Apps Script editor to set your PIN.
+ *
+ * How to use:
+ *   1. Open Extensions → Apps Script in your Google Sheet
+ *   2. Change the PIN below (must be 4–8 digits)
+ *   3. Click ▶ Run
+ *   4. Remove or blank out the PIN value before closing the editor
+ *
+ * The PIN is hashed with SHA-256 and stored in Script Properties.
+ * It is NEVER written to the sheet.
+ * ──────────────────────────────────────────────────────────────────
+ */
+function setupPin() {
+  var PIN = '1234';  // ← CHANGE THIS, then Run, then clear it
+
+  PIN = String(PIN).trim();
+  if (!/^\d{4,8}$/.test(PIN)) {
+    throw new Error('PIN must be 4–8 digits. Got: ' + PIN);
+  }
+  var props = PropertiesService.getScriptProperties();
+  var existing = props.getProperty('DASHBOARD_PIN_HASH') || '';
+  if (existing) {
+    // Already set — use changePin_ from the dashboard instead
+    throw new Error('A PIN is already configured. Use the "Change PIN" option in dashboard Settings to update it.');
+  }
+  props.setProperty('DASHBOARD_PIN_HASH', sha256Hex_(PIN));
+  clearPinFromConfig_();
+  Logger.log('✅ PIN set successfully. Clear the PIN value from this function before closing the editor.');
+  return 'PIN set';
 }
 
 // ─── Optional new-member alert (Telegram if configured) ────────
