@@ -534,7 +534,7 @@ function E(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&l
 function cfg(k,d){var v=config[(k||'').toLowerCase().replace(/\s+/g,'')];return v!=null&&v!==''?String(v):(d!==undefined?d:'')}
 function isYes(k,d){return String(cfg(k,d||'no')).toLowerCase().indexOf('yes')===0}
 function fnum(s){var n=parseFloat(String(s||'').replace(/[^\d.]/g,''));return isNaN(n)?0:n}
-function planDays_(dur,name){var m=String(dur||'').match(/(\d+)/);if(m){var n=parseInt(m[1],10);if(/year/i.test(dur))return n*365;if(/month/i.test(dur))return n*30;if(/week/i.test(dur))return n*7;return n}var s=String(name||'').toLowerCase();if(/year|annual/.test(s))return 365;if(/6.*month/.test(s))return 180;if(/3.*month|quarter/.test(s))return 90;if(/month/.test(s))return 30;if(/week/.test(s))return 7;if(/day|daily/.test(s))return 1;return 30}
+function planDays_(dur,name){var m=String(dur||'').match(/(\d+)/);if(m){var n=parseInt(m[1],10);if(/year/i.test(dur))return n*365;if(/month/i.test(dur))return n*30;if(/week/i.test(dur))return n*7;if(/hour/i.test(dur))return 1;return n}var s=String(name||'').toLowerCase();if(/year|annual/.test(s))return 365;if(/6.*month/.test(s))return 180;if(/3.*month|quarter/.test(s))return 90;if(/month/.test(s))return 30;if(/week/.test(s))return 7;if(/24.*hour|hour.*24/.test(s))return 1;if(/day|daily/.test(s))return 1;return 30}
 function toast(msg,kind){var t=$('toast');t.className='toast '+(kind||'')+' show';t.textContent=msg;clearTimeout(t._h);t._h=setTimeout(function(){t.className='toast '+(kind||'')},2400)}
 function daysToExpiry(m){if(!m||!m.expirydate)return null;var s=String(m.expirydate).trim();if(!s)return null;var d;var gm=s.match(/^Date\((\d+),(\d+),(\d+)\)$/);if(gm){d=new Date(+gm[1],+gm[2],+gm[3])}else{d=new Date(s)}if(isNaN(d.getTime()))return null;return Math.floor((d.getTime()-Date.now())/(24*60*60*1000))}
 
@@ -869,7 +869,13 @@ function renderPlans(){
     var handler=isLocked?'planLockedToast()':'pickPlan('+i+')';
     var cur2=cfg('currency','₹');
     var shiftTimingHtml='';
-    if(isYes('enableshifts')&&selectedShift){
+    var pNameL=String(p.name||'').toLowerCase();
+    var pDurL=String(p.duration||p.unit||'').toLowerCase();
+    var is24h=(pNameL.indexOf('24')>=0&&pNameL.indexOf('hour')>=0)||pDurL.indexOf('hour')>=0;
+    if(is24h){
+      var t24=cfg('fullday24time','6 AM – 5:59 AM (next day)');
+      shiftTimingHtml='<div class="plan-timing">🕐 <b>24-Hour Access</b>: '+E(t24)+'</div>';
+    } else if(isYes('enableshifts')&&selectedShift){
       var timingParts=[];
       if(selectedShift==='FULL'){
         var ft=cfg('fulldaytime','');
@@ -1396,13 +1402,28 @@ function showDone(memberId){
   lastMemberId=memberId;
   var needsApproval=isYes('requireapproval','yes');
   var seatLabel=selectedSeat?('Seat '+selectedSeat+(selectedShift==='FULL'?' · Full Day':' · '+cfg('shift'+(selectedShift||'').slice(1)+'label',selectedShift||''))):'';
+  var shopN=cfg('shopname','Library');
   var pendingHtml=needsApproval?
-    '<div style="background:var(--hold-bg);border:1px solid var(--hold);color:var(--hold-dk);border-radius:12px;padding:14px;margin:14px auto;max-width:340px;font-size:13px"><b>⏳ Awaiting shopkeeper approval</b><br>'+
-    'Your enrollment'+(selectedSeat?' and seat <b>'+E(selectedSeat)+'</b>':'')+' '+(selectedSeat?'are':'is')+' on hold.</div>':'';
+    '<div style="background:var(--hold-bg);border:1px solid var(--hold);color:var(--hold-dk);border-radius:12px;padding:14px;margin:14px auto;max-width:340px;font-size:13px">'+
+    '<b>⏳ Awaiting approval from '+E(shopN)+'</b><br>'+
+    'Your enrollment'+(selectedSeat?' and seat <b>'+E(selectedSeat)+'</b>':'')+' '+(selectedSeat?'are':'is')+' on hold until confirmed.</div>':'';
   var checkBg=needsApproval?'var(--hold)':'var(--ok)';
   var heading=needsApproval?'Enrollment received':'Enrollment submitted';
-  var confirmBtn=needsApproval?
-    '<div class="small" style="margin-top:10px;font-size:13px;color:var(--ink-3);background:var(--hold-bg);border:1px solid var(--hold);border-radius:10px;padding:12px 14px;">⏳ Your enrollment is awaiting approval. The shopkeeper will review it shortly.</div>':'';
+  var confirmBtn='';
+
+  var shopPhone=(cfg('phone','')||cfg('whatsapp','')||cfg('shopkeeperphone','')).replace(/\D/g,'');
+  var waShopNum=shopPhone.length===10?'91'+shopPhone:shopPhone;
+  var studentName=$('iName')?($('iName').value||'').trim():'';
+  var waMsg='📚 *New Enrollment — '+E(cfg('shopname','Library'))+'*\n\n'+
+    '👤 *Name:* '+studentName+'\n'+
+    '🆔 *Member ID:* '+memberId+'\n'+
+    (seatLabel?'🪑 *'+seatLabel+'*\n':'')+
+    (selectedPlan?'📋 *Plan:* '+selectedPlan.name+'\n':'')+
+    (needsApproval?'\n⏳ Awaiting your approval on the dashboard.':'\n✅ Enrollment submitted successfully.');
+  var waShopBtn=waShopNum?
+    '<a href="https://wa.me/'+waShopNum+'?text='+encodeURIComponent(waMsg)+'" target="_blank" rel="noopener" '+
+      'style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:13px 24px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 4px 14px rgba(37,211,102,.3)">'+
+      '📲 Send to '+E(cfg('shopname','Library'))+' on WhatsApp</a>':'';
 
   document.body.innerHTML='<div class="top" style="background:'+cfg('brandcolor','#0f766e')+';color:#fff;padding:18px;text-align:center"><h1 style="margin:0;font-size:18px">'+E(cfg('shopname','Library'))+'</h1></div>'+
     '<div class="done"><div class="check" style="background:'+checkBg+'">'+(needsApproval?'⏳':'✓')+'</div>'+
@@ -1413,7 +1434,8 @@ function showDone(memberId){
     pendingHtml+
     confirmBtn+
     '<div class="small" style="margin-top:18px">Please pay at the counter to activate your plan.</div>'+
-    (cfg('whatsappgrouplink','')?'<a href="'+E(cfg('whatsappgrouplink',''))+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:12px 24px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 4px 14px rgba(37,211,102,.3)">💬 Join our WhatsApp Group</a>':'')+
+    waShopBtn+
+    (cfg('whatsappgrouplink','')?'<a href="'+E(cfg('whatsappgrouplink',''))+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:12px 24px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 4px 14px rgba(37,211,102,.3)">💬 Join our WhatsApp Group</a>':'')+
     '</div>'+
     // PIN-entry modal — shopkeeper takes the phone, enters PIN, confirms.
     '<div class="confirm-modal" id="confirmModal">'+

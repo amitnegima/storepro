@@ -33,18 +33,32 @@
   button{font:inherit;cursor:pointer}
 
   /* ─── PIN gate ─── */
-  .pinScreen{position:fixed;inset:0;background:#0f766e;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:200;padding:20px}
-  .pinScreen::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.15) 0%,transparent 50%,rgba(255,255,255,.05) 100%)}
-  .pinBox{background:#fff;color:var(--ink);border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;z-index:2}
-  .pinBox .logo{width:56px;height:56px;border-radius:16px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
-  .pinBox h1{margin:0 0 4px;font-size:20px;color:var(--ink);font-weight:700;letter-spacing:-.02em}
-  .pinBox .sub{color:var(--ink-3);font-size:13px;margin-bottom:24px}
-  .pinDigits{display:flex;gap:10px;justify-content:center;margin:0 0 12px}
-  .pinDigits input{width:48px;height:56px;border:1.5px solid var(--line-dk);border-radius:12px;font-size:22px;font-weight:700;text-align:center;outline:none;color:var(--ink);font-family:inherit;transition:border-color .15s,box-shadow .15s;background:#fff}
-  .pinDigits input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+  .pinScreen{position:fixed;inset:0;background:linear-gradient(160deg,#0d9488 0%,#0f766e 55%,#115e59 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:200;padding:20px;overflow:hidden}
+  .pinScreen::before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(255,255,255,.06);top:-140px;right:-120px;pointer-events:none}
+  .pinScreen::after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(0,0,0,.08);bottom:-100px;left:-80px;pointer-events:none}
+  .pinBox{background:#fff;border-radius:24px;max-width:360px;width:100%;box-shadow:0 28px 72px rgba(0,0,0,.32);position:relative;z-index:2;overflow:hidden}
+  .pin-shop-hero{background:linear-gradient(145deg,#0f766e 0%,#0d9488 100%);padding:28px 24px 24px;position:relative;overflow:hidden}
+  .pin-shop-hero::before{content:"";position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07);top:-60px;right:-50px}
+  .pin-logo-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;position:relative;z-index:1}
+  .pin-logo{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center}
+  .pin-shop-name{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.2}
+  .pin-shop-tag{font-size:12px;color:rgba(255,255,255,.7);margin-top:3px}
+  .pin-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.12);border-radius:12px;overflow:hidden;margin-top:16px;position:relative;z-index:1}
+  .pin-stat{padding:10px 8px;text-align:center;background:rgba(0,0,0,.08)}
+  .pin-stat .psv{font-size:13px;font-weight:800;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pin-stat .psl{font-size:9.5px;font-weight:600;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+  .pin-info-chips{display:flex;flex-wrap:wrap;gap:6px;position:relative;z-index:1;margin-top:12px}
+  .pin-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);border-radius:99px;padding:4px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.95)}
+  .pin-entry{padding:24px}
+  .pin-entry-label{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;text-align:center}
+  .pinDigits{display:flex;gap:10px;justify-content:center;margin:0 0 14px}
+  .pinDigits input{width:54px;height:62px;border:2px solid var(--line-dk);border-radius:14px;font-size:26px;font-weight:800;text-align:center;outline:none;color:var(--ink);font-family:inherit;transition:border-color .15s,box-shadow .15s,background .15s;background:#f8fafc}
+  .pinDigits input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(13,148,136,.12);background:#fff}
   .pinDigits input.filled{border-color:var(--brand);background:var(--brand-bg)}
-  .pinErr{color:var(--err);font-size:12px;height:16px;margin-top:4px;font-weight:500}
-  .pinSpinner{display:none;width:20px;height:20px;border:2px solid var(--line-dk);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;margin:8px auto 0}
+  .pinErr{color:var(--err);font-size:12.5px;height:18px;margin-top:2px;font-weight:600;text-align:center}
+  .pinSpinner{display:none;width:20px;height:20px;border:2.5px solid var(--line-dk);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;margin:10px auto 0}
+  .pin-powered{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.02em;z-index:2}
+  .pin-powered a{color:rgba(255,255,255,.85);font-weight:700;text-decoration:none}
 
   /* ─── Header (hero) ─── */
   /* ── Clean topbar ── */
@@ -52,9 +66,10 @@
   .hdr-row{display:flex;align-items:center;gap:12px;max-width:720px;margin:0 auto;padding:10px 16px;position:relative}
   .hdr-logo{width:38px;height:38px;border-radius:10px;background:var(--brand);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;flex-shrink:0}
   .hdr-info{flex:1;min-width:0}
-  .hdr-greeting{font-size:11px;color:var(--ink-3);font-weight:400;margin-bottom:1px}
-  .hdr-name{font-weight:700;font-size:15px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
-  .hdr-meta{font-size:11px;color:var(--ink-3);margin-top:1px}
+  .hdr-greeting{font-size:11px;color:var(--ink-3);font-weight:500;margin-bottom:1px}
+  .hdr-name{font-weight:800;font-size:15px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .hdr-meta{font-size:10.5px;color:var(--ink-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hdr-phone{font-size:10.5px;color:var(--brand);font-weight:600;text-decoration:none;margin-top:2px;display:block}
   .hdr-btn{appearance:none;border:1px solid var(--line-dk);background:#fff;color:var(--ink-2);border-radius:9px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:background .15s;position:relative}
   .hdr-btn:hover{background:var(--bg);color:var(--ink)}
   .hdr-btn:active{background:var(--line)}
@@ -332,35 +347,33 @@
   .fc.hold.act{background:var(--hold);border-color:var(--hold)}
   .fc.fd.act{background:#b45309;border-color:#b45309}
 
-  .mb{background:#fff;border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:box-shadow .15s;border:1px solid var(--line);position:relative;overflow:hidden}
-  .mb::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--ok);border-radius:0 2px 2px 0}
+  .mb{background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all .15s;border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .mb::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ok);border-radius:0 3px 3px 0}
   .mb.pending::before{background:var(--hold)}
   .mb.expiring::before{background:var(--warn)}
   .mb.expired::before{background:var(--err)}
-  .mb:active{box-shadow:var(--shadow-sm);background:var(--bg)}
-  .mb .avatar{width:44px;height:44px;border-radius:12px;background:var(--brand-bg);color:var(--brand-dk);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;flex-shrink:0;background-size:cover;background-position:center;position:relative}
+  .mb:active{background:var(--bg);box-shadow:none}
+  .mb .avatar{width:46px;height:46px;border-radius:14px;background:var(--brand-bg);color:var(--brand-dk);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;background-size:cover;background-position:center;position:relative}
   .mb .avatar .status-dot{position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;background:var(--ok)}
   .mb .avatar.pending .status-dot{background:var(--hold)}
   .mb .avatar.expired .status-dot{background:var(--err)}
-  .mb .body{flex:1;min-width:0}
-  .mb .nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
-  .mb .meta{font-size:11px;color:var(--ink-3);display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;align-items:center}
-  .mb .meta .tag{background:var(--line);border-radius:5px;padding:2px 7px;font-weight:500;color:var(--ink-2);font-size:10.5px}
-  .mb .meta .tag.seat{background:var(--brand-bg);color:var(--brand-dk)}
-  .mb .meta .tag.shift{background:#eef2ff;color:#4338ca}
-  .mb .meta .tag.shift.full-day{background:#fef3c7;color:#92400e}
-  .mb .meta .tag.warn{background:var(--hold-bg);color:var(--hold-dk)}
-  .mb .meta .plan-name{font-size:11px;font-weight:700;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;padding:1px 6px}
-  .plan-detail-row{margin-top:4px}
-  .plan-detail{font-size:10.5px;font-weight:500;color:var(--ink-2);background:#f8fafc;border:1px solid var(--line);border-radius:5px;padding:1px 7px;display:inline-flex;align-items:center;gap:3px}
-  .mb .submeta{font-size:10.5px;color:var(--ink-3);display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;align-items:center}
-  .mb .submeta .date-range{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:10.5px;font-weight:500;color:var(--ink-2)}
-  .mb .submeta .date-range .sep{color:var(--ink-3);font-size:11px;margin:0 1px}
-  .mb .submeta .date-range.warn{background:var(--warn-bg);border-color:var(--warn);color:var(--warn-dk)}
-  .mb .submeta .date-range.err{background:var(--err-bg);border-color:var(--err);color:var(--err-dk)}
-  .mb .submeta .ph-chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:10.5px;font-weight:500;color:var(--ink-2);font-variant-numeric:tabular-nums}
-  .mb .meta .tag.paid{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-weight:700}
-  .mb .meta .tag.fee-due{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;font-weight:700}
+  .mb .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+  .mb .nm{font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mb .meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .mb .submeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .mb .tag{border-radius:7px;padding:3px 8px;font-weight:600;font-size:11px;display:inline-flex;align-items:center;gap:3px}
+  .mb .tag.seat{background:var(--brand-bg);color:var(--brand-dk)}
+  .mb .tag.shift{background:#eef2ff;color:#4338ca}
+  .mb .tag.shift.full-day{background:#fef3c7;color:#92400e}
+  .mb .plan-name{font-size:11.5px;font-weight:700;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:3px 8px}
+  .mb .tag.paid{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-weight:700}
+  .mb .tag.fee-due{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;font-weight:700}
+  .mb .date-range{font-size:11px;font-weight:500;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px}
+  .mb .date-range .sep{opacity:.4;margin:0 1px}
+  .mb .date-range.warn{color:var(--warn-dk)}
+  .mb .date-range.err{color:var(--err-dk)}
+  .mb .ph-chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .plan-detail-row{display:none} /* merged into row3 */
   .fee-due-badge{display:inline-flex;align-items:center;padding:2px 8px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;font-size:11.5px;font-weight:700}
   .fee-paid-badge{display:inline-flex;align-items:center;padding:2px 8px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;font-size:11.5px;font-weight:700}
   .mark-paid-btn{appearance:none;border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:3px 10px;border-radius:8px;font-size:11.5px;font-weight:600;cursor:pointer;transition:.12s}
@@ -856,24 +869,41 @@
 <!-- ─── PIN gate ─── -->
 <div class="pinScreen" id="pinScreen">
   <div class="pinBox">
-    <div class="logo">📚</div>
-    <h1>Library Dash</h1>
-    <div class="sub">Enter your 4-digit PIN to unlock</div>
-    <div class="pinDigits">
-      <input type="tel" maxlength="1" id="p1" inputmode="numeric" oninput="pinNext(this,2)">
-      <input type="tel" maxlength="1" id="p2" inputmode="numeric" oninput="pinNext(this,3)">
-      <input type="tel" maxlength="1" id="p3" inputmode="numeric" oninput="pinNext(this,4)">
-      <input type="tel" maxlength="1" id="p4" inputmode="numeric" oninput="pinNext(this,5)">
+    <div class="pin-shop-hero">
+      <div class="pin-logo-row">
+        <div class="pin-logo" id="pinLogo">📚</div>
+        <div style="flex:1;min-width:0">
+          <div class="pin-shop-name" id="pinShopName">Dashboard</div>
+          <div class="pin-shop-tag" id="pinShopTag"></div>
+        </div>
+      </div>
+      <div class="pin-stats-row" id="pinStatsRow" style="display:none">
+        <div class="pin-stat" id="pinStatSeats"><div class="psv" id="pinStatSeatsV">—</div><div class="psl">Seats</div></div>
+        <div class="pin-stat" id="pinStatTiming" style="display:none"><div class="psv" id="pinStatTimingV">—</div><div class="psl">Timing</div></div>
+        <div class="pin-stat" id="pinStatPhone" style="display:none"><div class="psv" id="pinStatPhoneV">—</div><div class="psl">Contact</div></div>
+      </div>
+      <div class="pin-info-chips" id="pinInfoChips"></div>
     </div>
-    <div class="pinErr" id="pinErr"></div>
-    <div class="pinSpinner" id="pinSpin"></div>
+    <div class="pin-entry">
+      <div class="pin-entry-label">🔒 Enter PIN to unlock</div>
+      <div class="pinDigits">
+        <input type="tel" maxlength="1" id="p1" inputmode="numeric" oninput="pinNext(this,2)">
+        <input type="tel" maxlength="1" id="p2" inputmode="numeric" oninput="pinNext(this,3)">
+        <input type="tel" maxlength="1" id="p3" inputmode="numeric" oninput="pinNext(this,4)">
+        <input type="tel" maxlength="1" id="p4" inputmode="numeric" oninput="pinNext(this,5)">
+      </div>
+      <div class="pinErr" id="pinErr"></div>
+      <div class="pinSpinner" id="pinSpin"></div>
+    </div>
   </div>
+  <div class="pin-powered">Powered by <a href="https://storepro.in" target="_blank">StorePro</a></div>
 </div>
 
 <!-- ─── Splash ─── -->
 <div class="splash" id="splash" style="display:none">
   <div class="spin"></div>
   <div id="splashMsg" style="color:var(--ink-2);font-size:13px;font-weight:500">Loading…</div>
+  <div style="position:absolute;bottom:24px;font-size:11px;color:var(--ink-3);letter-spacing:.03em">Powered by <a href="https://storepro.in" target="_blank" style="color:var(--brand);font-weight:600;text-decoration:none">StorePro</a></div>
 </div>
 
 <!-- ─── Pull to refresh ─── -->
@@ -887,6 +917,7 @@
       <div class="hdr-greeting" id="hdrGreeting">Good morning</div>
       <div class="hdr-name" id="hdrName">Library</div>
       <div class="hdr-meta" id="hdrMeta">—</div>
+      <a class="hdr-phone" id="hdrPhone" style="display:none"></a>
     </div>
     <button class="hdr-btn" id="hdrPendingBtn" onclick="goTab('Active');scrollToPending()" style="display:none" title="Pending approvals">⏳<span class="badge" id="hdrPendingBadge">0</span></button>
     <button class="hdr-btn" onclick="reloadAll()" title="Refresh">↻</button>
@@ -1083,7 +1114,7 @@ function lookupTenant(slug,cb){
     for(var i=1;i<r.table.rows.length;i++){
       var row=r.table.rows[i],o={};cols.forEach(function(k,j){var c=row.c&&row.c[j];o[k]=c&&c.v!=null?String(c.v).trim():''});
       var rs=(o.slug||'').toLowerCase();
-      if(rs===slug.toLowerCase()){SHEET_ID=o.sheetid||o.sheet||o.id||'';SCRIPT_URL=o.scripturl||o.script||'';if(SHEET_ID){cb(true);return}}
+      if(rs===slug.toLowerCase()){SHEET_ID=o.sheetid||o.sheet||o.id||'';SCRIPT_URL=o.scripturl||o.script||'';if(SHEET_ID){cb(true,o);return}}
     }
     cb(false);
   };
@@ -1140,24 +1171,96 @@ function sendPin(pin){
     .then(function(d){
       $('pinSpin').style.display='none';
       if(d&&d.ok){
-        DASH_TOKEN=d.token||'';try{localStorage.setItem('dash_token_'+SHEET_ID,DASH_TOKEN)}catch(e){}
+        DASH_TOKEN=d.token||'';
+        try{sessionStorage.setItem('dash_tok_'+SHEET_ID,DASH_TOKEN)}catch(e){}
+        startInactivityWatch();
         $('pinScreen').style.display='none';$('splash').style.display='flex';loadAll();
       }else{$('pinErr').textContent='Incorrect PIN';['p1','p2','p3','p4'].forEach(function(id){$(id).value=''});$('p1').focus()}
     })
     .catch(function(){$('pinSpin').style.display='none';$('pinErr').textContent='Network error — try again'});
 }
-function logout(){try{localStorage.removeItem('dash_token_'+SHEET_ID)}catch(e){};location.reload()}
+function logout(){DASH_TOKEN='';try{sessionStorage.removeItem('dash_tok_'+SHEET_ID)}catch(e){}showPinScreen();}
+function showPinScreen(){
+  ['p1','p2','p3','p4'].forEach(function(id){var el=$(id);if(el){el.value='';el.classList.remove('filled');}});
+  $('pinErr').textContent='';$('pinSpin').style.display='none';
+  $('pinScreen').style.display='flex';
+  setTimeout(function(){var p=$('p1');if(p)p.focus();},100);
+}
+
+var _inactivityTimer=null;
+var INACTIVITY_MS=15*60*1000;
+function resetInactivityTimer(){
+  if(!DASH_TOKEN)return;
+  clearTimeout(_inactivityTimer);
+  _inactivityTimer=setTimeout(function(){
+    if(DASH_TOKEN){DASH_TOKEN='';showPinScreen();}
+  },INACTIVITY_MS);
+}
+function startInactivityWatch(){
+  ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(function(evt){
+    document.addEventListener(evt,resetInactivityTimer,{passive:true});
+  });
+  resetInactivityTimer();
+}
 
 function tryAutoUnlock(){
   SLUG=resolveSlug();if(!SLUG)return;
-  lookupTenant(SLUG,function(ok){
+  lookupTenant(SLUG,function(ok,row){
     if(!ok)return;
-    var tok='';try{tok=localStorage.getItem('dash_token_'+SHEET_ID)||''}catch(e){}
-    if(!tok)return;
-    fetch(SCRIPT_URL+'?action=verifyToken&token='+encodeURIComponent(tok)+'&_t='+Date.now())
-      .then(function(r){return r.json()})
-      .then(function(d){if(d&&d.ok){DASH_TOKEN=tok;$('pinScreen').style.display='none';$('splash').style.display='flex';loadAll()}})
-      .catch(function(){});
+    row=row||{};
+    var ownerName=(row.ownername||'').trim();
+    var regPhone=(row.ownerphone||row.whatsapp||'').trim();
+    var regAddress=(row.address||'').trim();
+    var regLogo=(row.logo||row.logourl||'').trim();
+    var regTiming=(row.businesshours||row.timing||'').trim();
+
+    function applyPin(name,tagline,timing,phone,address,logo){
+      var el=function(id){return document.getElementById(id)};
+      if(el('pinShopName'))el('pinShopName').textContent=name+' Dashboard';
+      if(el('pinShopTag'))el('pinShopTag').textContent=ownerName?'👤 '+ownerName:(tagline||'');
+      var logoEl=el('pinLogo');
+      if(logoEl){
+        if(logo){logoEl.style.backgroundImage='url('+JSON.stringify(logo)+')';logoEl.textContent='';}
+        else{logoEl.textContent=(name.match(/[A-Z]/g)||['L']).slice(0,2).join('');}
+      }
+      var sr=el('pinStatsRow');
+      if(sr){
+        var tt=el('pinStatTiming'),tv=el('pinStatTimingV');
+        if(timing&&tt&&tv){tv.textContent=timing;tt.style.display='block';}
+        var pt=el('pinStatPhone'),pv=el('pinStatPhoneV');
+        if(phone&&pt&&pv){pv.textContent=phone;pt.style.display='block';}
+        var visCount=[timing,phone].filter(Boolean).length;
+        if(el('pinStatSeats'))el('pinStatSeats').style.display='none';
+        sr.style.display=visCount?'grid':'none';
+        sr.style.gridTemplateColumns='repeat('+Math.min(visCount,2)+',1fr)';
+      }
+      var chips='';
+      if(address)chips+='<span class="pin-chip">📍 '+E(address)+'</span>';
+      if(el('pinInfoChips'))el('pinInfoChips').innerHTML=chips;
+    }
+
+    // Load Config sheet for accurate shop name, timing, phone
+    gviz(SHEET_ID,'Config',function(r){
+      var cfgMap={};
+      if(r){parseRows(r).forEach(function(row){var k=(row.key||row.config||Object.keys(row)[0]||'').toLowerCase().replace(/\s+/g,'');var v=row.value||row[Object.keys(row)[1]]||'';if(k)cfgMap[k]=v;});}
+      var g=function(k){return cfgMap[k]||''};
+      applyPin(
+        g('shopname')||'Library',
+        g('tagline')||'',
+        g('timing')||regTiming,
+        g('phone')||g('whatsapp')||regPhone,
+        g('address')||regAddress,
+        g('logourl')||regLogo
+      );
+      // Auto-unlock within same browser tab session (survives refresh, not new tab/close)
+      var sessTok='';try{sessTok=sessionStorage.getItem('dash_tok_'+SHEET_ID)||''}catch(e){}
+      if(sessTok){
+        fetch(SCRIPT_URL+'?action=verifyToken&token='+encodeURIComponent(sessTok)+'&_t='+Date.now())
+          .then(function(r){return r.json()})
+          .then(function(d){if(d&&d.ok){DASH_TOKEN=sessTok;startInactivityWatch();$('pinScreen').style.display='none';$('splash').style.display='flex';loadAll();}})
+          .catch(function(){});
+      }
+    });
   });
 }
 
@@ -1270,11 +1373,18 @@ function renderSticky(){}
 
 function render(){
   document.title=cfg('shopname','Library')+' · Dash';
+  var ownerName=cfg('shopkeepername','')||cfg('ownername','');
   $('hdrName').textContent=cfg('shopname','Library');
-  $('hdrGreeting').textContent=getGreeting();
+  $('hdrGreeting').textContent=getGreeting()+(ownerName?', '+ownerName:'');
   var act=activeMembers(),pend=pendingMembers();
   console.log('[dash] render: members loaded:',members.length,', active:',act.length,', pending:',pend.length);
-  $('hdrMeta').textContent=act.length+' active'+(pend.length?' · '+pend.length+' pending':'')+' · '+cfg('seatcapacity','40')+' seats';
+  var timing=cfg('timing','');
+  var phone=cfg('shopkeeperphone','')||cfg('phone','');
+  var meta=act.length+' active'+(pend.length?' · '+pend.length+' pending':'')+' · '+cfg('seatcapacity','40')+' seats';
+  if(timing)meta+=' · '+timing;
+  $('hdrMeta').textContent=meta;
+  var phoneEl=$('hdrPhone');
+  if(phoneEl){if(phone){phoneEl.href='tel:'+phone.replace(/\D/g,'');phoneEl.textContent='📞 '+phone;phoneEl.style.display='inline'}else{phoneEl.style.display='none';}}
   var brand=cfg('brandcolor','');
   if(/^#[0-9a-f]{6}$/i.test(brand)){
     document.documentElement.style.setProperty('--brand',brand);
@@ -1918,20 +2028,23 @@ function renderActive(){
     var planPrice=planObj?parseFloat(String(planObj.price||'0').replace(/[^\d.]/g,''))||0:0;
     var planDur=planObj?(planObj.duration||planObj.unit||''):'';
     var planDetail=(planDur||planPrice)?('<span class="plan-detail">'+(planDur?'⏱ '+E(planDur):'')+(planDur&&planPrice?' · ':'' )+(planPrice?cur+planPrice:'')+'</span>'):'';
+    var dateCls=isExpired?'err':d!=null&&d<=7?'warn':'';
     return '<div class="mb '+cardCls+'" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
       '<div class="avatar '+(isExpired?'expired':isPending?'pending':'')+'" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'<span class="status-dot"></span></div>'+
       '<div class="body">'+
-        '<div class="nm">'+E(m.name||'—')+(daysEnrolled!=null&&daysEnrolled<=14?'<span class="new-badge">New</span>':'')+'</div>'+
+        '<div style="display:flex;align-items:center;gap:6px">'+
+          '<div class="nm">'+E(m.name||'—')+'</div>'+
+          (daysEnrolled!=null&&daysEnrolled<=14?'<span class="new-badge">New</span>':'')+
+        '</div>'+
         '<div class="meta">'+
           (m.seat?'<span class="tag seat">🪑 '+E(m.seat)+'</span>':'')+
           (shiftLbl?'<span class="tag shift'+(isFullShift?' full-day':'')+'">'+E(shiftLbl)+'</span>':'')+
-          (m.plan?'<span class="plan-name">📚 '+E(m.plan)+'</span>':'')+
-          (paid?'<span class="tag paid">✅ '+cur+paid+'</span>':'<span class="tag fee-due">❌ Fee Due</span>')+
+          (m.plan?'<span class="plan-name">'+E(m.plan)+'</span>':'')+
+          (paid?'<span class="tag paid">'+cur+paid+'</span>':'<span class="tag fee-due">Fee Due</span>')+
         '</div>'+
-        (planDetail?'<div class="plan-detail-row">'+planDetail+'</div>':'')+
         '<div class="submeta">'+
-          '<span class="date-range '+(isExpired?'err':d!=null&&d<=7?'warn':'')+'" title="Start → Expiry">📅 '+E(startTxt)+'<span class="sep">→</span>'+E(expiryTxt)+'</span>'+
-          (phone?'<span class="ph-chip" title="Phone">📞 '+E(m.phone)+'</span>':'')+
+          '<span class="date-range '+(dateCls)+'" title="Start → Expiry">📅 '+E(startTxt)+'<span class="sep">→</span>'+E(expiryTxt)+'</span>'+
+          (phone?'<span class="ph-chip">📞 '+E(m.phone)+'</span>':'')+
         '</div>'+
       '</div>'+
       '<div class="right">'+
@@ -2167,7 +2280,8 @@ function renderSettings(){
     txt('WhatsAppTemplate','WhatsApp template','Vars: {name} {plan} {expiry} {seat} {shop} {amount} {payLink}','Hi {name}, your {plan} at {shop} expires on {expiry} (Seat {seat}).\n\nPlease pay {amount} to renew.\n{payLink}')+
     txt('WhatsAppGroupLink','WhatsApp group invite link','Shown to students after enrollment','https://chat.whatsapp.com/...')+
     txt('RenewLink','Renew link','URL students tap to re-enroll','https://storepro.in/enroll.html?store=')+
-    txt('ShopkeeperPhone','Your phone (for test SMS/WA)','','9999999999')+
+    txt('ShopkeeperName','Your name','Shown as greeting on the dashboard header e.g. "Good morning, Amit"','')+
+    txt('ShopkeeperPhone','Your phone','Used for test SMS/WA and shown in dashboard header','9999999999')+
     txt('ShopkeeperEmail','Your email (for test email)','','');
 
   $('setHistory').innerHTML=
@@ -3102,7 +3216,7 @@ function _efRestoreFields(f){
   if(f.notes&&$('efNotes'))$('efNotes').value=f.notes;
 }
 
-function efPlanDays_(dur,name){var m=String(dur||'').match(/(\d+)/);if(m){var n=parseInt(m[1],10);if(/year/i.test(dur))return n*365;if(/month/i.test(dur))return n*30;if(/week/i.test(dur))return n*7;return n}var s=String(name||'').toLowerCase();if(/year|annual/.test(s))return 365;if(/6.*month/.test(s))return 180;if(/3.*month|quarter/.test(s))return 90;if(/month/.test(s))return 30;if(/week/.test(s))return 7;if(/day|daily/.test(s))return 1;return 30}
+function efPlanDays_(dur,name){var m=String(dur||'').match(/(\d+)/);if(m){var n=parseInt(m[1],10);if(/year/i.test(dur))return n*365;if(/month/i.test(dur))return n*30;if(/week/i.test(dur))return n*7;if(/hour/i.test(dur))return 1;return n}var s=String(name||'').toLowerCase();if(/year|annual/.test(s))return 365;if(/6.*month/.test(s))return 180;if(/3.*month|quarter/.test(s))return 90;if(/month/.test(s))return 30;if(/week/.test(s))return 7;if(/24.*hour|hour.*24/.test(s))return 1;if(/day|daily/.test(s))return 1;return 30}
 
 function efComputeExpiry_(startStr,plan){
   var start=startStr?new Date(startStr):new Date();
