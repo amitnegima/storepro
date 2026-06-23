@@ -125,25 +125,71 @@
   .upload-spinner::after{content:'';width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:var(--brand);border-radius:50%;animation:upload-spin .7s linear infinite}
 
   /* ── Shift picker ── */
-  .shifts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-  .shift{border:2px solid #f1f5f9;border-radius:16px;padding:14px;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);text-align:left;position:relative;background:#f8fafc;overflow:hidden}
-  .shift::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.5),transparent);pointer-events:none}
-  .shift:hover{border-color:#cbd5e1;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.06);transform:translateY(-1px)}
-  .shift.sel{border-color:var(--brand);background:linear-gradient(135deg,var(--brand-bg),#fff);box-shadow:0 0 0 4px rgba(15,118,110,.12),0 4px 14px rgba(0,0,0,.06);transform:translateY(-1px)}
-  .shift.sel::before{content:'✓';position:absolute;top:10px;right:12px;width:20px;height:20px;background:var(--brand);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .shift.full{opacity:.35;pointer-events:none;background:#f1f5f9}
-  .shift .sn{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
-  .shift .sn .shift-icon{width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-  .shift .sn .shift-icon.morning{background:linear-gradient(135deg,#fef3c7,#fde68a);box-shadow:0 2px 6px rgba(251,191,36,.3)}
-  .shift .sn .shift-icon.evening{background:linear-gradient(135deg,#ede9fe,#ddd6fe);box-shadow:0 2px 6px rgba(167,139,250,.3)}
-  .shift .sn .shift-icon.night{background:linear-gradient(135deg,#dbeafe,#bfdbfe);box-shadow:0 2px 6px rgba(96,165,250,.3)}
-  .shift .sn .shift-icon.fullday{background:linear-gradient(135deg,#d1fae5,#a7f3d0);box-shadow:0 2px 6px rgba(52,211,153,.3)}
-  .shift .sn .shift-icon.default{background:#f1f5f9}
-  .shift .st{font-size:11px;color:var(--ink-3);margin-left:40px;font-weight:500}
-  .shift .sa{font-size:11px;font-weight:600;margin-top:6px;margin-left:40px;display:inline-flex;align-items:center;gap:4px}
-  .shift .sa::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
-  .shift.full .sa{color:var(--err)}
-  .shift.full .sa::before{background:var(--err)}
+  /* ── Shift picker (redesigned) ── */
+  .shifts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .shift{border:1.5px solid #e2e8f0;border-radius:18px;padding:16px 14px 0;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);text-align:left;position:relative;background:#fff;overflow:hidden;display:flex;flex-direction:column}
+  .shift:hover{border-color:#94a3b8;box-shadow:0 4px 16px rgba(0,0,0,.07);transform:translateY(-1px)}
+  .shift.sel{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,118,110,.12),0 4px 16px rgba(0,0,0,.07);transform:translateY(-1px)}
+  .shift.full{opacity:.55;pointer-events:none;background:#f8fafc}
+  /* radio / check indicator */
+  .shift-radio{position:absolute;top:14px;right:14px;width:20px;height:20px;border-radius:50%;border:2px solid #cbd5e1;background:#fff;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .shift.sel .shift-radio{border-color:var(--brand);background:var(--brand)}
+  .shift.sel .shift-radio::after{content:'✓';color:#fff;font-size:11px;font-weight:800;line-height:1}
+  /* recommended ribbon */
+  .shift-ribbon{position:absolute;bottom:38px;right:-18px;background:var(--brand);color:#fff;font-size:9px;font-weight:800;letter-spacing:.06em;padding:3px 22px;transform:rotate(45deg);text-transform:uppercase}
+  /* icon */
+  .shift-icon-wrap{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;margin-bottom:10px}
+  .shift-icon-wrap.morning{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+  .shift-icon-wrap.evening{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+  .shift-icon-wrap.night{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+  .shift-icon-wrap.fullday{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+  .shift-icon-wrap.default{background:#f1f5f9}
+  /* header row */
+  .shift-head{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+  .shift-title{font:800 15px/1.2 var(--f);color:#0f172a}
+  .shift-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.02em}
+  .shift-badge.morning{background:#fef9c3;color:#854d0e}
+  .shift-badge.evening{background:#ede9fe;color:#5b21b6}
+  .shift-badge.night{background:#dbeafe;color:#1e40af}
+  .shift-badge.fullday{background:#dcfce7;color:#14532d}
+  .shift-badge.default{background:#f1f5f9;color:#475569}
+  .shift-time{font-size:12px;color:#64748b;margin-bottom:8px;font-weight:500}
+  /* availability row */
+  .shift-avail{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;margin-bottom:12px}
+  .shift-avail.ok{color:#16a34a}
+  .shift-avail.err{color:#dc2626}
+  .shift-avail-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .shift-avail.ok .shift-avail-dot{background:#16a34a}
+  .shift-avail.err .shift-avail-dot{background:#dc2626}
+  /* booked footer */
+  .shift-footer{margin:0 -14px;padding:8px 14px;background:#f8fafc;border-top:1px solid #f1f5f9;display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b;font-weight:500;margin-top:auto;border-radius:0 0 16px 16px}
+  /* full-day wide card */
+  .shift.fullday-card{grid-column:1/-1;flex-direction:row;align-items:flex-start;gap:0;padding:16px}
+  .shift.fullday-card .shift-left{flex:1;min-width:0}
+  .shift.fullday-card .shift-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;padding-left:12px}
+  .shift.fullday-card .shift-footer{display:none}
+  .shift.fullday-card .shift-icon-wrap{margin-bottom:8px}
+  .shift-features{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+  .shift-features li{display:flex;align-items:center;gap:6px;font-size:12px;color:#16a34a;font-weight:500}
+  .shift-features li::before{content:'✓';font-weight:800;font-size:11px}
+  .shift-price{font:800 18px/1 var(--f);color:var(--brand-dk)}
+  .shift-save{font-size:11px;color:#16a34a;font-weight:600}
+  /* tips card in grid */
+  .shift-tip-card{border:1.5px solid #e0f2fe;border-radius:18px;padding:16px;background:#f0f9ff;display:flex;flex-direction:column;gap:8px}
+  .shift-tip-head{display:flex;align-items:center;gap:8px;font:700 13px/1 var(--f);color:#0369a1}
+  .shift-tip-body{font-size:12px;color:#0369a1;line-height:1.55;opacity:.85}
+  /* sticky bottom bar */
+  .shift-confirm-bar{position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 16px;display:none;align-items:center;gap:12px;z-index:50;box-shadow:0 -4px 20px rgba(0,0,0,.08);flex-wrap:wrap}
+  .shift-confirm-bar.show{display:flex}
+  .scb-item{display:flex;flex-direction:column;gap:2px;padding-right:12px;border-right:1px solid #e2e8f0}
+  .scb-item:last-of-type{border-right:none}
+  .scb-label{font-size:10px;color:#64748b;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+  .scb-val{font-size:13px;font-weight:700;color:#0f172a}
+  .scb-val.ok{color:#16a34a}
+  .scb-confirm{margin-left:auto;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:12px 20px;font:700 14px var(--f);cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:.15s;flex-shrink:0}
+  .scb-confirm:active{background:var(--brand-dk)}
+  .scb-sub{width:100%;text-align:center;font-size:11px;color:#94a3b8;margin-top:-6px;display:flex;align-items:center;justify-content:flex-end;gap:4px}
+  @media(max-width:480px){.shifts{grid-template-columns:1fr}.shift.fullday-card{flex-direction:column}.shift.fullday-card .shift-right{align-items:flex-start;padding-left:0}.scb-item{display:none}.scb-confirm{width:100%}}
 
   /* ── Plan picker ── */
   .plans{display:flex;flex-direction:column;gap:8px;margin-top:8px}
@@ -174,116 +220,118 @@
   .plan-timing{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
   .plan-timing .pt-sep{color:var(--line-dk);align-self:center}
   .plan-timing{font-size:11px;color:var(--ink-2);line-height:1.5}
-  .shift .st{font-size:11px;color:var(--ink-2);margin-top:3px;padding-left:34px}
-  .shift .sa{font-size:11px;color:var(--ok);font-weight:600;margin-top:4px;padding-left:34px}
-  .shift.full .sa{color:var(--err)}
 
   /* ── Seat map ── */
-  .seatmap-wrap{margin-top:12px}
+  /* Availability count pills */
+  .seat-avail{display:flex;gap:7px;flex-wrap:wrap;padding:14px 16px 4px}
+  .sa{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-2);background:var(--bg);border:1px solid var(--line);padding:5px 11px;border-radius:99px}
+  .sa b{font-family:monospace;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .sa.hl{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}
+  .sa.hl b{color:#059669}
+
+  /* Front of hall bar */
+  .seatmap-wrap{margin-top:4px}
   .seatmap-front{
-    text-align:center;font-size:10px;font-weight:600;color:var(--ink-3);
-    letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;
-    display:flex;align-items:center;gap:10px
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:14px 16px 6px
   }
-  .seatmap-front::before,.seatmap-front::after{
-    content:'';flex:1;height:1px;
-    background:linear-gradient(90deg,transparent,#cbd5e1,transparent)
-  }
-  .seatmap{display:grid;gap:5px}
+  .seatmap-front-bar{width:58%;height:6px;border-radius:99px;background:linear-gradient(90deg,transparent,var(--brand),transparent)}
+  .seatmap-front-lbl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+  .seatmap-front-lbl svg{width:12px;height:12px;color:var(--brand)}
+  .seatmap{display:grid;gap:6px;padding:10px 16px 4px}
 
   /* Base seat */
   .seat{
-    aspect-ratio:1/1;border-radius:12px;border:2px solid #e2e8f0;
+    aspect-ratio:1/1;border-radius:11px;border:1.5px solid transparent;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    font-size:12px;font-weight:800;cursor:pointer;
-    background:#fff;color:#94a3b8;
-    transition:all .18s cubic-bezier(.4,0,.2,1);
+    cursor:pointer;transition:.16s cubic-bezier(.22,1,.36,1);
     position:relative;user-select:none;gap:2px
   }
-  .seat-num{font-size:12px;font-weight:800;line-height:1}
-  .seat-lbl{font-size:8.5px;font-weight:600;letter-spacing:.02em;line-height:1;opacity:.85;text-transform:uppercase}
+  .seat-num{font-size:12px;font-weight:700;font-family:var(--F);line-height:1;letter-spacing:-.01em}
+  .seat-lbl{font-size:8px;font-weight:700;letter-spacing:.04em;line-height:1;text-transform:uppercase}
 
   @keyframes seat-pulse{
-    0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}
-    50%{box-shadow:0 0 0 5px rgba(22,163,74,.2)}
+    0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}
+    60%{box-shadow:0 0 0 7px rgba(16,185,129,.2)}
   }
-  /* Free — bright green */
+  /* Free — brand emerald, pulsing */
   .seat.free{
-    background:#22c55e;color:#fff;border-color:#16a34a;
-    box-shadow:0 2px 8px rgba(34,197,94,.3);
-    animation:seat-pulse 2s ease-in-out infinite
+    background:#10b981;color:#fff;border-color:#059669;
+    box-shadow:0 3px 10px rgba(16,185,129,.35);
+    animation:seat-pulse 2.4s ease-in-out infinite
   }
   .seat.free:hover{
-    background:#16a34a;border-color:#15803d;
-    transform:scale(1.1);box-shadow:0 4px 16px rgba(22,163,74,.45);animation:none
+    transform:translateY(-3px) scale(1.04);
+    box-shadow:0 8px 18px rgba(16,185,129,.45);animation:none
   }
 
-  /* Selected — vivid indigo */
+  /* Selected — brand teal with checkmark */
   .seat.sel{
-    background:#6366f1;color:#fff;border-color:#4338ca;
-    transform:scale(1.12);
-    box-shadow:0 0 0 3px rgba(99,102,241,.35),0 6px 18px rgba(99,102,241,.45)
+    background:var(--brand);color:#fff;border-color:var(--brand-dk);
+    transform:translateY(-2px);
+    box-shadow:0 0 0 4px var(--brand-bg),0 6px 16px rgba(13,148,136,.4)
+  }
+  .seat.sel::after{
+    content:'';position:absolute;top:4px;right:4px;width:14px;height:14px;
+    border-radius:50%;background:#fff url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d9488' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") center/10px no-repeat
   }
 
-  /* Taken — bright red */
-  .seat.taken{
-    background:#ef4444;color:#fff;border-color:#dc2626;
-    cursor:not-allowed;pointer-events:none;opacity:.75
-  }
+  /* Taken — muted gray */
+  .seat.taken{background:#eef2f6;color:#a2aebe;border-color:#dde3ec;cursor:not-allowed;pointer-events:none}
+  /* Full-day taken — soft amber tint */
+  .seat.full-taken{background:#fef3c7;color:#b45309;border-color:#fde68a;cursor:not-allowed;pointer-events:none}
+  /* Pending — soft blue */
+  .seat.pending{background:#e0f2fe;color:#0369a1;border-color:#bae6fd;cursor:not-allowed;pointer-events:none}
 
-  /* Full-day taken — amber */
-  .seat.full-taken{
-    background:#f59e0b;color:#fff;border-color:#d97706;
-    cursor:not-allowed;pointer-events:none;opacity:.75
-  }
-
-  /* Pending — sky blue */
-  .seat.pending{
-    background:#38bdf8;color:#fff;border-color:#0284c7;
-    cursor:not-allowed;pointer-events:none;opacity:.8
-  }
-
-  /* Admin-blocked — gray stripes */
+  /* Admin-blocked — diagonal stripes */
   .seat.blocked{
-    background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 4px,#cbd5e1 4px,#cbd5e1 8px);
-    color:#94a3b8;border-color:#cbd5e1;cursor:not-allowed;pointer-events:none
+    background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 5px,#e2e8f0 5px,#e2e8f0 10px);
+    color:#94a3b8;border-color:#e2e8f0;cursor:not-allowed;pointer-events:none
   }
 
-  /* Half-available — orange, dashed */
+  /* Half-available — white card with emerald dot */
   .seat.half-available{
-    background:#fb923c;color:#fff;border-color:#ea580c;border-style:dashed;cursor:pointer
+    background:#fff;color:#059669;border:1.5px solid #6ee7b7;cursor:pointer;
+    box-shadow:0 1px 3px rgba(16,185,129,.12)
+  }
+  .seat.half-available::before{
+    content:'';position:absolute;top:5px;right:5px;width:7px;height:7px;
+    border-radius:50%;background:#10b981
   }
   .seat.half-available:hover{
-    background:#ea580c;border-style:solid;
-    transform:scale(1.1);box-shadow:0 4px 14px rgba(234,88,12,.4)
+    transform:translateY(-2px);border-color:#10b981;
+    box-shadow:0 4px 10px rgba(16,185,129,.25)
   }
 
-  /* Restricted — lime green */
-  .seat.restricted{
-    background:#a3e635;color:#365314;border-color:#84cc16;cursor:pointer
-  }
-  .seat.restricted:hover{
-    background:#84cc16;color:#1a2e05;border-color:#65a30d;
-    transform:scale(1.1);box-shadow:0 4px 14px rgba(132,204,22,.4)
-  }
+  /* Restricted — lime, Full Day only */
+  .seat.restricted{background:#f7fee7;color:#3f6212;border-color:#bef264;cursor:pointer}
+  .seat.restricted:hover{background:#ecfccb;border-color:#84cc16;transform:translateY(-2px)}
 
   /* Legend */
   .seat-legend{
-    display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;
-    background:#f8fafc;border-radius:10px;padding:10px 14px;border:1px solid #f1f5f9
+    display:flex;gap:10px;flex-wrap:wrap;
+    padding:14px 16px 18px;border-top:1px solid var(--line);margin-top:10px
   }
-  .seat-legend span{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#64748b;white-space:nowrap}
-  .seat-legend .sw{width:14px;height:14px;border-radius:4px;flex-shrink:0}
-  .sw.free{background:#22c55e}
-  .sw.taken{background:#ef4444}
-  .sw.full-taken{background:#f59e0b}
-  .sw.sel{background:#6366f1}
-  .sw.pending{background:#38bdf8}
-  .sw.blocked{background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 2px,#cbd5e1 2px,#cbd5e1 4px);border:1px solid #cbd5e1}
+  .seat-legend span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2);font-weight:500;white-space:nowrap}
+  .seat-legend .sw{width:15px;height:15px;border-radius:5px;flex-shrink:0}
+  .sw.free{background:#10b981;box-shadow:0 1px 4px rgba(16,185,129,.4)}
+  .sw.taken{background:#eef2f6;border:1px solid #dde3ec}
+  .sw.full-taken{background:#fef3c7;border:1px solid #fde68a}
+  .sw.sel{background:var(--brand)}
+  .sw.pending{background:#e0f2fe;border:1px solid #bae6fd}
+  .sw.half-available{background:#fff;border:1.5px solid #6ee7b7;position:relative}
+  .sw.half-available::after{content:'';position:absolute;top:2px;right:2px;width:5px;height:5px;border-radius:50%;background:#10b981}
+  .sw.blocked{background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 2px,#e2e8f0 2px,#e2e8f0 4px);border:1px solid #e2e8f0}
 
-  .hold-banner{background:var(--hold-bg);border:1px solid var(--hold);color:var(--hold-dk);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-top:10px;display:none;align-items:center;gap:8px}
+  .hold-banner{background:var(--brand-bg);border:1px solid rgba(13,148,136,.3);color:var(--brand-dk);border-radius:10px;padding:11px 14px;font-size:12.5px;margin:4px 16px 4px;display:none;align-items:center;gap:8px}
+  .coming-soon-banner{margin:14px 16px 4px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1.5px solid #bae6fd;border-radius:14px;padding:16px;display:flex;align-items:flex-start;gap:12px}
+  .csb-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .csb-body{flex:1;min-width:0}
+  .csb-title{font:700 13.5px/1.3 var(--f);color:#0c4a6e;margin-bottom:4px}
+  .csb-msg{font-size:12.5px;color:#075985;line-height:1.55}
   .hold-banner.show{display:flex}
-  .hold-banner .dot{width:8px;height:8px;border-radius:50%;background:var(--hold);box-shadow:0 0 0 3px rgba(245,158,11,.25);animation:pulse 1.8s infinite}
+  .hold-banner .dot{width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(13,148,136,.2);animation:seat-hpulse 1.8s infinite}
+  @keyframes seat-hpulse{0%,100%{box-shadow:0 0 0 3px rgba(13,148,136,.2)}50%{box-shadow:0 0 0 7px rgba(13,148,136,0)}}
   @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 7px rgba(245,158,11,0)}}
 
   .submit-bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);z-index:30}
@@ -437,8 +485,8 @@
     <div class="card-header">
       <div class="step-badge">2</div>
       <div class="card-header-text">
-        <h2>Choose shift</h2>
-        <div class="help" style="margin:0">Each seat is single-shift unless you pick Full Day.</div>
+        <h2>Choose your shift</h2>
+        <div class="help" style="margin:0">Select a time slot that works best for your study.</div>
       </div>
     </div>
     <div class="shifts" id="shiftList"></div>
@@ -459,31 +507,34 @@
     <div class="card-header">
       <div class="step-badge">4</div>
       <div class="card-header-text">
-        <h2>Pick a seat <span style="font-size:11px;font-weight:500;color:var(--ink-3);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:1px 8px;margin-left:4px">optional</span></h2>
-        <div class="help" id="seatHelp" style="margin:0">Tap a green seat to select. You can skip — shopkeeper will assign one.</div>
+        <h2>Pick a seat <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:2px 8px;margin-left:6px">optional</span></h2>
+        <div class="help" id="seatHelp" style="margin:0">Tap any <b style="color:#059669">green seat</b> to reserve it — or skip and we'll assign one.</div>
       </div>
     </div>
+    <div class="seat-avail" id="seatAvail"></div>
     <div class="seatmap-wrap">
-      <div class="seatmap-front">🖥️ Board / Front</div>
+      <div class="seatmap-front">
+        <div class="seatmap-front-bar"></div>
+        <div class="seatmap-front-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>Whiteboard / Screen</div>
+      </div>
       <div class="seatmap" id="seatMap"></div>
     </div>
+    <div class="hold-banner" id="holdBanner"><span class="dot"></span><span>Seat <b id="holdSeat"></b> held for you — <span id="holdShopName">the library</span> will confirm shortly.</span></div>
     <div class="seat-legend">
-      <span><span class="sw free"></span>Free</span>
+      <span><span class="sw free"></span>Available</span>
+      <span><span class="sw half-available"></span>One shift open</span>
       <span><span class="sw sel"></span>Your pick</span>
-      <span><span class="sw taken"></span>Taken</span>
-      <span><span class="sw full-taken"></span>Full-day</span>
+      <span><span class="sw taken"></span>Occupied</span>
       <span><span class="sw pending"></span>Pending</span>
-      <span><span class="sw" style="background:#fff7ed;border:1.5px dashed #fdba74"></span>Partial free</span>
-      <span><span class="sw" style="background:#f7fee7;border-color:#bef264"></span>Full Day only</span>
       <span><span class="sw blocked"></span>Reserved</span>
     </div>
-    <div class="hold-banner" id="holdBanner"><span class="dot"></span><span>Seat <b id="holdSeat"></b> held for you — shopkeeper will confirm shortly.</span></div>
+    <div id="comingSoonBanner" style="display:none"></div>
   </div>
 
   <div class="card">
     <h2>Anything else?</h2>
     <label style="margin-bottom:0">
-      <span class="lbl">Notes for shopkeeper (optional)</span>
+      <span class="lbl">Notes for <span class="lbl-shopname">the library</span> (optional)</span>
       <textarea id="iNotes" placeholder="Locker needed, AC seat preferred, etc."></textarea>
     </label>
   </div>
@@ -694,6 +745,8 @@ function render(){
   $('shopTitle').textContent=name;
   $('shopSub').textContent=cfg('tagline','')||'Fill the details below to enroll';
   var bsn=$('btnShopName');if(bsn)bsn.textContent=name;
+  var holdSN=$('holdShopName');if(holdSN)holdSN.textContent=name;
+  document.querySelectorAll('.lbl-shopname').forEach(function(el){el.textContent=name;});
   var logo=cfg('logourl','');
   var logoEl=$('topLogo');
   if(logoEl){if(logo){logoEl.style.backgroundImage='url('+JSON.stringify(logo)+')';logoEl.textContent=''}else{logoEl.textContent=(name.match(/[A-Z]/g)||['L']).slice(0,2).join('')}}
@@ -1046,32 +1099,99 @@ function shiftIcon_(i,label){
   if(i===3)return{em:'🌑',cls:'night'};
   return{em:'⏰',cls:'default'};
 }
+function shiftIconCls_(i,label){
+  var l=(label||'').toLowerCase();
+  if(i===1||/morn|day|sun/.test(l))return 'morning';
+  if(i===2||/eve|afternoon|pm/.test(l))return 'evening';
+  if(i===3||/night/.test(l))return 'night';
+  return 'default';
+}
+function shiftEmoji_(cls){return{morning:'🌅',evening:'🌙',night:'🌑',default:'⭐'}[cls]||'⭐'}
+function shiftDuration_(time){
+  if(!time)return '';
+  var m=time.match(/(\d+)\s*(AM|PM)[^–\-]*[–\-]\s*(\d+)\s*(AM|PM)/i);
+  if(!m)return '';
+  function toH(h,ap){h=parseInt(h);if(ap.toUpperCase()==='PM'&&h!==12)h+=12;if(ap.toUpperCase()==='AM'&&h===12)h=0;return h;}
+  var h=Math.abs(toH(m[3],m[4])-toH(m[1],m[2]));
+  if(!h)h=8;
+  return h+' hour'+(h!==1?'s':'');
+}
 function renderShifts(){
   if(!isYes('enableshifts')){$('cardShift').style.display='none';$('cardPlan').style.display='block';return}
   var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var html='';
+  var recIdx=-1;
+  var lefts=[];
+  for(var i=1;i<=n;i++){lefts.push(shiftLeft('S'+i));}
+  var recCfg=String(cfg('RecommendedShift','')||'').trim();
+  if(recCfg){
+    var recN=parseInt(recCfg.replace(/\D/g,''),10)||0;
+    if(recN>=1&&recN<=n){recIdx=recN;}
+    else{for(var ri=1;ri<=n;ri++){if(cfg('shift'+ri+'label','Shift '+ri).toLowerCase()===recCfg.toLowerCase()){recIdx=ri;break;}}}
+  }
+
   for(var i=1;i<=n;i++){
-    var key='S'+i,label=cfg('shift'+i+'label','Shift '+i),time=cfg('shift'+i+'time',''),left=shiftLeft(key);
-    var ico=shiftIcon_(i,label);
-    html+='<div class="shift'+(left<=0?' full':'')+(selectedShift===key?' sel':'')+'" onclick="pickShift(\''+key+'\')">'+
-      '<div class="sn"><span class="shift-icon '+ico.cls+'">'+ico.em+'</span>'+E(label)+'</div>'+(time?'<div class="st">'+E(time)+'</div>':'')+
-      '<div class="sa">'+(left<=0?'Full':left+' seats left')+'</div>'+
-    '</div>';
+    var key='S'+i,label=cfg('shift'+i+'label','Shift '+i),time=cfg('shift'+i+'time','');
+    var left=lefts[i-1],isFull=left<=0,isSel=selectedShift===key;
+    var cls=shiftIconCls_(i,label);
+    var taken=cap-left;
+    var rec=(recIdx===i);
+    html+=
+      '<div class="shift'+(isFull?' full':'')+(isSel?' sel':'')+'" onclick="pickShift(\''+key+'\')">'+
+        '<div class="shift-radio"></div>'+
+        (rec&&!isFull?'<div class="shift-ribbon">Recommended</div>':'')+
+        '<div class="shift-icon-wrap '+cls+'">'+shiftEmoji_(cls)+'</div>'+
+        '<div class="shift-head">'+
+          '<div class="shift-title">Shift '+i+'</div>'+
+          '<div class="shift-badge '+cls+'">'+E(label)+'</div>'+
+        '</div>'+
+        (time?'<div class="shift-time">'+E(time)+'</div>':'')+
+        '<div class="shift-avail '+(isFull?'err':'ok')+'"><div class="shift-avail-dot"></div>'+(isFull?'Full':left+' seats left')+'</div>'+
+        '<div class="shift-footer">👥 '+taken+' / '+cap+' seats booked</div>'+
+      '</div>';
   }
+
+  // Tips card occupies the empty slot when n is odd
+  var hasTip=(n%2!==0);
+  if(hasTip){
+    var bestShift=recIdx>0?cfg('shift'+recIdx+'label','Shift '+recIdx):'';
+    var bestTime=recIdx>0?cfg('shift'+recIdx+'time',''):'';
+    html+=
+      '<div class="shift-tip-card">'+
+        '<div class="shift-tip-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Tips for better productivity</div>'+
+        '<div class="shift-tip-body">'+(bestTime?bestTime+' hours':bestShift?bestShift:'')+' '+(bestShift?'is ideal for focused study with moderate occupancy.':'Pick the shift that matches your routine for best results.')+'</div>'+
+      '</div>';
+  }
+
   if(isYes('enablefullday')){
-    var fl=shiftLeft('FULL');
-    html+='<div class="shift'+(fl<=0?' full':'')+(selectedShift==='FULL'?' sel':'')+'" onclick="pickShift(\'FULL\')" style="grid-column:1/-1">'+
-      '<div class="sn"><span class="shift-icon fullday">☀️</span>'+E(cfg('fulldaylabel','Full Day'))+'</div>'+
-      (cfg('fulldaytime','')?'<div class="st">'+E(cfg('fulldaytime',''))+'</div>':'')+
-      '<div class="sa">'+(fl<=0?'Full':fl+' seats left')+'</div>'+
-    '</div>';
+    var fl=shiftLeft('FULL'),fdFull=fl<=0,fdSel=selectedShift==='FULL';
+    var fdLabel=cfg('fulldaylabel','Full Day');
+    var fdTime=cfg('fulldaytime',cfg('shift1time','6:00 AM')+' - '+cfg('shift'+n+'time','10:00 PM'));
+    var fdTaken=cap-fl;
+    html+=
+      '<div class="shift fullday-card'+(fdFull?' full':'')+(fdSel?' sel':'')+'" onclick="pickShift(\'FULL\')">'+
+        '<div class="shift-radio"></div>'+
+        '<div class="shift-left">'+
+          '<div class="shift-icon-wrap fullday">☀️</div>'+
+          '<div class="shift-head"><div class="shift-title">'+E(fdLabel)+'</div><div class="shift-badge fullday">Best Value</div></div>'+
+          (fdTime?'<div class="shift-time">'+E(fdTime)+'</div>':'')+
+          '<div class="shift-avail '+(fdFull?'err':'ok')+'"><div class="shift-avail-dot"></div>'+(fdFull?'Full':fl+' seats left')+'</div>'+
+          '<ul class="shift-features"><li>Access all day</li><li>Take breaks anytime</li><li>Best for deep focus</li></ul>'+
+        '</div>'+
+        '<div class="shift-right">'+
+          '<div style="font-size:11px;color:#64748b;font-weight:500;margin-bottom:2px">👥 '+fdTaken+' / '+cap+' seats booked</div>'+
+        '</div>'+
+      '</div>';
   }
+
   $('shiftList').innerHTML=html;
 }
+
+
 function pickShift(k){
   if(!shiftLeft(k))return;
   selectedShift=k;selectedSeat='';
-  // If the previously selected plan doesn't apply to the new shift, reset it
   if(selectedPlan&&plansForShift(k).indexOf(selectedPlan)<0){
     selectedPlan=null;recomputeTotal();
   }
@@ -1092,10 +1212,13 @@ function isHighOccupancy(){
 }
 function freeShiftsForSeat(seatId){
   var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var blocked=blockedSeats();
   var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
   var free=[];
   for(var i=1;i<=n;i++){
     var k='S'+i;
+    var shiftBlockKey=seatId.toUpperCase()+'-'+k;
+    if(blocked[shiftBlockKey])continue;
     var taken=hold.some(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()===k});
     if(!taken)free.push(k);
   }
@@ -1123,6 +1246,9 @@ function seatStatus(seatId){
   }
 
   // Single-shift selected
+  var shiftBlockKey=seatId.toUpperCase()+'-'+selectedShift;
+  if(blockedSeats()[shiftBlockKey])return 'taken';  // this specific shift is reserved
+
   if(highOcc&&isSeatFree){
     // Fully free seat at >50% occupancy: must be booked as Full Day only
     return 'restricted';
@@ -1144,45 +1270,89 @@ function blockedSeats(){
 }
 function renderSeatMap(){
   if(!selectedShift){$('cardSeat').style.display='none';return}
+  $('cardSeat').style.display='';
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var cols=Math.max(2,Math.min(12,parseInt(cfg('seatgridcols','8'),10)||8));
   var prefix=cfg('seatprefix','S');
   var blocked=blockedSeats();
   $('seatMap').style.gridTemplateColumns='repeat('+cols+',1fr)';
+  // count states for availability pills
+  var cFree=0,cPartial=0,cOccupied=0;
   var html='';
   for(var i=1;i<=cap;i++){
     var id=prefix+i;
     if(blocked[id.toUpperCase()]){
+      cOccupied++;
       html+='<div class="seat blocked" title="'+E(blocked[id.toUpperCase()])+'">'+
         '<span class="seat-num">'+id+'</span>'+
-        '<span class="seat-lbl">Reserved</span>'+
+        '<span class="seat-lbl">Held</span>'+
       '</div>';
       continue;
+    }
+    // Per-shift block: show as reserved when the selected shift matches
+    if(selectedShift&&selectedShift!=='FULL'){
+      var shiftBlockKey=id.toUpperCase()+'-'+selectedShift;
+      if(blocked[shiftBlockKey]){
+        cOccupied++;
+        html+='<div class="seat blocked" title="'+E(blocked[shiftBlockKey])+'">'+
+          '<span class="seat-num">'+id+'</span>'+
+          '<span class="seat-lbl">Reserved</span>'+
+        '</div>';
+        continue;
+      }
     }
     var st=seatStatus(id);
     var isSel=selectedSeat===id;
     var cls='seat '+st+(isSel?' sel':'');
-    var lbl={free:'Available',taken:'Taken','full-taken':'Full',pending:'Pending',sel:'Yours',restricted:'☀️ Only','half-available':'Partial',blocked:'Reserved'}[isSel?'sel':st]||'';
+    if(st==='free')cFree++;
+    else if(st==='half-available')cPartial++;
+    else cOccupied++;
+    var lbl={free:'Open',taken:'Taken','full-taken':'Full',pending:'Pending',sel:'Yours',restricted:'Full Day','half-available':'Partial',blocked:'Held'}[isSel?'sel':st]||'';
     if(st==='half-available'){
       var fs2=freeShiftsForSeat(id);
-      var freeLabels=fs2.map(function(k){var si=parseInt(k.slice(1),10)||1;return shiftIcon_(si,cfg('shift'+si+'label','')).em}).join('');
-      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Only '+E(freeLabels)+' shift available">'+
+      var fsLabel=fs2.map(function(k){var si=parseInt(k.slice(1),10)||1;return cfg('shift'+si+'label','S'+si)}).join('/');
+      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="'+E(fsLabel)+' shift open">'+
         '<span class="seat-num">'+id+'</span>'+
-        '<span class="seat-lbl">'+freeLabels+' free</span>'+
+        '<span class="seat-lbl">'+E(fsLabel)+'</span>'+
       '</div>';
     }else if(st==='restricted'){
-      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Full Day only">'+
+      html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')" title="Full Day plan only">'+
         '<span class="seat-num">'+id+'</span>'+
-        '<span class="seat-lbl">☀️ Only</span>'+
+        '<span class="seat-lbl">Full Day</span>'+
       '</div>';
     }else{
       html+='<div class="'+cls+'" onclick="pickSeat(\''+id+'\')">'+
         '<span class="seat-num">'+id+'</span>'+
-        '<span class="seat-lbl">'+(isSel?'✓ Yours':lbl)+'</span>'+
+        '<span class="seat-lbl">'+(isSel?'Yours':lbl)+'</span>'+
       '</div>';
     }
   }
   $('seatMap').innerHTML=html;
+  // update availability pills
+  var ap=$('seatAvail');
+  if(ap)ap.innerHTML=
+    '<span class="sa hl"><b>'+cFree+'</b> available</span>'+
+    (cPartial?'<span class="sa"><b>'+cPartial+'</b> part-time</span>':'')+
+    '<span class="sa"><b>'+cOccupied+'</b> occupied</span>';
+  // coming soon banner
+  var csb=$('comingSoonBanner');
+  if(csb){
+    var csMsg=cfg('ComingSoonSeats','');
+    if(csMsg){
+      csb.style.display='';
+      csb.innerHTML=
+        '<div class="coming-soon-banner">'+
+          '<div class="csb-icon">🚀</div>'+
+          '<div class="csb-body">'+
+            '<div class="csb-title">More seats coming soon!</div>'+
+            '<div class="csb-msg">'+E(csMsg)+'</div>'+
+          '</div>'+
+        '</div>';
+    }else{
+      csb.style.display='none';
+      csb.innerHTML='';
+    }
+  }
 }
 function pickSeat(id){
   var el=document.querySelector('#seatMap .seat[onclick*="\''+id+'\'"]');
@@ -1398,6 +1568,20 @@ function submitForm(){
 // Member ID retained for the "shopkeeper confirms on this phone" flow.
 var lastMemberId='';
 
+function buildReviewSection_(){
+  var link=cfg('googlereviewlink','');
+  var qr=cfg('googlereviewqr','');
+  if(!link&&!qr)return '';
+  var qrHtml=qr?'<img src="'+E(qr)+'" style="width:110px;height:110px;object-fit:contain;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(0,0,0,.08)">':'';
+  var linkHtml=link?'<a href="'+E(link)+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:11px 22px;background:#fff;border:1.5px solid #fbbf24;color:#92400e;text-decoration:none;border-radius:12px;font-weight:700;font-size:13px;box-shadow:0 2px 8px rgba(251,191,36,.2)">⭐ Leave a Google Review</a>':'';
+  return '<div style="margin-top:24px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:18px;padding:20px 18px;max-width:360px;margin-left:auto;margin-right:auto;text-align:center">'+
+    '<div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px">⭐ Enjoying our library?</div>'+
+    '<div style="font-size:12px;color:#78716c;margin-bottom:12px;line-height:1.5">Your review helps other students find us. Scan the QR or tap below — it takes just 30 seconds!</div>'+
+    (qrHtml?'<div style="margin-bottom:8px">'+qrHtml+'</div>':'')+
+    linkHtml+
+  '</div>';
+}
+
 function showDone(memberId){
   lastMemberId=memberId;
   var needsApproval=isYes('requireapproval','yes');
@@ -1435,14 +1619,13 @@ function showDone(memberId){
     confirmBtn+
     '<div class="small" style="margin-top:18px">Please pay at the counter to activate your plan.</div>'+
     waShopBtn+
-    (cfg('whatsappgrouplink','')?'<a href="'+E(cfg('whatsappgrouplink',''))+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:12px 24px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 4px 14px rgba(37,211,102,.3)">💬 Join our WhatsApp Group</a>':'')+
     '</div>'+
     // PIN-entry modal — shopkeeper takes the phone, enters PIN, confirms.
     '<div class="confirm-modal" id="confirmModal">'+
       '<div class="confirm-box">'+
         '<div class="cb-ic">🔓</div>'+
         '<h3>Confirm enrollment</h3>'+
-        '<div class="cb-sub">Shopkeeper, enter your 4-digit PIN to approve</div>'+
+        '<div class="cb-sub">Enter your 4-digit PIN to approve</div>'+
         '<div class="cb-digits">'+
           '<input type="tel" maxlength="1" id="cb1" inputmode="numeric" oninput="cbNext(this,2)">'+
           '<input type="tel" maxlength="1" id="cb2" inputmode="numeric" oninput="cbNext(this,3)">'+

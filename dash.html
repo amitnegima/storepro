@@ -57,6 +57,9 @@
   .pinDigits input.filled{border-color:var(--brand);background:var(--brand-bg)}
   .pinErr{color:var(--err);font-size:12.5px;height:18px;margin-top:2px;font-weight:600;text-align:center}
   .pinSpinner{display:none;width:20px;height:20px;border:2.5px solid var(--line-dk);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;margin:10px auto 0}
+  .pin-bksp{display:block;margin:10px auto 0;appearance:none;border:1.5px solid var(--line-dk);background:#fff;border-radius:10px;padding:6px 18px;font-size:18px;color:var(--ink-3);cursor:pointer;transition:.15s;line-height:1}
+  .pin-bksp:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-bg)}
+  .pin-bksp:active{background:var(--line)}
   .pin-powered{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.02em;z-index:2}
   .pin-powered a{color:rgba(255,255,255,.85);font-weight:700;text-decoration:none}
 
@@ -107,25 +110,25 @@
   .empty .empty-ic{font-size:32px;margin-bottom:8px;opacity:.4;display:block}
 
   /* ─── Pending approval banner ─── */
-  .pending-banner{background:var(--hold-bg);border:1px solid #fed7aa;border-radius:var(--r);padding:14px;margin-bottom:14px;position:relative;overflow:hidden;display:none}
+  .pending-banner{background:#fff;border:1.5px solid var(--hold);border-radius:var(--r);margin-bottom:14px;display:none;overflow:hidden}
   .pending-banner.show{display:block}
-  .pending-banner::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--hold)}
-  .pending-banner-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-  .pending-banner-icon{width:32px;height:32px;border-radius:50%;background:var(--hold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px}
-  .pending-banner-title{font-weight:600;color:var(--hold-dk);font-size:13.5px}
-  .pending-banner-title small{display:block;font-weight:400;font-size:11px;opacity:.7;margin-top:1px}
-  .pending-list{display:flex;flex-direction:column;gap:6px}
-  .pending-row{background:#fff;border:1px solid #fed7aa;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:9px}
-  .pending-row .av{width:30px;height:30px;border-radius:8px;background:var(--hold-bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:var(--hold-dk);flex-shrink:0;background-size:cover;background-position:center}
+  .pending-banner-head{display:flex;align-items:center;gap:10px;padding:13px 14px 11px}
+  .pending-banner-icon{width:36px;height:36px;border-radius:50%;background:var(--hold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .pending-banner-title{font-weight:700;color:var(--hold-dk);font-size:14px;line-height:1.3}
+  .pending-banner-title small{font-weight:500;font-size:12px;color:var(--hold);margin-left:2px}
+  .pending-list{display:flex;flex-direction:column;border-top:1px solid #ede9fe}
+  .pending-row{background:#fff;border-bottom:1px solid #f3f0ff;padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .pending-row:last-child{border-bottom:none}
+  .pending-row .av{width:34px;height:34px;border-radius:10px;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--hold-dk);flex-shrink:0;background-size:cover;background-position:center}
   .pending-row .body{flex:1;min-width:0}
-  .pending-row .nm{font-weight:600;font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pending-row .meta{font-size:11px;color:var(--ink-3);margin-top:1px}
-  .pending-row .actions{display:flex;gap:4px}
-  .pending-row .actions button{appearance:none;border:none;border-radius:7px;width:30px;height:30px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .pending-row .btn-approve{background:var(--ok);color:#fff}
-  .pending-row .btn-approve:active{background:var(--ok-dk)}
-  .pending-row .btn-reject{background:var(--err-bg);color:var(--err-dk)}
-  .pending-row .btn-reject:active{background:var(--err);color:#fff}
+  .pending-row .nm{font-weight:600;font-size:13.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pending-row .meta{font-size:11.5px;color:var(--ink-3);margin-top:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .pending-row .meta .pr-shift-pill{display:inline-flex;align-items:center;gap:3px;background:#fef3c7;color:#92400e;border-radius:5px;padding:2px 7px;font-size:10.5px;font-weight:600}
+  .pending-row .actions{display:flex;gap:5px;flex-shrink:0}
+  .pending-row .btn-approve{appearance:none;background:#16a34a;color:#fff;border:none;border-radius:10px;width:36px;height:36px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+  .pending-row .btn-approve:active{background:#15803d}
+  .pending-row .btn-reject{appearance:none;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;width:36px;height:36px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .pending-row .btn-reject:active{background:#dc2626;color:#fff}
 
   /* ─── Tab bar ─── */
   .tabs{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);background:#fff;border-radius:16px;padding:5px;z-index:40;display:flex;gap:2px;box-shadow:0 4px 24px -4px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.04);max-width:calc(100vw - 24px);transition:transform .2s,opacity .2s}
@@ -246,57 +249,76 @@
   .seat-view-btn.modern-on{background:var(--brand);border-color:var(--brand);color:#fff}
 
   /* ── Modern card view ── */
-  .seat-cards-toolbar{display:flex;align-items:center;gap:6px;margin-bottom:12px;justify-content:flex-end}
-  .seat-cols-btn{appearance:none;border:1px solid var(--line-dk);background:#fff;color:var(--ink-3);border-radius:7px;padding:4px 10px;font:600 11px var(--F);cursor:pointer;transition:.15s}
-  .seat-cols-btn.act{background:var(--brand);border-color:var(--brand);color:#fff}
-  .seat-cols-label{font-size:11px;color:var(--ink-3);font-weight:600}
-
-  .seat-cards{display:grid;gap:12px}
-
-  .sc-card{border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .15s;background:#fff;border:1.5px solid var(--line)}
-  .sc-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1);border-color:var(--brand)}
-  .sc-card:active{transform:scale(.98)}
-
-  /* Coloured header band with seat + shift info */
-  .sc-card-head{padding:14px 16px 10px;position:relative}
-  .sc-card-head.s1{background:linear-gradient(135deg,#fffbeb,#fef3c7)}
-  .sc-card-head.s2{background:linear-gradient(135deg,#f5f3ff,#ede9fe)}
-  .sc-card-head.fd{background:linear-gradient(135deg,#f0fdf4,#dcfce7)}
-  .sc-card-head.free{background:#f9fafb}
-  .sc-card-head.blocked{background:repeating-linear-gradient(45deg,#f9fafb,#f9fafb 4px,#f3f4f6 4px,#f3f4f6 8px)}
-  .sc-card-seat-lbl{font-size:22px;font-weight:900;color:var(--ink);letter-spacing:-.04em;line-height:1}
-  .sc-card-shift-lbl{font-size:11px;font-weight:600;margin-top:3px;opacity:.7}
-  .sc-card-head.s1 .sc-card-shift-lbl{color:#92400e}
-  .sc-card-head.s2 .sc-card-shift-lbl{color:#4c1d95}
-  .sc-card-head.fd .sc-card-shift-lbl{color:#065f46}
-  .sc-card-status-dot{position:absolute;top:12px;right:14px;width:11px;height:11px;border-radius:50%;border:2.5px solid #fff}
-  .sc-card.occupied .sc-card-status-dot{background:var(--ok)}
-  .sc-card.pending  .sc-card-status-dot{background:var(--hold);animation:pulse 1.5s infinite}
-  .sc-card.expiring .sc-card-status-dot{background:var(--warn);animation:pulse 1.5s infinite}
-  .sc-card.expired  .sc-card-status-dot{background:var(--err)}
-
-  /* Card body — horizontal: avatar left, info right */
-  .sc-card-body{padding:14px 16px 16px;display:flex;align-items:center;gap:14px}
-  .sc-card-av{width:54px;height:54px;border-radius:50%;flex-shrink:0;background:var(--brand-bg);color:var(--brand-dk);font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;background-size:cover;background-position:center;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
-  .sc-card.occupied .sc-card-av{box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px var(--ok)}
-  .sc-card.pending  .sc-card-av{box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px var(--hold)}
-  .sc-card.expired  .sc-card-av{box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px var(--err)}
-  .sc-card.expiring .sc-card-av{box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px var(--warn)}
-  .sc-card-info{flex:1;min-width:0}
-  .sc-card-name{font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
-  .sc-card-plan{font-size:11.5px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .sc-card-row{display:flex;align-items:center;gap:5px;margin-top:7px;flex-wrap:wrap}
-  .sc-card-days{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--ok-bg);color:var(--ok-dk)}
-  .sc-card-days.warn{background:var(--warn-bg);color:var(--warn-dk)}
-  .sc-card-days.err{background:var(--err-bg);color:var(--err-dk)}
-  .sc-card-days.hold{background:var(--hold-bg);color:var(--hold-dk)}
-  .sc-card-phone{font-size:11px;color:var(--ink-3);white-space:nowrap}
-
-  /* Free / blocked special states */
-  .sc-card.free-card{border-style:dashed;border-color:#d1d5db;background:#f9fafb}
-  .sc-card.free-card:hover{border-style:solid;border-color:var(--brand);background:#fff}
-  .sc-card.blocked-card{border-color:#e2e8f0;background:repeating-linear-gradient(45deg,#f9fafb,#f9fafb 4px,#f3f4f6 4px,#f3f4f6 8px)}
-  .sc-card-blk-lbl{font-size:10.5px;color:#9ca3af;font-weight:500}
+  /* ── New modern seat board ── */
+  .sb-wrap{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif}
+  .sb-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  /* seat card */
+  .sb-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.05);transition:.18s;display:flex;flex-direction:column;min-height:220px;cursor:pointer}
+  .sb-card:hover{box-shadow:0 6px 20px rgba(15,23,42,.1);transform:translateY(-2px)}
+  .sb-card.flag-over{border-color:#FECACA}
+  .sb-card.flag-over .sb-hd{background:#DC2626}
+  .sb-card.flag-soon{border-color:#FDE68A}
+  .sb-card.flag-soon .sb-hd{background:#D97706}
+  /* card header */
+  .sb-hd{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;background:#0F766E;color:#fff}
+  .sb-seat-id{font-weight:800;font-size:13px;letter-spacing:.03em}
+  .sb-seat-type{font-size:10px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:.05em}
+  /* shift tabs */
+  .sb-tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #E2E8F0}
+  .sb-tab{padding:6px 5px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:4px}
+  .sb-tab.m{background:#FFF7ED;color:#EA580C;border-right:1px solid #E2E8F0}
+  .sb-tab.e{background:#F5F3FF;color:#7C3AED}
+  /* shift halves grid */
+  .sb-halves{flex:1;display:grid;grid-template-columns:1fr 1fr}
+  .sb-half{border-right:1px solid #E2E8F0;display:flex;flex-direction:column}
+  .sb-half:last-child{border-right:none}
+  /* occupant block */
+  .sb-occ{flex:1;padding:13px 10px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+  .sb-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:#fff;border:2.5px solid var(--rc,#059669);box-shadow:0 0 0 4px var(--rb,#ECFDF5);margin-bottom:5px;flex-shrink:0;background-size:cover;background-position:center}
+  .sb-name{font-weight:700;font-size:11.5px;color:#0F172A;letter-spacing:-.01em;line-height:1.2}
+  .sb-plan{font-size:10px;color:#64748B;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+  .sb-prog{width:100%;margin-top:6px}
+  .sb-prog-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px}
+  .sb-prog-d{font-weight:700;color:#334155}
+  .sb-prog-pl{color:#94A3B8;font-weight:500}
+  .sb-prog-track{height:4px;background:#E2E8F0;border-radius:2px;overflow:hidden}
+  .sb-prog-fill{height:100%;border-radius:2px;transition:width .3s}
+  .sb-pay{margin-top:8px;display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;letter-spacing:.02em}
+  .sb-pay.paid{background:#ECFDF5;color:#059669}
+  .sb-pay.due{background:#FFFBEB;color:#D97706}
+  .sb-pay.over{background:#FEF2F2;color:#DC2626}
+  /* free slot */
+  .sb-free{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#94A3B8;background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(148,163,184,.04) 8px,rgba(148,163,184,.04) 16px)}
+  .sb-free:hover{color:#0F766E;background:#F0FDFA}
+  .sb-free-plus{width:30px;height:30px;border-radius:50%;border:2px dashed currentColor;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:300;line-height:1}
+  .sb-free-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  /* full-day body */
+  .sb-full-body{flex:1;display:flex;flex-direction:column}
+  /* empty seat */
+  .sb-card.sb-empty{border:2px dashed #CBD5E1;box-shadow:none;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(148,163,184,.04) 10px,rgba(148,163,184,.04) 20px)}
+  .sb-card.sb-empty:hover{border-color:#0F766E;background:#F0FDFA}
+  .sb-avail{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#94A3B8}
+  .sb-card.sb-empty:hover .sb-avail{color:#0F766E}
+  .sb-avail-id{font-weight:800;font-size:18px;color:#CBD5E1}
+  .sb-card.sb-empty:hover .sb-avail-id{color:#0F766E}
+  .sb-avail-plus{width:38px;height:38px;border-radius:50%;border:2px dashed currentColor;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:300}
+  .sb-avail-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  /* reserved */
+  .sb-card.sb-reserved{background:#F8FAFC;border-color:#E2E8F0;box-shadow:none}
+  .sb-card.sb-reserved .sb-hd{background:#94A3B8}
+  .sb-half-reserved{cursor:pointer}
+  .sb-resv-half{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:70px;gap:5px;opacity:.75;padding:10px 6px}
+  .sb-resv-half .sb-resv-ic{color:#94A3B8}
+  .sb-resv-half .sb-resv-lbl{font-size:10.5px;font-weight:600;color:#64748b;text-align:center;word-break:break-word}
+  .sb-half-reserved:hover .sb-resv-half{opacity:1;background:rgba(148,163,184,.1);border-radius:8px}
+  .sb-resv{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#94A3B8}
+  .sb-resv-ic{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid #E2E8F0;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .sb-resv-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  /* cols toolbar */
+  .sb-toolbar{display:flex;align-items:center;gap:6px;margin-bottom:12px;justify-content:flex-end}
+  .sb-col-btn{appearance:none;border:1px solid var(--line-dk);background:#fff;color:var(--ink-3);border-radius:7px;padding:4px 10px;font:600 11px var(--F);cursor:pointer;transition:.15s}
+  .sb-col-btn.act{background:var(--brand);border-color:var(--brand);color:#fff}
+  .sb-col-lbl{font-size:11px;font-weight:600;color:var(--ink-3)}
 
   /* Fully free seat */
   .seat-cell.fully-free{align-items:center;justify-content:center;background:#f9fafb;border-style:dashed;border-color:#d1d5db}
@@ -347,85 +369,113 @@
   .fc.hold.act{background:var(--hold);border-color:var(--hold)}
   .fc.fd.act{background:#b45309;border-color:#b45309}
 
-  .mb{background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all .15s;border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-  .mb::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ok);border-radius:0 3px 3px 0}
+  .mb{background:#fff;border-radius:16px;padding:14px 16px 14px 20px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:box-shadow .15s,border-color .15s;border:1px solid var(--line-dk);position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05),0 1px 8px rgba(0,0,0,.03)}
+  .mb:hover{box-shadow:0 4px 14px -2px rgba(0,0,0,.1);border-color:#cbd5e1}
+  .mb::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ok)}
   .mb.pending::before{background:var(--hold)}
   .mb.expiring::before{background:var(--warn)}
   .mb.expired::before{background:var(--err)}
+  .mb.expired{opacity:.82}
   .mb:active{background:var(--bg);box-shadow:none}
-  .mb .avatar{width:46px;height:46px;border-radius:14px;background:var(--brand-bg);color:var(--brand-dk);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;background-size:cover;background-position:center;position:relative}
-  .mb .avatar .status-dot{position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;background:var(--ok)}
+  .mb .avatar{width:48px;height:48px;border-radius:14px;background:var(--brand-bg);color:var(--brand-dk);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;background-size:cover;background-position:center;position:relative;border:1.5px solid rgba(13,148,136,.18)}
+  .mb .avatar .status-dot{position:absolute;bottom:-3px;right:-3px;width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;background:var(--ok)}
   .mb .avatar.pending .status-dot{background:var(--hold)}
   .mb .avatar.expired .status-dot{background:var(--err)}
-  .mb .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
-  .mb .nm{font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mb .meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .mb .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+  .mb .nm{font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mb .meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
   .mb .submeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .mb .tag{border-radius:7px;padding:3px 8px;font-weight:600;font-size:11px;display:inline-flex;align-items:center;gap:3px}
-  .mb .tag.seat{background:var(--brand-bg);color:var(--brand-dk)}
-  .mb .tag.shift{background:#eef2ff;color:#4338ca}
-  .mb .tag.shift.full-day{background:#fef3c7;color:#92400e}
-  .mb .plan-name{font-size:11.5px;font-weight:700;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:3px 8px}
+  .mb .tag{border-radius:8px;padding:3px 9px;font-weight:600;font-size:11px;display:inline-flex;align-items:center;gap:4px}
+  .mb .tag.seat{background:var(--brand-bg);color:var(--brand-dk);border:1px solid rgba(13,148,136,.2)}
+  .mb .tag.shift{background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe}
+  .mb .tag.shift.full-day{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+  .mb .plan-name{font-size:11px;font-weight:600;color:var(--ink-2);background:var(--bg);border:1px solid var(--line-dk);border-radius:7px;padding:3px 9px}
   .mb .tag.paid{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-weight:700}
   .mb .tag.fee-due{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;font-weight:700}
   .mb .date-range{font-size:11px;font-weight:500;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px}
   .mb .date-range .sep{opacity:.4;margin:0 1px}
-  .mb .date-range.warn{color:var(--warn-dk)}
-  .mb .date-range.err{color:var(--err-dk)}
-  .mb .ph-chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;color:var(--ink-3);font-variant-numeric:tabular-nums}
-  .plan-detail-row{display:none} /* merged into row3 */
+  .mb .date-range.warn{color:var(--warn-dk);font-weight:600}
+  .mb .date-range.err{color:var(--err-dk);font-weight:600}
+  .mb .ph-chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .plan-detail-row{display:none}
   .fee-due-badge{display:inline-flex;align-items:center;padding:2px 8px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;font-size:11.5px;font-weight:700}
   .fee-paid-badge{display:inline-flex;align-items:center;padding:2px 8px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:6px;font-size:11.5px;font-weight:700}
   .mark-paid-btn{appearance:none;border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:3px 10px;border-radius:8px;font-size:11.5px;font-weight:600;cursor:pointer;transition:.12s}
   .mark-paid-btn:active{background:var(--bg)}
-  .new-badge{font-size:9px;font-weight:700;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:.02em}
-  .renew-cta{appearance:none;border:none;background:linear-gradient(135deg,var(--warn),#f59e0b);color:#fff;font:700 10.5px var(--F);padding:4px 9px;border-radius:7px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(245,158,11,.3);transition:.15s}
-  .renew-cta.renew-exp{background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 2px 6px rgba(22,163,74,.3)}
-  .renew-cta:active{transform:scale(.95)}
+  .new-badge{font-size:9px;font-weight:700;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;letter-spacing:.04em;text-transform:uppercase}
+  .renew-cta{appearance:none;border:none;background:var(--warn);color:#fff;font:700 11px 'Inter';padding:6px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(234,88,12,.25);transition:.15s;display:inline-flex;align-items:center;gap:5px}
+  .renew-cta.renew-exp{background:var(--ok);box-shadow:0 2px 6px rgba(22,163,74,.25)}
+  .renew-cta:active{transform:scale(.95);opacity:.85}
 
   /* ── View toggle button ── */
   .view-toggle{appearance:none;border:1px solid var(--line-dk);background:#fff;color:var(--ink-2);border-radius:8px;width:34px;height:34px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.15s}
   .view-toggle:hover{background:var(--bg);border-color:var(--brand);color:var(--brand)}
 
   /* ── Compact list view ── */
-  .act-list-table{width:100%;border-collapse:collapse;font-size:12.5px}
-  .act-list-table thead th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);padding:6px 8px;text-align:left;border-bottom:2px solid var(--line);white-space:nowrap}
+  /* ─── Redesigned member list table ─── */
+  .act-list-table{width:100%;border-collapse:collapse}
+  .act-list-table thead th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;padding:11px 16px;text-align:left;background:#f8fafc;border-bottom:1px solid #e2e8f0;white-space:nowrap}
   .act-list-table thead th.th-r{text-align:right}
-  .act-list-table tbody tr{border-bottom:1px solid var(--line-soft);cursor:pointer;transition:background .1s}
-  .act-list-table tbody tr:hover{background:var(--bg)}
+  .act-list-table tbody tr{border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background .12s}
+  .act-list-table tbody tr:hover{background:#f8fafc}
   .act-list-table tbody tr:last-child{border-bottom:none}
-  .act-list-table tbody tr.expired{background:#fff5f5}
-  .act-list-table tbody tr.expiring{background:#fffbeb}
-  .act-list-table tbody tr.pending{background:#faf5ff}
-  .act-list-table td{padding:7px 8px;vertical-align:middle}
-  .lt-seat{font-size:11px;font-weight:800;color:var(--brand-dk);background:var(--brand-bg);border-radius:5px;padding:2px 7px;white-space:nowrap}
-  .lt-av{width:28px;height:28px;border-radius:8px;background:var(--brand-bg);color:var(--brand-dk);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background-size:cover;background-position:center;overflow:hidden}
-  .lt-name{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
-  .lt-name-cell{display:flex;align-items:center;gap:7px;min-width:0}
-  .lt-shift{font-size:14px;text-align:center}
-  .lt-date{color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
-  .lt-pill{font-weight:700;font-size:11px;padding:2px 8px;border-radius:5px;white-space:nowrap;background:var(--ok-bg);color:var(--ok-dk);display:inline-block}
-  .lt-pill.warn{background:var(--warn-bg);color:var(--warn-dk)}
-  .lt-pill.err{background:var(--err-bg);color:var(--err-dk)}
-  .lt-pill.hold{background:var(--hold-bg);color:var(--hold-dk)}
-  .lt-paid{font-size:11px;font-weight:600;color:#15803d;white-space:nowrap}
-  .lt-acts{display:flex;gap:4px;justify-content:flex-end}
-  .lt-acts button{appearance:none;border:1px solid var(--line-dk);background:#fff;border-radius:6px;width:26px;height:26px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
-  .lt-acts button:active{background:var(--line)}
-  .lt-acts .lt-renew{background:linear-gradient(135deg,var(--warn),#f59e0b);border:none;color:#fff;width:auto;padding:0 8px;font-size:10px;font-weight:700;border-radius:6px}
-  .lt-acts .lt-approve{background:var(--ok);border:none;color:#fff}
-  .lt-acts .lt-reject{background:var(--err-bg);border-color:var(--err);color:var(--err-dk)}
-  .mb .right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-  .mb .days-pill{font-weight:600;font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--ok-bg);color:var(--ok-dk)}
+  .act-list-table tbody tr.expired{background:linear-gradient(to right,#fef2f2,transparent 70%)}
+  .act-list-table tbody tr.expired:hover{background:linear-gradient(to right,#fee2e2,#f8fafc)}
+  .act-list-table tbody tr.expiring{background:linear-gradient(to right,#fffbeb,transparent 70%)}
+  .act-list-table tbody tr.expiring:hover{background:linear-gradient(to right,#fef3c7,#f8fafc)}
+  .act-list-table tbody tr.pending{background:linear-gradient(to right,#f5f3ff,transparent 70%)}
+  .act-list-table td{padding:13px 16px;vertical-align:middle}
+  /* seat */
+  .lt-seat{display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;color:#0f766e;background:#f0fdfa;border:1px solid #99f6e4;border-radius:9px;padding:5px 11px;min-width:42px;letter-spacing:-.01em}
+  /* avatar */
+  .lt-av{width:36px;height:36px;border-radius:50%;background:#f0fdfa;color:#0f766e;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;background-size:cover;background-position:center;overflow:hidden;border:1px solid #e2e8f0}
+  /* name cell */
+  .lt-name-cell{display:flex;align-items:center;gap:11px;min-width:0}
+  .lt-name{font-weight:700;font-size:14px;color:#0f172a;letter-spacing:-.01em;line-height:1.2}
+  .lt-meta{display:flex;align-items:center;gap:7px;margin-top:4px;flex-wrap:wrap}
+  .lt-shift-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;border:1px solid}
+  .lt-shift-tag.m{color:#ea580c;background:#fff7ed;border-color:#fed7aa}
+  .lt-shift-tag.e{color:#7c3aed;background:#f5f3ff;border-color:#ddd6fe}
+  .lt-shift-tag.full{color:#d97706;background:#fffbeb;border-color:#fde68a}
+  .lt-plan-tag{font-size:10.5px;font-weight:600;color:#64748b}
+  .lt-fee-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .lt-fee-tag.paid{color:#16a34a}
+  .lt-fee-tag.due{color:#dc2626}
+  /* dates */
+  .lt-date{font-size:13px;color:#334155;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .lt-date.expired-txt{color:#dc2626;font-weight:600}
+  .lt-date .arr{color:#94a3b8;margin:0 5px}
+  /* status pill */
+  .lt-pill{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:12px;padding:5px 11px;border-radius:99px;white-space:nowrap;letter-spacing:-.01em}
+  .lt-pill.ok{background:#f0fdf4;color:#16a34a}
+  .lt-pill.warn{background:#fffbeb;color:#d97706}
+  .lt-pill.err{background:#fef2f2;color:#dc2626}
+  .lt-pill.hold{background:#f5f3ff;color:#7c3aed}
+  .lt-pill svg{width:12px;height:12px;flex-shrink:0}
+  /* actions */
+  .lt-acts{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+  .lt-acts .lt-icn{appearance:none;border:1.5px solid #e2e8f0;background:#fff;border-radius:9px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.13s;color:#64748b;flex-shrink:0}
+  .lt-acts .lt-icn svg{width:15px;height:15px}
+  .lt-acts .lt-icn:hover{border-color:#0f766e;color:#0f766e;background:#f0fdfa}
+  .lt-acts .lt-icn:active{transform:scale(.93)}
+  .lt-acts .lt-remind{height:34px;padding:0 12px;border-radius:9px;border:none;background:#d97706;color:#fff;font:700 11.5px var(--F);letter-spacing:.02em;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:.13s;flex-shrink:0;box-shadow:0 2px 8px rgba(217,119,6,.3)}
+  .lt-acts .lt-remind svg{width:14px;height:14px}
+  .lt-acts .lt-remind:hover{background:#b45309}
+  .lt-acts .lt-approve{height:34px;padding:0 12px;border-radius:9px;border:none;background:#16a34a;color:#fff;font:700 11.5px var(--F);display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+  .lt-acts .lt-reject{height:34px;padding:0 12px;border-radius:9px;border:1.5px solid #fecaca;background:#fef2f2;color:#dc2626;font:700 11.5px var(--F);display:inline-flex;align-items:center;cursor:pointer}
+  .mb .right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+  .mb .days-pill{font-weight:700;font-size:12px;padding:5px 11px;border-radius:99px;background:var(--ok-bg);color:var(--ok-dk);display:inline-flex;align-items:center;gap:4px;letter-spacing:-.01em}
   .mb .days-pill.warn{background:var(--warn-bg);color:var(--warn-dk)}
   .mb .days-pill.err{background:var(--err-bg);color:var(--err-dk)}
   .mb .days-pill.hold{background:var(--hold-bg);color:var(--hold-dk)}
   .mb .phone{color:var(--ink-3);font-size:10.5px;font-variant-numeric:tabular-nums;font-weight:400}
-  .mb-quick{display:flex;gap:4px;margin-top:2px}
-  .mb-quick button{appearance:none;border:1px solid var(--line-dk);background:#fff;border-radius:7px;width:28px;height:28px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;color:var(--ink-3)}
+  .mb-quick{display:flex;gap:5px;margin-top:0}
+  .mb-quick button{appearance:none;border:1px solid var(--line-dk);background:#fff;border-radius:9px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-3);transition:.12s}
+  .mb-quick button:hover{border-color:var(--brand);background:var(--brand-bg);color:var(--brand)}
   .mb-quick button:active{background:var(--line)}
-  .mb-quick .qa-wa:active{background:#dcfce7;border-color:#22c55e}
-  .mb-quick .qa-call:active{background:var(--brand-bg);border-color:var(--brand)}
+  .mb-quick .qa-wa:hover{background:#dcfce7;border-color:#22c55e;color:#15803d}
+  .mb-quick .qa-wa-renew{width:auto;padding:0 10px;gap:4px;background:#22c55e;border-color:#16a34a;color:#fff;font-size:11px;font-weight:700}
+  .mb-quick .qa-wa-renew:hover{background:#16a34a;border-color:#15803d;color:#fff}
 
   /* ─── Premium hero card ─── */
   .premium-hero{position:relative;border-radius:var(--r-lg);padding:20px;color:#fff;overflow:hidden;margin-bottom:14px;background:var(--brand-dk);box-shadow:var(--shadow)}
@@ -481,7 +531,7 @@
   .sheet-close-btn{position:sticky;top:0;float:right;margin:-38px 14px 0 0;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.05);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:none;color:var(--ink-3);font-size:16px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:14;line-height:1;transition:all .2s}
   .sheet-close-btn:hover{background:rgba(0,0,0,.08);color:var(--ink-2)}
   .sheet-close-btn:active{background:var(--err);color:#fff;transform:scale(.88)}
-  #sheetBody{padding:0 18px}
+  #sheetBody{padding:0}
 
   /* Member detail hero — photo-banner style: large photo fills the top, with
      a gradient overlay so name + badge sit readably on top. Falls back to a
@@ -528,9 +578,11 @@
   .qa-email{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .m-primary button{appearance:none;border:none;border-radius:14px;padding:14px 12px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.01em;transition:all .2s;width:100%}
   .m-primary button:active{transform:scale(.97)}
-  .m-primary .call{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3);font-size:15px;padding:16px}
+  .m-primary .call{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3);font-size:13.5px;padding:15px;gap:7px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .m-primary .call svg{width:18px;height:18px;flex-shrink:0}
   .m-quick-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .m-primary .wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 3px 12px rgba(37,211,102,.3)}
+  .m-primary .wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 3px 12px rgba(37,211,102,.3);font-size:13.5px;gap:7px}
+  .m-primary .wa svg{width:18px;height:18px;flex-shrink:0}
   .m-primary .wa:active{transform:scale(.96)}
   .m-msg-card{background:#f8fafc;border:1px solid #e8edf2;border-radius:16px;padding:14px 16px}
   .m-msg-card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:10px;display:flex;align-items:center;gap:6px}
@@ -538,10 +590,14 @@
   .m-msg-card.wa-card .m-msg-card-title::before{background:#25d366}
   .m-msg-card.em-card .m-msg-card-title::before{background:#6366f1}
   .m-msg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .m-primary .wa-fee{background:#fff;border:1.5px solid #bbf7d0;color:#15803d;font-size:12.5px}
-  .m-primary .wa-renew{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:12.5px;box-shadow:0 2px 8px rgba(34,197,94,.25)}
-  .m-primary .em-fee{background:#fff;border:1.5px solid #c7d2fe;color:#4f46e5;font-size:12.5px}
-  .m-primary .em-renew{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-size:12.5px;box-shadow:0 2px 8px rgba(99,102,241,.25)}
+  .m-primary .wa-fee{background:#fff;border:1.5px solid #bbf7d0;color:#15803d;font-size:12px;gap:5px}
+  .m-primary .wa-fee svg{width:13px;height:13px;flex-shrink:0}
+  .m-primary .wa-renew{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:12px;box-shadow:0 2px 8px rgba(34,197,94,.25);gap:5px}
+  .m-primary .wa-renew svg{width:13px;height:13px;flex-shrink:0}
+  .m-primary .em-fee{background:#fff;border:1.5px solid #c7d2fe;color:#4f46e5;font-size:12px;gap:5px}
+  .m-primary .em-fee svg{width:13px;height:13px;flex-shrink:0}
+  .m-primary .em-renew{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-size:12px;box-shadow:0 2px 8px rgba(99,102,241,.25);gap:5px}
+  .m-primary .em-renew svg{width:13px;height:13px;flex-shrink:0}
   .m-primary .wa-fee:active,.m-primary .wa-renew:active,.m-primary .em-fee:active,.m-primary .em-renew:active{transform:scale(.96)}
 
   .m-section{margin-bottom:20px}
@@ -551,7 +607,8 @@
   .m-list{background:#fff;border-radius:16px;padding:4px 16px;border:1px solid var(--line);box-shadow:0 1px 4px rgba(0,0,0,.03)}
   .m-row{display:flex;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);font-size:13px;gap:12px;min-height:48px}
   .m-row:last-child{border:none}
-  .m-row .m-ic{width:36px;height:36px;border-radius:11px;background:var(--bg);color:var(--ink-3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:inset 0 1px 2px rgba(0,0,0,.03)}
+  .m-row .m-ic{width:36px;height:36px;border-radius:10px;background:var(--bg);color:var(--ink-3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1px solid var(--line);transition:.15s}
+  .m-row .m-ic svg{width:16px;height:16px;flex-shrink:0}
   .m-row .m-text{flex:1;min-width:0}
   .m-row .m-lbl{font-size:9px;color:var(--ink-3);font-weight:600;letter-spacing:.06em;line-height:1.1;margin-bottom:3px;text-transform:uppercase}
   .m-row .m-val{color:var(--ink);font-weight:600;font-size:14px;line-height:1.3;word-break:break-word}
@@ -582,6 +639,80 @@
   .m-notes::before{content:"💬 ";opacity:.7}
 
   .m-enrolled-at{font-size:10px;color:var(--ink-3);text-align:center;padding:10px 0 8px;font-weight:500;opacity:.5;letter-spacing:.03em}
+
+  /* ─── Redesigned member-detail sheet ─── */
+  .msh-hd{background:linear-gradient(135deg,#115e59,#0f766e);color:#fff;padding:20px 20px 18px;display:flex;align-items:center;gap:14px;position:relative}
+  .msh-av{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);display:grid;place-items:center;font-weight:800;font-size:22px;flex-shrink:0;overflow:hidden}
+  .msh-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .msh-info{flex:1;min-width:0}
+  .msh-name{font-weight:800;font-size:20px;letter-spacing:-.03em;line-height:1.1}
+  .msh-meta{font-size:11.5px;color:rgba(255,255,255,.7);margin-top:3px;font-variant-numeric:tabular-nums}
+  .msh-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:99px}
+  .msh-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:#6ee7b7}
+  .msh-badge.pending::before{background:#fcd34d}
+  .msh-badge.expired::before{background:#fca5a5}
+  .msh-badge.deleted::before{background:rgba(255,255,255,.4)}
+  .msh-edit{position:absolute;top:14px;right:14px;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:6px 12px;border-radius:9px;cursor:pointer;transition:.15s}
+  .msh-edit:active{background:rgba(255,255,255,.25)}
+  .msh-body{padding:16px 18px}
+  .msh-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .msh-fact{border:1px solid #e2e8f0;border-radius:14px;padding:13px 14px;background:#fff;position:relative;overflow:hidden}
+  .msh-fact::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--fc,#0f766e)}
+  .msh-fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;display:flex;align-items:center;gap:5px;margin-bottom:6px}
+  .msh-fl svg{width:12px;height:12px}
+  .msh-fv{font-weight:800;font-size:17px;letter-spacing:-.02em;line-height:1;display:flex;align-items:baseline;gap:5px}
+  .msh-fv small{font-size:11.5px;color:#64748b;font-weight:500}
+  .msh-fsub{font-size:11px;color:#64748b;margin-top:4px}
+  .msh-fact.msh-due .msh-fv{color:#dc2626}
+  .msh-fchip{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:99px;margin-top:7px}
+  .msh-fchip.unpaid{background:#fef2f2;color:#dc2626}
+  .msh-fchip.ok{background:#f0fdf4;color:#16a34a}
+  .msh-fchip.partial{background:#fffbeb;color:#d97706}
+  .msh-prog{margin-top:7px}
+  .msh-prog-track{height:4px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+  .msh-prog-fill{height:100%;border-radius:3px;background:#d97706}
+  .msh-acts1{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+  .msh-acta{height:44px;border-radius:12px;font:700 13px var(--F);display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:.15s;border:none}
+  .msh-acta svg{width:16px;height:16px;flex-shrink:0}
+  .msh-acta:active{transform:scale(.95)}
+  .msh-acta.call{background:#16a34a;color:#fff}
+  .msh-acta.wa{background:#1da851;color:#fff}
+  .msh-renew-btn{width:100%;height:46px;border-radius:12px;font:700 14px var(--F);background:#0f766e;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px;transition:.15s}
+  .msh-renew-btn:active{transform:scale(.98);background:#115e59}
+  .msh-renew-btn svg{width:17px;height:17px}
+  .msh-acts2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+  .msh-actb{height:42px;border-radius:12px;font:600 12.5px var(--F);background:#fff;border:1.5px solid #e2e8f0;color:#334155;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+  .msh-actb:active{border-color:#0f766e;color:#0f766e;background:#f0fdfa}
+  .msh-actb svg{width:15px;height:15px;flex-shrink:0}
+  .msh-sec{margin-bottom:18px}
+  .msh-sec-h{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+  .msh-sec-h::after{content:"";flex:1;height:1px;background:#e2e8f0}
+  .msh-rows{border:1px solid #e2e8f0;border-radius:13px;overflow:hidden;background:#fff}
+  .msh-drow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f1f5f9}
+  .msh-drow:last-child{border-bottom:none}
+  .msh-drow-ic{width:32px;height:32px;border-radius:9px;background:#f8fafc;display:grid;place-items:center;color:#64748b;flex-shrink:0;border:1px solid #f1f5f9}
+  .msh-drow-ic svg{width:15px;height:15px}
+  .msh-drow-tx{flex:1;min-width:0}
+  .msh-drow-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;margin-bottom:2px}
+  .msh-drow-v{font-size:13.5px;font-weight:600;color:#0f172a}
+  .msh-drow-act{font-size:12px;font-weight:700;color:#0f766e;background:#f0fdfa;border:1px solid #99f6e4;padding:6px 11px;border-radius:9px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0}
+  .msh-drow-act:active{background:#0f766e;color:#fff}
+  .msh-drow-act svg{width:12px;height:12px}
+  .msh-fee-pill{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#dc2626;background:#fef2f2;padding:3px 8px;border-radius:99px;margin-right:8px;flex-shrink:0}
+  .msh-manage{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .msh-mbtn{display:flex;align-items:center;gap:9px;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:13px;background:#fff;font:600 13px var(--F);color:#334155;cursor:pointer;transition:.15s;text-align:left}
+  .msh-mbtn:active{border-color:#0f766e;color:#0f766e;background:#f0fdfa}
+  .msh-mbtn svg{width:16px;height:16px;color:#94a3b8;flex-shrink:0}
+  .msh-mbtn:active svg{color:#0f766e}
+  .msh-mbtn.danger:active{border-color:#dc2626;color:#dc2626;background:#fef2f2}
+  .msh-mbtn.danger:active svg{color:#dc2626}
+  .msh-pend-acts{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+  .msh-pend-acts button{appearance:none;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;white-space:nowrap;height:38px;box-sizing:border-box}
+  .msh-pend-acts .approve{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+  .msh-pend-acts .reject{background:#fff;border:1.5px solid rgba(220,38,38,.2);color:#dc2626;flex-shrink:0}
+  .msh-restore{margin-bottom:14px}
+  .msh-restore button{width:100%;appearance:none;border:none;border-radius:13px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s}
+  @media(max-width:400px){.msh-facts,.msh-acts1,.msh-acts2,.msh-manage{grid-template-columns:1fr}}
 
   .m-secondary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
   .m-secondary button{appearance:none;border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:13px;border-radius:14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
@@ -714,6 +845,26 @@
   .btn.danger{color:var(--err-dk);border-color:var(--err-bg)}
   .btn.danger:active{background:var(--err-bg)}
 
+  /* ─── WhatsApp preview sheet ─── */
+  #waPreviewBg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center}
+  #waPreviewBg.show{display:flex}
+  #waPreviewSheet{background:#fff;border-radius:22px 22px 0 0;width:100%;max-width:480px;padding:0 0 calc(20px + var(--safeB,0px));box-shadow:0 -4px 32px rgba(0,0,0,.18);display:flex;flex-direction:column;max-height:90vh;overflow:hidden}
+  .wap-header{display:flex;align-items:center;gap:12px;padding:18px 20px 14px}
+  .wap-icon{width:44px;height:44px;border-radius:50%;background:#e7fae7;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .wap-title{font:800 16px var(--f);color:var(--ink)}
+  .wap-sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+  .wap-phone-row{padding:0 20px 10px;font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+  .wap-phone-row span{font-weight:600;color:var(--ink);font-size:13px}
+  .wap-bubble-wrap{flex:1;overflow-y:auto;padding:0 16px 12px}
+  .wap-bubble{background:#e7fce7;border-radius:16px 16px 4px 16px;padding:14px 16px;position:relative}
+  .wap-bubble::after{content:"";position:absolute;bottom:0;right:-8px;border:8px solid transparent;border-bottom-color:#e7fce7;border-right:0;border-bottom-left-radius:4px}
+  .wap-textarea{width:100%;border:none;background:transparent;font:500 13.5px var(--f);color:#1c1c1e;line-height:1.65;resize:none;outline:none;min-height:120px}
+  .wap-actions{display:flex;gap:10px;padding:12px 20px 0;border-top:1px solid var(--line)}
+  .wap-cancel{flex:1;padding:12px;border:1.5px solid var(--line-dk);background:#fff;border-radius:12px;font:600 14px var(--f);color:var(--ink-2);cursor:pointer;transition:.15s}
+  .wap-cancel:active{background:var(--line)}
+  .wap-send{flex:2;padding:12px 18px;background:#25d366;border:none;border-radius:12px;font:700 14px var(--f);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .wap-send:active{background:#16a34a}
+
   /* ─── Toast ─── */
   .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#18181b;color:#fff;padding:10px 16px;border-radius:10px;font-size:12.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:120;display:flex;align-items:center;gap:6px;max-width:calc(100vw - 40px)}
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -748,6 +899,39 @@
   details summary::after{content:"›";color:var(--ink-3);font-size:20px;line-height:1;font-weight:300;transition:transform .2s}
   details[open] summary::after{transform:rotate(90deg);color:var(--brand)}
   details > div{padding:0 16px 14px;border-top:1px solid var(--line)}
+
+  /* ─── Shifts & Seating settings card ─── */
+  .ss-card{padding:0}
+  .ss-row-setting{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);gap:10px}
+  .ss-row-setting:last-child{border-bottom:none}
+  .ss-row-desc{flex:1;min-width:0}
+  .ss-row-lab{font-weight:600;font-size:13px;color:var(--ink)}
+  .ss-row-hint{font-size:11px;color:var(--ink-3);margin-top:2px;line-height:1.35}
+  .ss-count-pills{display:flex;gap:4px;flex-shrink:0}
+  .ss-pill{appearance:none;border:1.5px solid var(--line-dk);background:#fff;color:var(--ink2);width:34px;height:34px;border-radius:9px;font:700 13px var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .ss-pill.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .ss-table-wrap{overflow-x:auto;border-top:1px solid var(--line)}
+  .ss-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .ss-table thead th{padding:8px 12px;text-align:left;font:700 10px var(--f);text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);border-bottom:1px solid var(--line);background:var(--bg)}
+  .ss-table thead th:first-child{min-width:120px}
+  .ss-table tbody tr{border-bottom:1px solid var(--line)}
+  .ss-table tbody tr:last-child{border-bottom:none}
+  .ss-row.ss-dim td{opacity:.38}
+  .ss-sh{display:flex;align-items:center;gap:8px;padding:10px 12px}
+  .ss-sh-icon{width:28px;height:28px;border-radius:8px;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .ss-sh-name{font-weight:600;font-size:12.5px;color:var(--ink)}
+  .ss-sh-sub{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+  .ss-td{padding:10px 10px 10px 4px;vertical-align:middle}
+  .ss-input{width:100%;padding:7px 9px;border:1px solid var(--line-dk);border-radius:8px;font:inherit;font-size:12px;background:#fff;outline:none;transition:border-color .15s;box-sizing:border-box}
+  .ss-input:focus{border-color:var(--brand)}
+  .ss-input:disabled{background:var(--bg);cursor:not-allowed;opacity:.5}
+  .ss-time-wrap{display:flex;align-items:center;gap:5px;min-width:110px}
+  .ss-time-ic{font-size:13px;flex-shrink:0;opacity:.5}
+  .ss-hint-row{padding:9px 14px;background:var(--bg);border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+  .ss-fullday-section{border-top:2px solid var(--line)}
+  .ss-fullday-label{padding:10px 16px 4px;font:700 10px var(--f);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+  .ss-inline-input{padding:7px 10px;border:1px solid var(--line-dk);border-radius:8px;font:inherit;font-size:12.5px;background:#fff;min-width:110px;max-width:46%;outline:none;transition:border-color .15s;flex-shrink:0}
+  .ss-inline-input:focus{border-color:var(--brand)}
 
   @media (max-width:380px){
     .m-keystrip{gap:6px}
@@ -808,8 +992,8 @@
   @media(min-width:1120px){
     body{overflow-x:hidden}
     .ds-left,.ds-right{display:block!important;position:fixed;top:0;width:280px;height:100vh;overflow-y:auto;padding:12px 14px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:#fafafa;border-right:1px solid var(--line)}
-    .ds-left{left:0;padding-top:100px;border-left:none}
-    .ds-right{right:0;border-right:none;border-left:1px solid var(--line);padding-top:100px}
+    .ds-left{left:0;padding-top:130px;border-left:none}
+    .ds-right{right:0;border-right:none;border-left:1px solid var(--line);padding-top:130px}
     #main{margin-left:280px;margin-right:280px;max-width:none!important}
     .hdr-row,.occ{max-width:none!important;margin-left:280px!important;margin-right:280px!important}
   }
@@ -824,37 +1008,39 @@
   .ds-card-title a{font-size:10px;text-transform:none;letter-spacing:0;color:var(--brand);cursor:pointer;font-weight:600}
 
   /* Occupancy mini ring */
-  .ds-occ{display:flex;align-items:center;gap:12px}
-  .ds-ring{position:relative;width:64px;height:64px;flex-shrink:0}
+  .ds-occ{display:flex;align-items:center;gap:16px;padding:2px 0 6px}
+  .ds-ring{position:relative;width:90px;height:90px;flex-shrink:0}
   .ds-ring svg{transform:rotate(-90deg)}
-  .ds-ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--ink);line-height:1}
-  .ds-ring-pct{font-size:9px;font-weight:600;color:var(--ink-3)}
-  .ds-occ-stats{flex:1;display:flex;flex-direction:column;gap:4px}
-  .ds-stat-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
-  .ds-stat-row .lbl{color:var(--ink-3)}
-  .ds-stat-row .val{font-weight:700;color:var(--ink)}
-  .ds-stat-row .val.ok{color:var(--ok-dk)}
+  .ds-ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--ink);line-height:1}
+  .ds-ring-pct{font-size:10px;font-weight:500;color:var(--ink-3);margin-top:1px}
+  .ds-occ-stats{flex:1;display:flex;flex-direction:column;gap:7px}
+  .ds-stat-row{display:flex;align-items:center;justify-content:space-between;font-size:12.5px}
+  .ds-stat-row .lbl{color:var(--ink-2);font-weight:500}
+  .ds-stat-row .val{font-weight:800;color:var(--ink);font-size:13px}
+  .ds-stat-row .val.ok{color:#16a34a}
   .ds-stat-row .val.warn{color:#d97706}
-  .ds-stat-row .val.err{color:var(--err-dk)}
+  .ds-stat-row .val.err{color:#dc2626}
 
   /* Sidebar member rows */
-  .ds-member{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;transition:background .1s}
+  .ds-member{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;transition:background .1s}
   .ds-member:last-child{border-bottom:none;padding-bottom:0}
   .ds-member:hover{background:var(--bg);margin:0 -14px;padding-left:14px;padding-right:14px;border-radius:8px}
-  .ds-av{width:30px;height:30px;border-radius:50%;background:var(--brand-bg);color:var(--brand);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background-size:cover;background-position:center;overflow:hidden}
+  .ds-av{width:36px;height:36px;border-radius:50%;background:#e2e8f0;color:#475569;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background-size:cover;background-position:center;overflow:hidden}
   .ds-info{flex:1;min-width:0}
-  .ds-name{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ds-meta{font-size:10px;color:var(--ink-3);margin-top:1px}
-  .ds-pill{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+  .ds-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ds-meta{font-size:11px;color:var(--ink-3);margin-top:2px}
+  .ds-pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0}
   .ds-pill.warn{background:#fef3c7;color:#92400e}
-  .ds-pill.err{background:#fee2e2;color:var(--err-dk)}
-  .ds-pill.ok{background:#dcfce7;color:var(--ok-dk)}
+  .ds-pill.err{background:#fee2e2;color:#dc2626}
+  .ds-pill.ok{background:#dcfce7;color:#16a34a}
   .ds-pill.hold{background:#ede9fe;color:#5b21b6}
 
   /* Quick approve/reject in sidebar */
-  .ds-acts{display:flex;gap:5px;flex-shrink:0}
-  .ds-approve{background:var(--ok);color:#fff;border:none;border-radius:7px;width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-  .ds-reject{background:var(--err-bg);color:var(--err-dk);border:1px solid var(--err);border-radius:7px;width:26px;height:26px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .ds-acts{display:flex;gap:6px;flex-shrink:0}
+  .ds-approve{background:#16a34a;color:#fff;border:none;border-radius:10px;width:36px;height:36px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+  .ds-approve:active{background:#15803d}
+  .ds-reject{background:#fee2e2;color:#dc2626;border:none;border-radius:10px;width:36px;height:36px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .ds-reject:active{background:#dc2626;color:#fff}
 
   /* Sidebar search */
   .ds-search{width:100%;padding:9px 12px;border:1.5px solid var(--line-dk);border-radius:10px;font:500 13px var(--F);color:var(--ink);outline:none;background:#fff;box-sizing:border-box}
@@ -894,6 +1080,7 @@
       </div>
       <div class="pinErr" id="pinErr"></div>
       <div class="pinSpinner" id="pinSpin"></div>
+      <button class="pin-bksp" onclick="pinBackspace()" title="Backspace">⌫</button>
     </div>
   </div>
   <div class="pin-powered">Powered by <a href="https://storepro.in" target="_blank">StorePro</a></div>
@@ -929,9 +1116,10 @@
 
 <!-- ─── Desktop sidebars ─── -->
 <aside class="ds-left" id="dsLeft" style="display:none">
-  <div class="ds-card" id="dsOccCard"></div>
+  <div class="ds-card" id="dsOccCard" style="margin-top:4px"></div>
   <div class="ds-card" id="dsPendingCard"></div>
   <div class="ds-card" id="dsAlertCard"></div>
+  <div class="ds-card" id="dsBdayCard"></div>
 </aside>
 <aside class="ds-right" id="dsRight" style="display:none">
   <div class="ds-card ds-search-card">
@@ -952,7 +1140,6 @@
         <h3 id="seatsTitle">Seat map</h3>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="util" id="seatsUtil">0 / 0 occupied</div>
-          <button class="seat-view-btn" id="seatViewBtn" onclick="toggleSeatView()" title="Switch seat view">⊞</button>
         </div>
       </div>
       <div class="seat-grid" id="seatGrid"></div>
@@ -979,7 +1166,7 @@
       <div class="pending-banner-head">
         <div class="pending-banner-icon">⏳</div>
         <div>
-          <div class="pending-banner-title">Awaiting approval <small id="pendingSub"></small></div>
+          <div class="pending-banner-title">Awaiting approval<small id="pendingSub"></small></div>
         </div>
       </div>
       <div class="pending-list" id="pendingList"></div>
@@ -1005,10 +1192,22 @@
   <div id="pgMore" class="page">
     <h2>Settings</h2>
 
-    <details open><summary>Shift system</summary><div id="setShifts"></div></details>
+    <details open>
+      <summary>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;border-radius:10px;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">🪑</div>
+          <div>
+            <div>Shifts &amp; seating</div>
+            <div style="font-size:11px;font-weight:400;color:var(--ink-3);margin-top:1px">Split each seat into multiple bookable time-of-day shifts.</div>
+          </div>
+        </div>
+      </summary>
+      <div id="setShifts"></div>
+    </details>
     <details><summary>Enrollment fields &amp; approval</summary><div id="setEnroll"></div></details>
     <details><summary>Expiry reminders</summary><div id="setReminders"></div></details>
     <details><summary>History &amp; archive</summary><div id="setHistory"></div></details>
+    <details><summary>⭐ Google Reviews</summary><div id="setGoogleReviews"></div></details>
     <details><summary>🔐 Dashboard PIN</summary><div id="setPinSection"></div></details>
 
     <h2>Tests &amp; tools</h2>
@@ -1033,6 +1232,35 @@
 
 </main>
 
+<!-- ─── WhatsApp Preview Sheet ─── -->
+<div id="waPreviewBg" onclick="if(event.target===this)closeWAPreview()">
+  <div id="waPreviewSheet">
+    <div class="handle-zone" onclick="closeWAPreview()"><div class="handle"></div></div>
+    <div class="wap-header">
+      <div class="wap-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.558 4.14 1.535 5.879L.057 23.057a.75.75 0 00.918.918l5.178-1.478A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.956 9.956 0 01-5.148-1.43l-.369-.21-3.073.877.877-3.073-.21-.369A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      </div>
+      <div>
+        <div class="wap-title">WhatsApp Message</div>
+        <div class="wap-sub" id="wapRecipient"></div>
+      </div>
+    </div>
+    <div class="wap-phone-row" id="wapPhoneRow"></div>
+    <div class="wap-bubble-wrap">
+      <div class="wap-bubble">
+        <textarea class="wap-textarea" id="wapText" rows="8" placeholder="Message…"></textarea>
+      </div>
+    </div>
+    <div class="wap-actions">
+      <button class="wap-cancel" onclick="closeWAPreview()">Cancel</button>
+      <button class="wap-send" onclick="sendWAPreview()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Send via WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ─── FAB: Add member ─── -->
 <button class="fab" id="fab" onclick="openEnrollSheet()" title="Add member" style="display:none">＋</button>
 
@@ -1054,9 +1282,25 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ─── Welcome message modal (shown after approving an online enrollment) ─── -->
+<div id="welcomeModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:22px 22px 0 0;width:100%;max-width:480px;padding:24px 20px 32px;box-shadow:0 -4px 32px rgba(0,0,0,.18)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font:700 16px var(--F)">📩 Send Welcome Message</div>
+      <button onclick="closeWelcomeModal()" style="appearance:none;border:none;background:none;font-size:22px;cursor:pointer;color:var(--ink-2)">✕</button>
+    </div>
+    <div style="font-size:13px;color:var(--ink-2);margin-bottom:14px">Share plan details &amp; group link with the student via WhatsApp.</div>
+    <textarea id="welcomeMsg" rows="9" style="width:100%;border:1.5px solid var(--line-dk);border-radius:12px;padding:12px;font:13px var(--F);resize:vertical;outline:none;box-sizing:border-box"></textarea>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button onclick="sendWelcomeWA()" style="flex:1;appearance:none;border:none;background:#25d366;color:#fff;padding:13px;border-radius:12px;font:700 14px var(--F);cursor:pointer">💬 Send via WhatsApp</button>
+      <button onclick="closeWelcomeModal()" style="appearance:none;border:none;background:var(--line);color:var(--ink-1);padding:13px 18px;border-radius:12px;font:700 14px var(--F);cursor:pointer">Skip</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var MASTER_SHEET_ID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
-var EXPECTED_SCRIPT_VERSION=3;  // bump when the Apps Script needs redeploying
+var EXPECTED_SCRIPT_VERSION=5;  // bump when the Apps Script needs redeploying
 var SHEET_ID='',SCRIPT_URL='',SLUG='',DASH_TOKEN='';
 var config={},members=[],plans=[];
 var currentTab='Seats';
@@ -1149,7 +1393,14 @@ function parseRows(r){
 }
 
 // ─── PIN gate ───
-function pinNext(el,n){var v=(el.value||'').replace(/\D/g,'');el.value=v;if(!v)return;if(n<=4)$('p'+n).focus();else checkPin()}
+function pinNext(el,n){var v=(el.value||'').replace(/\D/g,'');el.value=v;if(!v)return;el.classList.add('filled');if(n<=4)$('p'+n).focus();else checkPin()}
+function pinBackspace(){
+  var ids=['p4','p3','p2','p1'];
+  for(var i=0;i<ids.length;i++){
+    var el=$(ids[i]);
+    if(el&&el.value){el.value='';el.classList.remove('filled');el.focus();return;}
+  }
+}
 function checkPin(){
   var pin=['p1','p2','p3','p4'].map(function(id){return $(id).value||''}).join('');
   if(!/^\d{4}$/.test(pin))return;
@@ -1561,108 +1812,145 @@ function isSeatFullyBooked(list){
   return true;
 }
 
-var seatViewMode=localStorage.getItem('dash_seat_view')||'default'; // 'default'|'modern'
-function toggleSeatView(){
-  seatViewMode=seatViewMode==='default'?'modern':'default';
-  localStorage.setItem('dash_seat_view',seatViewMode);
-  var btn=$('seatViewBtn');
-  if(btn){btn.innerHTML=seatViewMode==='modern'?'⊞':'✦';btn.classList.toggle('modern-on',seatViewMode==='modern');btn.title=seatViewMode==='modern'?'Switch to grid view':'Switch to card view'}
-  renderSeats();
-}
-var seatCardCols=parseInt(localStorage.getItem('dash_seat_cols')||'5',10)||5;
-var seatDefaultCols=parseInt(localStorage.getItem('dash_def_cols')||'6',10)||5;
-function setSeatCols(n){
-  if(seatViewMode==='modern'){seatCardCols=n;localStorage.setItem('dash_seat_cols',n);renderSeatsModern();}
-  else{seatDefaultCols=n;localStorage.setItem('dash_def_cols',n);renderSeats();}
-}
-function _setSeatCols_modern_only(n){  // keep old calls working
+var seatCardCols=parseInt(localStorage.getItem('dash_seat_cols')||'6',10)||6;
+function setSeatCols(n){seatCardCols=n;localStorage.setItem('dash_seat_cols',n);renderSeatsModern();}
+function _setSeatCols_modern_only(n){
   seatCardCols=n;localStorage.setItem('dash_seat_cols',n);
   renderSeatsModern();
 }
 function renderSeatsModern(){
-  $('seatGrid').style.gridTemplateColumns='';  // clear default view's column setting
+  $('seatGrid').style.gridTemplateColumns='';
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var prefix=cfg('seatprefix','S');
+  var seenSeats={};holdingMembers().forEach(function(m){if(m.seat)seenSeats[m.seat]=true});
+  var occ=Object.keys(seenSeats).length;
+  if($('seatsTitle'))$('seatsTitle').textContent='Seat map';
+  if($('seatsUtil'))$('seatsUtil').textContent=occ+' / '+cap+' occupied';
   var blocked=blockedSeats();
   var lbl1=cfg('shift1label','Morning'),lbl2=cfg('shift2label','Evening'),lblFd=cfg('fulldaylabel','Full Day');
   var bySeat={};
   holdingMembers().forEach(function(m){if(m.seat)(bySeat[m.seat]=bySeat[m.seat]||[]).push(m)});
-  function headCls(list){
-    if(!list.length)return 'free';
-    var sh=(list[0].shift||'').toUpperCase();
-    return sh==='FULL'?'fd':sh==='S2'?'s2':'s1';
+
+  var SUN='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>';
+  var LOCK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
+  var FULL='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16l-2-9 5.5 4L12 5l3.5 6L21 7l-2 9H5zm0 2h14v2H5z"/></svg>';
+
+  function payStatus(m){
+    var paid=parseFloat(m.totalpaid||'0')||0;
+    var d=daysToExpiry(m);
+    if(d!=null&&d<0)return 'over';
+    if(!paid)return 'due';
+    return 'paid';
   }
-  function shiftLabel(m){
-    var sh=(m.shift||'').toUpperCase();
-    if(sh==='FULL')return '☀️ '+lblFd;
-    if(sh==='S2')return '🌆 '+lbl2;
-    return '🌅 '+lbl1;
+  function ringColors(ps){
+    if(ps==='over')return {rc:'#DC2626',rb:'#FEF2F2'};
+    if(ps==='due') return {rc:'#D97706',rb:'#FFFBEB'};
+    return {rc:'#059669',rb:'#ECFDF5'};
   }
-  function cardStatus(list){
-    var order=['expired','expiring','pending','occupied'];
-    return order.filter(function(s){return list.some(function(m){return memberSeatStatus(m)===s})})[0]||'occupied';
+  function barColor(ps){return ps==='over'?'#DC2626':ps==='due'?'#D97706':'#059669';}
+  function payChip(ps){
+    if(ps==='over')return '<span class="sb-pay over">⚠ Overdue</span>';
+    if(ps==='due') return '<span class="sb-pay due">⏳ Due</span>';
+    return '<span class="sb-pay paid">✓ Paid</span>';
+  }
+  function progBar(m){
+    var d=daysToExpiry(m),ps=payStatus(m);
+    var plan=30;try{var po=plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0];if(po){var dur=po.duration||po.unit||'';var nm=String(dur||'').match(/(\d+)/);if(nm)plan=parseInt(nm[1],10)||30;}}catch(e){}
+    var left=d!=null?Math.max(0,d):0;
+    var pct=d==null?50:Math.round(Math.min(100,Math.max(0,(plan-Math.max(0,d))/plan*100)));
+    var dTxt=d==null?'—':d<0?Math.abs(d)+'d ago':d+'d left';
+    return '<div class="sb-prog">'+
+      '<div class="sb-prog-row"><span class="sb-prog-d">'+dTxt+'</span><span class="sb-prog-pl">'+(m.plan||'').split(/[\s\-]/)[0]+'</span></div>'+
+      '<div class="sb-prog-track"><div class="sb-prog-fill" style="width:'+pct+'%;background:'+barColor(ps)+'"></div></div>'+
+    '</div>';
+  }
+  function occBlock(m){
+    var ps=payStatus(m);
+    var rc=ringColors(ps);
+    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+');background-color:#e2e8f0':'';
+    return '<div class="sb-occ">'+
+      '<div class="sb-av" style="--rc:'+rc.rc+';--rb:'+rc.rb+';'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+      '<div class="sb-name">'+E(ini(m.name)===E(ini(m.name))?m.name.toUpperCase().split(' ')[0]:m.name)+'</div>'+
+      '<div class="sb-plan">'+(m.plan||'').split(/[\s\-–]/)[0]+'</div>'+
+      progBar(m)+
+      payChip(ps)+
+    '</div>';
+  }
+  function freeHalf(seatId, shift){
+    return '<div class="sb-half"><div class="sb-free" onclick="event.stopPropagation();openFreeSeatAction(\''+seatId+'\',\''+shift+'\')" title="Enroll or block this shift"><div class="sb-free-plus">+</div><div class="sb-free-lbl">Free</div></div></div>';
+  }
+  function flagClass(list){
+    var pss=list.map(payStatus);
+    if(pss.some(function(p){return p==='over'}))return ' flag-over';
+    var anyDue=pss.some(function(p){return p==='due'});
+    if(anyDue){var d=daysToExpiry(list[0]);if(d!=null&&d<=5)return ' flag-soon';}
+    return '';
   }
 
-  var colsBtns=[3,4,5].map(function(n){
-    return '<button class="seat-cols-btn'+(seatCardCols===n?' act':'')+'" onclick="setSeatCols('+n+')">'+n+'</button>';
+  var colsBtns=[4,5,6,8].map(function(n){
+    return '<button class="sb-col-btn'+(seatCardCols===n?' act':'')+'" onclick="setSeatCols('+n+')">'+n+'</button>';
   }).join('');
-  var toolbar='<div class="seat-cards-toolbar"><span class="seat-cols-label">Columns:</span>'+colsBtns+'</div>';
+  var toolbar='<div class="sb-toolbar"><span class="sb-col-lbl">Columns:</span>'+colsBtns+'</div>';
 
-  var html='<div class="seat-cards" style="grid-template-columns:repeat('+seatCardCols+',1fr)">';
+  var html='<div class="sb-wrap"><div class="sb-grid" style="grid-template-columns:repeat('+seatCardCols+',1fr)">';
+
   for(var i=1;i<=cap;i++){
     var id=prefix+i,list=bySeat[id]||[];
-    var hc=headCls(list);
+    var byShift={};list.forEach(function(m){byShift[(m.shift||'').toUpperCase()]=m;});
 
     if(blocked[id.toUpperCase()]){
-      html+='<div class="sc-card blocked-card" onclick="toggleBlockSeat(\''+id+'\')" title="Click to unblock">'+
-        '<div class="sc-card-head blocked">'+
-          '<div class="sc-card-seat-lbl" style="color:#9ca3af">'+id+'</div>'+
-          '<div class="sc-card-shift-lbl" style="color:#9ca3af">Blocked</div>'+
-        '</div>'+
-        '<div class="sc-card-body">'+
-          '<div class="sc-card-av" style="background:#f3f4f6;font-size:18px">🚫</div>'+
-          '<div class="sc-card-info"><div class="sc-card-blk-lbl">'+E(blocked[id.toUpperCase()])+'</div></div>'+
-        '</div></div>';
+      html+='<div class="sb-card sb-reserved" onclick="toggleBlockSeat(\''+id+'\')" title="Click to unblock">'+
+        '<div class="sb-hd"><span class="sb-seat-id">'+id+'</span><span class="sb-seat-type">Held</span></div>'+
+        '<div class="sb-resv"><div class="sb-resv-ic">'+LOCK+'</div><div class="sb-resv-lbl">'+E(blocked[id.toUpperCase()])+'</div></div>'+
+      '</div>';
       continue;
     }
 
     if(!list.length){
-      html+='<div class="sc-card free-card" onclick="openSeatSheet(\''+id+'\')">'+
-        '<div class="sc-card-head free">'+
-          '<div class="sc-card-seat-lbl" style="color:#9ca3af">'+id+'</div>'+
-          '<div class="sc-card-shift-lbl" style="color:#9ca3af">Free</div>'+
+      html+='<div class="sb-card sb-empty" onclick="openFreeSeatAction(\''+id+'\',\'\')" title="Enroll or block">'+
+        '<div class="sb-hd"><span class="sb-seat-id">'+id+'</span><span class="sb-seat-type"></span></div>'+
+        '<div class="sb-avail">'+
+          '<div class="sb-avail-id">'+id+'</div>'+
+          '<div class="sb-avail-plus">+</div>'+
+          '<div class="sb-avail-lbl">Available</div>'+
         '</div>'+
-        '<div class="sc-card-body">'+
-          '<div class="sc-card-av" style="background:#f3f4f6;font-size:20px;color:#d1d5db">+</div>'+
-          '<div class="sc-card-info"><div class="sc-card-name" style="color:#9ca3af">Unassigned</div><div class="sc-card-plan">Tap to assign</div></div>'+
-        '</div></div>';
+      '</div>';
       continue;
     }
 
-    var m=list[0],st=cardStatus(list),d=daysToExpiry(m);
-    var pillCls=st==='expired'?'err':st==='pending'?'hold':d!=null&&d<=7?'warn':'';
-    var dTxt=st==='expired'?Math.abs(d)+'d ago':st==='pending'?'Pending':d==null?'—':d+'d left';
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
-    var phone=(m.phone||'').replace(/\D/g,'');
-    html+='<div class="sc-card '+st+'" onclick="openSeatSheet(\''+id+'\')">'+
-      '<div class="sc-card-head '+hc+'">'+
-        '<div class="sc-card-status-dot"></div>'+
-        '<div class="sc-card-seat-lbl">'+id+'</div>'+
-        '<div class="sc-card-shift-lbl">'+E(shiftLabel(m))+'</div>'+
-      '</div>'+
-      '<div class="sc-card-body">'+
-        '<div class="sc-card-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
-        '<div class="sc-card-info">'+
-          '<div class="sc-card-name">'+E(m.name||'—')+'</div>'+
-          '<div class="sc-card-plan">'+E(m.plan||'—')+'</div>'+
-          '<div class="sc-card-row">'+
-            '<span class="sc-card-days '+pillCls+'">'+dTxt+'</span>'+
-            (phone?'<span class="sc-card-phone">📞 '+E(m.phone)+'</span>':'')+
-          '</div>'+
+    var isFullDay=!!(byShift['FULL']);
+    var fc=list.length?flagClass(list):'';
+
+    if(isFullDay){
+      var m=byShift['FULL'];
+      html+='<div class="sb-card'+fc+'" onclick="openSeatSheet(\''+id+'\')">'+
+        '<div class="sb-hd"><span class="sb-seat-id">'+id+'</span><span class="sb-seat-type">'+FULL+' '+E(lblFd)+'</span></div>'+
+        '<div class="sb-full-body">'+occBlock(m)+'</div>'+
+      '</div>';
+    } else {
+      var mOcc=byShift['S1'],eOcc=byShift['S2'];
+      var s1BlockKey=id.toUpperCase()+'-S1',s2BlockKey=id.toUpperCase()+'-S2';
+      var s1Blocked=blocked[s1BlockKey],s2Blocked=blocked[s2BlockKey];
+      function reservedHalf(key,lbl){
+        return '<div class="sb-half sb-half-reserved" onclick="event.stopPropagation();toggleBlockSeatShift(\''+key+'\',\''+E(lbl)+'\')" title="Click to unblock">'+
+          '<div class="sb-resv-half"><div class="sb-resv-ic">'+LOCK+'</div><div class="sb-resv-lbl">'+E(lbl)+'</div></div>'+
+        '</div>';
+      }
+      html+='<div class="sb-card'+fc+'" onclick="openSeatSheet(\''+id+'\')">'+
+        '<div class="sb-hd"><span class="sb-seat-id">'+id+'</span><span class="sb-seat-type">Shift Seat</span></div>'+
+        '<div class="sb-tabs">'+
+          '<div class="sb-tab m">'+SUN+' '+E(lbl1)+'</div>'+
+          '<div class="sb-tab e">'+MOON+' '+E(lbl2)+'</div>'+
         '</div>'+
-      '</div></div>';
+        '<div class="sb-halves">'+
+          (s1Blocked?reservedHalf(s1BlockKey,s1Blocked):mOcc?'<div class="sb-half">'+occBlock(mOcc)+'</div>':freeHalf(id,'S1'))+
+          (s2Blocked?reservedHalf(s2BlockKey,s2Blocked):eOcc?'<div class="sb-half">'+occBlock(eOcc)+'</div>':freeHalf(id,'S2'))+
+        '</div>'+
+      '</div>';
+    }
   }
-  html+='</div>';
+  html+='</div></div>';
   $('seatGrid').innerHTML=toolbar+html;
 }
 
@@ -1676,6 +1964,14 @@ function blockedSeats(){
     if(seat)map[seat]=label||'Not available';
   });
   return map;
+}
+function toggleBlockSeatShift(key,currentLabel){
+  if(!confirm('Unblock "'+currentLabel+'" for this shift?'))return;
+  var blocked=blockedSeats();
+  var newVal=Object.keys(blocked).filter(function(k){return k!==key}).map(function(k){return k+':'+blocked[k]}).join(',');
+  sendCmd({action:'updateConfig',key:'BlockedSeats',value:newVal},function(){
+    config['blockedseats']=newVal;renderSeats();toast('Shift unblocked','ok');
+  });
 }
 function toggleBlockSeat(id){
   var blocked=blockedSeats();
@@ -1696,132 +1992,50 @@ function toggleBlockSeat(id){
   }
 }
 function renderSeats(){
-  // Update toggle button state
-  var btn=$('seatViewBtn');
-  if(btn){btn.innerHTML=seatViewMode==='modern'?'⊞':'✦';btn.classList.toggle('modern-on',seatViewMode==='modern');btn.title=seatViewMode==='modern'?'Switch to grid view':'Switch to card view'}
-  if(seatViewMode==='modern'){renderSeatsModern();return}
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
-  var cols=seatDefaultCols;
-  var prefix=cfg('seatprefix','S');
-  var seenSeats={};
-  holdingMembers().forEach(function(m){if(m.seat)seenSeats[m.seat]=true});
-  var occ=Object.keys(seenSeats).length;
-  $('seatsTitle').textContent='Seat map';
-  $('seatsUtil').textContent=occ+' / '+cap+' occupied';
-  $('seatGrid').style.gridTemplateColumns='repeat('+cols+',1fr)';
-  // Inject column selector above the grid
-  var colsToolbar=$('seatColsToolbar');
-  if(!colsToolbar){
-    colsToolbar=document.createElement('div');
-    colsToolbar.id='seatColsToolbar';
-    colsToolbar.className='seat-cards-toolbar';
-    $('seatGrid').parentNode.insertBefore(colsToolbar,$('seatGrid'));
-  }
-  colsToolbar.innerHTML='<span class="seat-cols-label">Columns:</span>'+
-    [3,4,5,6,8].map(function(n){return '<button class="seat-cols-btn'+(seatDefaultCols===n?' act':'')+'" onclick="setSeatCols('+n+')">'+n+'</button>'}).join('');
+  renderSeatsModern();
+}
 
-  // Show just the first name — bigger and more legible than initials alone.
-  // 9-char limit keeps the strip on one line even at tight 8-col layouts.
-  function shortName(n){var f=String(n||'').trim().split(/\s+/)[0]||'';return f.length>9?f.substring(0,8)+'…':f}
-
-  var bySeat={};
-  holdingMembers().forEach(function(m){if(m.seat)(bySeat[m.seat]=bySeat[m.seat]||[]).push(m)});
-
-  var blocked=blockedSeats();
-
-  // Shift labels from config
+function openFreeSeatAction(seatId, shift){
   var lbl1=cfg('shift1label','Morning'),lbl2=cfg('shift2label','Evening');
-  var fullLbl=cfg('fulldaylabel','Full Day');
+  var shiftLabel=shift==='S1'?lbl1:shift==='S2'?lbl2:shift==='FULL'?cfg('fulldaylabel','Full Day'):'';
+  var heading=shiftLabel?(seatId+' · '+shiftLabel+' (Free)'):('Seat '+seatId+' · Available');
+  var subText=shiftLabel?'This shift slot is free. What would you like to do?':'This seat is fully free. What would you like to do?';
 
-  function halfStatus(m){
-    var d=daysToExpiry(m),st=(m.status||'').toLowerCase();
-    if(st==='pending')return 'pending';
-    if(d!=null&&d<0)return 'expired';
-    if(d!=null&&d<=7)return 'expiring';
-    return 'occupied';
-  }
-  // shiftCls: 's1' | 's2' | 'fd'  — controls the band colour
-  function halfHtml(m,sym,bandLabel,shiftCls){
-    var st=halfStatus(m);
-    var d=daysToExpiry(m);
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
-    var daysTxt=st==='expired'?'⚠ '+Math.abs(d)+'d ago':st==='pending'?'Pending':d==null?'—':d+'d left';
-    var daysCls=st==='expired'?'err':st==='pending'?'hold':d!=null&&d<=7?'warn':'ok';
-    var planShort=String(m.plan||'').split(/[\s\-–]/)[0];
-    var paid=parseFloat(m.totalpaid||'0')||0;
-    var feeHtml='<div class="sh-fee '+(paid?'paid':'due')+'">'+(paid?'✅ Paid':'❌ Due')+'</div>';
-    return '<div class="sc-half '+st+' '+(shiftCls||'')+'" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\')" title="'+E(m.name)+'">'+
-      '<div class="sh-band"><span>'+sym+'</span><span>'+E(bandLabel)+'</span></div>'+
-      '<div class="sh-body">'+
-        '<div class="sh-av" style="'+av+'">'+(m.photourl?'':'<span>'+E(ini(m.name))+'</span>')+'</div>'+
-        '<div class="sh-name">'+E(shortName(m.name))+'</div>'+
-        '<div class="sh-days '+daysCls+'">'+daysTxt+'</div>'+
-        (planShort?'<div class="sh-plan">'+E(planShort)+'</div>':'')+
-        feeHtml+
+  var enrollLabel=shiftLabel?'Enroll member for '+shiftLabel:'Enroll new member';
+  var blockLabel=shiftLabel?'Block '+shiftLabel+' shift':'Block this seat';
+
+  $('sheetBody').innerHTML=
+    '<div style="padding:20px 16px 8px">'+
+      '<div style="font:700 17px var(--F);color:var(--ink);margin-bottom:4px">'+E(heading)+'</div>'+
+      '<div style="font-size:13px;color:var(--ink-3);margin-bottom:22px">'+subText+'</div>'+
+      '<div style="display:flex;flex-direction:column;gap:12px">'+
+        '<button onclick="closeSheet();openEnrollSheet(\''+E(seatId)+'\',\''+E(shift)+'\')" '+
+          'style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--brand-bg);border:1.5px solid var(--brand);border-radius:14px;cursor:pointer;text-align:left;width:100%">'+
+          '<span style="font-size:24px">📋</span>'+
+          '<div><div style="font:700 14px var(--F);color:var(--brand)">'+enrollLabel+'</div>'+
+          '<div style="font-size:12px;color:var(--ink-3);margin-top:2px">Open quick-enroll form</div></div>'+
+        '</button>'+
+        '<button onclick="blockFreeSeatShift(\''+E(seatId)+'\',\''+E(shift)+'\')" '+
+          'style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border:1.5px solid var(--line-dk);border-radius:14px;cursor:pointer;text-align:left;width:100%">'+
+          '<span style="font-size:24px">🚫</span>'+
+          '<div><div style="font:700 14px var(--F);color:var(--ink-2)">'+blockLabel+'</div>'+
+          '<div style="font-size:12px;color:var(--ink-3);margin-top:2px">Mark as reserved/unavailable</div></div>'+
+        '</button>'+
       '</div>'+
     '</div>';
-  }
-  function freeHalfHtml(sym,bandLabel,seatId,shiftCls){
-    return '<div class="sc-half free '+(shiftCls||'')+'" onclick="event.stopPropagation();openSeatSheet(\''+seatId+'\')" title="Free — tap to assign">'+
-      '<div class="sh-band"><span>'+sym+'</span><span>'+E(bandLabel)+'</span></div>'+
-      '<div class="sh-body">'+
-        '<div class="sh-empty">+</div>'+
-        '<div class="sh-name">Free</div>'+
-      '</div>'+
-    '</div>';
-  }
+  openSheet();
+}
 
-  var html='';
-  for(var i=1;i<=cap;i++){
-    var id=prefix+i,list=bySeat[id]||[];
-
-    if(blocked[id.toUpperCase()]){
-      html+='<div class="seat-cell blocked" onclick="toggleBlockSeat(\''+id+'\')" title="Click to unblock">'+
-        '<span class="blk-id">'+id+'</span>'+
-        '<span class="blk-lbl">'+E(blocked[id.toUpperCase()])+'</span>'+
-      '</div>';
-      continue;
-    }
-
-    if(!list.length){
-      html+='<div class="seat-cell fully-free" onclick="openSeatSheet(\''+id+'\')">'+
-        '<div class="sc-ff-id">'+id+'</div>'+
-      '</div>';
-      continue;
-    }
-
-    var byShift={};
-    list.forEach(function(m){byShift[(m.shift||'').toUpperCase()]=m});
-
-    // Short label for the band: take first word before space/bracket
-    function shortLbl(l){return (l||'').split(/[\s(]/)[0]||l}
-    var halvesHtml='<div class="sc-halves">';
-    if(byShift['FULL']){
-      halvesHtml+=halfHtml(byShift['FULL'],'☀️',shortLbl(fullLbl),'fd');
-    }else{
-      halvesHtml+=(byShift['S1']?halfHtml(byShift['S1'],'🌅',shortLbl(lbl1),'s1'):freeHalfHtml('🌅',shortLbl(lbl1),id,'s1'));
-      halvesHtml+=(byShift['S2']?halfHtml(byShift['S2'],'🌆',shortLbl(lbl2),'s2'):freeHalfHtml('🌆',shortLbl(lbl2),id,'s2'));
-    }
-    halvesHtml+='</div>';
-
-    html+='<div class="seat-cell" onclick="openSeatSheet(\''+id+'\')">'+
-      '<div class="sc-id">'+id+'</div>'+
-      halvesHtml+
-    '</div>';
-  }
-  $('seatGrid').innerHTML=html;
-
-  // Shift icon key below the seat grid
-  var keyHtml='';
-  var nShifts=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
-  for(var si=1;si<=nShifts;si++){
-    var lbl=cfg('shift'+si+'label','Shift '+si);
-    keyHtml+='<span><span class="sk-icon">'+shiftIcon_(si,lbl)+'</span>'+E(lbl)+'</span>';
-  }
-  if(cfg('enablefullday','')!=='no'){
-    keyHtml+='<span><span class="sk-icon">☀️</span>'+E(cfg('fulldaylabel','Full Day'))+'</span>';
-  }
-  $('shiftKey').innerHTML=keyHtml;
+function blockFreeSeatShift(seatId, shift){
+  var label=prompt('Label for '+seatId+(shift?' ('+shift+')':'')+' (e.g. Reserved, Staff):','Reserved');
+  if(!label)return;
+  var blocked=blockedSeats();
+  var key=shift?seatId.toUpperCase()+'-'+shift.toUpperCase():seatId.toUpperCase();
+  var existing=Object.keys(blocked).map(function(k){return k+':'+blocked[k]}).join(',');
+  var newVal=(existing?existing+',':'')+key+':'+label.trim();
+  sendCmd({action:'updateConfig',key:'BlockedSeats',value:newVal},function(){
+    config['blockedseats']=newVal;renderSeats();toast(seatId+(shift?' '+shift:'')+' blocked','ok');closeSheet();
+  });
 }
 
 // ─── Active list + pending banner ───
@@ -1830,15 +2044,21 @@ function renderPending(){
   console.log('[dash] renderPending found',pend.length,'pending members');
   if(!pend.length){$('pendingBanner').classList.remove('show');return}
   $('pendingBanner').classList.add('show');
-  $('pendingSub').textContent='· '+pend.length+' to review';
+  $('pendingSub').innerHTML='&nbsp;· '+pend.length+' to review';
   console.log('[dash] renderPending displaying',pend.length,'members');
   $('pendingList').innerHTML=pend.map(function(m){
     var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+    var shiftPill='';
+    if(m.shift){
+      var isFullShift=(m.shift||'').toUpperCase()==='FULL';
+      var shiftTxt=isFullShift?('☀️ '+cfg('fulldaylabel','Full Day')):(shiftIcon_(parseInt((m.shift||'').slice(1),10)||1,cfg('shift'+(m.shift||'').slice(1)+'label',''))+' '+cfg('shift'+(m.shift||'').slice(1)+'label',m.shift));
+      shiftPill='<span class="pr-shift-pill">'+E(shiftTxt)+'</span>';
+    }
     return '<div class="pending-row">'+
       '<div class="av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
       '<div class="body" onclick="openMemberSheet(\''+E(m.memberid)+'\')" style="cursor:pointer">'+
         '<div class="nm">'+E(m.name)+'</div>'+
-        '<div class="meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+(m.shift?' · '+((m.shift||'').toUpperCase()==='FULL'?'☀️ '+cfg('fulldaylabel','Full Day'):shiftIcon_(parseInt((m.shift||'').slice(1),10)||1,cfg('shift'+(m.shift||'').slice(1)+'label',''))+' '+cfg('shift'+(m.shift||'').slice(1)+'label',m.shift)):'')+'</div>'+
+        '<div class="meta">'+E(m.plan||'—')+shiftPill+'</div>'+
       '</div>'+
       '<div class="actions">'+
         '<button class="btn-approve" onclick="event.stopPropagation();approveMember(\''+E(m.memberid)+'\')" title="Approve">✓</button>'+
@@ -1935,53 +2155,74 @@ function updateViewToggleBtn(){
 
 function renderActiveList(rows){
   var cur=cfg('currency','₹');
-  // 5 columns: Seat | Member+Shift+Paid | Dates | Status | Actions
+  var IC_CLOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  var IC_WARN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.6a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+  var IC_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  var IC_CALL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.4-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.7.6a2 2 0 011.7 2z"/></svg>';
+  var IC_WA='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.6.1l-.9 1.1c-.2.2-.3.2-.6.1-1.5-.7-2.5-1.3-3.5-3-.3-.5.3-.4.8-1.4.1-.2 0-.3 0-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.5c-.2 0-.5.1-.8.4-1.1 1-1.1 2.5-1.1 2.6.1.2 1.1 3.3 4.2 5 2 1 2.5 1 3.4.9.6 0 1.7-.7 2-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z"/><path d="M12 2a10 10 0 00-8.6 15l-1.4 4 4.1-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.4.8.8-2.4-.2-.3A8 8 0 1112 20z"/></svg>';
+  var IC_BELL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>';
   var thead='<thead><tr>'+
-    '<th style="width:52px">Seat</th>'+
+    '<th style="width:58px">Seat</th>'+
     '<th>Member</th>'+
-    '<th style="width:130px">Enrolled → Expires</th>'+
-    '<th class="th-r" style="width:76px">Status</th>'+
-    '<th class="th-r" style="width:72px">Actions</th>'+
+    '<th style="width:150px">Enrolled → Expires</th>'+
+    '<th class="th-r" style="width:110px">Status</th>'+
+    '<th class="th-r" style="width:110px">Actions</th>'+
   '</tr></thead>';
   var tbody='<tbody>'+rows.map(function(m){
     var isPending=(m.status||'').toLowerCase()==='pending';
     var d=daysToExpiry(m);
     var isExpired=d!=null&&d<0;
     var rowCls=isExpired?'expired':isPending?'pending':d!=null&&d<=7?'expiring':'';
-    var pillCls=isExpired?'err':isPending?'hold':d!=null&&d<=7?'warn':'';
-    var dTxt=isExpired?Math.abs(d)+'d ago':isPending?'Pending':d==null?'—':d+'d left';
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
-    var shiftEmoji=(m.shift||'').toUpperCase()==='FULL'?'☀️':m.shift?shiftIcon_(parseInt((m.shift||'').slice(1),10)||1,cfg('shift'+(m.shift||'').slice(1)+'label','')):'';
-    var phone=(m.phone||'').replace(/\D/g,'');
+    var pillCls=isExpired?'err':isPending?'hold':d!=null&&d<=7?'warn':'ok';
+    var pillIcon=isExpired?IC_WARN:isPending?'':d!=null&&d<=7?IC_CLOCK:IC_OK;
+    var pillTxt=isExpired?Math.abs(d)+'d overdue':isPending?'Pending':d==null?'—':d+'d left';
+    var avStyle=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+');background-size:cover;background-position:center':'';
+    var avContent=m.photourl?'':E(ini(m.name));
+    var shiftKey=(m.shift||'').toUpperCase();
+    var shiftTag='';
+    if(shiftKey==='FULL'){
+      shiftTag='<span class="lt-shift-tag full">☀️ '+E(cfg('fulldaylabel','Full Day'))+'</span>';
+    } else if(m.shift){
+      var sNum=parseInt((m.shift||'').slice(1),10)||1;
+      var sLbl=cfg('shift'+sNum+'label',m.shift);
+      var sIco=shiftIcon_(sNum,sLbl);
+      var sCls=sNum===2?'e':'m';
+      shiftTag='<span class="lt-shift-tag '+sCls+'">'+sIco+' '+E(sLbl)+'</span>';
+    }
     var paid=parseFloat(m.totalpaid||'0')||0;
+    var feeTag=paid
+      ?'<span class="lt-fee-tag paid">'+IC_OK+' '+cur+paid+'</span>'
+      :'<span class="lt-fee-tag due">'+IC_WARN+' Fee due</span>';
+    var planTag=m.plan?'<span class="lt-plan-tag">'+E(m.plan)+'</span>':'';
+    var daysEnrolled=m.enrolledat?Math.floor((Date.now()-new Date(m.enrolledat).getTime())/86400000):null;
+    var newBadge=(daysEnrolled!=null&&daysEnrolled<=14)?'<span class="new-badge">New</span>':'';
+    var phone=(m.phone||'').replace(/\D/g,'');
+    var waPh=phone.length===10?'91'+phone:phone;
     var renewUrgent=!isExpired&&!isPending&&d!=null&&d<=3;
-    var daysEnrolled=m.enrolledat?(Math.floor((Date.now()-new Date(m.enrolledat).getTime())/(86400000))):null;
-    var isNew=daysEnrolled!=null&&daysEnrolled<=14;
-    var actions=isPending
-      ? '<button class="lt-approve" onclick="event.stopPropagation();approveMember(\''+E(m.memberid)+'\')" title="Approve">✓</button>'+
-        '<button class="lt-reject" onclick="event.stopPropagation();rejectMember(\''+E(m.memberid)+'\')" title="Reject">✕</button>'
-      : renewUrgent
-        ? '<button class="lt-renew" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')" title="Send WhatsApp renewal reminder">📲 Remind</button>'+
-          (phone?'<button onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'" title="Call">📞</button>':'')
-        : (phone?'<button onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'" title="Call">📞</button>'+
-            '<button onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="WhatsApp">📲</button>':'');
+    var actions='';
+    if(isPending){
+      actions='<button class="lt-approve" onclick="event.stopPropagation();approveMember(\''+E(m.memberid)+'\')" title="Approve">'+IC_OK+' Approve</button>'+
+              '<button class="lt-reject" onclick="event.stopPropagation();rejectMember(\''+E(m.memberid)+'\')" title="Reject">✕</button>';
+    } else if(renewUrgent){
+      actions='<button class="lt-remind" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\');waRenew(\''+E(m.memberid)+'\')" title="Send reminder">'+IC_BELL+' Remind</button>'+
+              (phone?'<button class="lt-icn" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'" title="Call">'+IC_CALL+'</button>':'');
+    } else {
+      if(phone) actions+='<button class="lt-icn" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'" title="Call">'+IC_CALL+'</button>';
+      if(phone) actions+='<button class="lt-icn" onclick="event.stopPropagation();location.href=\'https://wa.me/'+waPh+'\'" title="WhatsApp">'+IC_WA+'</button>';
+    }
     var startShort=m.startdate?fmtDate(m.startdate).replace(/\s\d{4}/,''):'—';
     var expiryShort=m.expirydate?fmtDate(m.expirydate).replace(/\s\d{4}/,''):'—';
     return '<tr class="'+rowCls+'" onclick="openMemberSheet(\''+E(m.memberid)+'\')" title="'+E(m.name)+'">'+
       '<td><span class="lt-seat">'+(m.seat||'—')+'</span></td>'+
       '<td><div class="lt-name-cell">'+
-        '<div class="lt-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="lt-av" style="'+avStyle+'">'+avContent+'</div>'+
         '<div style="min-width:0">'+
-          '<div class="lt-name">'+E(m.name)+(isNew?' <span class="new-badge">New</span>':'')+'</div>'+
-          '<div style="font-size:10.5px;color:var(--ink-3);margin-top:1px;display:flex;gap:5px;align-items:center">'+
-            (shiftEmoji?'<span>'+shiftEmoji+'</span>':'')+
-            (m.plan?'<span style="color:#1d4ed8;font-weight:700">📚 '+E(m.plan)+'</span>':'')+
-            (paid?'<span style="color:#15803d;font-weight:600">✅ '+cur+paid+'</span>':'<span style="color:#dc2626;font-weight:600">❌ Fee Due</span>')+
-          '</div>'+
+          '<div class="lt-name">'+E(m.name)+newBadge+'</div>'+
+          '<div class="lt-meta">'+shiftTag+planTag+feeTag+'</div>'+
         '</div>'+
       '</div></td>'+
-      '<td class="lt-date" style="font-size:11px">'+E(startShort)+' → '+E(expiryShort)+'</td>'+
-      '<td style="text-align:right"><span class="lt-pill '+pillCls+'">'+dTxt+'</span></td>'+
+      '<td class="lt-date'+(isExpired?' expired-txt':'')+'">'+E(startShort)+'<span class="arr">→</span>'+E(expiryShort)+'</td>'+
+      '<td style="text-align:right"><span class="lt-pill '+pillCls+'">'+pillIcon+pillTxt+'</span></td>'+
       '<td><div class="lt-acts">'+actions+'</div></td>'+
     '</tr>';
   }).join('')+'</tbody>';
@@ -2029,6 +2270,12 @@ function renderActive(){
     var planDur=planObj?(planObj.duration||planObj.unit||''):'';
     var planDetail=(planDur||planPrice)?('<span class="plan-detail">'+(planDur?'⏱ '+E(planDur):'')+(planDur&&planPrice?' · ':'' )+(planPrice?cur+planPrice:'')+'</span>'):'';
     var dateCls=isExpired?'err':d!=null&&d<=7?'warn':'';
+    var IC_SEAT='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="11" height="7" rx="1"/><path d="M5 6V4.5A1.5 1.5 0 016.5 3h3A1.5 1.5 0 0111 4.5V6M5.5 13v1.5M10.5 13v1.5"/></svg>';
+    var IC_CAL='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="3.5" width="13" height="11" rx="1.5"/><path d="M11 1.5v4M5 1.5v4M1.5 7.5h13"/></svg>';
+    var IC_PHONE='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 11.2v1.9a1.3 1.3 0 01-1.4 1.3A12.9 12.9 0 015.7 12a12.7 12.7 0 01-3.9-3.9A12.9 12.9 0 011.5 2.4 1.3 1.3 0 012.8 1h2A1.3 1.3 0 016 2.1c.1.6.3 1.2.5 1.8a1.3 1.3 0 01-.3 1.4l-.8.9A10.4 10.4 0 009 10l.9-.9a1.3 1.3 0 011.4-.3c.6.2 1.2.4 1.8.5A1.3 1.3 0 0114 10.6v.6z"/></svg>';
+    var IC_CALL='<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 11.2v1.9a1.3 1.3 0 01-1.4 1.3A12.9 12.9 0 015.7 12a12.7 12.7 0 01-3.9-3.9A12.9 12.9 0 011.5 2.4 1.3 1.3 0 012.8 1h2A1.3 1.3 0 016 2.1c.1.6.3 1.2.5 1.8a1.3 1.3 0 01-.3 1.4l-.8.9A10.4 10.4 0 009 10l.9-.9a1.3 1.3 0 011.4-.3c.6.2 1.2.4 1.8.5A1.3 1.3 0 0114 10.6v.6z"/></svg>';
+    var IC_WA='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.2-.1-.4-.1-.6.1-.2.2-.6.9-.8 1-.1.2-.3.2-.5.1-.8-.4-1.6-.9-2.2-1.5-.6-.6-1.1-1.4-1.5-2.2-.1-.2 0-.4.1-.5.1-.1.2-.3.4-.5.1-.1.1-.3.2-.4 0-.2 0-.3-.1-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.6.7-.9 1.5-.9 2.4 0 .9.3 1.8.8 2.5 1 1.5 2.3 2.7 3.8 3.5.5.3 1 .4 1.5.5.6.1 1.2 0 1.7-.3.4-.3.7-.8.8-1.3.1-.5 0-.9-.3-1.1m-5.5 4.8C8.4 19.2 5.8 16.6 5.8 13c0-3.6 2.6-6.2 6.2-6.2 3.6 0 6.2 2.6 6.2 6.2 0 3.6-2.6 6.2-6.2 6.2M12 4.8C7.5 4.8 3.8 8.5 3.8 13c0 1.5.4 2.9 1.1 4.1L3 21l4-1.9c1.2.6 2.5 1 3.9 1 4.5 0 8.2-3.7 8.2-8.1S16.5 4.8 12 4.8"/></svg>';
+    var IC_RENEW='<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.7 7a5.8 5.8 0 11-1.7-4M14 2v4h-4"/></svg>';
     return '<div class="mb '+cardCls+'" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
       '<div class="avatar '+(isExpired?'expired':isPending?'pending':'')+'" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'<span class="status-dot"></span></div>'+
       '<div class="body">'+
@@ -2037,25 +2284,25 @@ function renderActive(){
           (daysEnrolled!=null&&daysEnrolled<=14?'<span class="new-badge">New</span>':'')+
         '</div>'+
         '<div class="meta">'+
-          (m.seat?'<span class="tag seat">🪑 '+E(m.seat)+'</span>':'')+
+          (m.seat?'<span class="tag seat">'+IC_SEAT+' '+E(m.seat)+'</span>':'')+
           (shiftLbl?'<span class="tag shift'+(isFullShift?' full-day':'')+'">'+E(shiftLbl)+'</span>':'')+
           (m.plan?'<span class="plan-name">'+E(m.plan)+'</span>':'')+
-          (paid?'<span class="tag paid">'+cur+paid+'</span>':'<span class="tag fee-due">Fee Due</span>')+
+          (paid?'<span class="tag paid">✓ '+cur+paid+'</span>':'<span class="tag fee-due">Fee Due</span>')+
         '</div>'+
         '<div class="submeta">'+
-          '<span class="date-range '+(dateCls)+'" title="Start → Expiry">📅 '+E(startTxt)+'<span class="sep">→</span>'+E(expiryTxt)+'</span>'+
-          (phone?'<span class="ph-chip">📞 '+E(m.phone)+'</span>':'')+
+          '<span class="date-range '+(dateCls)+'" title="Start → Expiry">'+IC_CAL+' '+E(startTxt)+'<span class="sep">→</span>'+E(expiryTxt)+'</span>'+
+          (phone?'<span class="ph-chip">'+IC_PHONE+' '+E(m.phone)+'</span>':'')+
         '</div>'+
       '</div>'+
       '<div class="right">'+
         '<div class="days-pill '+pillCls+'">'+dTxt+'</div>'+
-        (isExpired?'<button class="renew-cta renew-exp" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\');setTimeout(function(){openRenewMember(\''+E(m.memberid)+'\')},120)" title="Renew membership">🔄 Renew</button>':'')+
-        (renewUrgent?'<button class="renew-cta" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')" title="Send WhatsApp renewal reminder">📲 Remind</button>':'')+
+        (isExpired?'<button class="renew-cta renew-exp" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\');setTimeout(function(){openRenewMember(\''+E(m.memberid)+'\')},120)" title="Renew membership">'+IC_RENEW+' Renew</button>':'')+
+        (renewUrgent?'<button class="renew-cta" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')" title="Send WhatsApp renewal reminder">'+IC_RENEW+' Remind</button>':'')+
         (phone&&!renewUrgent&&!isExpired?'<div class="mb-quick">'+
-          '<button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">📞</button>'+
-          '<button class="qa-wa" title="WhatsApp" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')">📲</button>'+
+          '<button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">'+IC_CALL+'</button>'+
+          '<button class="qa-wa" title="WhatsApp" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')">'+IC_WA+'</button>'+
         '</div>':'')+
-        (phone&&renewUrgent?'<div class="mb-quick"><button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">📞</button></div>':'')+
+        (phone&&renewUrgent?'<div class="mb-quick"><button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">'+IC_CALL+'</button></div>':'')+
       '</div>'+
     '</div>';
   }).join('');
@@ -2064,7 +2311,7 @@ function renderActive(){
 // ─── Desktop sidebars ───
 function renderDesktopSidebars(){
   if(window.innerWidth<1120)return;
-  renderDsOcc();renderDsPending();renderDsAlerts();renderDsExpiring();renderDsRecent();
+  renderDsOcc();renderDsPending();renderDsAlerts();renderDsBirthdays();renderDsExpiring();renderDsRecent();
 }
 function renderDsOcc(){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
@@ -2078,30 +2325,34 @@ function renderDsOcc(){
   var free=Math.max(0,cap-occ);
   var expSoon=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=0&&d<=7}).length;
   var expired=activeMembers().filter(function(m){var d=daysToExpiry(m);return d!=null&&d<0}).length;
-  var C=2*Math.PI*26,fill=Math.max(0,Math.min(C,(pct/100)*C));
-  var col=pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--ok)';
-  $('dsOccCard').innerHTML='<div class="ds-card-title">Occupancy</div>'+
+  var r=37,C=2*Math.PI*r,fill=Math.max(0,Math.min(C,(pct/100)*C));
+  var col=pct>=90?'#dc2626':pct>=70?'#d97706':'#f97316';
+  $('dsOccCard').innerHTML=
     '<div class="ds-occ">'+
       '<div class="ds-ring">'+
-        '<svg width="64" height="64" viewBox="0 0 64 64">'+
-          '<circle cx="32" cy="32" r="26" fill="none" stroke="var(--line)" stroke-width="7"/>'+
-          '<circle cx="32" cy="32" r="26" fill="none" stroke="'+col+'" stroke-width="7" stroke-dasharray="'+fill+' '+(C-fill)+'" stroke-linecap="round"/>'+
+        '<svg width="90" height="90" viewBox="0 0 90 90">'+
+          '<circle cx="45" cy="45" r="'+r+'" fill="none" stroke="#e2e8f0" stroke-width="8"/>'+
+          '<circle cx="45" cy="45" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="8" stroke-dasharray="'+fill+' '+(C-fill)+'" stroke-linecap="round" transform="rotate(-90 45 45)"/>'+
         '</svg>'+
         '<div class="ds-ring-num">'+pct+'<span class="ds-ring-pct">%</span></div>'+
       '</div>'+
       '<div class="ds-occ-stats">'+
-        '<div class="ds-stat-row"><span class="lbl">Occupied</span><span class="val">'+occ+' / '+cap+'</span></div>'+
+        '<div class="ds-stat-row"><span class="lbl">Occupied</span><span class="val"><b>'+occ+'</b> <span style="color:var(--ink-3);font-weight:400;font-size:11px">/ '+cap+'</span></span></div>'+
         '<div class="ds-stat-row"><span class="lbl">Free seats</span><span class="val ok">'+free+'</span></div>'+
-        (expSoon?'<div class="ds-stat-row"><span class="lbl">Expiring ≤7d</span><span class="val warn">'+expSoon+'</span></div>':'')+
-        (expired?'<div class="ds-stat-row"><span class="lbl">Expired</span><span class="val err">'+expired+'</span></div>':'')+
+        '<div class="ds-stat-row"><span class="lbl">Expiring ≤7d</span><span class="val '+(expSoon?'warn':'ok')+'">'+expSoon+'</span></div>'+
+        '<div class="ds-stat-row"><span class="lbl">Expired</span><span class="val '+(expired?'err':'ok')+'">'+expired+'</span></div>'+
       '</div>'+
     '</div>';
 }
 function renderDsPending(){
   var pend=pendingMembers();
   var el=$('dsPendingCard');
-  if(!pend.length){el.innerHTML='';return}
-  el.innerHTML='<div class="ds-card-title">Pending approval <span style="background:var(--hold-bg);color:var(--hold-dk);padding:1px 7px;border-radius:99px;font-size:10px">'+pend.length+'</span></div>'+
+  if(!pend.length){el.innerHTML='';el.style.display='none';return}
+  el.style.display='';
+  el.innerHTML=
+    '<div class="ds-card-title">PENDING APPROVAL'+
+      '<span style="background:var(--hold-bg);color:var(--hold-dk);width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">'+pend.length+'</span>'+
+    '</div>'+
     pend.slice(0,5).map(function(m){
       var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       return '<div class="ds-member">'+
@@ -2119,8 +2370,9 @@ function renderDsAlerts(){
   var today=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d===0});
   var tomorrow=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d===1});
   var el=$('dsAlertCard');
-  if(!today.length&&!tomorrow.length){el.innerHTML='';return}
-  var rows=today.concat(tomorrow).slice(0,4).map(function(m){
+  if(!today.length&&!tomorrow.length){el.innerHTML='';el.style.display='none';return}
+  el.style.display='';
+  var rows=today.concat(tomorrow).slice(0,5).map(function(m){
     var d=daysToExpiry(m);
     var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
     return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
@@ -2129,7 +2381,60 @@ function renderDsAlerts(){
       '<span class="ds-pill '+(d===0?'err':'warn')+'">'+(d===0?'Today':'Tomorrow')+'</span>'+
     '</div>';
   }).join('');
-  el.innerHTML='<div class="ds-card-title">⚠️ Expiring today/tomorrow</div>'+rows;
+  el.innerHTML=
+    '<div class="ds-card-title" style="gap:7px">'+
+      '<span style="display:inline-flex;align-items:center;gap:5px">'+
+        '<span style="width:20px;height:20px;border-radius:50%;background:#fef3c7;display:inline-flex;align-items:center;justify-content:center;font-size:11px">⚠️</span>'+
+        'EXPIRING TODAY / TOMORROW'+
+      '</span>'+
+    '</div>'+rows;
+}
+function renderDsBirthdays(){
+  var el=$('dsBdayCard');if(!el)return;
+  var now=new Date();
+  var todayMD=String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  var shop=cfg('shopname','Library');
+  var upcoming=[];
+  activeMembers().forEach(function(m){
+    if(!m.dob)return;
+    var d=new Date(m.dob);
+    if(isNaN(d.getTime()))return;
+    var bMD=String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    // days until birthday this year (or next)
+    var bThis=new Date(now.getFullYear(),d.getMonth(),d.getDate());
+    if(bThis<new Date(now.getFullYear(),now.getMonth(),now.getDate()))bThis=new Date(now.getFullYear()+1,d.getMonth(),d.getDate());
+    var diff=Math.round((bThis.getTime()-new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime())/(86400000));
+    if(diff<=7)upcoming.push({m:m,diff:diff,bMD:bMD});
+  });
+  upcoming.sort(function(a,b){return a.diff-b.diff});
+  if(!upcoming.length){el.innerHTML='';el.style.display='none';return}
+  el.style.display='';
+  el.innerHTML=
+    '<div class="ds-card-title" style="gap:7px">'+
+      '<span style="display:inline-flex;align-items:center;gap:5px">'+
+        '<span style="font-size:14px">🎂</span>UPCOMING BIRTHDAYS'+
+      '</span>'+
+    '</div>'+
+    upcoming.slice(0,5).map(function(item){
+      var m=item.m,diff=item.diff;
+      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
+      var isToday=diff===0;
+      var ph=(m.phone||'').replace(/\D/g,'');
+      var waPh=ph.length===10?'91'+ph:ph;
+      var waMsg=isToday
+        ?'🎂 Happy Birthday '+m.name+'! 🎉\n\nWishing you a wonderful day from all of us at *'+shop+'*. May this year bring you great success in your studies! 🌟'
+        :'';
+      var pillHtml=isToday
+        ?'<div style="display:flex;align-items:center;gap:5px">'+
+            '<span class="ds-pill err" style="background:#fff0f3;color:#dc2626">Today 🎂</span>'+
+            (waPh?'<button onclick="event.stopPropagation();openWAPreview(\''+waPh+'\','+JSON.stringify(m.name)+','+JSON.stringify(waMsg)+')" style="appearance:none;border:none;background:#25d366;color:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center" title="Send birthday wish">📲</button>':'')+'</div>'
+        :'<span class="ds-pill warn">'+diff+'d</span>';
+      return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
+        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-info"><div class="ds-name">'+E(m.name)+(isToday?' 🎂':'')+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
+        pillHtml+
+      '</div>';
+    }).join('');
 }
 function renderDsExpiring(){
   var act=activeMembers();
@@ -2224,13 +2529,63 @@ function renderInsights(){
       '<div class="avatar" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'<span class="status-dot"></span></div>'+
       '<div class="body"><div class="nm">'+E(m.name)+'</div><div class="meta">'+(m.seat?'<span class="tag seat">🪑 '+E(m.seat)+'</span>':'')+(shiftLbl?'<span class="tag shift'+(isFullShift?' full-day':'')+'">'+E(shiftLbl)+'</span>':'')+(m.plan?'<span class="plan-name">'+E(m.plan)+'</span>':'')+'</div></div>'+
       '<div class="right"><div class="days-pill '+pillCls+'">'+dTxt+'</div>'+
-        (phone?'<div class="mb-quick"><button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">📞</button><button class="qa-wa" title="WhatsApp reminder" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')">📲</button>'+(m.email?'<button class="qa-email" title="Send renewal email" onclick="event.stopPropagation();sendRenewalEmail(\''+E(m.memberid)+'\')">✉️</button>':'')+'</div>':'<div class="mb-quick">'+(m.email?'<button class="qa-email" title="Send renewal email" onclick="event.stopPropagation();sendRenewalEmail(\''+E(m.memberid)+'\')">✉️</button>':'')+'<button class="qa-wa" title="Send renew nudge" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')">📲</button></div>')+
+        (phone?'<div class="mb-quick"><button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">📞</button><button class="qa-wa qa-wa-renew" title="WhatsApp renewal reminder" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')">📲 Renew</button>'+(m.email?'<button class="qa-email" title="Send renewal email" onclick="event.stopPropagation();sendRenewalEmail(\''+E(m.memberid)+'\')">✉️</button>':'')+'</div>':'<div class="mb-quick">'+(m.email?'<button class="qa-email" title="Send renewal email" onclick="event.stopPropagation();sendRenewalEmail(\''+E(m.memberid)+'\')">✉️</button>':'')+'<button class="qa-wa qa-wa-renew" title="Send renew nudge" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')">📲 Renew</button></div>')+
       '</div>'+
     '</div>';
   }).join('');
 }
 function statCard(label,icon,val,kind,sub){
   return '<div class="stat '+(kind||'')+'"><div><div class="lbl">'+E(label)+'</div><div class="val">'+E(val)+'</div></div>'+(sub?'<div class="sub">'+E(sub)+'</div>':'')+'<div class="icon">'+icon+'</div></div>';
+}
+
+// ─── Shifts card builder ───
+function buildShiftsCard_(){
+  var shiftEnabled=isYes('enableshifts','yes');
+  var count=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var fullDayEnabled=isYes('enablefullday','yes');
+  var defLabels=['','Morning','Evening','Night','Late Night'];
+  var defTimes=['','6 AM – 2 PM','2 PM – 10 PM','10 PM – 6 AM','2 AM – 6 AM'];
+  var icons=['','🌅','🌙','🌑','⭐'];
+  var rows='';
+  for(var i=1;i<=4;i++){
+    var active=i<=count;
+    var lbl=cfg('shift'+i+'label',defLabels[i]);
+    var tim=cfg('shift'+i+'time',defTimes[i]);
+    rows+='<tr class="ss-row'+(active?'':' ss-dim')+'">'+
+      '<td class="ss-sh"><span class="ss-sh-icon">'+icons[i]+'</span><div><div class="ss-sh-name">Shift '+i+'</div><div class="ss-sh-sub">'+(active?defLabels[i].toUpperCase():'INACTIVE')+'</div></div></td>'+
+      '<td class="ss-td"><input type="text" class="ss-input" value="'+E(lbl)+'" placeholder="'+E(defLabels[i])+'" '+(active?'':'disabled')+' onchange="saveCfg(\'Shift'+i+'Label\',this.value)"></td>'+
+      '<td class="ss-td"><div class="ss-time-wrap"><span class="ss-time-ic">🕐</span><input type="text" class="ss-input" value="'+E(tim)+'" placeholder="'+E(defTimes[i])+'" '+(active?'':'disabled')+' onchange="saveCfg(\'Shift'+i+'Time\',this.value)"></div></td>'+
+    '</tr>';
+  }
+  return '<div class="ss-card">'+
+    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Enable shift system</div><div class="ss-row-hint">Splits each seat into N time-of-day shifts</div></div>'+
+      '<div class="switch'+(shiftEnabled?' on':'')+'" onclick="toggleCfg(\'EnableShifts\',this);setTimeout(function(){var el=document.getElementById(\'setShifts\');if(el)el.innerHTML=buildShiftsCard_()},350)"></div></div>'+
+    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Number of shifts</div><div class="ss-row-hint">Choose between 1 and 4. Define labels and times below.</div></div>'+
+      '<div class="ss-count-pills">'+[1,2,3,4].map(function(n){return '<button class="ss-pill'+(n===count?' on':'')+'" onclick="setShiftCount_('+n+')">'+n+'</button>'}).join('')+'</div></div>'+
+    '<div class="ss-table-wrap"><table class="ss-table"><thead><tr><th>SHIFT</th><th>LABEL</th><th>TIME WINDOW</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    (count<4?'<div class="ss-hint-row">ⓘ Shifts '+(count+1)+(count<3?'–4':'')+(count===3?'':'')+' are hidden. Raise <b>Number of shifts</b> to use them.</div>':'')+
+    '<div class="ss-fullday-section">'+
+      '<div class="ss-fullday-label">FULL DAY</div>'+
+      '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Enable Full Day option</div><div class="ss-row-hint">A Full-Day booking occupies every shift for that seat.</div></div>'+
+        '<div class="switch'+(fullDayEnabled?' on':'')+'" onclick="toggleCfg(\'EnableFullDay\',this)"></div></div>'+
+      '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Full Day label</div><div class="ss-row-hint">Shown on the board and on member records.</div></div>'+
+        '<input type="text" class="ss-inline-input" value="'+E(cfg('fulldaylabel','Full Day'))+'" onchange="saveCfg(\'FullDayLabel\',this.value)"></div>'+
+    '</div>'+
+    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Recommended shift</div><div class="ss-row-hint">Shift number (1–4) or label shown with a "Recommended" ribbon on the enrollment page. Leave blank to hide.</div></div>'+
+      '<input type="text" class="ss-inline-input" value="'+E(cfg('recommendedshift',''))+'" placeholder="e.g. 2 or Evening" style="width:110px;min-width:unset" onchange="saveCfg(\'RecommendedShift\',this.value)"></div>'+
+    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Total seats</div><div class="ss-row-hint">Physical seat capacity of your library.</div></div>'+
+      '<input type="number" class="ss-inline-input" value="'+E(cfg('seatcapacity','40'))+'" style="width:70px;min-width:unset;text-align:center" onchange="saveCfg(\'SeatCapacity\',this.value)"></div>'+
+    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Seat ID prefix</div><div class="ss-row-hint">Seats become S1, S2, … — change A for A1, A2, …</div></div>'+
+      '<input type="text" class="ss-inline-input" value="'+E(cfg('seatprefix','S'))+'" style="width:70px;min-width:unset;text-align:center" onchange="saveCfg(\'SeatPrefix\',this.value)"></div>'+
+    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Grid columns</div><div class="ss-row-hint">Visual layout — e.g. 8 cols × 5 rows = 40 seats</div></div>'+
+      '<input type="number" class="ss-inline-input" value="'+E(cfg('seatgridcols','8'))+'" style="width:70px;min-width:unset;text-align:center" onchange="saveCfg(\'SeatGridCols\',this.value)"></div>'+
+    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Coming soon message</div><div class="ss-row-hint">Shown on the enrollment page below the seat map. Leave blank to hide. e.g. "10 new seats opening from 1 Aug"</div></div>'+
+      '<input type="text" class="ss-inline-input" value="'+E(cfg('comingsoonseats',''))+'" placeholder="e.g. 10 new seats from 1 Aug" style="width:160px;min-width:unset" onchange="saveCfg(\'ComingSoonSeats\',this.value)"></div>'+
+  '</div>';
+}
+function setShiftCount_(n){
+  saveCfg('ShiftCount',String(n));
+  setTimeout(function(){if($('setShifts'))$('setShifts').innerHTML=buildShiftsCard_()},350);
 }
 
 // ─── Settings ───
@@ -2240,21 +2595,10 @@ function renderSettings(){
   function num(key,label,hint,def){return '<div class="setting"><div class="desc"><div class="lab">'+E(label)+'</div>'+(hint?'<div class="hint">'+E(hint)+'</div>':'')+'</div><input type="number" value="'+E(cfg(key,def||''))+'" onchange="saveCfg(\''+E(key)+'\',this.value)"></div>'}
   function sel(key,label,opts,def){var cur=cfg(key,def||'');return '<div class="setting"><div class="desc"><div class="lab">'+E(label)+'</div></div><select onchange="saveCfg(\''+E(key)+'\',this.value)">'+opts.map(function(o){return '<option value="'+E(o)+'"'+(o===cur?' selected':'')+'>'+E(o)+'</option>'}).join('')+'</select></div>'}
 
-  $('setShifts').innerHTML=
-    tog('EnableShifts','Enable shift system','Splits each seat into N time-of-day shifts','yes')+
-    num('ShiftCount','Number of shifts','1 to 4. Labels/times below.','2')+
-    txt('Shift1Label','Shift 1 label','','Morning')+txt('Shift1Time','Shift 1 time','','6 AM - 2 PM')+
-    txt('Shift2Label','Shift 2 label','','Evening')+txt('Shift2Time','Shift 2 time','','2 PM - 10 PM')+
-    txt('Shift3Label','Shift 3 label','Only used if ShiftCount ≥ 3','Night')+txt('Shift3Time','Shift 3 time','','10 PM - 6 AM')+
-    txt('Shift4Label','Shift 4 label','Only used if ShiftCount ≥ 4','Late Night')+txt('Shift4Time','Shift 4 time','','2 AM - 6 AM')+
-    tog('EnableFullDay','Enable Full Day option','Full Day occupies every shift for that seat','yes')+
-    txt('FullDayLabel','Full Day label','','Full Day')+
-    num('SeatCapacity','Total seats','','40')+
-    txt('SeatPrefix','Seat ID prefix','Seats become S1, S2, …','S')+
-    num('SeatGridCols','Grid columns','Visual layout — 8 cols × 5 rows = 40','8');
+  $('setShifts').innerHTML=buildShiftsCard_();
 
   $('setEnroll').innerHTML=
-    tog('RequireApproval','Shopkeeper approval needed','New enrollments stay Pending until you approve them.','yes')+
+    tog('RequireApproval','Approval required','New enrollments stay Pending until you approve them.','yes')+
     tog('RequireStudentPhoto','Require student photo','','yes')+
     num('MaxPhotoMB','Max photo size (MB)','Up to 10 MB recommended max — Cloudinary free tier handles it fine.','4')+
     num('PhotoMinWidth','Min photo width (px)','','400')+
@@ -2280,15 +2624,31 @@ function renderSettings(){
     txt('WhatsAppTemplate','WhatsApp template','Vars: {name} {plan} {expiry} {seat} {shop} {amount} {payLink}','Hi {name}, your {plan} at {shop} expires on {expiry} (Seat {seat}).\n\nPlease pay {amount} to renew.\n{payLink}')+
     txt('WhatsAppGroupLink','WhatsApp group invite link','Shown to students after enrollment','https://chat.whatsapp.com/...')+
     txt('RenewLink','Renew link','URL students tap to re-enroll','https://storepro.in/enroll.html?store=')+
-    txt('ShopkeeperName','Your name','Shown as greeting on the dashboard header e.g. "Good morning, Amit"','')+
-    txt('ShopkeeperPhone','Your phone','Used for test SMS/WA and shown in dashboard header','9999999999')+
-    txt('ShopkeeperEmail','Your email (for test email)','','');
+    txt('ShopkeeperName','Owner name','Shown as greeting on the dashboard header e.g. "Good morning, Amit"','')+
+    txt('ShopkeeperPhone','Owner phone','Used for test SMS/WA and shown in dashboard header','9999999999')+
+    txt('ShopkeeperEmail','Owner email','','');
 
   $('setHistory').innerHTML=
     tog('ShowHistory','Show History section','Lets you see and restore deleted/expired members.','no')+
     num('ArchiveAfterDays','Auto-archive after (days)','Members deleted/expired more than this many days ago move to Members_Archive when you tap Archive.','365');
 
   $('archDays').textContent=cfg('archiveafterdays','365');
+
+  var qrUrl=cfg('googlereviewqr','');
+  $('setGoogleReviews').innerHTML=
+    '<div style="padding:4px 0 10px;display:flex;flex-direction:column;gap:0">'+
+      '<div class="setting"><div class="desc"><div class="lab">Google Review Link</div><div class="hint">Paste your Google Maps review URL. Sent in WhatsApp and email reminders.</div></div>'+
+        '<input type="url" value="'+E(cfg('googlereviewlink',''))+'" placeholder="https://g.page/r/…/review" onchange="saveCfg(\'GoogleReviewLink\',this.value)" style="min-width:0;flex:1;margin-left:10px"></div>'+
+      '<div class="setting"><div class="desc"><div class="lab">QR Code Image</div><div class="hint">Upload a QR image — shown on the enrollment success screen.</div></div>'+
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">'+
+          (qrUrl?'<img src="'+E(qrUrl)+'" style="width:80px;height:80px;object-fit:contain;border-radius:10px;border:1px solid var(--line)" id="grQrPreview">':'<div id="grQrPreview" style="width:80px;height:80px;border:2px dashed var(--line-dk);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--ink-4);font-size:22px">⭐</div>')+
+          '<label style="cursor:pointer;background:var(--brand-bg);color:var(--brand);border:1.5px solid var(--brand);border-radius:8px;padding:6px 12px;font:600 12px var(--f)">'+
+            '📤 Upload QR<input type="file" accept="image/*" style="display:none" onchange="uploadGoogleQR(this)">'+
+          '</label>'+
+          (qrUrl?'<button onclick="saveCfg(\'GoogleReviewQR\',\'\');renderSettings()" style="appearance:none;border:none;background:none;color:var(--err-dk);font-size:11px;cursor:pointer;font-weight:600">Remove</button>':'')+
+        '</div>'+
+      '</div>'+
+    '</div>';
 
   $('setPinSection').innerHTML=
     '<div style="padding:14px 0 6px">'+
@@ -2310,6 +2670,23 @@ function renderSettings(){
         '<div id="pinMsg" style="font-size:12px;min-height:18px"></div>'+
       '</div>'+
     '</div>';
+}
+
+function uploadGoogleQR(input){
+  var f=input.files&&input.files[0];if(!f)return;
+  var prev=document.getElementById('grQrPreview');
+  if(prev)prev.style.opacity='.4';
+  var url='https://api.cloudinary.com/v1_1/storepro/image/upload';
+  var fd=new FormData();fd.append('file',f);fd.append('upload_preset','storepro_products');
+  fetch(url,{method:'POST',body:fd})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(!d.secure_url)throw new Error('Upload failed');
+      saveCfg('GoogleReviewQR',d.secure_url);
+      toast('QR uploaded ✓','ok');
+      setTimeout(renderSettings,600);
+    })
+    .catch(function(){toast('Upload failed','err');if(prev)prev.style.opacity='1'});
 }
 
 function changePinFn(){
@@ -2410,170 +2787,184 @@ function openMemberSheet(memberId){
   if(!m){toast('Member not found','err');return}
   var d=daysToExpiry(m);
   var status=(m.status||'').toLowerCase();
-  var dTxt=d==null?'—':d<0?(Math.abs(d)+'d ago'):(d+' days');
+  var dTxt=d==null?'—':d<0?(Math.abs(d)+' days ago'):(d+' days');
   var badgeCls='active';if(d!=null&&d<0)badgeCls='expired';else if(status==='pending')badgeCls='pending';else if(status==='deleted'||status==='rejected')badgeCls='deleted';
-  var badgeLabel=d!=null&&d<0?'Expired':status==='pending'?'Pending approval':status==='deleted'?'Deleted':status==='rejected'?'Rejected':'Active';
-  var shiftLbl=(m.shift||'').toUpperCase()==='FULL'?'☀️ '+cfg('fulldaylabel','Full Day'):(m.shift?shiftIcon_(parseInt(m.shift.slice(1),10)||1,cfg('shift'+m.shift.slice(1)+'label',''))+' '+cfg('shift'+m.shift.slice(1)+'label',m.shift):'—');
+  var badgeLabel=d!=null&&d<0?'Expired':status==='pending'?'Pending':status==='deleted'?'Deleted':status==='rejected'?'Rejected':'Active';
+  var shiftLbl=(m.shift||'').toUpperCase()==='FULL'?cfg('fulldaylabel','Full Day'):(m.shift?cfg('shift'+m.shift.slice(1)+'label',m.shift):'');
   var hasPhone=!!(m.phone||'').replace(/\D/g,'');
   var phoneRaw=(m.phone||'').replace(/\D/g,'');
-  var waPh=phoneRaw.length===10?'91'+phoneRaw:phoneRaw;
+  var cur=cfg('currency','₹');
+  var paidAmt=parseFloat(m.totalpaid||'0')||0;
+  var planObj=m.plan?plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0]:null;
+  var planPrice=planObj?parseFloat(String(planObj.price||'0').replace(/[^\d.]/g,''))||0:0;
+  var planDur=planObj?(planObj.duration||planObj.unit||''):'';
 
-  var hero='<div class="m-hero"><div class="m-hero-deco"></div>'+
-    '<button class="m-edit-btn" onclick="openEditMember(\''+E(memberId)+'\')">✏️ Edit</button>'+
-    '<div class="m-hero-inner">'+
-      '<div class="m-avatar-wrap">'+(m.photourl?'<img src="'+E(m.photourl)+'" alt="">':'<span class="m-initials">'+E(ini(m.name))+'</span>')+'</div>'+
-      '<div class="m-hero-text">'+
-        '<h3>'+E(m.name||'—')+'</h3>'+
-        '<div class="pid">'+E(m.memberid||'—')+(m.phone?' · '+E(m.phone):'')+'</div>'+
-        '<div class="badge '+badgeCls+'"><span class="b-dot"></span>'+E(badgeLabel)+'</div>'+
-      '</div>'+
-    '</div></div>';
+  // ─── SVG icons ───
+  var I_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+  var I_CAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>';
+  var I_SEAT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="9" width="14" height="9" rx="1"/><path d="M7 9V7a2 2 0 012-2h6a2 2 0 012 2v2M8 18v2M16 18v2"/></svg>';
+  var I_CLOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  var I_WARN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.6a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+  var I_PHONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.4-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.7.6a2 2 0 011.7 2z"/></svg>';
+  var I_WA='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.6.1l-.9 1.1c-.2.2-.3.2-.6.1-1.5-.7-2.5-1.3-3.5-3-.3-.5.3-.4.8-1.4.1-.2 0-.3 0-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.5c-.2 0-.5.1-.8.4-1.1 1-1.1 2.5-1.1 2.6.1.2 1.1 3.3 4.2 5 2 1 2.5 1 3.4.9.6 0 1.7-.7 2-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z"/><path d="M12 2a10 10 0 00-8.6 15l-1.4 4 4.1-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.4.8.8-2.4-.2-.3A8 8 0 1112 20z"/></svg>';
+  var I_RENEW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.4M21 3v5h-5"/></svg>';
+  var I_BELL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>';
+  var I_DOC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13l2 2 4-4"/></svg>';
+  var I_TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
+  var I_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  var I_MAIL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
 
-  var expCls=d!=null&&d<0?'err':d!=null&&d<=7?'warn':'';
-  var expStatusBadge='';
-  if(d!=null && d<0) expStatusBadge='<span class="kt-badge err">⚠ Expired</span>';
-  else if(d!=null && d<=7) expStatusBadge='<span class="kt-badge warn">⚠ Expiring soon</span>';
-  else if(d!=null && d<=30) expStatusBadge='<span class="kt-badge ok">Active</span>';
-  var cur2=cfg('currency','₹');
-  var paid3=parseFloat(m.totalpaid||'0')||0;
-  var planObj2=m.plan?plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0]:null;
-  var planPrice2=planObj2?parseFloat(String(planObj2.price||'0').replace(/[^\d.]/g,''))||0:0;
-  var planDur2=planObj2?(planObj2.duration||planObj2.unit||''):'';
-  var feeCls=paid3===0?'err':planPrice2&&paid3<planPrice2?'warn':'ok';
-  var feeVal=paid3===0?'Due':cur2+paid3;
-  var feeSub=planPrice2?(paid3>=planPrice2?'full payment':(paid3===0?'not paid':cur2+(planPrice2-paid3)+' remaining')):'';
-  var feeBadge=paid3===0?'<span class="kt-badge err">❌ Unpaid</span>':(planPrice2&&paid3<planPrice2?'<span class="kt-badge warn">Partial</span>':'<span class="kt-badge ok">✅ Paid</span>');
-  var keystrip='<div class="m-keystrip">'+
-    '<div class="kt plan-kt"><div class="lbl">📚 Plan</div><div class="val" style="font-size:15px;line-height:1.2">'+E(m.plan||'—')+'</div><div class="sub">'+E(planDur2||(shiftLbl||''))+'</div></div>'+
-    '<div class="kt seat-kt"><div class="lbl">🪑 Seat</div><div class="val">'+E(m.seat||'—')+'</div><div class="sub">'+(m.seat?E(shiftLbl)||'assigned':'unassigned')+'</div></div>'+
-    '<div class="kt '+expCls+'"><div class="lbl">⏰ Expires</div><div class="val">'+E(dTxt)+'</div><div class="sub">'+E(fmtDate(m.expirydate))+'</div>'+expStatusBadge+'</div>'+
-    '<div class="kt '+feeCls+'"><div class="lbl">💰 Paid</div><div class="val">'+E(feeVal)+'</div>'+(feeSub?'<div class="sub">'+E(feeSub)+'</div>':'')+feeBadge+'</div>'+
+  // ─── Header ───
+  var avContent=m.photourl?'<img src="'+E(m.photourl)+'" alt="">':E(ini(m.name));
+  var header='<div class="msh-hd">'+
+    '<div class="msh-av">'+avContent+'</div>'+
+    '<div class="msh-info">'+
+      '<div class="msh-name">'+E(m.name||'—')+'</div>'+
+      '<div class="msh-meta">'+E(m.memberid||'—')+(m.phone?' · '+E(m.phone):'')+'</div>'+
+      '<span class="msh-badge '+badgeCls+'">'+E(badgeLabel)+'</span>'+
+    '</div>'+
+    '<button class="msh-edit" onclick="openEditMember(\''+E(memberId)+'\')">'+I_EDIT+' Edit</button>'+
   '</div>';
 
-  var primary='';
-  if(status==='active' && hasPhone){
-    primary='<div class="m-primary">'+
-      '<div class="m-quick-row">'+
-        '<button class="call" onclick="location.href=\'tel:'+phoneRaw+'\'">📞 Call</button>'+
-        '<button class="wa" onclick="location.href=\'https://wa.me/\'+(\''+phoneRaw+'\'.replace(/\\D/g,\'\').length===10?\'91\':\'\')+\''+phoneRaw+'\'.replace(/\\D/g,\'\')">💬 WhatsApp</button>'+
-      '</div>'+
-      '<div class="m-msg-card wa-card">'+
-        '<div class="m-msg-card-title">WhatsApp Message</div>'+
-        '<div class="m-msg-row">'+
-          '<button class="wa-fee" onclick="waRenew(\''+E(memberId)+'\')">📋 Fee Reminder</button>'+
-          '<button class="wa-renew" onclick="waRenewal(\''+E(memberId)+'\')">🎓 Renewal</button>'+
-        '</div>'+
-      '</div>'+
-      (m.email?
-        '<div class="m-msg-card em-card">'+
-          '<div class="m-msg-card-title">Send Email</div>'+
-          '<div class="m-msg-row">'+
-            '<button class="em-fee" onclick="sendFeeReminderEmail(\''+E(memberId)+'\')">📧 Fee Reminder</button>'+
-            '<button class="em-renew" onclick="sendRenewalEmail(\''+E(memberId)+'\')">🎓 Renewal</button>'+
-          '</div>'+
-        '</div>'
-      : '')+
-    '</div>';
-  } else if(status==='active' && m.email){
-    primary='<div class="m-primary">'+
-      '<div class="m-msg-card em-card">'+
-        '<div class="m-msg-card-title">Send Email</div>'+
-        '<div class="m-msg-row">'+
-          '<button class="em-fee" onclick="sendFeeReminderEmail(\''+E(memberId)+'\')">📧 Fee Reminder</button>'+
-          '<button class="em-renew" onclick="sendRenewalEmail(\''+E(memberId)+'\')">🎓 Renewal</button>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  }
+  // ─── Key facts ───
+  var totalDays=0;
+  if(m.startdate&&m.expirydate){var s=new Date(m.startdate),e2=new Date(m.expirydate);totalDays=Math.round((e2-s)/(86400000))||1}
+  var pct=totalDays>0&&d!=null?Math.max(0,Math.min(100,Math.round((totalDays-Math.max(0,d))/totalDays*100))):0;
+  var expColor=d==null?'#0f766e':d<0?'#dc2626':d<=7?'#d97706':'#0f766e';
+  var feeColor=paidAmt===0?'#dc2626':planPrice&&paidAmt<planPrice?'#d97706':'#16a34a';
+  var feeLabel=paidAmt===0?'Due':(planPrice&&paidAmt<planPrice?'Partial':cur+paidAmt);
+  var feeChipCls=paidAmt===0?'unpaid':(planPrice&&paidAmt<planPrice?'partial':'ok');
+  var feeChipTxt=paidAmt===0?'Unpaid':(planPrice&&paidAmt<planPrice?'Partial':'Paid');
+  var facts='<div class="msh-facts">'+
+    '<div class="msh-fact" style="--fc:#0f766e">'+
+      '<div class="msh-fl">'+I_CAL+' Plan</div>'+
+      '<div class="msh-fv">'+E(m.plan||'—')+'</div>'+
+      '<div class="msh-fsub">'+E(planDur||shiftLbl||'—')+'</div>'+
+    '</div>'+
+    '<div class="msh-fact" style="--fc:#d97706">'+
+      '<div class="msh-fl">'+I_SEAT+' Seat</div>'+
+      '<div class="msh-fv">'+E(m.seat||'—')+'</div>'+
+      '<div class="msh-fsub">'+E(shiftLbl||'—')+'</div>'+
+    '</div>'+
+    '<div class="msh-fact'+(d!=null&&d<0?' msh-due':'')+'" style="--fc:'+expColor+'">'+
+      '<div class="msh-fl">'+I_CLOCK+' Expires</div>'+
+      '<div class="msh-fv" style="color:'+expColor+'">'+E(d==null?'—':Math.abs(d))+' <small>'+(d==null?'':d<0?'days ago':'days left')+'</small></div>'+
+      '<div class="msh-fsub">'+E(fmtDate(m.expirydate)||'—')+'</div>'+
+      (totalDays>0?'<div class="msh-prog"><div class="msh-prog-track"><div class="msh-prog-fill" style="width:'+pct+'%;background:'+expColor+'"></div></div></div>':'')+
+    '</div>'+
+    '<div class="msh-fact'+(paidAmt===0?' msh-due':'')+'" style="--fc:'+feeColor+'">'+
+      '<div class="msh-fl">'+I_WARN+' Fee Status</div>'+
+      '<div class="msh-fv" style="color:'+feeColor+'">'+E(feeLabel)+'</div>'+
+      '<span class="msh-fchip '+feeChipCls+'">'+feeChipTxt+'</span>'+
+    '</div>'+
+  '</div>';
 
+  // ─── Status-specific actions (pending / deleted) ───
   var statusActs='';
   if(status==='pending'&&(d==null||d>=0)){
-    statusActs='<div class="m-pending-acts">'+
-      '<button class="approve" onclick="approveMember(\''+E(memberId)+'\')">✓ Approve enrollment</button>'+
+    statusActs='<div class="msh-pend-acts">'+
+      '<button class="approve" onclick="approveMember(\''+E(memberId)+'\')">'+I_CHECK+' Approve enrollment</button>'+
       '<button class="reject" onclick="rejectMember(\''+E(memberId)+'\')">✕ Reject</button>'+
     '</div>';
-    primary='';
   } else if(status==='deleted'||status==='rejected'){
-    statusActs='<div class="m-restore"><button onclick="restoreMember()">↺ Restore as active member</button></div>';
-    primary='';
+    statusActs='<div class="msh-restore"><button onclick="restoreMember()">'+I_RENEW+' Restore as active</button></div>';
   }
 
+  // ─── Primary action buttons (active members only) ───
+  var primaryActs='';
+  if(status==='active'||status==='expired'){
+    var callBtn=hasPhone?'<button class="msh-acta call" onclick="location.href=\'tel:'+phoneRaw+'\'">'+I_PHONE+' Call</button>':'';
+    var waBtn=hasPhone?'<button class="msh-acta wa" onclick="location.href=\'https://wa.me/'+(phoneRaw.length===10?'91':'')+phoneRaw+'\'">'+I_WA+' WhatsApp</button>':'';
+    var rowActs=(callBtn||waBtn)?'<div class="msh-acts1">'+callBtn+waBtn+'</div>':'';
+    var renewBtn=status==='active'?'<button class="msh-renew-btn" onclick="openRenewMember(\''+E(memberId)+'\')">'+I_RENEW+' Renew Membership</button>':'';
+    var remindersLabel='<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:14px 0 6px;padding:0 18px">Fee Reminders</div>';
+    var waReminderBtn='<button class="msh-actb" onclick="waRenew(\''+E(memberId)+'\')" title="Send fee payment reminder on WhatsApp" style="flex:1">📲 WhatsApp — Fee Due</button>';
+    var emailReminderBtn=m.email?'<button class="msh-actb" onclick="sendFeeReminderEmail(\''+E(memberId)+'\')" title="Send fee reminder email" style="flex:1">✉️ Email — Fee Due</button>':'';
+    var renewalWaBtn=hasPhone?'<button class="msh-actb" onclick="waRenewal(\''+E(memberId)+'\')" title="Send membership renewal reminder on WhatsApp" style="flex:1">📲 WhatsApp — Renew</button>':'';
+    var renewalEmailBtn=m.email?'<button class="msh-actb" onclick="sendRenewalEmail(\''+E(memberId)+'\')" title="Send renewal email" style="flex:1">✉️ Email — Renew</button>':'';
+    var renewalLabel='<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:14px 0 6px;padding:0 18px">Renewal Reminders</div>';
+    var receiptBtn=paidAmt?'<button class="msh-actb" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_DOC+' Update Payment</button>':'<button class="msh-actb" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_CHECK+' Mark Paid</button>';
+    primaryActs=rowActs+renewBtn+
+      remindersLabel+'<div class="msh-acts2">'+waReminderBtn+emailReminderBtn+'</div>'+
+      renewalLabel+'<div class="msh-acts2">'+renewalWaBtn+renewalEmailBtn+'</div>'+
+      '<div class="msh-acts2" style="margin-top:10px">'+receiptBtn+'</div>';
+  }
+
+  // ─── Membership section ───
   var expRowSuffix=d!=null?(d<0?' · '+Math.abs(d)+' days ago':' · '+d+' days left'):'';
-  var paid2=parseFloat(m.totalpaid||'0')||0;
-  var feeRow='<div class="m-row">'+
-    '<div class="m-ic">💰</div>'+
-    '<div class="m-text">'+
-      '<div class="m-lbl">'+(paid2?'Total paid':'Fee status')+'</div>'+
-      '<div class="m-val" style="display:flex;align-items:center;gap:8px">'+
-        (paid2?'<span class="fee-paid-badge">'+cfg('currency','₹')+paid2+'</span>':'<span class="fee-due-badge">Due</span>')+
-        (status==='active'?'<button class="mark-paid-btn" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+( paid2?'Update':'💰 Mark Paid')+'</button>':'')+
-      '</div>'+
+  var feeRowHtml='<div class="msh-drow">'+
+    '<div class="msh-drow-ic">'+I_WARN+'</div>'+
+    '<div class="msh-drow-tx"><div class="msh-drow-l">Fee status</div>'+
+      '<div class="msh-drow-v">'+(paidAmt?cur+paidAmt+' for '+E(m.plan||'plan'):cur+'0 — not paid')+'</div>'+
     '</div>'+
+    (paidAmt===0?'<span class="msh-fee-pill">Due</span>':'')+
+    (status==='active'?'<button class="msh-drow-act" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_CHECK+(paidAmt?' Update':' Mark Paid')+'</button>':'')+
   '</div>';
-  var membership='<div class="m-section">'+
-    '<div class="m-section-title">Membership</div>'+
-    '<div class="m-list">'+
-      iconRow('💳','Plan',m.plan)+
-      iconRow('📅','Start date',fmtDate(m.startdate))+
-      iconRow('⏰','Expires on',m.expirydate?fmtDate(m.expirydate)+expRowSuffix:'')+
-      feeRow+
-      (m.lastremindersent?iconRow('🔔','Last reminder',m.lastremindersent):'')+
+  var membershipSec='<div class="msh-sec">'+
+    '<div class="msh-sec-h">Membership</div>'+
+    '<div class="msh-rows">'+
+      mshDrow(I_CAL,'Plan',m.plan||'—')+
+      mshDrow(I_CAL,'Start date',fmtDate(m.startdate)||'—')+
+      mshDrow(I_CLOCK,'Expires on',m.expirydate?fmtDate(m.expirydate)+expRowSuffix:'—')+
+      feeRowHtml+
+      (m.lastremindersent?mshDrow(I_BELL,'Last reminder',m.lastremindersent):'')+
     '</div>'+
   '</div>';
 
-  var contactItems='';
-  if(m.phone)contactItems+=iconRow('📱','Phone',m.phone,'tel:'+phoneRaw);
-  if(m.email)contactItems+=iconRow('📧','Email',m.email,'mailto:'+m.email);
-  if(m.fathername)contactItems+=iconRow('👨','Father\'s name',m.fathername);
-  if(m.dob)contactItems+=iconRow('🎂','Date of birth',fmtDate(m.dob));
-  var contact=contactItems
-    ? '<div class="m-section"><div class="m-section-title">Personal</div><div class="m-list">'+contactItems+'</div></div>'
-    : '';
+  // ─── Personal section ───
+  var personalRows='';
+  if(m.phone)personalRows+=mshDrowAct(I_PHONE,'Phone',m.phone,I_PHONE+' Call','location.href=\'tel:'+phoneRaw+'\'');
+  if(m.email)personalRows+=mshDrowAct(I_MAIL,'Email',m.email,'Send','location.href=\'mailto:'+E(m.email)+'\'');
+  if(m.fathername)personalRows+=mshDrow('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z"/></svg>','Father\'s name',m.fathername);
+  if(m.dob)personalRows+=mshDrow(I_CAL,'Date of birth',fmtDate(m.dob));
+  var personalSec=personalRows?'<div class="msh-sec"><div class="msh-sec-h">Personal</div><div class="msh-rows">'+personalRows+'</div></div>':'';
 
-  var aadharCard='';
+  // ─── Aadhar ───
   var aadharNum=m.aadhar||'';
   var aadharPhoto=m.aadharphotourl||'';
   var notesPhotoMatch=(m.notes||'').match(/AadharPhoto:\s*(https?:\/\/\S+)/);
   if(notesPhotoMatch)aadharPhoto=notesPhotoMatch[1];
+  var aadharSec='';
   if(aadharNum||aadharPhoto){
     var fmtAadhar=aadharNum.length===12?aadharNum.replace(/(\d{4})(\d{4})(\d{4})/,'$1 $2 $3'):aadharNum;
-    aadharCard='<div class="m-section"><div class="m-section-title">Identity</div>'+
+    aadharSec='<div class="msh-sec"><div class="msh-sec-h">Identity</div>'+
       '<div class="m-aadhar-card">'+
         '<div class="m-aadhar-head">'+
           '<div class="m-ac-icon">🪪</div>'+
-          '<div>'+
-            '<div class="m-ac-title">Aadhar Card</div>'+
-            (fmtAadhar?'<div class="m-ac-sub">'+E(fmtAadhar)+'</div>':'')+
-          '</div>'+
+          '<div><div class="m-ac-title">Aadhar Card</div>'+(fmtAadhar?'<div class="m-ac-sub">'+E(fmtAadhar)+'</div>':'')+'</div>'+
         '</div>'+
         (aadharPhoto?'<div class="m-aadhar-img" onclick="window.open(\''+E(aadharPhoto)+'\',\'_blank\')"><img src="'+E(aadharPhoto)+'" alt="Aadhar"><div class="m-ai-expand">⤢</div></div>':'')+
       '</div></div>';
   }
 
-  var study='';
-
+  // ─── Notes ───
   var notesText=(m.notes||'').replace(/AadharPhoto:\s*https?:\/\/\S+/g,'').trim();
-  var notes=notesText
-    ? '<div class="m-section"><div class="m-section-title">Notes</div><div class="m-notes">'+E(notesText)+'</div></div>'
-    : '';
+  var notesSec=notesText?'<div class="msh-sec"><div class="msh-sec-h">Notes</div><div class="m-notes">'+E(notesText)+'</div></div>':'';
 
-  var moreActs='';
+  // ─── Manage section ───
+  var manageSec='';
   if(status==='active'||status==='expired'){
-    var isExp=status==='expired';
-    moreActs='<div class="m-section"><div class="m-section-title">Manage</div>'+
-      '<div class="m-secondary">'+
-        '<button onclick="openRenewMember(\''+E(memberId)+'\')">🔄 Renew membership</button>'+
-        '<button onclick="openExtendDate()">📅 Set expiry date</button>'+
-        '<button onclick="reassignPrompt()">🪑 Reassign seat</button>'+
+    manageSec='<div class="msh-sec"><div class="msh-sec-h">Manage</div>'+
+      '<div class="msh-manage">'+
+        '<button class="msh-mbtn" onclick="openRenewMember(\''+E(memberId)+'\')">'+I_RENEW+' Renew</button>'+
+        '<button class="msh-mbtn" onclick="openExtendDate()">'+I_CAL+' Set expiry</button>'+
+        '<button class="msh-mbtn" onclick="reassignPrompt()">'+I_SEAT+' Reassign seat</button>'+
+        '<button class="msh-mbtn danger" onclick="deleteMember()">'+I_TRASH+' Delete</button>'+
       '</div>'+
-      '<div class="m-danger"><button onclick="deleteMember()">🗑 Delete member</button></div>'+
     '</div>';
   }
 
   var enrolledAt=m.enrolledat?'<div class="m-enrolled-at">Enrolled '+E(fmtDate(m.enrolledat))+'</div>':'';
 
-  $('sheetBody').innerHTML=hero+keystrip+primary+statusActs+membership+contact+aadharCard+study+notes+moreActs+enrolledAt;
+  $('sheetBody').innerHTML=header+'<div class="msh-body">'+facts+statusActs+primaryActs+membershipSec+personalSec+aadharSec+notesSec+manageSec+enrolledAt+'</div>';
   openSheet();
+}
+
+function mshDrow(ic,lbl,val){
+  return '<div class="msh-drow"><div class="msh-drow-ic">'+ic+'</div><div class="msh-drow-tx"><div class="msh-drow-l">'+E(lbl)+'</div><div class="msh-drow-v">'+E(val)+'</div></div></div>';
+}
+function mshDrowAct(ic,lbl,val,actTxt,actJs){
+  return '<div class="msh-drow"><div class="msh-drow-ic">'+ic+'</div><div class="msh-drow-tx"><div class="msh-drow-l">'+E(lbl)+'</div><div class="msh-drow-v">'+E(val)+'</div></div><button class="msh-drow-act" onclick="'+actJs+'">'+actTxt+'</button></div>';
 }
 
 // Icon-prefixed data row. When href is supplied the row becomes tappable (e.g. tel: links).
@@ -2737,13 +3128,55 @@ function quickMarkPaid(memberId){
   });
 }
 
+var _welcomeMemberId='';
 function approveMember(id){
   var mid=id||openMemberId;
+  var snap=members.filter(function(x){return x.memberid===mid})[0]||null;
   toast('Approving…');
   sendCmd({action:'approveMember',memberId:String(mid)},function(res){
     if(res&&res.error){toast(res.hint||'Failed to approve','err');return}
-    toast('Approved ✓','ok');closeSheet();reloadAll();
+    toast('Approved ✓','ok');closeSheet();
+    _welcomeMemberId=String(mid);
+    openWelcomeModal(snap);
+    reloadAll();
   });
+}
+function openWelcomeModal(snap){
+  var m=snap||(members.filter(function(x){return x.memberid===_welcomeMemberId})[0]||null);
+  var shop=cfg('shopname','Library');
+  var waGroup=cfg('whatsappgrouplink','')||cfg('whatsappgroup','')||cfg('grouplink','');
+  var cur=cfg('currency','₹');
+  var name=m?m.name||'Student':'Student';
+  var plan=m?m.plan||'':'';
+  var expiry=m?fmtDate(m.expirydate)||'':'';
+  var paidAmt=m?parseFloat(m.totalpaid||'0')||0:0;
+  var planObj=plan?plans.filter(function(p){return (p.name||p.plan||'')===plan})[0]:null;
+  var planPrice=planObj?parseFloat(String(planObj.price||'0').replace(/[^\d.]/g,''))||0:0;
+  var feeAmt=paidAmt>0?paidAmt:planPrice;
+  var msg=
+    '🎉 *Welcome to '+shop+'!*\n\n'+
+    'Dear *'+name+'*, your enrollment has been *confirmed*.\n\n'+
+    '┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n'+
+    (plan?'📋 *Plan:* '+plan+'\n':'')+
+    (feeAmt>0?'💰 *Fee:* '+cur+feeAmt+'\n':'')+
+    (expiry?'📅 *Valid till:* '+expiry+'\n':'')+
+    '┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n\n'+
+    (waGroup?'💬 *Join our group:* '+waGroup+'\n\n':'')+
+    'See you soon! 😊\n*'+shop+'*'+
+    (cfg('googlereviewlink','')?'\n\n⭐ *Enjoying '+shop+'? Leave us a Google Review:*\n'+cfg('googlereviewlink',''):'');
+  document.getElementById('welcomeMsg').value=msg;
+  document.getElementById('welcomeModal').style.display='flex';
+}
+function closeWelcomeModal(){
+  document.getElementById('welcomeModal').style.display='none';
+}
+function sendWelcomeWA(){
+  var m=members.filter(function(x){return x.memberid===_welcomeMemberId})[0];
+  var phone=m?String(m.phone||'').replace(/\D/g,''):'';
+  if(phone.length===10)phone='91'+phone;
+  var msg=document.getElementById('welcomeMsg').value;
+  if(phone)open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
+  closeWelcomeModal();
 }
 function rejectMember(id){
   var mid=id||openMemberId;
@@ -2754,43 +3187,47 @@ function rejectMember(id){
   });
 }
 function callMember(){var m=currentMember();if(m&&m.phone)location.href='tel:'+m.phone}
+var _waPendingPhone='';
+function openWAPreview(phone,name,msg){
+  _waPendingPhone=phone;
+  document.getElementById('wapRecipient').textContent=name||'Member';
+  document.getElementById('wapPhoneRow').innerHTML='📱 <span>'+phone.replace(/^91/,'+91 ')+'</span>';
+  document.getElementById('wapText').value=msg;
+  document.getElementById('waPreviewBg').classList.add('show');
+  setTimeout(function(){document.getElementById('wapText').style.height='auto';document.getElementById('wapText').style.height=document.getElementById('wapText').scrollHeight+'px';},50);
+}
+function closeWAPreview(){document.getElementById('waPreviewBg').classList.remove('show')}
+function sendWAPreview(){
+  var msg=document.getElementById('wapText').value;
+  if(_waPendingPhone&&msg)open('https://wa.me/'+_waPendingPhone+'?text='+encodeURIComponent(msg),'_blank');
+  closeWAPreview();
+}
+
 function waMember(){
   var m=currentMember();if(!m||!m.phone)return;
   var phone=String(m.phone).replace(/\D/g,'');if(phone.length===10)phone='91'+phone;
   var d=daysToExpiry(m);var dTxt=d==null?'soon':d<0?(Math.abs(d)+' days ago'):('in '+d+' days');
   var msg='Hi '+m.name+', this is '+cfg('shopname','our library')+'. Your '+(m.plan||'plan')+' expires '+dTxt+(m.expirydate?' ('+fmtDate(m.expirydate)+')':'')+'.';
-  open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
+  openWAPreview(phone,m.name,msg);
 }
 function waRenew(memberId){
   var m=members.filter(function(x){return x.memberid===memberId})[0];if(!m||!m.phone)return;
   var phone=String(m.phone).replace(/\D/g,'');if(phone.length===10)phone='91'+phone;
   var shop=cfg('shopname','Library');
   var waGroup=cfg('whatsappgrouplink','');
-  var defaultTpl=
+  var msg=
     '📚 *Fee Reminder — '+shop+'*\n\n'+
-    'Dear *{name}*,\n\n'+
-    'Please pay your library fee within *2 days* from your joining date to continue your membership. '+
-    'If we do not receive the fee in time, we may have to offer your seat to another student.\n\n'+
-    'प्रिय *{name}*, कृपया जॉइनिंग डेट से *2 दिन* के अंदर फीस जमा करें। '+
-    'समय पर फीस न मिलने पर आपकी सीट किसी और को देनी पड़ सकती है।\n\n'+
-    '┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n'+
-    '📋 *Plan:* {plan}\n'+
-    '🪑 *Seat:* {seat}\n'+
-    '📅 *Expires:* {expiry}\n'+
-    '┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n\n'+
-    'धन्यवाद / Thank you,\n*{shop}*';
-  var tpl=cfg('whatsapptemplate',defaultTpl);
-  var msg=tpl
-    .replace(/\{name\}/g,m.name||'')
-    .replace(/\{plan\}/g,m.plan||'')
-    .replace(/\{expiry\}/g,fmtDate(m.expirydate)||'')
-    .replace(/\{seat\}/g,m.seat||'—')
-    .replace(/\{shop\}/g,shop)
-    .replace(/\{renewLink\}/g,cfg('renewlink',''));
+    'Dear *'+m.name+'*,\n\n'+
+    'We hope you\'re enjoying your time at '+shop+'. 😊\n\n'+
+    'We kindly request you to please clear your library fee at your earliest convenience so that your membership continues smoothly without any interruption.\n\n'+
+    'प्रिय *'+m.name+'*, हम आशा करते हैं कि आप '+shop+' में अच्छा समय बिता रहे हैं। 😊\n\n'+
+    'कृपया जल्द से जल्द अपनी लाइब्रेरी फीस जमा करें ताकि आपकी सदस्यता बिना किसी रुकावट के जारी रह सके।\n\n'+
+    'धन्यवाद / Thank you,\n*'+shop+'*';
   if(waGroup)msg+='\n\n💬 Group: '+waGroup;
-  open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
+  var reviewLink=cfg('googlereviewlink','');
+  if(reviewLink)msg+='\n\n⭐ *Enjoying '+shop+'? Leave us a review:*\n'+reviewLink;
+  openWAPreview(phone,m.name,msg);
 }
-
 function waRenewal(memberId){
   var m=members.filter(function(x){return x.memberid===memberId})[0];if(!m||!m.phone)return;
   var phone=String(m.phone).replace(/\D/g,'');if(phone.length===10)phone='91'+phone;
@@ -2814,7 +3251,9 @@ function waRenewal(memberId){
     .replace(/\{seat\}/g,m.seat||'—')
     .replace(/\{shop\}/g,shop);
   if(waGroup)msg+='\n\n💬 Group: '+waGroup;
-  open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
+  var reviewLink2=cfg('googlereviewlink','');
+  if(reviewLink2)msg+='\n\n⭐ *Enjoying '+shop+'? Leave us a review:*\n'+reviewLink2;
+  openWAPreview(phone,m.name,msg);
 }
 var _rnwPlan='';
 
@@ -3090,8 +3529,10 @@ function restoreMember(){sendCmd({action:'restoreMember',memberId:String(openMem
 // ─── Enroll new member from dashboard ──────────────────────────
 var _efShift='',_efSeat='',_efPlan='',_efAadharURL='';
 
-function openEnrollSheet(){
-  _efShift='';_efSeat='';_efPlan='';_efAadharURL='';
+function openEnrollSheet(presetSeat, presetShift){
+  _efPlan='';_efAadharURL='';
+  _efSeat=presetSeat||'';
+  _efShift=presetShift||'';
   $('sheetBody').innerHTML=renderEnrollForm_();
   openSheet();
 }
@@ -3323,7 +3764,7 @@ function submitEnroll(){
 }
 
 function testSms(){
-  var phone=cfg('shopkeeperphone','');if(!phone){toast('Set ShopkeeperPhone first','err');return}
+  var phone=cfg('shopkeeperphone','');if(!phone){toast('Set Owner phone in settings first','err');return}
   toast('Sending test SMS…');
   sendCmd({action:'sendTestSms',phone:String(phone),message:String('StorePro test · '+new Date().toLocaleString('en-IN'))},function(res){
     if(res&&res.ok)toast('Test SMS sent ✓','ok');
@@ -3331,7 +3772,7 @@ function testSms(){
   });
 }
 function testEmail(){
-  var email=cfg('shopkeeperemail','');if(!email){toast('Set ShopkeeperEmail in Reminders settings first','err');return}
+  var email=cfg('shopkeeperemail','');if(!email){toast('Set Owner email in settings first','err');return}
   toast('Sending test email…');
   sendCmd({action:'sendTestEmail',email:String(email)},function(res){
     if(res&&res.ok)toast('Test email sent to '+res.to+' ✓','ok');
@@ -3339,7 +3780,7 @@ function testEmail(){
   });
 }
 function testWA(){
-  var phone=cfg('shopkeeperphone','');if(!phone){toast('Set ShopkeeperPhone first','err');return}
+  var phone=cfg('shopkeeperphone','');if(!phone){toast('Set Owner phone in settings first','err');return}
   var ph=phone.replace(/\D/g,'');if(ph.length===10)ph='91'+ph;
   open('https://wa.me/'+ph+'?text='+encodeURIComponent('StorePro test from '+cfg('shopname','your library')+' · '+new Date().toLocaleString('en-IN')),'_blank');
 }
@@ -3425,6 +3866,13 @@ document.addEventListener('touchend',function(){
 // ─── PIN input filled class ───
 document.querySelectorAll('.pinDigits input').forEach(function(inp){
   inp.addEventListener('input',function(){this.classList.toggle('filled',!!this.value)});
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='Backspace'&&!this.value){
+      var prev=this.previousElementSibling;
+      if(prev&&prev.tagName==='INPUT'){prev.value='';prev.classList.remove('filled');prev.focus();}
+      e.preventDefault();
+    }
+  });
 });
 
 // ─── Hide tab bar on scroll down, show on scroll up ───
