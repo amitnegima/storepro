@@ -15,14 +15,14 @@
 // this via the `version` action and warns the shopkeeper if it's older than
 // expected (so they know to redeploy after pulling new code).
 // ═══════════════════════════════════════════════════════════════════
-var SCRIPT_VERSION = 3;  // 3: Pending-by-default + explicit p.status hint
+var SCRIPT_VERSION = 5;  // 5: EnrollmentMode column (Online / Walk-in)
 
 var MEMBERS_HEADERS = [
   'MemberID', 'EnrolledAt', 'Name', 'FatherName', 'Phone', 'DOB',
   'Email', 'Aadhar', 'Preparation', 'ExamDetails', 'PhotoURL',
   'Plan', 'StartDate', 'ExpiryDate', 'Seat', 'Shift',
   'TotalPaid', 'Status', 'LastReminderSent', 'Notes',
-  'AadharPhotoURL'
+  'AadharPhotoURL', 'EnrollmentMode'
 ];
 
 // ─── Entry points ───────────────────────────────────────────────
@@ -177,6 +177,7 @@ function saveMember_(p) {
       case 'Status':           return decideInitialStatus_(p.status || '', isAuthenticated);
       case 'LastReminderSent': return '';
       case 'Notes':            return p.notes || '';
+      case 'EnrollmentMode':   return isAuthenticated ? 'Walk-in' : 'Online';
     }
     return '';
   });
@@ -184,8 +185,9 @@ function saveMember_(p) {
   sh.appendRow(row);
   rememberMemberId_(memberId);
 
-  // Optional shopkeeper alert — reuses Telegram if configured, otherwise no-op.
-  try { sendNewMemberAlert_(row); } catch (e) { /* best effort */ }
+  // Optional shopkeeper alerts — best-effort, never block enrollment.
+  try { sendNewMemberAlert_(row); } catch (e) {}
+  try { sendEnrollmentAlertEmail_(row); } catch (e) {}
 
   return memberId;
 }
@@ -241,11 +243,15 @@ function planDurationDays_(planName) {
     }
   } catch (e) {}
   var s = String(planName).toLowerCase();
+  // Month-based plans first — catches "24-Hour Monthly", "3-Month", etc.
+  // before any number-based day/hour pattern fires.
   if (/year|annual/.test(s)) return 365;
   if (/6.*month/.test(s)) return 180;
   if (/3.*month|quarter/.test(s)) return 90;
-  if (/month/.test(s)) return 30;
+  if (/month/.test(s)) return 30;  // "Monthly", "24-Hour Monthly" → 30 days
   if (/week/.test(s)) return 7;
+  // "24-hour" without "month" means a single 24-hour access slot = 1 day
+  if (/24.*hour|hour.*24/.test(s)) return 1;
   if (/day|daily/.test(s)) return 1;
   return 30;
 }
@@ -455,6 +461,7 @@ function dailyExpiryReminders() {
   var emailBodyTpl = getCfg_('EmailTemplate', 'Dear {name},\n\nYour {plan} membership at {shop} is expiring on {expiry}.\n\nSeat: {seat}\n\nPlease pay the renewal amount at the earliest to continue your seat without interruption.\n\nRenew: {renewLink}\n\nThank you,\n{shop} Team');
   var shop = getCfg_('ShopName', 'Library');
   var renewLink = getCfg_('RenewLink', '');
+  var reviewLink = getCfg_('GoogleReviewLink', '');
 
   var sh = getMembersSheet_();
   var info = membersIndex_(sh);
@@ -483,7 +490,8 @@ function dailyExpiryReminders() {
       expiry: Utilities.formatDate(exp, 'Asia/Kolkata', 'dd MMM yyyy'),
       seat: row[info.idx['Seat']] || '—',
       shop: shop,
-      renewLink: renewLink
+      renewLink: renewLink,
+      reviewLink: reviewLink
     };
     var phone = String(row[info.idx['Phone']] || '').replace(/\D/g,'');
     var email = String(row[info.idx['Email']] || '').trim();
@@ -525,7 +533,7 @@ function dailyExpiryReminders() {
         memberId: row[info.idx['MemberID']],
         name: subs.name,
         phone: phone,
-        url: waLink_(phone, applyTpl_(waTpl, subs))
+        url: waLink_(phone, applyTpl_(waTpl, subs) + (reviewLink ? '\n\n⭐ Enjoying ' + shop + '? Leave us a review:\n' + reviewLink : ''))
       });
     }
     sh.getRange(i + 2, info.idx['LastReminderSent'] + 1).setValue(today + ' ' + new Date().toISOString().slice(11,16));
@@ -644,7 +652,8 @@ function getMemberSubs_(memberId) {
     expiry: exp ? Utilities.formatDate(exp, 'Asia/Kolkata', 'dd MMM yyyy') : '—',
     seat: row[idx['Seat']] || '—',
     shop: shop,
-    renewLink: getCfg_('RenewLink', '')
+    renewLink: getCfg_('RenewLink', ''),
+    reviewLink: getCfg_('GoogleReviewLink', '')
   };
 }
 
@@ -656,7 +665,8 @@ function sendFeeReminderEmail_(memberId) {
     'Dear ' + s.name + ',\n\n' +
     'This is a reminder to please pay your library fee within 2 days from your joining date so that your library membership can continue. If we do not receive the fee in this time, we may have to offer your seat to another student.\n\n' +
     'Plan  : ' + s.plan + '\nSeat  : ' + s.seat + '\nExpiry: ' + s.expiry + '\n\n' +
-    'Regards / धन्यवाद,\n' + s.shop;
+    'Regards / धन्यवाद,\n' + s.shop +
+    (s.reviewLink ? '\n\n⭐ Enjoying ' + s.shop + '? Leave us a Google Review:\n' + s.reviewLink : '');
   try {
     sendEmail_(s.email, applyTpl_(subTpl, s), plainBody, s.shop, buildFeeReminderHtml_(s));
     return { ok: true, to: s.email, name: s.name };
@@ -674,7 +684,8 @@ function sendRenewalEmail_(memberId, customMsg) {
     'Your ' + s.plan + ' membership at ' + s.shop + ' is expiring on ' + s.expiry + '.\n\n' +
     'Renew now to keep your seat ' + (s.seat !== '—' ? '(Seat ' + s.seat + ')' : '') + ' and stay on track with your studies!\n\n' +
     (s.renewLink ? 'Renew here: ' + s.renewLink + '\n' : '') +
-    '\nSee you soon,\n' + s.shop + ' Team';
+    '\nSee you soon,\n' + s.shop + ' Team' +
+    (s.reviewLink ? '\n\n⭐ Enjoying ' + s.shop + '? Leave us a Google Review:\n' + s.reviewLink : '');
   try {
     sendEmail_(s.email, applyTpl_(subTpl, s), plainBody, s.shop, buildRenewalEmailHtml_(s));
     return { ok: true, to: s.email, name: s.name };
@@ -760,6 +771,8 @@ function buildFeeReminderHtml_(subs) {
 
           waSection+
 
+          (subs.reviewLink ? buildReviewBlock_(subs.reviewLink) : '')+
+
           '<p style="margin:22px 0 0;font-size:13.5px;color:#78716c;line-height:1.6">'+
             'Thank you for being part of '+subs.shop+'. We look forward to your continued association.<br>'+
             '<br>Regards / &#x0927;&#x0928;&#x094D;&#x092F;&#x0935;&#x093E;&#x0926;,<br>'+
@@ -829,6 +842,8 @@ function buildRenewalEmailHtml_(subs) {
             'Questions? Just reply to this email or visit us at the library. We\'re rooting for you! &#x1F4DA;'+
           '</p>'+
 
+          (subs.reviewLink ? buildReviewBlock_(subs.reviewLink) : '')+
+
           '<p style="margin:18px 0 0;font-size:14px;color:#475569">'+
             'Warm regards,<br><strong style="color:#0f172a">'+subs.shop+' Team</strong>'+
           '</p>'+
@@ -842,6 +857,17 @@ function buildRenewalEmailHtml_(subs) {
       '</div>'+
     '</div>'+
     '</body></html>';
+}
+
+function buildReviewBlock_(reviewLink) {
+  return '<table width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0 0">'+
+    '<tr><td style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:16px 18px;text-align:center">'+
+      '<div style="font-size:16px;margin-bottom:4px">⭐⭐⭐⭐⭐</div>'+
+      '<div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:4px">Enjoying our library? Leave us a review!</div>'+
+      '<div style="font-size:12px;color:#78716c;margin-bottom:12px">Your feedback helps other students find us. Takes just 30 seconds.</div>'+
+      '<a href="'+reviewLink+'" style="display:inline-block;padding:10px 22px;background:#f59e0b;color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:13px">⭐ Write a Google Review</a>'+
+    '</td></tr>'+
+  '</table>';
 }
 
 // ─── Config + auth (same hashing/token shape as store-apps-script.js) ──
@@ -936,9 +962,25 @@ function getDashboardToken_() {
 }
 
 function verifyDashboardToken_(token) {
-  var stored = PropertiesService.getScriptProperties().getProperty('DASHBOARD_TOKEN') || '';
+  var props = PropertiesService.getScriptProperties();
+  // If script version changed since last token issue, force re-login once.
+  var lastVer = props.getProperty('TOKEN_SCRIPT_VERSION') || '';
+  if (lastVer !== String(SCRIPT_VERSION)) {
+    props.deleteProperty('DASHBOARD_TOKEN');
+    props.setProperty('TOKEN_SCRIPT_VERSION', String(SCRIPT_VERSION));
+    return false;
+  }
+  var stored = props.getProperty('DASHBOARD_TOKEN') || '';
   if (!stored) return true;
   return constantTimeEq_(token, stored);
+}
+
+function resetSessions() {
+  var props = PropertiesService.getScriptProperties();
+  props.deleteProperty('DASHBOARD_TOKEN');
+  props.setProperty('TOKEN_SCRIPT_VERSION', String(SCRIPT_VERSION));
+  Logger.log('✅ All dashboard sessions invalidated. Users must re-enter PIN.');
+  return 'sessions-reset';
 }
 
 function migrateDashboardPin() {
@@ -982,6 +1024,93 @@ function setupPin() {
   clearPinFromConfig_();
   Logger.log('✅ PIN set successfully. Clear the PIN value from this function before closing the editor.');
   return 'PIN set';
+}
+
+// ─── Shopkeeper email alert on new enrollment ──────────────────
+
+function sendEnrollmentAlertEmail_(row) {
+  var to = getCfg_('ShopkeeperEmail', '');
+  if (!to || to.indexOf('@') < 1) return;
+
+  var hi = {};
+  MEMBERS_HEADERS.forEach(function(h, i){ hi[h] = i; });
+
+  var name     = String(row[hi['Name']]       || '—');
+  var phone    = String(row[hi['Phone']]      || '—');
+  var plan     = String(row[hi['Plan']]       || '—');
+  var seat     = String(row[hi['Seat']]       || 'Not selected');
+  var shift    = String(row[hi['Shift']]      || '—');
+  var status   = String(row[hi['Status']]     || 'Pending');
+  var expiry   = String(row[hi['ExpiryDate']] || '—');
+  var memberId = String(row[hi['MemberID']]   || '—');
+  var shop     = getCfg_('ShopName', 'Library');
+  var dashUrl  = getCfg_('DashboardURL', '');
+
+  var isPending = status === 'Pending';
+  var subject   = (isPending ? '🟠 New enrollment awaiting approval' : '📚 New enrollment confirmed') + ' — ' + name + ' · ' + shop;
+
+  var accentColor = isPending ? '#d97706' : '#0f766e';
+  var statusLabel = isPending ? '⏳ Pending Approval' : '✅ Active';
+  var statusBg    = isPending ? '#fef3c7' : '#d1fae5';
+  var statusFg    = isPending ? '#92400e' : '#065f46';
+
+  var dashSection = dashUrl
+    ? '<tr><td align="center" style="padding-top:22px">'+
+        '<a href="'+dashUrl+'" style="display:inline-block;padding:12px 28px;background:'+accentColor+';color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px">'+
+          (isPending ? '✓ Review &amp; Approve' : '📋 Open Dashboard')+
+        '</a></td></tr>'
+    : '';
+
+  var html =
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<style>body{margin:0;padding:0;background:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif}</style>'+
+    '</head><body>'+
+    '<div style="max-width:520px;margin:28px auto;padding:0 16px">'+
+      '<div style="background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)">'+
+
+        '<div style="background:linear-gradient(135deg,'+accentColor+' 0%,'+accentColor+'cc 100%);padding:26px 28px 22px">'+
+          '<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">'+shop+'</div>'+
+          '<div style="font-size:22px;font-weight:800;color:#fff;line-height:1.2">New Enrollment</div>'+
+          '<div style="margin-top:10px;display:inline-block;background:'+statusBg+';color:'+statusFg+';border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700">'+statusLabel+'</div>'+
+        '</div>'+
+
+        '<div style="padding:24px 28px">'+
+          '<table width="100%" cellpadding="0" cellspacing="0">'+
+            '<tr><td colspan="2" style="padding-bottom:16px;font-size:15px;font-weight:700;color:#0f172a;border-bottom:1px solid #f1f5f9">'+name+'</td></tr>'+
+            '<tr><td style="padding:10px 0 0;font-size:12px;color:#94a3b8;width:110px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Member ID</td>'+
+                '<td style="padding:10px 0 0;font-size:13px;font-weight:500;color:#334155;font-family:monospace">'+memberId+'</td></tr>'+
+            '<tr><td style="padding:8px 0 0;font-size:12px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Phone</td>'+
+                '<td style="padding:8px 0 0;font-size:13px;font-weight:600;color:#0f172a"><a href="tel:'+phone+'" style="color:#0f766e;text-decoration:none">'+phone+'</a></td></tr>'+
+            '<tr><td style="padding:8px 0 0;font-size:12px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Plan</td>'+
+                '<td style="padding:8px 0 0;font-size:13px;font-weight:600;color:#0f172a">'+plan+'</td></tr>'+
+            '<tr><td style="padding:8px 0 0;font-size:12px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Seat</td>'+
+                '<td style="padding:8px 0 0;font-size:13px;color:#334155">'+seat+'  <span style="color:#94a3b8;font-size:11px">'+shift+'</span></td></tr>'+
+            '<tr><td style="padding:8px 0 0;font-size:12px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Expires</td>'+
+                '<td style="padding:8px 0 0;font-size:13px;color:#334155">'+expiry+'</td></tr>'+
+            dashSection+
+          '</table>'+
+        '</div>'+
+
+        '<div style="padding:14px 28px;background:#f8fafc;border-top:1px solid #f1f5f9;text-align:center">'+
+          '<p style="margin:0;font-size:11px;color:#94a3b8">StorePro · '+shop+'</p>'+
+        '</div>'+
+
+      '</div>'+
+    '</div>'+
+    '</body></html>';
+
+  var plain =
+    'New enrollment at ' + shop + '\n\n' +
+    'Name     : ' + name + '\n' +
+    'Phone    : ' + phone + '\n' +
+    'Plan     : ' + plan + '\n' +
+    'Seat     : ' + seat + ' ' + shift + '\n' +
+    'Expires  : ' + expiry + '\n' +
+    'Status   : ' + status + '\n' +
+    'Member ID: ' + memberId + '\n' +
+    (dashUrl ? '\nOpen dashboard: ' + dashUrl : '');
+
+  MailApp.sendEmail({ to: to, subject: subject, body: plain, htmlBody: html, name: shop });
 }
 
 // ─── Optional new-member alert (Telegram if configured) ────────
