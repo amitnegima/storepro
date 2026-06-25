@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StorePro Debug</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:#f1f5f9;min-height:100vh;padding:16px}
+h1{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:4px}
+.sub{font-size:12px;color:#64748b;margin-bottom:20px}
+.card{background:#fff;border-radius:14px;border:1px solid #e2e8f0;margin-bottom:12px;overflow:hidden}
+.card-hdr{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f1f5f9}
+.card-title{font-size:13px;font-weight:700;color:#0f172a;flex:1}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.badge.pass{background:#dcfce7;color:#16a34a}
+.badge.fail{background:#fee2e2;color:#dc2626}
+.badge.warn{background:#fef3c7;color:#92400e}
+.badge.run{background:#dbeafe;color:#1d4ed8}
+.badge.idle{background:#f1f5f9;color:#94a3b8}
+.card-body{padding:12px 16px;font-size:12px;color:#475569;line-height:1.7}
+.row{display:flex;align-items:baseline;gap:8px;padding:3px 0;border-bottom:1px solid #f8fafc}
+.row:last-child{border:none}
+.row .lbl{color:#94a3b8;font-weight:600;min-width:120px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.row .val{color:#0f172a;font-weight:500;word-break:break-all}
+.row .val.ok{color:#16a34a}
+.row .val.err{color:#dc2626}
+.row .val.warn{color:#d97706}
+pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:11px;overflow-x:auto;margin-top:8px;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto}
+.step-ic{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.step-ic.pass{background:#dcfce7}
+.step-ic.fail{background:#fee2e2}
+.step-ic.run{background:#dbeafe}
+.step-ic.idle{background:#f1f5f9}
+input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font:14px inherit;outline:none;transition:.15s;margin-bottom:10px}
+input:focus{border-color:#0f766e}
+button{appearance:none;border:none;background:#0f766e;color:#fff;padding:11px 20px;border-radius:10px;font:700 13px inherit;cursor:pointer;width:100%;transition:.15s}
+button:active{background:#0b5e58}
+.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin:16px 0 8px}
+.kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px}
+.kv-item{background:#f8fafc;border-radius:6px;padding:5px 8px}
+.kv-item .k{font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.kv-item .v{font-size:12px;font-weight:600;color:#0f172a;word-break:break-all}
+.spinner{width:16px;height:16px;border:2px solid #e2e8f0;border-top-color:#0f766e;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.retry-btn{background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;margin-top:8px;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;width:auto}
+</style>
+</head>
+<body>
+
+<h1>🔍 StorePro Debug</h1>
+<div class="sub">Checks sheet access, config, plans, and members for any store.</div>
+
+<div class="card">
+  <div class="card-body">
+    <input type="text" id="slugInput" placeholder="Enter store slug (e.g. study-point)" value="">
+    <button onclick="runDiag()">▶ Run Diagnostics</button>
+  </div>
+</div>
+
+<div id="results"></div>
+
+<script>
+var MASTER_SHEET_ID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
+var _q=[],_busy=false;
+
+function gviz(sheetId,sheetName,cb,h0){
+  _q.push({sheetId:sheetId,sheetName:sheetName,cb:cb,h0:h0});
+  if(!_busy)next_();
+}
+function next_(){
+  if(!_q.length){_busy=false;return}
+  _busy=true;
+  var job=_q.shift();
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  if(!window.google.visualization.Query)window.google.visualization.Query={};
+  var done=false;
+  var t=setTimeout(function(){if(done)return;done=true;job.cb(null,'timeout');next_();},10000);
+  window.google.visualization.Query.setResponse=function(r){
+    if(done)return;done=true;clearTimeout(t);job.cb(r,null);next_();
+  };
+  var url='https://docs.google.com/spreadsheets/d/'+job.sheetId+'/gviz/tq?tqx=out:json'+(job.h0?'&headers=0':'&headers=1')+'&sheet='+encodeURIComponent(job.sheetName)+'&_t='+Date.now();
+  var sc=document.createElement('script');sc.src=url;
+  sc.onerror=function(){if(done)return;done=true;clearTimeout(t);job.cb(null,'script-error');next_();};
+  document.body.appendChild(sc);
+}
+
+function parseRows(r){
+  if(!r||!r.table)return [];
+  var headers=[],rows=r.table.rows||[];
+  if(r.table.cols&&r.table.cols.length){
+    var looksAuto=true;
+    r.table.cols.forEach(function(c){var l=(c.label||'').trim();if(l&&!/^[A-Z]+$/.test(l))looksAuto=false;headers.push(l.toLowerCase().replace(/\s+/g,''))});
+    if(looksAuto&&rows[0]){var hr=rows[0];headers=[];if(hr.c)hr.c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});rows=rows.slice(1);}
+  }
+  return rows.map(function(row){var o={};if(!row.c)return o;headers.forEach(function(h,j){var c=row.c[j];var v=c?(c.v!=null?String(c.v):(c.f!=null?String(c.f):'')):'';o[h]=String(v).trim()});return o;});
+}
+
+function E(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function setStep(id,status,badge,detail){
+  var el=document.getElementById('step-'+id);if(!el)return;
+  var ic=el.querySelector('.step-ic');var b=el.querySelector('.badge');var det=el.querySelector('.step-detail');
+  var icons={pass:'✅',fail:'❌',warn:'⚠️',run:'⏳',idle:'○'};
+  if(ic){ic.className='step-ic '+status;ic.textContent=icons[status]||''}
+  if(b){b.className='badge '+status;b.textContent=badge}
+  if(det&&detail!==undefined)det.innerHTML=detail;
+}
+
+function card(id,title){
+  return '<div class="card" id="step-'+id+'">'+
+    '<div class="card-hdr">'+
+      '<div class="step-ic idle" style="font-size:14px">○</div>'+
+      '<div class="card-title">'+title+'</div>'+
+      '<span class="badge idle">Waiting</span>'+
+    '</div>'+
+    '<div class="card-body step-detail" style="display:none"></div>'+
+  '</div>';
+}
+
+function showDetail(id,html){
+  var el=document.getElementById('step-'+id);if(!el)return;
+  var det=el.querySelector('.step-detail');
+  if(det){det.style.display='';det.innerHTML=html}
+}
+
+function kv(label,val,cls){
+  return '<div class="row"><span class="lbl">'+E(label)+'</span><span class="val'+(cls?' '+cls:'')+'">'+E(String(val))+'</span></div>';
+}
+
+function runDiag(){
+  var slug=(document.getElementById('slugInput').value||'').trim().toLowerCase();
+  if(!slug){alert('Enter a store slug first');return}
+  _q=[];_busy=false;
+
+  document.getElementById('results').innerHTML=
+    '<div class="section-title">Diagnostics for "'+E(slug)+'"</div>'+
+    card('registry','Step 1 — Master Registry lookup')+
+    card('sheet','Step 2 — Tenant sheet access')+
+    card('config','Step 3 — Config tab')+
+    card('products','Step 4 — Products / Plans tab')+
+    card('members','Step 5 — Members tab')+
+    card('script','Step 6 — Apps Script reachability');
+
+  setStep('registry','run','Running…');
+
+  // Step 1 — Master Registry
+  gviz(MASTER_SHEET_ID,'Stores',function(r,err){
+    if(!r){
+      setStep('registry','fail','Failed');
+      showDetail('registry',
+        kv('Error',err||'null response','err')+
+        kv('Cause','Master Registry sheet may be private or network error')+
+        '<pre>Sheet ID: '+MASTER_SHEET_ID+'</pre>');
+      return;
+    }
+    var rows=r.table?r.table.rows:[];
+    if(!rows||rows.length<2){
+      setStep('registry','fail','Empty');
+      showDetail('registry',kv('Error','No rows in Stores tab','err')+kv('Fix','Add store rows to the Master Registry'));
+      return;
+    }
+    var hr=rows[0],cols=[];
+    if(hr&&hr.c)hr.c.forEach(function(c){cols.push(c&&c.v!=null?String(c.v).toLowerCase().trim().replace(/\s+/g,''):'')});
+
+    var SHEET_ID='',SCRIPT_URL='',found=false;
+    for(var i=1;i<rows.length;i++){
+      var row=rows[i],o={};
+      cols.forEach(function(k,j){var c=row.c&&row.c[j];o[k]=c&&c.v!=null?String(c.v).trim():''});
+      var rs=(o.slug||'').toLowerCase();
+      if(rs===slug){
+        SHEET_ID=o.sheetid||o.sheet||o.id||'';
+        SCRIPT_URL=o.scripturl||o.script||'';
+        found=true;break;
+      }
+    }
+
+    if(!found){
+      setStep('registry','fail','Not found');
+      showDetail('registry',
+        kv('Slug searched',slug,'err')+
+        kv('Slugs in registry',rows.slice(1).map(function(r){var c=r.c&&r.c[cols.indexOf('slug')];return c&&c.v?c.v:'?'}).join(', '),'warn')+
+        kv('Fix','Add slug "'+slug+'" to the Master Registry Stores tab'));
+      return;
+    }
+
+    setStep('registry','pass','Found');
+    showDetail('registry',
+      kv('Slug',slug,'ok')+
+      kv('Sheet ID',SHEET_ID||'⚠️ EMPTY',SHEET_ID?'ok':'err')+
+      kv('Script URL',SCRIPT_URL||'⚠️ EMPTY',SCRIPT_URL?'ok':'warn')+
+      kv('Columns found',cols.filter(Boolean).join(', ')));
+
+    if(!SHEET_ID){
+      setStep('sheet','fail','No Sheet ID');
+      showDetail('sheet',kv('Error','SheetID column is empty in registry row','err')+kv('Fix','Paste the Google Sheet ID into the SheetID column of the registry'));
+      return;
+    }
+
+    // Step 2 — Sheet access
+    setStep('sheet','run','Checking…');
+    gviz(SHEET_ID,'Config',function(r2,err2){
+      if(!r2){
+        setStep('sheet','fail','Inaccessible');
+        showDetail('sheet',
+          kv('Sheet ID',SHEET_ID)+
+          kv('Error',err2==='timeout'?'Request timed out (10s)':err2==='script-error'?'Script load error (sheet may be private)':'No response','err')+
+          kv('Fix','Share the sheet → "Anyone with the link" → Viewer'));
+        setStep('config','fail','Skipped');
+        setStep('products','fail','Skipped');
+        setStep('members','fail','Skipped');
+        return;
+      }
+      setStep('sheet','pass','Accessible');
+      showDetail('sheet',kv('Sheet ID',SHEET_ID,'ok')+kv('Status','Public ✓','ok'));
+
+      // Step 3 — Config
+      setStep('config','run','Parsing…');
+      var config={};
+      var configRows=parseRows(r2);
+      var rawCols=r2.table&&r2.table.cols?r2.table.cols.map(function(c){return c.label||'(empty)'}).join(', '):'—';
+
+      configRows.forEach(function(row){
+        var keys=Object.keys(row);
+        var k=row['key']||row['config']||row['name']||row['setting']||row['']||(keys[0]?row[keys[0]]:'');
+        var v=row['value']||row['val']||(keys[1]?row[keys[1]]:'');
+        k=String(k||'').trim();v=String(v||'').trim();
+        if(k)config[k.toLowerCase().replace(/\s+/g,'')]=v;
+      });
+
+      var cfgCount=Object.keys(config).length;
+      var shopName=config['shopname']||config['name']||'';
+      var brandColor=config['brandcolor']||'';
+
+      if(!cfgCount){
+        setStep('config','fail','Empty');
+        showDetail('config',
+          kv('Rows parsed',configRows.length)+
+          kv('gviz cols returned',rawCols,'warn')+
+          kv('First row raw',JSON.stringify(configRows[0]||{}),'err')+
+          kv('Likely fix','Cell A1 of Config tab should say "Key", cell B1 should say "Value"'));
+      } else {
+        setStep('config','pass',cfgCount+' keys');
+        var important=['shopname','brandcolor','seatcapacity','shiftcount','enableshifts','requireapproval','scripturl','dashboardurl'];
+        var detail=kv('Keys found',cfgCount,'ok')+kv('gviz cols',rawCols)+kv('ShopName',shopName||'⚠️ missing',shopName?'ok':'warn');
+        if(brandColor)detail+=kv('BrandColor',brandColor,'ok');
+        detail+='<div class="section-title" style="margin-top:10px">Key config values</div><div class="kv-grid">';
+        important.forEach(function(k){if(config[k])detail+='<div class="kv-item"><div class="k">'+k+'</div><div class="v">'+E(config[k])+'</div></div>';});
+        detail+='</div>';
+        showDetail('config',detail);
+      }
+
+      // Step 4 — Products
+      setStep('products','run','Loading…');
+      var tabsToTry=['Products','Plans','Menu','Sheet1'];
+      function tryTab(idx){
+        if(idx>=tabsToTry.length){
+          setStep('products','fail','Not found');
+          showDetail('products',kv('Tried tabs',tabsToTry.join(', '),'warn')+kv('Fix','Create a Products tab with Name/Price/Duration columns'));
+          return;
+        }
+        gviz(SHEET_ID,tabsToTry[idx],function(rp,errp){
+          var rows=parseRows(rp);
+          if(!rows.length){tryTab(idx+1);return;}
+          setStep('products','pass',rows.length+' plans in "'+tabsToTry[idx]+'"');
+          var cols=rows[0]?Object.keys(rows[0]).join(', '):'—';
+          var sample=rows.slice(0,3).map(function(r){return (r['name']||r['plan']||r[Object.keys(r)[0]]||'?')+' — '+(r['price']||'?')+'₹'}).join('<br>');
+          showDetail('products',kv('Tab used',tabsToTry[idx],'ok')+kv('Row count',rows.length,'ok')+kv('Columns',cols)+kv('First 3 plans','')+
+            '<pre>'+E(sample)+'</pre>');
+        });
+      }
+      tryTab(0);
+
+      // Step 5 — Members
+      setStep('members','run','Loading…');
+      gviz(SHEET_ID,'Members',function(rm,errm){
+        if(!rm){
+          setStep('members','warn','Timeout/Error');
+          showDetail('members',kv('Error',errm||'No response','warn')+kv('Note','Members tab may not exist yet on a new sheet — this is OK'));
+          return;
+        }
+        var mrows=parseRows(rm);
+        var active=mrows.filter(function(m){return (m.status||'').toLowerCase()==='active'}).length;
+        var pending=mrows.filter(function(m){return (m.status||'').toLowerCase()==='pending'}).length;
+        setStep('members',mrows.length?'pass':'warn',mrows.length+' members');
+        showDetail('members',kv('Total rows',mrows.length,mrows.length?'ok':'warn')+kv('Active',active,'ok')+kv('Pending',pending,pending?'warn':'ok')+kv('Columns',mrows[0]?Object.keys(mrows[0]).join(', '):'—'));
+      });
+
+      // Step 6 — Script URL
+      if(!SCRIPT_URL){
+        setStep('script','warn','No URL');
+        showDetail('script',kv('ScriptURL','Not set in registry','warn')+kv('Impact','Enrollment submissions and dashboard commands will not work'));
+      } else {
+        setStep('script','run','Pinging…');
+        // Use image ping (no CORS issues)
+        var img=new Image();
+        var done6=false;
+        var t6=setTimeout(function(){if(done6)return;done6=true;setStep('script','warn','No response (302 OK)');showDetail('script',kv('URL',SCRIPT_URL,'ok')+kv('Status','302 redirect is normal for Apps Script','ok')+kv('Note','Script URL is set. If enrollment fails, redeploy the script as "Anyone" access.'));},4000);
+        img.onload=img.onerror=function(){if(done6)return;done6=true;clearTimeout(t6);setStep('script','pass','Reachable');showDetail('script',kv('URL',SCRIPT_URL,'ok')+kv('Status','Reachable ✓','ok'));};
+        img.src=SCRIPT_URL+'?action=version&_t='+Date.now();
+      }
+    });
+  },true);
+}
+
+// Auto-fill slug from URL
+var qs=new URLSearchParams(location.search);var s=qs.get('store');
+if(s)document.getElementById('slugInput').value=s;
+</script>
+</body>
+</html>

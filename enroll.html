@@ -137,6 +137,10 @@
   .shift.sel .shift-radio::after{content:'✓';color:#fff;font-size:11px;font-weight:800;line-height:1}
   /* recommended ribbon */
   .shift-ribbon{position:absolute;bottom:38px;right:-18px;background:var(--brand);color:#fff;font-size:9px;font-weight:800;letter-spacing:.06em;padding:3px 22px;transform:rotate(45deg);text-transform:uppercase}
+  /* locked shift */
+  .shift-locked{opacity:.6;cursor:not-allowed!important}
+  .shift-locked:hover{transform:none!important;box-shadow:none!important}
+  .shift-lock-badge{position:absolute;top:10px;right:10px;background:#1e293b;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.03em}
   /* icon */
   .shift-icon-wrap{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;margin-bottom:10px}
   .shift-icon-wrap.morning{background:linear-gradient(135deg,#fef3c7,#fde68a)}
@@ -596,20 +600,41 @@ function resolveSlug(){
   return '';
 }
 
+var _gvizQueue=[];var _gvizBusy=false;
 function gviz(sheetId,sheetName,cb,headers0){
+  _gvizQueue.push({sheetId:sheetId,sheetName:sheetName,cb:cb,headers0:headers0});
+  if(!_gvizBusy)_gvizNext_();
+}
+function _gvizNext_(){
+  if(!_gvizQueue.length){_gvizBusy=false;return}
+  _gvizBusy=true;
+  var job=_gvizQueue.shift();
   if(!window.google)window.google={};
   if(!window.google.visualization)window.google.visualization={};
   if(!window.google.visualization.Query)window.google.visualization.Query={};
-  window.google.visualization.Query.setResponse=function(r){cb(r)};
-  var url='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json'+(headers0?'&headers=0':'&headers=1')+'&sheet='+encodeURIComponent(sheetName)+'&_t='+Date.now();
-  var sc=document.createElement('script');sc.src=url;sc.onerror=function(){cb(null)};document.body.appendChild(sc);
+  var done=false;
+  var timeout=setTimeout(function(){
+    if(done)return;done=true;
+    console.warn('[gviz] timeout loading sheet:',job.sheetName);
+    job.cb(null);_gvizNext_();
+  },8000);
+  window.google.visualization.Query.setResponse=function(r){
+    if(done)return;done=true;clearTimeout(timeout);
+    job.cb(r);_gvizNext_();
+  };
+  var url='https://docs.google.com/spreadsheets/d/'+job.sheetId+'/gviz/tq?tqx=out:json'+(job.headers0?'&headers=0':'&headers=1')+'&sheet='+encodeURIComponent(job.sheetName)+'&_t='+Date.now();
+  var sc=document.createElement('script');
+  sc.src=url;
+  sc.onerror=function(){
+    if(done)return;done=true;clearTimeout(timeout);
+    console.warn('[gviz] script error loading sheet:',job.sheetName);
+    job.cb(null);_gvizNext_();
+  };
+  document.body.appendChild(sc);
 }
 
 function lookupTenant(slug,cb){
-  if(!window.google)window.google={};
-  if(!window.google.visualization)window.google.visualization={};
-  if(!window.google.visualization.Query)window.google.visualization.Query={};
-  window.google.visualization.Query.setResponse=function(r){
+  gviz(MASTER_SHEET_ID,'Stores',function(r){
     if(!r||!r.table||!r.table.rows||r.table.rows.length<2){console.log('[enroll] tenant lookup failed: no data');cb(false);return}
     var hr=r.table.rows[0],cols=[];if(hr&&hr.c)hr.c.forEach(function(c){cols.push(c&&c.v!=null?String(c.v).toLowerCase().trim().replace(/\s+/g,''):'')});
     console.log('[enroll] Master Registry columns:',cols);
@@ -619,18 +644,12 @@ function lookupTenant(slug,cb){
       if(rs===slug.toLowerCase()||(rsSub&&rsSub===slug.toLowerCase())){
         SHEET_ID=o.sheetid||o.sheet||o.id||'';SCRIPT_URL=o.scripturl||o.script||'';
         console.log('[enroll] Found store:',slug,'sheetid:',SHEET_ID,'scripturl:',SCRIPT_URL);
-  if(SCRIPT_URL){
-    fetch(SCRIPT_URL+'?action=version&_t='+Date.now()).then(function(r){return r.json()}).then(function(v){console.log('[enroll] Script version:',v.version)}).catch(function(e){console.log('[enroll] Version check failed:',e)});
-  }
         if(SHEET_ID){cb(true);return}
       }
     }
     console.log('[enroll] Store not found in registry for slug:',slug);
     cb(false);
-  };
-  var s=document.createElement('script');
-  s.src='https://docs.google.com/spreadsheets/d/'+MASTER_SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Stores&headers=0&_t='+Date.now();
-  s.onerror=function(){cb(false)};document.body.appendChild(s);
+  },true);
 }
 
 function parseRows(r){
@@ -668,12 +687,17 @@ function pick(o,aliases){
 }
 
 // ─── Boot ───
+function splashErr(msg){
+  $('splashMsg').innerHTML=msg+'<br><button onclick="location.reload()" style="margin-top:14px;padding:10px 24px;background:#0f766e;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">↺ Retry</button>';
+}
 function boot(){
   SLUG=resolveSlug();
-  if(!SLUG){ $('splashMsg').textContent='No store specified.';return }
-  $('splashMsg').textContent='Connecting to '+SLUG+'…';
+  if(!SLUG){ splashErr('No store specified in the URL.<br><small>Add ?store=yourname to the URL.</small>');return }
+  $('splashMsg').textContent='Step 1/3 — Looking up "'+SLUG+'"…';
   lookupTenant(SLUG,function(ok){
-    if(!ok){$('splashMsg').textContent='Library not found.';return}
+    if(!ok){ splashErr('Could not find library "<b>'+SLUG+'</b>".<br><small>The master registry may be inaccessible or the store slug is wrong.</small>');return}
+    if(!SHEET_ID){ splashErr('Library found but Sheet ID is empty in registry.<br><small>Check the SheetID column in the Master Registry.</small>');return}
+    $('splashMsg').textContent='Step 2/3 — Loading config…';
     loadAll();
   });
 }
@@ -712,14 +736,29 @@ function loadAll(){
   // Parallel calls clobber each other — the response you see in Network is real, but its data
   // gets dispatched to whichever gviz() call last reassigned setResponse. Always run sequentially.
   gviz(SHEET_ID,'Config',function(r){
-    parseRows(r).forEach(function(row){
-      var k=row.key||row.config||Object.keys(row)[0]||'',v=row.value||row[Object.keys(row)[1]||'']||'';
+    if(!r){
+      splashErr('Could not read the Config sheet.<br><small>Make sure the Google Sheet is shared as <b>"Anyone with the link — Viewer"</b> and has a <b>Config</b> tab.</small>');
+      return;
+    }
+    var configRows=parseRows(r);
+    console.log('[enroll] Config raw rows:',configRows.length,'· first row keys:',configRows[0]?Object.keys(configRows[0]):'none','· sample:',configRows[0]);
+    // Also log raw gviz cols for debugging
+    if(r.table&&r.table.cols)console.log('[enroll] Config gviz cols:',r.table.cols.map(function(c){return c.label||'(empty)'}));
+    configRows.forEach(function(row){
+      var keys=Object.keys(row);
+      // Handle blank first-column header (A1 cell empty) — value lives under '' key
+      var k=row['key']||row['config']||row['name']||row['setting']||row['']||(keys[0]?row[keys[0]]:'');
+      var v=row['value']||row['val']||(keys[1]?row[keys[1]]:'');
+      k=String(k||'').trim();v=String(v||'').trim();
       if(k)config[k.toLowerCase().replace(/\s+/g,'')]=v;
     });
-    console.log('[enroll] config loaded:',Object.keys(config).length,'keys');
+    console.log('[enroll] config loaded:',Object.keys(config).length,'keys →',Object.keys(config).slice(0,8));
+    if(!Object.keys(config).length)console.warn('[enroll] Config still empty — raw first row was:',JSON.stringify(configRows[0]));
+    $('splashMsg').textContent='Step 3/3 — Loading plans…';
 
     tryLoadProducts(['Products','Plans','Menu','Sheet1'],0,function(){
       console.log('[enroll] loaded '+plans.length+' plans');
+      if(!plans.length)console.warn('[enroll] No plans found — check Products tab in sheet');
 
       // Members tab may not exist yet on a fresh tenant — guard with a timeout
       // so a missing tab doesn't stall the whole render.
@@ -739,7 +778,42 @@ function loadAll(){
   });
 }
 
+function showMaintenance(reason){
+  var name=cfg('shopname','Library');
+  var brand=cfg('brandcolor','#0f766e');
+  var phone=cfg('phone','')||cfg('whatsapp','');
+  var customMsg=cfg('maintenancemessage','');
+  var ph=phone?String(phone).replace(/\D/g,''):'';
+  document.title=name+' · Under Maintenance';
+  document.body.innerHTML=
+    '<div style="min-height:100vh;background:linear-gradient(160deg,'+brand+' 0%,'+brand+'cc 55%,#f1f5f9 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,\'Inter\',sans-serif">'+
+    '<div style="background:#fff;border-radius:24px;max-width:400px;width:100%;padding:36px 28px;box-shadow:0 8px 40px rgba(0,0,0,.14);text-align:center">'+
+      '<div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,'+brand+','+brand+'99);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px">🔧</div>'+
+      '<h1 style="font-size:22px;font-weight:800;color:#0f172a;margin-bottom:8px">Under Maintenance</h1>'+
+      '<p style="font-size:14px;color:#64748b;line-height:1.7;margin-bottom:6px">'+
+        (customMsg?E(customMsg):'We\'re making some improvements to serve you better. Please check back soon.')+
+      '</p>'+
+      '<p style="font-size:13px;color:#94a3b8;margin-bottom:24px">हम जल्द ही वापस आएंगे। असुविधा के लिए खेद है।</p>'+
+      '<div style="background:#f8fafc;border-radius:14px;padding:16px;border:1px solid #e2e8f0;margin-bottom:20px">'+
+        '<div style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">'+E(name)+'</div>'+
+        (ph?'<a href="tel:'+ph+'" style="display:inline-flex;align-items:center;gap:6px;background:#0f766e;color:#fff;text-decoration:none;padding:10px 20px;border-radius:10px;font-weight:700;font-size:13px">📞 Contact Us</a>':'<div style="font-size:13px;color:#94a3b8">Please visit us in person</div>')+
+      '</div>'+
+      '<p style="font-size:11px;color:#cbd5e1">Powered by StorePro</p>'+
+    '</div>'+
+    '</div>';
+}
+
 function render(){
+  // ── Maintenance mode check ──
+  var manualMaint=cfg('maintenancemode','no').toLowerCase();
+  var configEmpty=Object.keys(config).length===0;
+  var plansEmpty=!plans||plans.length===0;
+  if(manualMaint==='yes'||configEmpty||plansEmpty){
+    var reason=manualMaint==='yes'?'manual':configEmpty?'config-empty':'plans-empty';
+    showMaintenance(reason);
+    return;
+  }
+
   var name=cfg('shopname','Library');
   document.title=name+' · Enrollment';
   $('shopTitle').textContent=name;
@@ -998,7 +1072,15 @@ function shiftCount(shiftKey){
   var activeHold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
   return activeHold.filter(function(m){return (m.shift||'').toUpperCase()===shiftKey}).length;
 }
+function lockedShifts(){
+  var map={};
+  (cfg('LockedShifts','')||'').split(',').forEach(function(s){var k=s.trim().toUpperCase();if(k)map[k]=true;});
+  return map;
+}
+function isShiftLocked(shiftKey){return !!lockedShifts()[shiftKey.toUpperCase()];}
+
 function shiftLeft(shiftKey){
+  if(isShiftLocked(shiftKey))return 0;
   var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
   return shiftLeftCounter_(shiftKey,hold);
 }
@@ -1131,23 +1213,26 @@ function renderShifts(){
     else{for(var ri=1;ri<=n;ri++){if(cfg('shift'+ri+'label','Shift '+ri).toLowerCase()===recCfg.toLowerCase()){recIdx=ri;break;}}}
   }
 
+  var _locked=lockedShifts();
   for(var i=1;i<=n;i++){
     var key='S'+i,label=cfg('shift'+i+'label','Shift '+i),time=cfg('shift'+i+'time','');
-    var left=lefts[i-1],isFull=left<=0,isSel=selectedShift===key;
+    var isLocked=!!_locked[key];
+    var left=isLocked?0:lefts[i-1],isFull=left<=0,isSel=selectedShift===key;
     var cls=shiftIconCls_(i,label);
-    var taken=cap-left;
-    var rec=(recIdx===i);
+    var taken=cap-lefts[i-1];
+    var rec=(recIdx===i&&!isLocked);
     html+=
-      '<div class="shift'+(isFull?' full':'')+(isSel?' sel':'')+'" onclick="pickShift(\''+key+'\')">'+
+      '<div class="shift'+(isFull?' full':'')+(isSel?' sel':'')+(isLocked?' shift-locked':'')+'" onclick="pickShift(\''+key+'\')">'+
         '<div class="shift-radio"></div>'+
-        (rec&&!isFull?'<div class="shift-ribbon">Recommended</div>':'')+
+        (rec?'<div class="shift-ribbon">Recommended</div>':'')+
+        (isLocked?'<div class="shift-lock-badge">🔒 Locked</div>':'')+
         '<div class="shift-icon-wrap '+cls+'">'+shiftEmoji_(cls)+'</div>'+
         '<div class="shift-head">'+
           '<div class="shift-title">Shift '+i+'</div>'+
           '<div class="shift-badge '+cls+'">'+E(label)+'</div>'+
         '</div>'+
         (time?'<div class="shift-time">'+E(time)+'</div>':'')+
-        '<div class="shift-avail '+(isFull?'err':'ok')+'"><div class="shift-avail-dot"></div>'+(isFull?'Full':left+' seats left')+'</div>'+
+        '<div class="shift-avail '+(isLocked?'err':isFull?'err':'ok')+'"><div class="shift-avail-dot"></div>'+(isLocked?'Not available':isFull?'Full':left+' seats left')+'</div>'+
         '<div class="shift-footer">👥 '+taken+' / '+cap+' seats booked</div>'+
       '</div>';
   }
@@ -1165,18 +1250,20 @@ function renderShifts(){
   }
 
   if(isYes('enablefullday')){
-    var fl=shiftLeft('FULL'),fdFull=fl<=0,fdSel=selectedShift==='FULL';
+    var fdLocked=!!_locked['FULL'];
+    var fl=fdLocked?0:shiftLeft('FULL'),fdFull=fl<=0,fdSel=selectedShift==='FULL';
     var fdLabel=cfg('fulldaylabel','Full Day');
     var fdTime=cfg('fulldaytime',cfg('shift1time','6:00 AM')+' - '+cfg('shift'+n+'time','10:00 PM'));
-    var fdTaken=cap-fl;
+    var fdTaken=cap-shiftLeft('FULL');
     html+=
-      '<div class="shift fullday-card'+(fdFull?' full':'')+(fdSel?' sel':'')+'" onclick="pickShift(\'FULL\')">'+
+      '<div class="shift fullday-card'+(fdFull?' full':'')+(fdSel?' sel':'')+(fdLocked?' shift-locked':'')+'" onclick="pickShift(\'FULL\')">'+
         '<div class="shift-radio"></div>'+
+        (fdLocked?'<div class="shift-lock-badge">🔒 Locked</div>':'')+
         '<div class="shift-left">'+
           '<div class="shift-icon-wrap fullday">☀️</div>'+
-          '<div class="shift-head"><div class="shift-title">'+E(fdLabel)+'</div><div class="shift-badge fullday">Best Value</div></div>'+
+          '<div class="shift-head"><div class="shift-title">'+E(fdLabel)+'</div><div class="shift-badge fullday">'+(fdLocked?'Locked':'Best Value')+'</div></div>'+
           (fdTime?'<div class="shift-time">'+E(fdTime)+'</div>':'')+
-          '<div class="shift-avail '+(fdFull?'err':'ok')+'"><div class="shift-avail-dot"></div>'+(fdFull?'Full':fl+' seats left')+'</div>'+
+          '<div class="shift-avail '+(fdLocked?'err':fdFull?'err':'ok')+'"><div class="shift-avail-dot"></div>'+(fdLocked?'Not available':fdFull?'Full':fl+' seats left')+'</div>'+
           '<ul class="shift-features"><li>Access all day</li><li>Take breaks anytime</li><li>Best for deep focus</li></ul>'+
         '</div>'+
         '<div class="shift-right">'+
@@ -1190,6 +1277,7 @@ function renderShifts(){
 
 
 function pickShift(k){
+  if(isShiftLocked(k)){toast('This shift is currently locked and not accepting new enrollments.','err');return;}
   if(!shiftLeft(k))return;
   selectedShift=k;selectedSeat='';
   if(selectedPlan&&plansForShift(k).indexOf(selectedPlan)<0){
@@ -1660,7 +1748,7 @@ function cbCheckPin(){
   document.getElementById('cbSpin').style.display='block';
   document.getElementById('cbErr').textContent='';
   // Verify PIN, then approve the just-created member, all from the student's phone.
-  fetch(SCRIPT_URL+'?action=verifyPin&pin='+encodeURIComponent(pin)+'&_t='+Date.now())
+  fetch(SCRIPT_URL+'?action=verifyPin&pin='+encodeURIComponent(pin)+'&_t='+Date.now(),{redirect:'follow'})
     .then(function(r){return r.json()})
     .then(function(d){
       if(!d||!d.ok){
@@ -1671,7 +1759,7 @@ function cbCheckPin(){
         return;
       }
       // PIN good — fire approveMember and show the confetti screen.
-      fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      fetch(SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},
         body:JSON.stringify({action:'approveMember',memberId:lastMemberId,token:d.token||''})})
         .then(function(){showApproved()})
         .catch(function(){showApproved()}); // sheet write succeeds even if response fetch fails
