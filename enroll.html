@@ -350,11 +350,41 @@
   .toast.ok{background:var(--ok)}
   .toast.err{background:var(--err)}
 
-  .splash{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:100;transition:opacity .25s}
+  .splash{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;z-index:100;transition:opacity .3s ease}
   .splash.hide{opacity:0;pointer-events:none}
-  .spin{width:36px;height:36px;border:3px solid var(--brand-bg);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+
+  /* ── Animated logo mark ── */
+  .splash-logo{width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,var(--brand),var(--brand-dk));display:flex;align-items:center;justify-content:center;margin-bottom:28px;box-shadow:0 8px 32px rgba(13,148,136,.25);animation:splash-logo-in .5s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes splash-logo-in{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+  .splash-logo svg{width:36px;height:36px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ── Segmented progress arc ── */
+  .splash-ring{position:relative;width:56px;height:56px;margin-bottom:20px}
+  .splash-ring svg{width:56px;height:56px;transform:rotate(-90deg)}
+  .splash-ring-track{fill:none;stroke:#f1f5f9;stroke-width:4}
+  .splash-ring-fill{fill:none;stroke:var(--brand);stroke-width:4;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:138;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)}
+  .splash-ring-fill.p1{stroke-dashoffset:92}
+  .splash-ring-fill.p2{stroke-dashoffset:46}
+  .splash-ring-fill.p3{stroke-dashoffset:0}
+
+  /* ── Dots loader ── */
+  .splash-dots{display:flex;gap:6px;margin-bottom:16px}
+  .splash-dots span{width:7px;height:7px;border-radius:50%;background:var(--brand);opacity:.25;animation:splash-dot .9s ease-in-out infinite}
+  .splash-dots span:nth-child(2){animation-delay:.15s}
+  .splash-dots span:nth-child(3){animation-delay:.3s}
+  @keyframes splash-dot{0%,80%,100%{opacity:.2;transform:scale(.85)}40%{opacity:1;transform:scale(1.15)}}
+
+  .splash .msg{color:var(--ink-3);font-size:12.5px;font-weight:500;letter-spacing:.01em;text-align:center;max-width:220px;line-height:1.5}
+  .splash .msg b{color:var(--brand-dk);font-weight:700}
+
+  /* ── Step indicators ── */
+  .splash-steps{display:flex;align-items:center;gap:6px;margin-bottom:20px}
+  .splash-step{width:28px;height:4px;border-radius:99px;background:#f1f5f9;transition:background .4s,width .3s}
+  .splash-step.done{background:var(--brand)}
+  .splash-step.active{background:var(--brand);opacity:.5;width:36px}
+
   @keyframes spin{to{transform:rotate(360deg)}}
-  .splash .msg{color:var(--ink-2);font-size:13px}
+  .spin{display:none}
 
   .done{padding:24px;text-align:center;max-width:420px;margin:0 auto}
   .done .check{width:72px;height:72px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 16px;box-shadow:0 6px 20px rgba(16,163,74,.3)}
@@ -392,8 +422,18 @@
 <body>
 
 <div class="splash" id="splash">
-  <div class="spin"></div>
-  <div class="msg" id="splashMsg">Loading library…</div>
+  <div class="splash-logo">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+  </div>
+  <div class="splash-steps" id="splashSteps">
+    <div class="splash-step active" id="sStep1"></div>
+    <div class="splash-step" id="sStep2"></div>
+    <div class="splash-step" id="sStep3"></div>
+  </div>
+  <div class="splash-dots">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="msg" id="splashMsg">Looking up library…</div>
 </div>
 
 <div class="top" id="heroTop">
@@ -586,6 +626,13 @@ document.getElementById('form').addEventListener('input',function(ev){
 
 function $(id){return document.getElementById(id)}
 function E(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function setSplashStep_(n,msg){
+  var m=$('splashMsg');if(m)m.textContent=msg;
+  [1,2,3].forEach(function(i){
+    var el=$('sStep'+i);if(!el)return;
+    el.className='splash-step'+(i<n?' done':i===n?' active':'');
+  });
+}
 function cfg(k,d){var v=config[(k||'').toLowerCase().replace(/\s+/g,'')];return v!=null&&v!==''?String(v):(d!==undefined?d:'')}
 function isYes(k,d){return String(cfg(k,d||'no')).toLowerCase().indexOf('yes')===0}
 function fnum(s){var n=parseFloat(String(s||'').replace(/[^\d.]/g,''));return isNaN(n)?0:n}
@@ -693,11 +740,11 @@ function splashErr(msg){
 function boot(){
   SLUG=resolveSlug();
   if(!SLUG){ splashErr('No store specified in the URL.<br><small>Add ?store=yourname to the URL.</small>');return }
-  $('splashMsg').textContent='Step 1/3 — Looking up "'+SLUG+'"…';
+  setSplashStep_(1,'Looking up library…');
   lookupTenant(SLUG,function(ok){
     if(!ok){ splashErr('Could not find library "<b>'+SLUG+'</b>".<br><small>The master registry may be inaccessible or the store slug is wrong.</small>');return}
     if(!SHEET_ID){ splashErr('Library found but Sheet ID is empty in registry.<br><small>Check the SheetID column in the Master Registry.</small>');return}
-    $('splashMsg').textContent='Step 2/3 — Loading config…';
+    setSplashStep_(2,'Loading configuration…');
     loadAll();
   });
 }
@@ -754,7 +801,7 @@ function loadAll(){
     });
     console.log('[enroll] config loaded:',Object.keys(config).length,'keys →',Object.keys(config).slice(0,8));
     if(!Object.keys(config).length)console.warn('[enroll] Config still empty — raw first row was:',JSON.stringify(configRows[0]));
-    $('splashMsg').textContent='Step 3/3 — Loading plans…';
+    setSplashStep_(3,'Loading plans…');
 
     tryLoadProducts(['Products','Plans','Menu','Sheet1'],0,function(){
       console.log('[enroll] loaded '+plans.length+' plans');
@@ -875,7 +922,7 @@ function renderEsLib(){
 
 function renderEsShifts(){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
-  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var hold=holdingMembers();
   var rows='';
   if(isYes('enableshifts')){
     var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
@@ -1069,7 +1116,7 @@ function holdingMembers(){
   return members.filter(function(m){var s=(m.status||'').toLowerCase();return s==='active'||s==='pending'});
 }
 function shiftCount(shiftKey){
-  var activeHold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var activeHold=holdingMembers();
   return activeHold.filter(function(m){return (m.shift||'').toUpperCase()===shiftKey}).length;
 }
 function lockedShifts(){
@@ -1081,12 +1128,12 @@ function isShiftLocked(shiftKey){return !!lockedShifts()[shiftKey.toUpperCase()]
 
 function shiftLeft(shiftKey){
   if(isShiftLocked(shiftKey))return 0;
-  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var hold=holdingMembers();
   return shiftLeftCounter_(shiftKey,hold);
 }
 function renderShiftCounter(){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
-  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var hold=holdingMembers();
   var totalOccupied=0,seen={};
   hold.forEach(function(m){var s=String(m.seat||'').trim();if(s&&!seen[s]){seen[s]=1;totalOccupied++}});
   var noSeat=hold.filter(function(m){return !m.seat}).length;
@@ -1293,18 +1340,19 @@ function isHighOccupancy(){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var reserved=Object.keys(blockedSeats()).length;
   var effective=Math.max(1,cap-reserved);
-  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var hold=holdingMembers();
   var seen={};hold.forEach(function(m){if(m.seat)seen[m.seat]=true});
   var occ=Object.keys(seen).length+hold.filter(function(m){return !m.seat}).length;
   return (occ/effective)>0.5;
 }
 function freeShiftsForSeat(seatId){
-  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var hold=holdingMembers();
   var blocked=blockedSeats();
   var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
   var free=[];
   for(var i=1;i<=n;i++){
     var k='S'+i;
+    if(isShiftLocked(k))continue;                          // globally locked shift = not free
     var shiftBlockKey=seatId.toUpperCase()+'-'+k;
     if(blocked[shiftBlockKey])continue;
     var taken=hold.some(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()===k});
@@ -1313,7 +1361,7 @@ function freeShiftsForSeat(seatId){
   return free;
 }
 function seatStatus(seatId){
-  var hold=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
+  var hold=holdingMembers();
   function occupants(filter){return hold.filter(filter)}
 
   // Full-day occupant always blocks everything
@@ -1328,14 +1376,16 @@ function seatStatus(seatId){
   var highOcc=isHighOccupancy();
 
   if(selectedShift==='FULL'){
-    if(isSeatFree)return 'free';                         // fully free → OK for Full Day
-    if(highOcc&&fs.length>0)return 'half-available';     // partially taken → show free shift
+    if(isShiftLocked('FULL'))return 'taken';             // Full Day locked globally
+    if(isSeatFree)return 'free';
+    if(highOcc&&fs.length>0)return 'half-available';
     return anyHold.every(function(m){return (m.status||'').toLowerCase()==='pending'})?'pending':'taken';
   }
 
   // Single-shift selected
+  if(isShiftLocked(selectedShift))return 'taken';       // globally locked shift
   var shiftBlockKey=seatId.toUpperCase()+'-'+selectedShift;
-  if(blockedSeats()[shiftBlockKey])return 'taken';  // this specific shift is reserved
+  if(blockedSeats()[shiftBlockKey])return 'taken';      // seat-level shift block
 
   if(highOcc&&isSeatFree){
     // Fully free seat at >50% occupancy: must be booked as Full Day only
