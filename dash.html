@@ -141,23 +141,60 @@
   .pending-row .btn-reject{appearance:none;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;width:36px;height:36px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
   .pending-row .btn-reject:active{background:#dc2626;color:#fff}
 
-  /* ─── Tab bar (left vertical rail) ─── */
-  .tabs{position:fixed;left:10px;bottom:16px;background:#fff;border-radius:20px;padding:5px;z-index:50;display:flex;flex-direction:column;gap:1px;box-shadow:var(--shadow-lg),0 0 0 1px rgba(0,0,0,.04);transition:transform .25s cubic-bezier(.4,0,.2,1),opacity .2s}
-  .tabs.hidden{transform:translateX(-80px);opacity:0;pointer-events:none}
-  @media(max-width:1119px){main{padding-left:76px!important}}
-  @media(min-width:1120px){.tabs{box-shadow:none;background:#f1f5f9;border:1px solid var(--line-dk);bottom:20px;left:14px}}
-  .tab{padding:9px 10px;color:var(--ink-3);font-size:9.5px;font-weight:600;border-radius:13px;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:52px;position:relative;-webkit-user-select:none;user-select:none;cursor:pointer;letter-spacing:.03em;text-transform:uppercase}
-  .tab .ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
-  .tab .ic svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-  .tab.act{color:var(--brand-dk);background:var(--brand-bg)}
-  .tab.act .ic{transform:scale(1.08)}
+  /* ─── Tab bar ─── */
+  .tabs{
+    position:fixed;bottom:0;left:0;right:0;z-index:50;
+    display:flex;flex-direction:row;align-items:stretch;
+    background:#fff;
+    border-top:1.5px solid #e2e8f0;
+    box-shadow:0 -4px 20px rgba(13,148,136,.06);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+  }
+  .tabs.hidden{transform:translateY(100%)}
+  main{padding-bottom:80px!important}
+  @media(max-width:1119px){main{padding-left:16px!important}}
+  @media(min-width:1120px){.tabs{display:none}}
+
+  .tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;padding:10px 4px 9px;
+    color:#94a3b8;
+    cursor:pointer;position:relative;
+    -webkit-user-select:none;user-select:none;
+    background:none;border:none;
+    transition:color .18s;
+    -webkit-tap-highlight-color:transparent;
+    overflow:hidden;
+  }
+  .tab::before{
+    content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:0;height:2.5px;border-radius:0 0 3px 3px;
+    background:var(--brand);transition:width .22s cubic-bezier(.4,0,.2,1);
+  }
+  .tab.act::before{width:36px}
+  .tab .ic{
+    width:24px;height:24px;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .tab .ic svg{
+    width:22px;height:22px;stroke:currentColor;fill:none;
+    stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .tab .tab-lbl{font-size:10.5px;font-weight:600;line-height:1;letter-spacing:.01em}
+  .tab.act{color:var(--brand-dk)}
+  .tab.act .ic{transform:scale(1.1)}
   .tab.act .ic svg{stroke-width:2.2}
-  .tab:not(.act):hover{background:var(--bg);color:var(--ink-2)}
-  .tab:not(.act):active{transform:scale(.94)}
-  .tab .dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--hold);display:none;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(124,58,237,.3)}
+  .tab:not(.act):active{color:var(--ink-2)}
+  .tab:not(.act):active .ic{transform:scale(.9)}
+  .tab .dot{
+    position:absolute;top:8px;left:calc(50% + 8px);
+    width:7px;height:7px;border-radius:50%;
+    background:var(--warn);display:none;
+    border:2px solid #fff;
+  }
   .tab .dot.show{display:block}
-  .tab.act .dot{border-color:var(--brand-bg)}
-  /* no left padding override needed — tabs are at bottom */
 
   /* ─── Seats grid ─── */
   .seats-card{padding:20px;border-radius:var(--r-lg);box-shadow:var(--shadow)}
@@ -525,12 +562,21 @@
   .premium-hero-ring .pr-num{font-size:17px;letter-spacing:-.02em;line-height:1}
   .premium-hero-ring .pr-lbl{font-size:8.5px;font-weight:500;opacity:.6;letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
 
-  /* ─── Bento Insights ─── */
-  .insights-bento{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  /* ─── Insights ─── */
+  .ins-cycle{background:linear-gradient(135deg,#0d9488,#0f766e);border-radius:var(--r);padding:16px;color:#fff;margin-bottom:12px}
+  .ins-cycle-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.7;margin-bottom:4px}
+  .ins-cycle-period{font-size:17px;font-weight:800;letter-spacing:-.3px;margin-bottom:12px}
+  .ins-cycle-row{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-bottom:8px}
+  .ins-cycle-stat{text-align:center}
+  .ins-cycle-stat-num{font-size:22px;font-weight:800;line-height:1}
+  .ins-cycle-stat-lbl{font-size:10px;opacity:.7;margin-top:2px;font-weight:500}
+  .ins-cycle-bar-bg{background:rgba(255,255,255,.2);border-radius:99px;height:6px;overflow:hidden}
+  .ins-cycle-bar-fill{background:#fff;height:6px;border-radius:99px}
 
-  .stat{background:var(--card);border-radius:var(--r);padding:14px;border:1px solid var(--line);position:relative;overflow:hidden;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+  .ins-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+  .stat{background:var(--card);border-radius:var(--r);padding:14px;border:1px solid var(--line);position:relative;overflow:hidden;min-height:90px;display:flex;flex-direction:column;justify-content:space-between}
   .stat .lbl{font-size:10.5px;color:var(--ink-3);font-weight:500}
-  .stat .val{font-size:28px;font-weight:700;color:var(--ink);margin-top:2px;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .stat .val{font-size:26px;font-weight:700;color:var(--ink);margin-top:2px;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
   .stat .icon{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:8px;background:var(--line);color:var(--ink-3);display:flex;align-items:center;justify-content:center;font-size:13px}
   .stat.ok .val{color:var(--ok-dk)}.stat.ok .icon{background:var(--ok-bg);color:var(--ok-dk)}
   .stat.warn .val{color:var(--warn-dk)}.stat.warn .icon{background:var(--warn-bg);color:var(--warn-dk)}
@@ -538,7 +584,85 @@
   .stat.hold .val{color:var(--hold-dk)}.stat.hold .icon{background:var(--hold-bg);color:var(--hold-dk)}
   .stat .sub{font-size:11px;color:var(--ink-3);font-weight:400;margin-top:6px;line-height:1.3}
 
+  .ins-section-hdr{font-size:12px;font-weight:700;color:var(--ink-2);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.05em}
+  .ins-collect-card{background:var(--card);border-radius:var(--r);border:1px solid var(--line);padding:14px;margin-bottom:12px}
+  .ins-collect-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .ins-collect-lbl{font-size:12.5px;color:var(--ink-3);font-weight:500}
+  .ins-collect-val{font-size:13px;font-weight:700}
+  .ins-bar-bg{background:var(--line);border-radius:99px;height:7px;overflow:hidden;margin:8px 0 5px}
+  .ins-bar-fill{height:7px;border-radius:99px;background:var(--ok-dk)}
+  .ins-bar-footer{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);font-weight:500}
+
+  .ins-new-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .ins-new-row:last-child{border-bottom:none}
+  .ins-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+  .ins-new-name{font-size:13px;font-weight:600;color:var(--ink)}
+  .ins-new-sub{font-size:11px;color:var(--ink-3);margin-top:1px}
+  .ins-new-right{margin-left:auto;text-align:right;flex-shrink:0}
+  .ins-new-amt{font-size:12.5px;font-weight:700;color:var(--ok-dk)}
+  .ins-new-date{font-size:10.5px;color:var(--ink-3);margin-top:1px}
+
+  .ins-shift-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .ins-shift-row:last-child{border-bottom:none}
+  .ins-shift-lbl{font-size:12.5px;font-weight:600;color:var(--ink);width:80px;flex-shrink:0}
+  .ins-shift-bar-bg{flex:1;background:var(--line);border-radius:99px;height:5px;overflow:hidden}
+  .ins-shift-bar-fill{height:5px;border-radius:99px}
+  .ins-shift-n{font-size:12px;font-weight:700;color:var(--ink-2);width:20px;text-align:right;flex-shrink:0}
+
+  .ins-empty-sm{padding:16px 0;text-align:center;color:var(--ink-3);font-size:13px}
+  .exp-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .exp-row:last-child{border-bottom:none}
+  .exp-seat{background:var(--bg);border-radius:6px;padding:2px 7px;font-size:11.5px;font-weight:700;color:var(--ink-2);flex-shrink:0}
+  .exp-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.2}
+  .exp-plan{font-size:11px;color:var(--ink-3);margin-top:1px}
+  .exp-pill{margin-left:auto;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;flex-shrink:0;white-space:nowrap}
+  .exp-pill.gone{background:#f1f5f9;color:var(--ink-3)}
+  .exp-pill.urgent{background:var(--err-bg);color:var(--err-dk)}
+  .exp-pill.soon{background:var(--warn-bg);color:var(--warn-dk)}
+  .exp-pill.ok{background:var(--ok-bg);color:var(--ok-dk)}
+
   @media (max-width:380px){.premium-hero{padding:16px}.premium-hero-num{font-size:38px}.premium-hero-ring{width:68px;height:68px}.premium-hero-ring .pr-num{font-size:14px}}
+
+  /* ── Complaints tab ── */
+  .cmp-toolbar{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+  .cmp-filter{padding:5px 12px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font:600 12px var(--f);color:var(--ink-3);cursor:pointer;transition:.15s;white-space:nowrap}
+  .cmp-filter.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .cmp-filter.on.rose{background:var(--err-dk);border-color:var(--err-dk)}
+  .cmp-filter.on.amber{background:var(--warn-dk);border-color:var(--warn-dk)}
+  .cmp-filter.on.ok{background:var(--ok-dk);border-color:var(--ok-dk)}
+  .cmp-search{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font:14px var(--f);color:var(--ink);outline:none;margin-bottom:10px;background:var(--card)}
+  .cmp-search:focus{border-color:var(--brand)}
+  .cmp-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .cmp-stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;text-align:center}
+  .cmp-stat-n{font:800 22px var(--f);letter-spacing:-.5px;line-height:1;margin-bottom:2px}
+  .cmp-stat-l{font:600 10px var(--f);color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+  .cmp-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 14px;margin-bottom:8px}
+  .cmp-card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
+  .cmp-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+  .cmp-body{flex:1;min-width:0}
+  .cmp-subject{font:700 13.5px var(--f);color:var(--ink);line-height:1.3;margin-bottom:3px}
+  .cmp-meta{font:500 11.5px var(--f);color:var(--ink-3);display:flex;flex-wrap:wrap;gap:8px}
+  .cmp-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+  .cmp-status{padding:3px 8px;border-radius:99px;font:700 10.5px var(--f);white-space:nowrap}
+  .cmp-status.open{background:#dbeafe;color:#1d4ed8}
+  .cmp-status.progress{background:var(--warn-bg);color:var(--warn-dk)}
+  .cmp-status.resolved{background:var(--ok-bg);color:var(--ok-dk)}
+  .cmp-status.closed{background:#f1f5f9;color:var(--ink-3)}
+  .cmp-pri{font:700 10px var(--f);white-space:nowrap}
+  .cmp-pri.high{color:var(--err-dk)}.cmp-pri.med{color:var(--warn-dk)}.cmp-pri.low{color:var(--ok-dk)}
+  .cmp-desc{font:400 12.5px var(--f);color:var(--ink-2);line-height:1.5;padding:8px 0 0;border-top:1px solid var(--line);white-space:pre-wrap;word-break:break-word}
+  .cmp-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+  .cmp-btn{padding:5px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);font:600 11.5px var(--f);color:var(--ink-2);cursor:pointer;transition:.15s}
+  .cmp-btn:hover{border-color:var(--brand);color:var(--brand)}
+  .cmp-btn.resolve{background:var(--ok-dk);border-color:var(--ok-dk);color:#fff}
+  .cmp-btn.resolve:hover{background:var(--ok)}
+  .cmp-id{font:600 10px var(--f);color:var(--ink-4);margin-left:auto;align-self:center}
+  .cmp-anon{font:600 11px var(--f);color:var(--ink-3);display:flex;align-items:center;gap:4px}
+  .cmp-empty-s{text-align:center;padding:36px 16px;color:var(--ink-3);font:600 13px var(--f)}
+  .cmp-reload{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:var(--brand-bg);color:var(--brand);font:700 12px var(--f);border:none;cursor:pointer;margin:0 auto;transition:.15s}
+  .cmp-reload:hover{background:var(--brand);color:#fff}
+  .cmp-link-bar{background:var(--brand-bg);border-radius:var(--r);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;font:600 12.5px var(--f);color:var(--brand)}
+  .cmp-link-bar a{font:700 12px var(--f);color:#fff;background:var(--brand);padding:6px 12px;border-radius:8px;white-space:nowrap}
 
   /* ─── Bottom sheet ─── */
   .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s;z-index:90;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
@@ -979,7 +1103,7 @@
   }
 
   /* ─── FAB (Add member) ─── */
-  .fab{position:fixed;bottom:28px;right:20px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-dk));color:#fff;border:none;font-size:26px;font-weight:300;box-shadow:0 4px 14px rgba(13,148,136,.35);cursor:pointer;z-index:80;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s}
+  .fab{position:fixed;bottom:84px;right:16px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-dk));color:#fff;border:none;font-size:26px;font-weight:300;box-shadow:0 4px 14px rgba(13,148,136,.35);cursor:pointer;z-index:80;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s}
   .fab:active{transform:scale(.9);box-shadow:0 2px 8px rgba(13,148,136,.25)}
 
   /* ─── Enroll form inside bottom sheet ─── */
@@ -1234,10 +1358,43 @@
   </div>
 
   <div id="pgInsights" class="page">
-    <h2>Overview</h2>
-    <div class="insights-bento" id="insightCards"></div>
-    <h2>Expiring next 3 days</h2>
-    <div id="expSoon"></div>
+    <div class="ins-cycle" id="insCycle"></div>
+    <div class="ins-kpis" id="insKpis"></div>
+    <div class="ins-collect-card" id="insCollect"></div>
+    <div class="ins-section-hdr">New This Cycle</div>
+    <div id="insNew"></div>
+    <div class="ins-section-hdr">By Shift — This Cycle</div>
+    <div id="insShift"></div>
+    <div class="ins-section-hdr">Expiring / Expired This Cycle</div>
+    <div id="insExp"></div>
+  </div>
+
+  <div id="pgComplaints" class="page">
+    <div class="cmp-link-bar">
+      <span>Share this link with members to submit complaints</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="refreshComplaints_()" id="cmpRefreshBtn" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:none;background:rgba(255,255,255,.7);color:var(--brand);font:700 12px var(--f);cursor:pointer;transition:.15s" title="Refresh complaints">
+          <svg id="cmpRefreshIc" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Refresh
+        </button>
+        <a id="cmpFormLink" href="complaint.html" target="_blank">Open Form ↗</a>
+      </div>
+    </div>
+    <div class="cmp-stats-row">
+      <div class="cmp-stat"><div class="cmp-stat-n" id="cmpStTotal">—</div><div class="cmp-stat-l">Total</div></div>
+      <div class="cmp-stat"><div class="cmp-stat-n" id="cmpStOpen" style="color:#1d4ed8">—</div><div class="cmp-stat-l">Open</div></div>
+      <div class="cmp-stat"><div class="cmp-stat-n" id="cmpStHigh" style="color:var(--err-dk)">—</div><div class="cmp-stat-l">High</div></div>
+      <div class="cmp-stat"><div class="cmp-stat-n" id="cmpStResolved" style="color:var(--ok-dk)">—</div><div class="cmp-stat-l">Resolved</div></div>
+    </div>
+    <input class="cmp-search" id="cmpSearchInp" type="text" placeholder="Search by name, subject, category…" oninput="renderCmpList_()">
+    <div class="cmp-toolbar">
+      <button class="cmp-filter on" data-f="all" onclick="setCmpFilter_(this,'all')">All</button>
+      <button class="cmp-filter rose" data-f="open" onclick="setCmpFilter_(this,'open')">🔴 Open</button>
+      <button class="cmp-filter amber" data-f="in progress" onclick="setCmpFilter_(this,'in progress')">🟡 In Progress</button>
+      <button class="cmp-filter ok" data-f="resolved" onclick="setCmpFilter_(this,'resolved')">✓ Resolved</button>
+      <button class="cmp-filter" data-f="high" onclick="setCmpFilter_(this,'high')">⚠️ High Priority</button>
+    </div>
+    <div id="cmpList"></div>
   </div>
 
   <div id="pgMore" class="page">
@@ -1318,20 +1475,27 @@
 <!-- ─── Tab bar ─── -->
 <div class="tabs" id="tabs" style="display:none">
   <div class="tab act" onclick="goTab('Seats')" id="tabSeats">
-    <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 10h18M3 6h18M5 14v5M19 14v5M5 19h3m8 0h3"/><rect x="3" y="10" width="18" height="4" rx="1"/></svg></span>
-    Seats<span class="dot" id="tabSeatsDot"></span>
+    <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 9h18M3 5h18M5 13v6M19 13v6M5 19h4m10 0h-4"/><rect x="3" y="9" width="18" height="4" rx="1.5"/></svg></span>
+    <span class="tab-lbl">Seats</span>
+    <span class="dot" id="tabSeatsDot"></span>
   </div>
   <div class="tab" onclick="goTab('Active')" id="tabActive">
-    <span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="8" r="2.5"/><path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M22 20c0-2.2-2.2-4-5-4"/></svg></span>
-    Active<span class="dot" id="tabActiveDot"></span>
+    <span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3.5"/><path d="M2 21c0-3.5 3.1-6 7-6s7 2.5 7 6"/><path d="M17 11c1.7 0 3 1.3 3 3"/><path d="M22 21c0-2-1.3-3.7-3-4.3"/></svg></span>
+    <span class="tab-lbl">Active</span>
+    <span class="dot" id="tabActiveDot"></span>
   </div>
   <div class="tab" onclick="goTab('Insights')" id="tabInsights">
-    <span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span>
-    Insights
+    <span class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="13" width="5" height="8" rx="1"/><rect x="9.5" y="8" width="5" height="13" rx="1"/><rect x="17" y="3" width="5" height="18" rx="1"/></svg></span>
+    <span class="tab-lbl">Insights</span>
+  </div>
+  <div class="tab" onclick="goTab('Complaints')" id="tabComplaints">
+    <span class="ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+    <span class="tab-lbl">Issues</span>
+    <span class="dot" id="tabComplaintsDot"></span>
   </div>
   <div class="tab" onclick="goTab('More')" id="tabMore">
-    <span class="ic"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></span>
-    More
+    <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span>
+    <span class="tab-lbl">More</span>
   </div>
 </div>
 
@@ -1779,26 +1943,26 @@ function buildPremiumHero(kind){
 
   if(kind==='occupancy'){
     var dashFill=Math.max(0,Math.min(C,(occPct/100)*C));
-    return '<div class="premium-hero">'+
-      '<div class="premium-hero-head"><div class="premium-hero-title">'+E(cfg('shopname','Library'))+'</div><div class="premium-hero-sub">Live capacity</div></div>'+
-      '<div class="premium-hero-body">'+
-        '<div>'+
-          '<div class="premium-hero-num">'+occSeats+'<span class="pct"> / '+cap+'</span></div>'+
-          '<div class="premium-hero-label">seats occupied right now</div>'+
-        '</div>'+
-        '<div class="premium-hero-ring">'+
+    var expiring7=allAct.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=0&&d<=7}).length;
+    var ringColor=occPct>=90?'#fca5a5':occPct>=70?'#fcd34d':'#86efac';
+    return '<div class="premium-hero" style="padding:16px">'+
+      '<div style="display:flex;align-items:center;gap:14px">'+
+        '<div class="premium-hero-ring" style="width:74px;height:74px;flex-shrink:0">'+
           '<svg viewBox="0 0 100 100">'+
-            '<circle class="pr-bg" cx="50" cy="50" r="40" fill="none" stroke-width="8"/>'+
-            '<circle class="pr-fg" cx="50" cy="50" r="40" fill="none" stroke-width="8" stroke-dasharray="'+dashFill+' '+(C-dashFill)+'"/>'+
+            '<circle class="pr-bg" cx="50" cy="50" r="40" fill="none" stroke-width="9"/>'+
+            '<circle class="pr-fg" cx="50" cy="50" r="40" fill="none" stroke-width="9" stroke="'+ringColor+'" stroke-dasharray="'+dashFill+' '+(C-dashFill)+'"/>'+
           '</svg>'+
-          '<div class="pr-center"><span class="pr-num">'+occPct+'%</span><span class="pr-lbl">full</span></div>'+
+          '<div class="pr-center"><span class="pr-num" style="font-size:15px;color:#fff">'+occPct+'%</span><span class="pr-lbl">full</span></div>'+
         '</div>'+
-      '</div>'+
-      '<div class="premium-hero-chips">'+
-        '<span class="premium-hero-chip ok"><span class="ph-dot"></span>'+free+' free seats</span>'+
-        (pend?'<span class="premium-hero-chip warn"><span class="ph-dot"></span>'+pend.length+' pending</span>':'')+
-        (expSoon?'<span class="premium-hero-chip warn"><span class="ph-dot"></span>'+expSoon+' expiring</span>':'')+
-        (expired?'<span class="premium-hero-chip err"><span class="ph-dot"></span>'+expired+' expired</span>':'')+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="font-size:10px;font-weight:600;opacity:.55;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">'+E(cfg('shopname','Library'))+'</div>'+
+          '<div style="display:flex;flex-direction:column;gap:4px">'+
+            '<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;opacity:.7;font-weight:500">Occupied</span><span style="font-size:13px;font-weight:800;font-variant-numeric:tabular-nums">'+occSeats+' <span style="opacity:.5;font-weight:500">/ '+cap+'</span></span></div>'+
+            '<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;opacity:.7;font-weight:500">Free seats</span><span style="font-size:13px;font-weight:800;color:#86efac">'+free+'</span></div>'+
+            (expiring7?'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;opacity:.7;font-weight:500">Expiring ≤7d</span><span style="font-size:13px;font-weight:800;color:#fcd34d">'+expiring7+'</span></div>':'')+
+            (expired?'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;opacity:.7;font-weight:500">Expired</span><span style="font-size:13px;font-weight:800;color:#fca5a5">'+expired+'</span></div>':'')+
+          '</div>'+
+        '</div>'+
       '</div>'+
     '</div>';
   }
@@ -1856,10 +2020,11 @@ function renderOccupancy(){
 
 function goTab(t){
   currentTab=t;
-  ['Seats','Active','Insights','More'].forEach(function(name){
+  ['Seats','Active','Insights','Complaints','More'].forEach(function(name){
     $('pg'+name).classList.toggle('act',name===t);
     $('tab'+name).classList.toggle('act',name===t);
   });
+  if(t==='Complaints')loadComplaints_();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function scrollToPending(){setTimeout(function(){var pb=$('pendingBanner');if(pb)pb.scrollIntoView({behavior:'smooth',block:'start'})},120)}
@@ -2598,46 +2763,267 @@ function dsMemberSearch(q){
 }
 
 // ─── Insights ───
-function renderInsights(){
-  var act=activeMembers(),pend=pendingMembers();
-  var cur=cfg('currency','₹');
-  var totalRev=act.concat(pend).reduce(function(s,m){var n=parseFloat(m.totalpaid||0);return s+(isNaN(n)?0:n)},0);
-  var expSoon=act.filter(function(m){var d=daysToExpiry(m);return d!=null && d>=0 && d<=3});
-  var expired=act.filter(function(m){var d=daysToExpiry(m);return d!=null && d<0});
+function billingCycle_(){
+  var t=new Date(),d=t.getDate(),m=t.getMonth(),y=t.getFullYear();
+  var s,e;
+  if(d>=26){s=new Date(y,m,26);e=new Date(y,m+1,25);}
+  else{s=new Date(y,m-1,26);e=new Date(y,m,25);}
+  e.setHours(23,59,59,999);
+  var total=Math.round((e-s)/864e5)+1;
+  var elapsed=Math.min(total,Math.max(0,Math.floor((t-s)/864e5)+1));
+  return{start:s,end:e,total:total,elapsed:elapsed,remaining:Math.max(0,total-elapsed)};
+}
+function parseMD_(str){
+  if(!str)return null;
+  var g=str.match(/^Date\((\d+),(\d+),(\d+)\)$/);
+  var d=g?new Date(+g[1],+g[2],+g[3]):new Date(str.replace(/\//g,'-'));
+  return isNaN(d.getTime())?null:d;
+}
+function fmtMD_(d){var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+mo[d.getMonth()];}
+function planPrice_(name){var p=plans.filter(function(p){return (p.name||p.plan||'')===name})[0];return p?parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0:0;}
 
+function renderInsights(){
+  var cycle=billingCycle_();
+  var cur=cfg('currency','₹');
+  var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var act=activeMembers(),pend=pendingMembers();
+  var all=act.concat(pend);
+
+  // Members whose plan startdate falls in this cycle (new enrollments + renewals)
+  var newM=all.filter(function(m){var d=parseMD_(m.startdate);return d&&d>=cycle.start&&d<=cycle.end;});
+
+  // Members whose expirydate falls in this cycle
+  var expM=all.filter(function(m){var d=parseMD_(m.expirydate);return d&&d>=cycle.start&&d<=cycle.end;})
+    .sort(function(a,b){return parseMD_(a.expirydate)-parseMD_(b.expirydate);});
+
+  // Fee totals for all active members
+  var collected=act.reduce(function(s,m){var n=parseFloat(m.totalpaid||0);return s+(isNaN(n)?0:n);},0);
+  var expected=act.reduce(function(s,m){return s+planPrice_(m.plan);},0);
+  var outstanding=Math.max(0,expected-collected);
+  var colPct=expected>0?Math.round(collected/expected*100):100;
+
+  // Cycle revenue = fees paid by new members this cycle
+  var cycleRev=newM.reduce(function(s,m){var n=parseFloat(m.totalpaid||0);return s+(isNaN(n)?0:n);},0);
+
+  // ── Cycle banner ──
+  var barPct=Math.round(cycle.elapsed/cycle.total*100);
+  $('insCycle').innerHTML=
+    '<div class="ins-cycle-hdr">Billing Cycle</div>'+
+    '<div class="ins-cycle-period">'+fmtMD_(cycle.start)+' – '+fmtMD_(cycle.end)+' '+cycle.end.getFullYear()+'</div>'+
+    '<div class="ins-cycle-row">'+
+      '<div class="ins-cycle-stat"><div class="ins-cycle-stat-num">'+cycle.elapsed+'</div><div class="ins-cycle-stat-lbl">days elapsed</div></div>'+
+      '<div style="flex:1;padding:0 12px"><div class="ins-cycle-bar-bg"><div class="ins-cycle-bar-fill" style="width:'+barPct+'%"></div></div></div>'+
+      '<div class="ins-cycle-stat"><div class="ins-cycle-stat-num">'+cycle.remaining+'</div><div class="ins-cycle-stat-lbl">days left</div></div>'+
+    '</div>';
+
+  // ── KPI cards ──
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var free=Math.max(0,cap-act.length-pend.length);
-
-  // Insights hero uses the shared 'occupancy' premium hero — same look as Seats tab.
-  $('insightCards').innerHTML='<div style="grid-column:1/-1">'+buildPremiumHero('occupancy')+'</div>'+
+  $('insKpis').innerHTML=
+    statCard('Cycle Revenue','💰',cur+Math.round(cycleRev).toLocaleString('en-IN'),'ok','from '+newM.length+' new members')+
+    statCard('New Members','🆕',newM.length,'','enrolled this cycle')+
     statCard('Active','👥',act.length,'ok','enrolled members')+
-    statCard('Pending','⏳',pend.length,pend.length?'hold':'',pend.length?'awaiting approval':'all reviewed')+
-    statCard('Revenue','💰',cur+totalRev,'','from current cohort')+
-    statCard('Expiring','⚠️',expSoon.length,expSoon.length?'warn':'',expSoon.length?'within 3 days':'no one expiring')+
-    statCard('Expired','⏰',expired.length,expired.length?'err':'',expired.length?'still listed active':'')+
-    statCard('Free seats','🪑',free,'',cap+' total seats');
+    statCard('Expiring','⚠️',expM.length,expM.length?'warn':'','this cycle');
 
-  var combo=expired.concat(expSoon).sort(function(a,b){return (daysToExpiry(a)||0)-(daysToExpiry(b)||0)});
-  if(!combo.length){$('expSoon').innerHTML='<div class="empty"><span class="empty-ic">🎉</span>Nobody expiring in the next 3 days.<br><span style="font-size:12px;color:var(--ink-3)">Reminders will surface here automatically.</span></div>';return}
-  $('expSoon').innerHTML=combo.map(function(m){
-    var d=daysToExpiry(m);
-    var cardCls=d<0?'expired':'expiring',pillCls=d<0?'err':'warn',dTxt=d<0?Math.abs(d)+'d ago':d+'d left';
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
-    var shiftLbl=(m.shift||'').toUpperCase()==='FULL'?'☀️ '+cfg('fulldaylabel','Full Day'):m.shift?shiftIcon_(parseInt((m.shift||'').slice(1),10)||1,cfg('shift'+(m.shift||'').slice(1)+'label',''))+' '+cfg('shift'+(m.shift||'').slice(1)+'label',m.shift):'';
-    var isFullShift=(m.shift||'').toUpperCase()==='FULL';
-    var phone=(m.phone||'').replace(/\D/g,'');
-    var waPh=phone.length===10?'91'+phone:phone;
-    return '<div class="mb '+cardCls+'" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
-      '<div class="avatar" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'<span class="status-dot"></span></div>'+
-      '<div class="body"><div class="nm">'+E(m.name)+'</div><div class="meta">'+(m.seat?'<span class="tag seat">🪑 '+E(m.seat)+'</span>':'')+(shiftLbl?'<span class="tag shift'+(isFullShift?' full-day':'')+'">'+E(shiftLbl)+'</span>':'')+(m.plan?'<span class="plan-name">'+E(m.plan)+'</span>':'')+'</div></div>'+
-      '<div class="right"><div class="days-pill '+pillCls+'">'+dTxt+'</div>'+
-        (phone?'<div class="mb-quick"><button class="qa-call" title="Call" onclick="event.stopPropagation();location.href=\'tel:'+phone+'\'">📞</button><button class="qa-wa qa-wa-renew" title="WhatsApp renewal reminder" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')">📲 Renew</button>'+(m.email?'<button class="qa-email" title="Send renewal email" onclick="event.stopPropagation();sendRenewalEmail(\''+E(m.memberid)+'\')">✉️</button>':'')+'</div>':'<div class="mb-quick">'+(m.email?'<button class="qa-email" title="Send renewal email" onclick="event.stopPropagation();sendRenewalEmail(\''+E(m.memberid)+'\')">✉️</button>':'')+'<button class="qa-wa qa-wa-renew" title="Send renew nudge" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')">📲 Renew</button></div>')+
+  // ── Fee collection ──
+  $('insCollect').innerHTML=
+    '<div style="font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Fee Collection — Active Members</div>'+
+    '<div class="ins-collect-row"><span class="ins-collect-lbl">Collected</span><span class="ins-collect-val" style="color:var(--ok-dk)">'+cur+Math.round(collected).toLocaleString('en-IN')+'</span></div>'+
+    '<div class="ins-collect-row"><span class="ins-collect-lbl">Outstanding</span><span class="ins-collect-val" style="color:var(--err-dk)">'+cur+Math.round(outstanding).toLocaleString('en-IN')+'</span></div>'+
+    '<div class="ins-collect-row"><span class="ins-collect-lbl">Total Expected</span><span class="ins-collect-val">'+cur+Math.round(expected).toLocaleString('en-IN')+'</span></div>'+
+    '<div class="ins-bar-bg"><div class="ins-bar-fill" style="width:'+colPct+'%;background:'+(colPct<70?'var(--err-dk)':colPct<90?'var(--warn-dk)':'var(--ok-dk)')+'"></div></div>'+
+    '<div class="ins-bar-footer"><span>'+colPct+'% collected</span><span>'+act.length+' active members</span></div>';
+
+  // ── New members list ──
+  var avColors=['#6366f1','#0d9488','#d97706','#3b82f6','#dc2626','#7c3aed','#16a34a'];
+  if(!newM.length){
+    $('insNew').innerHTML='<div class="ins-empty-sm">No new enrollments this cycle</div>';
+  } else {
+    $('insNew').innerHTML=newM.slice(0,6).map(function(m,i){
+      var paid=parseFloat(m.totalpaid||0)||0;
+      var shiftKey=(m.shift||'').toUpperCase();
+      var shiftLbl=shiftKey==='FULL'?cfg('fulldaylabel','Full Day'):shiftKey?cfg('shift'+(shiftKey.slice(1))+'label',shiftKey):'—';
+      var dt=parseMD_(m.startdate);
+      var av=avColors[i%avColors.length];
+      return '<div class="ins-new-row">'+
+        '<div class="ins-av" style="background:'+av+'22;color:'+av+'">'+E(ini(m.name))+'</div>'+
+        '<div>'+
+          '<div class="ins-new-name">'+E(m.name||'Unknown')+'</div>'+
+          '<div class="ins-new-sub">'+(m.seat?'Seat '+E(m.seat)+' · ':'')+E(shiftLbl||'—')+'</div>'+
+        '</div>'+
+        '<div class="ins-new-right">'+
+          '<div class="ins-new-amt">'+cur+Math.round(paid).toLocaleString('en-IN')+'</div>'+
+          '<div class="ins-new-date">'+(dt?fmtMD_(dt):'')+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('')+(newM.length>6?'<div class="ins-empty-sm" style="padding:8px 0">+' +(newM.length-6)+' more</div>':'');
+  }
+
+  // ── Shift breakdown ──
+  var shiftN=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var shiftKeys=[];
+  for(var i=1;i<=shiftN;i++)shiftKeys.push('S'+i);
+  if(isYes('enablefullday'))shiftKeys.push('FULL');
+  var shiftColors=['#d97706','#3b82f6','#7c3aed','#ec4899','#16a34a'];
+  var shiftCounts={};
+  newM.forEach(function(m){var k=(m.shift||'').toUpperCase();shiftCounts[k]=(shiftCounts[k]||0)+1;});
+  var maxSC=Math.max(1,shiftKeys.reduce(function(mx,k){return Math.max(mx,shiftCounts[k]||0);},0));
+  $('insShift').innerHTML=shiftKeys.map(function(k,idx){
+    var lbl=k==='FULL'?cfg('fulldaylabel','Full Day'):cfg('shift'+(k.slice(1))+'label','Shift '+k.slice(1));
+    var c=shiftCounts[k]||0;
+    return '<div class="ins-shift-row">'+
+      '<div class="ins-shift-lbl">'+E(lbl)+'</div>'+
+      '<div class="ins-shift-bar-bg"><div class="ins-shift-bar-fill" style="width:'+Math.round(c/maxSC*100)+'%;background:'+shiftColors[idx%shiftColors.length]+'"></div></div>'+
+      '<div class="ins-shift-n">'+c+'</div>'+
+    '</div>';
+  }).join('')||'<div class="ins-empty-sm">Shifts not configured</div>';
+
+  // ── Expiry list ──
+  if(!expM.length){
+    $('insExp').innerHTML='<div class="ins-empty-sm">No expirations this cycle 🎉</div>';
+  } else {
+    var today=new Date();
+    $('insExp').innerHTML=expM.slice(0,8).map(function(m){
+      var dt=parseMD_(m.expirydate);
+      var days=dt?Math.floor((dt-today)/864e5):null;
+      var cls,lbl;
+      if(days===null){cls='gone';lbl='?';}
+      else if(days<0){cls='gone';lbl=Math.abs(days)+'d ago';}
+      else if(days<=3){cls='urgent';lbl=days===0?'Today':days+'d left';}
+      else if(days<=7){cls='soon';lbl=days+'d left';}
+      else{cls='ok';lbl=days+'d left';}
+      var shiftKey=(m.shift||'').toUpperCase();
+      var shiftLbl=shiftKey==='FULL'?cfg('fulldaylabel','Full Day'):shiftKey?cfg('shift'+(shiftKey.slice(1))+'label',shiftKey):'';
+      return '<div class="exp-row" onclick="openMemberSheet(\''+E(m.memberid)+'\')" style="cursor:pointer">'+
+        '<div class="exp-seat">'+(m.seat?E(m.seat):'—')+'</div>'+
+        '<div>'+
+          '<div class="exp-name">'+E(m.name||'Unknown')+'</div>'+
+          '<div class="exp-plan">'+(shiftLbl?E(shiftLbl)+' · ':'')+E(m.plan||'')+'</div>'+
+        '</div>'+
+        '<div class="exp-pill '+cls+'">'+lbl+'</div>'+
+      '</div>';
+    }).join('')+(expM.length>8?'<div class="ins-empty-sm" style="padding:8px 0">+' +(expM.length-8)+' more</div>':'');
+  }
+}
+function statCard(label,icon,val,kind,sub){
+  return '<div class="stat '+(kind||'')+'"><div><div class="lbl">'+E(label)+'</div><div class="val">'+E(val)+'</div></div>'+(sub?'<div class="sub">'+E(sub)+'</div>':'')+'<div class="icon">'+icon+'</div></div>';
+}
+
+// ─── Complaints ───
+var _cmps=[],_cmpFilter='all',_cmpLoaded=false;
+var _cmpCatIc={'Seat / Furniture':'🪑','Noise / Disturbance':'🔊','Cleanliness':'🧹','WiFi / Electricity':'📶','Staff Behavior':'👤','Fee / Billing':'💰','AC / Ventilation':'❄️','Other':'💬'};
+var _cmpCatBg={'Seat / Furniture':'#fef3c7','Noise / Disturbance':'#ede9fe','Cleanliness':'#f0fdf4','WiFi / Electricity':'#dbeafe','Staff Behavior':'#fce7f3','Fee / Billing':'#d1fae5','AC / Ventilation':'#e0f2fe','Other':'#f1f5f9'};
+
+function refreshComplaints_(){
+  _cmpLoaded=false;
+  var ic=$('cmpRefreshIc');
+  if(ic){ic.style.animation='spin .7s linear infinite';setTimeout(function(){ic.style.animation='';},1500);}
+  loadComplaints_();
+}
+function loadComplaints_(){
+  var link=$('cmpFormLink');
+  if(link)link.href='complaint.html';
+  if(_cmpLoaded){renderCmpList_();return;}
+  $('cmpList').innerHTML='<div class="cmp-empty-s">Loading…</div>';
+  gviz(SHEET_ID,'Complaints',function(r){
+    if(!r||!r.table){
+      _cmps=[];
+      $('cmpList').innerHTML='<div class="cmp-empty-s">No complaints yet.<br><span style="font-size:12px;color:var(--ink-3)">Share the complaint form link with members.</span></div>';
+      updateCmpStats_();return;
+    }
+    _cmps=parseRows(r).filter(function(c){return c.subject||c.complaintid||c['complaint id'];});
+    _cmps.forEach(function(c){if(!c.complaintid)c.complaintid=c['complaint id']||'';if(!c.date)c.date=c['date & time']||'';});
+    _cmps.sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+    _cmpLoaded=true;
+    updateCmpStats_();
+    renderCmpList_();
+  });
+}
+
+function updateCmpStats_(){
+  $('cmpStTotal').textContent=_cmps.length||'0';
+  $('cmpStOpen').textContent=_cmps.filter(function(c){return (c.status||'').toLowerCase()==='open';}).length||'0';
+  $('cmpStHigh').textContent=_cmps.filter(function(c){return (c.priority||'').toLowerCase()==='high';}).length||'0';
+  $('cmpStResolved').textContent=_cmps.filter(function(c){return (c.status||'').toLowerCase()==='resolved';}).length||'0';
+  var openN=_cmps.filter(function(c){return (c.status||'').toLowerCase()==='open';}).length;
+  var dot=$('tabComplaintsDot');if(dot)dot.classList.toggle('show',openN>0);
+}
+
+function setCmpFilter_(btn,f){
+  _cmpFilter=f;
+  document.querySelectorAll('.cmp-filter').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderCmpList_();
+}
+
+function renderCmpList_(){
+  var q=($('cmpSearchInp').value||'').toLowerCase().trim();
+  var list=_cmps.filter(function(c){
+    var status=(c.status||'open').toLowerCase();
+    var priority=(c.priority||'').toLowerCase();
+    if(_cmpFilter==='high'){if(priority!=='high')return false;}
+    else if(_cmpFilter!=='all'){if(status!==_cmpFilter)return false;}
+    if(q){var hay=(c.name+c.phone+c.subject+c.category+c.description+c.seat+'').toLowerCase();if(hay.indexOf(q)<0)return false;}
+    return true;
+  });
+  if(!list.length){
+    $('cmpList').innerHTML='<div class="cmp-empty-s">'+(q||_cmpFilter!=='all'?'No matching complaints':'No complaints yet')+'</div>';
+    return;
+  }
+  var statusCls={open:'open','in progress':'progress',resolved:'resolved',closed:'closed'};
+  var priCls={high:'high',medium:'med',low:'low'};
+  var priIc={high:'🔴',medium:'🟡',low:'🟢'};
+  $('cmpList').innerHTML=list.map(function(c){
+    var realIdx=_cmps.indexOf(c);
+    var status=(c.status||'Open');
+    var sCls=statusCls[status.toLowerCase()]||'open';
+    var priority=(c.priority||'Low');
+    var pCls=priCls[priority.toLowerCase()]||'low';
+    var pIc=priIc[priority.toLowerCase()]||'🟢';
+    var catIc=_cmpCatIc[c.category]||'💬';
+    var catBg=_cmpCatBg[c.category]||'#f1f5f9';
+    var isAnon=!c.name&&!c.phone;
+    return '<div class="cmp-card">'+
+      '<div class="cmp-card-top">'+
+        '<div class="cmp-ic" style="background:'+catBg+'">'+catIc+'</div>'+
+        '<div class="cmp-body">'+
+          '<div class="cmp-subject">'+E(c.subject||'(No subject)')+'</div>'+
+          '<div class="cmp-meta">'+
+            (isAnon?'<span class="cmp-anon">👤 Anonymous</span>':'')+
+            (c.name?'<span>👤 '+E(c.name)+'</span>':'')+
+            (c.seat?'<span>🪑 '+E(c.seat)+'</span>':'')+
+            (c.phone?'<span>📞 '+E(c.phone)+'</span>':'')+
+            (c.category?'<span>'+E(c.category)+'</span>':'')+
+            (c.date?'<span>'+E((c.date||'').slice(0,15))+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="cmp-right">'+
+          '<span class="cmp-status '+sCls+'">'+E(status)+'</span>'+
+          '<span class="cmp-pri '+pCls+'">'+pIc+' '+E(priority)+'</span>'+
+          (c.rating?'<span style="font-size:10px;color:var(--warn-dk)">'+('★').repeat(parseInt(c.rating)||0)+'</span>':'')+
+        '</div>'+
+      '</div>'+
+      (c.description?'<div class="cmp-desc">'+E(c.description)+'</div>':'')+
+      '<div class="cmp-actions">'+
+        (c.phone?'<button class="cmp-btn" onclick="location.href=\'tel:'+E(c.phone.replace(/\D/g,''))+'\'">📞 Call</button>':'')+
+        (status.toLowerCase()==='open'?'<button class="cmp-btn" onclick="setCmpStatus_('+realIdx+',\'In Progress\')">⏳ In Progress</button>':'')+
+        (status.toLowerCase()!=='resolved'?'<button class="cmp-btn resolve" onclick="setCmpStatus_('+realIdx+',\'Resolved\')">✓ Resolved</button>':'')+
+        (status.toLowerCase()==='resolved'?'<button class="cmp-btn" onclick="setCmpStatus_('+realIdx+',\'Closed\')">✕ Close</button>':'')+
+        (c.complaintid?'<span class="cmp-id">'+E(c.complaintid)+'</span>':'')+
       '</div>'+
     '</div>';
   }).join('');
 }
-function statCard(label,icon,val,kind,sub){
-  return '<div class="stat '+(kind||'')+'"><div><div class="lbl">'+E(label)+'</div><div class="val">'+E(val)+'</div></div>'+(sub?'<div class="sub">'+E(sub)+'</div>':'')+'<div class="icon">'+icon+'</div></div>';
+
+function setCmpStatus_(idx,status){
+  var c=_cmps[idx];if(!c)return;
+  c.status=status;
+  if(SCRIPT_URL&&c.complaintid){
+    var img=new Image();img.src=SCRIPT_URL+'?action=updateComplaintStatus&complaintId='+encodeURIComponent(c.complaintid)+'&status='+encodeURIComponent(status)+'&_t='+Date.now();
+  }
+  updateCmpStats_();
+  renderCmpList_();
+  toast('Marked as '+status,'ok');
 }
 
 // ─── Shifts card builder ───
