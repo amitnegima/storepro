@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d9488">
+<title>Submit a Complaint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --brand:#0d9488;--brand-dk:#0f766e;--brand-bg:#f0fdfa;
+  --ink:#0f172a;--ink-2:#334155;--ink-3:#64748b;--ink-4:#cbd5e1;
+  --bg:#f1f5f9;--card:#fff;--line:#e2e8f0;
+  --ok:#16a34a;--ok-bg:#f0fdf4;
+  --err:#dc2626;--err-bg:#fef2f2;
+  --warn:#d97706;--warn-bg:#fffbeb;
+  --r:14px;--f:'Inter',-apple-system,sans-serif;
+  --shadow:0 2px 8px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06);
+}
+html,body{min-height:100%;font-family:var(--f);font-size:14px;line-height:1.5;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none}
+input,textarea,select{font:inherit}
+a{text-decoration:none;color:inherit}
+
+/* ── Page wrapper ── */
+.wrap{min-height:100vh;display:flex;flex-direction:column}
+
+/* ── Header ── */
+.hdr{background:linear-gradient(135deg,var(--brand),var(--brand-dk));padding:28px 20px 24px;text-align:center;color:#fff;position:relative}
+.hdr-logo{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px;border:2px solid rgba(255,255,255,.25)}
+.hdr-name{font-size:20px;font-weight:800;letter-spacing:-.3px;margin-bottom:2px}
+.hdr-sub{font-size:13px;opacity:.75;font-weight:500}
+.hdr-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:600;margin-top:10px}
+
+/* ── Splash / loading ── */
+.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:12px}
+.spin{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.splash-msg{color:var(--ink-3);font-size:14px;font-weight:500;text-align:center}
+.splash-err{color:var(--err);font-size:14px;font-weight:500;text-align:center;max-width:320px;line-height:1.5}
+
+/* ── Main content ── */
+.content{flex:1;padding:20px 16px 32px;max-width:540px;margin:0 auto;width:100%}
+
+/* ── Steps indicator ── */
+.steps{display:flex;align-items:center;gap:0;margin-bottom:24px}
+.step{display:flex;align-items:center;gap:6px;flex:1}
+.step-circle{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--ink-3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s}
+.step-label{font-size:11px;font-weight:600;color:var(--ink-3);white-space:nowrap;transition:color .25s}
+.step-line{flex:1;height:2px;background:var(--line);margin:0 4px;border-radius:99px;transition:background .25s}
+.step.done .step-circle{background:var(--brand);border-color:var(--brand);color:#fff}
+.step.done .step-label{color:var(--brand)}
+.step.done .step-line{background:var(--brand)}
+.step.active .step-circle{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 0 0 3px var(--brand-bg)}
+.step.active .step-label{color:var(--brand)}
+
+/* ── Form card ── */
+.form-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.form-card-hdr{padding:16px 18px 0;border-bottom:1px solid var(--line);padding-bottom:14px;display:flex;align-items:center;gap:10px}
+.form-card-hdr-ic{width:36px;height:36px;border-radius:10px;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.form-card-hdr-ic svg{width:18px;height:18px;stroke:var(--brand);fill:none;stroke-width:2}
+.form-card-hdr-title{font-size:14px;font-weight:700;color:var(--ink)}
+.form-card-hdr-sub{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+.form-card-body{padding:16px 18px}
+
+/* ── Field group ── */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field-label{font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.field-required{color:var(--err);font-size:11px}
+.field-input{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:14px var(--f);color:var(--ink);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+.field-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-bg)}
+.field-input.err{border-color:var(--err)}
+.field-input::placeholder{color:var(--ink-4)}
+textarea.field-input{resize:vertical;min-height:100px;line-height:1.5}
+select.field-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+.field-hint{font-size:11px;color:var(--ink-3);margin-top:4px}
+.field-err{font-size:11px;color:var(--err);margin-top:4px;display:none}
+.field-input.err+.field-err{display:block}
+
+/* ── Category chips ── */
+.cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.cat-chip{padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;text-align:left;transition:all .15s;background:#fff;display:flex;align-items:center;gap:7px}
+.cat-chip:hover{border-color:var(--brand);background:var(--brand-bg)}
+.cat-chip.sel{border-color:var(--brand);background:var(--brand-bg);color:var(--brand)}
+.cat-chip-ic{font-size:16px;line-height:1;flex-shrink:0}
+.cat-chip-lbl{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.2}
+.cat-chip.sel .cat-chip-lbl{color:var(--brand-dk)}
+.cat-chip-sub{font-size:10.5px;color:var(--ink-3);margin-top:1px}
+
+/* ── Rating stars ── */
+.stars{display:flex;gap:6px}
+.star-btn{font-size:26px;cursor:pointer;line-height:1;transition:transform .1s;opacity:.35;-webkit-tap-highlight-color:transparent;user-select:none}
+.star-btn.lit{opacity:1;transform:scale(1.05)}
+.star-btn:hover{transform:scale(1.15)}
+
+/* ── Priority row ── */
+.priority-row{display:flex;gap:8px}
+.priority-chip{flex:1;padding:8px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--ink-3);transition:all .15s;background:#fff}
+.priority-chip.low.sel{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.priority-chip.med.sel{border-color:var(--warn);background:var(--warn-bg);color:var(--warn)}
+.priority-chip.high.sel{border-color:var(--err);background:var(--err-bg);color:var(--err)}
+.priority-chip:hover{border-color:var(--ink-4)}
+
+/* ── Submit button ── */
+.submit-wrap{padding:0}
+.btn-submit{width:100%;padding:14px;background:var(--brand);color:#fff;border-radius:12px;font:700 15px var(--f);letter-spacing:.01em;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-submit:hover{background:var(--brand-dk)}
+.btn-submit:active{transform:scale(.98)}
+.btn-submit:disabled{background:#94a3b8;cursor:not-allowed;transform:none}
+.btn-submit-spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
+.submitting .btn-submit-spin{display:block}
+.submitting .btn-submit-lbl{display:none}
+.btn-note{text-align:center;font-size:11.5px;color:var(--ink-3);margin-top:8px;line-height:1.4}
+
+/* ── Success screen ── */
+.success-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;display:none}
+.success-ic{width:72px;height:72px;border-radius:50%;background:var(--ok-bg);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;border:3px solid #bbf7d0}
+.success-title{font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px;letter-spacing:-.3px}
+.success-sub{font-size:14px;color:var(--ink-3);max-width:320px;line-height:1.6;margin-bottom:20px}
+.success-ref{background:var(--bg);border:1.5px dashed var(--line);border-radius:12px;padding:14px 20px;margin-bottom:24px;width:100%;max-width:300px}
+.success-ref-lbl{font-size:11px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.success-ref-num{font-size:22px;font-weight:800;color:var(--brand);letter-spacing:1px;font-variant-numeric:tabular-nums}
+.success-steps{background:var(--card);border-radius:12px;padding:16px;text-align:left;margin-bottom:24px;width:100%;max-width:340px;box-shadow:var(--shadow)}
+.success-step-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0}
+.success-step-row+.success-step-row{border-top:1px solid var(--line)}
+.success-step-num{width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.success-step-text{font-size:13px;color:var(--ink-2);line-height:1.4}
+.btn-another{padding:12px 28px;border:2px solid var(--brand);border-radius:12px;color:var(--brand);font:700 14px var(--f);transition:.15s}
+.btn-another:hover{background:var(--brand-bg)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:#0f172a;color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:all .22s;z-index:99;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:#15803d}
+.toast.err{background:#b91c1c}
+
+@media(min-width:540px){
+  .hdr{padding:36px 24px 30px;border-radius:0}
+  .content{padding:24px 0 40px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+
+  <!-- Header (populated after tenant loads) -->
+  <div class="hdr" id="hdr" style="display:none">
+    <div class="hdr-logo" id="hdrLogo">📚</div>
+    <div class="hdr-name" id="hdrName">Library</div>
+    <div class="hdr-sub" id="hdrSub">Member Complaint Portal</div>
+    <div class="hdr-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+      Complaint Portal
+    </div>
+  </div>
+
+  <!-- Splash / loading -->
+  <div class="splash" id="splash">
+    <div class="spin"></div>
+    <div class="splash-msg" id="splashMsg">Loading…</div>
+  </div>
+
+  <!-- Main form (hidden until loaded) -->
+  <div class="content" id="mainContent" style="display:none">
+
+    <!-- Steps -->
+    <div class="steps" id="steps">
+      <div class="step active" id="step1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Details</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Complaint</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Submit</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Your Details -->
+    <div id="page1">
+      <div class="form-card">
+        <div class="form-card-hdr">
+          <div class="form-card-hdr-ic">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div>
+            <div class="form-card-hdr-title">Your Details</div>
+            <div class="form-card-hdr-sub">Optional — you can submit anonymously</div>
+          </div>
+        </div>
+        <div class="form-card-body">
+          <div class="field">
+            <div class="field-label">Full Name</div>
+            <input class="field-input" id="fName" type="text" placeholder="Optional" autocomplete="name">
+          </div>
+          <div class="field">
+            <div class="field-label">Phone Number</div>
+            <input class="field-input" id="fPhone" type="tel" placeholder="Optional" maxlength="10" inputmode="numeric">
+          </div>
+          <div class="field">
+            <div class="field-label">Email Address</div>
+            <input class="field-input" id="fEmail" type="email" placeholder="Optional — for updates" autocomplete="email">
+          </div>
+          <div class="field">
+            <div class="field-label">Seat / Member ID</div>
+            <input class="field-input" id="fSeat" type="text" placeholder="e.g. S12 or your member ID">
+            <div class="field-hint">Check your enrollment slip or receipt</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="goStep2()">
+        Continue
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- Step 2: Complaint Details -->
+    <div id="page2" style="display:none">
+      <div class="form-card">
+        <div class="form-card-hdr">
+          <div class="form-card-hdr-ic">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v12H4z"/><path d="M8 4v12M12 4v12M16 4v12M4 10h16"/></svg>
+          </div>
+          <div>
+            <div class="form-card-hdr-title">Category</div>
+            <div class="form-card-hdr-sub">What is your complaint about?</div>
+          </div>
+        </div>
+        <div class="form-card-body">
+          <div class="cat-grid" id="catGrid">
+            <button class="cat-chip" data-cat="Seat / Furniture" onclick="pickCat(this)">
+              <span class="cat-chip-ic">🪑</span>
+              <div><div class="cat-chip-lbl">Seat / Furniture</div><div class="cat-chip-sub">Broken, dirty, uncomfortable</div></div>
+            </button>
+            <button class="cat-chip" data-cat="Noise / Disturbance" onclick="pickCat(this)">
+              <span class="cat-chip-ic">🔊</span>
+              <div><div class="cat-chip-lbl">Noise / Disturbance</div><div class="cat-chip-sub">Talking, phone calls, music</div></div>
+            </button>
+            <button class="cat-chip" data-cat="Cleanliness" onclick="pickCat(this)">
+              <span class="cat-chip-ic">🧹</span>
+              <div><div class="cat-chip-lbl">Cleanliness</div><div class="cat-chip-sub">Washroom, floors, tables</div></div>
+            </button>
+            <button class="cat-chip" data-cat="WiFi / Electricity" onclick="pickCat(this)">
+              <span class="cat-chip-ic">📶</span>
+              <div><div class="cat-chip-lbl">WiFi / Electricity</div><div class="cat-chip-sub">Slow internet, power cuts</div></div>
+            </button>
+            <button class="cat-chip" data-cat="Staff Behavior" onclick="pickCat(this)">
+              <span class="cat-chip-ic">👤</span>
+              <div><div class="cat-chip-lbl">Staff Behavior</div><div class="cat-chip-sub">Rude, unhelpful, unfair</div></div>
+            </button>
+            <button class="cat-chip" data-cat="Fee / Billing" onclick="pickCat(this)">
+              <span class="cat-chip-ic">💰</span>
+              <div><div class="cat-chip-lbl">Fee / Billing</div><div class="cat-chip-sub">Overcharge, receipt issue</div></div>
+            </button>
+            <button class="cat-chip" data-cat="AC / Ventilation" onclick="pickCat(this)">
+              <span class="cat-chip-ic">❄️</span>
+              <div><div class="cat-chip-lbl">AC / Ventilation</div><div class="cat-chip-sub">Too hot, too cold, stuffy</div></div>
+            </button>
+            <button class="cat-chip" data-cat="Other" onclick="pickCat(this)">
+              <span class="cat-chip-ic">💬</span>
+              <div><div class="cat-chip-lbl">Other</div><div class="cat-chip-sub">Something else</div></div>
+            </button>
+          </div>
+          <div id="catErr" style="color:var(--err);font-size:11.5px;margin-top:8px;display:none">Please select a category</div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-hdr">
+          <div class="form-card-hdr-ic">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div>
+            <div class="form-card-hdr-title">Describe Your Complaint</div>
+            <div class="form-card-hdr-sub">Be as specific as possible</div>
+          </div>
+        </div>
+        <div class="form-card-body">
+          <div class="field">
+            <div class="field-label">Subject <span class="field-required">*</span></div>
+            <input class="field-input" id="fSubject" type="text" placeholder="Brief title of your complaint">
+            <div class="field-err">Please enter a subject</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Description <span class="field-required">*</span></div>
+            <textarea class="field-input" id="fDesc" rows="4" placeholder="Describe the issue in detail — what happened, when, where…"></textarea>
+            <div class="field-err">Please describe the issue</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Priority</div>
+            <div class="priority-row">
+              <button class="priority-chip low sel" data-p="Low" onclick="pickPriority(this)">🟢 Low</button>
+              <button class="priority-chip med" data-p="Medium" onclick="pickPriority(this)">🟡 Medium</button>
+              <button class="priority-chip high" data-p="High" onclick="pickPriority(this)">🔴 High</button>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Overall Experience</div>
+            <div class="stars" id="starRow">
+              <span class="star-btn" data-s="1" onclick="pickStar(1)">★</span>
+              <span class="star-btn" data-s="2" onclick="pickStar(2)">★</span>
+              <span class="star-btn" data-s="3" onclick="pickStar(3)">★</span>
+              <span class="star-btn" data-s="4" onclick="pickStar(4)">★</span>
+              <span class="star-btn" data-s="5" onclick="pickStar(5)">★</span>
+            </div>
+            <div class="field-hint" id="starHint">Tap to rate (optional)</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn-submit" style="flex:0 0 auto;width:auto;padding:14px 20px;background:var(--card);color:var(--ink-2);border:1.5px solid var(--line)" onclick="goStep1()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="btn-submit" id="btnSubmit" onclick="submitComplaint()" style="flex:1">
+          <div class="btn-submit-spin"></div>
+          <span class="btn-submit-lbl" style="display:flex;align-items:center;gap:8px">
+            Submit Complaint
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          </span>
+        </button>
+      </div>
+      <div class="btn-note">Your complaint will be reviewed within 24–48 hours.</div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Success screen -->
+  <div class="success-wrap" id="successWrap">
+    <div class="success-ic">✓</div>
+    <div class="success-title">Complaint Submitted!</div>
+    <div class="success-sub">Thank you. We've received your complaint and will look into it promptly.</div>
+    <div class="success-ref">
+      <div class="success-ref-lbl">Reference Number</div>
+      <div class="success-ref-num" id="successRef">CMP-———</div>
+    </div>
+    <div class="success-steps">
+      <div class="success-step-row">
+        <div class="success-step-num">1</div>
+        <div class="success-step-text">Your complaint has been logged with a unique reference number.</div>
+      </div>
+      <div class="success-step-row">
+        <div class="success-step-num">2</div>
+        <div class="success-step-text">Our team will review and investigate within 24–48 hours.</div>
+      </div>
+      <div class="success-step-row">
+        <div class="success-step-num">3</div>
+        <div class="success-step-text">We'll reach out to you on your phone/email once resolved.</div>
+      </div>
+    </div>
+    <button class="btn-another" onclick="resetForm()">Submit Another</button>
+  </div>
+
+</div><!-- /wrap -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+var MASTER_SHEET_ID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
+var SHEET_ID='',SCRIPT_URL='',SLUG='',SHOP_NAME='';
+var selectedCat='',selectedPriority='Low',selectedStar=0;
+
+function $(id){return document.getElementById(id)}
+function E(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function toast(msg,kind){var t=$('toast');t.className='toast '+(kind||'')+' show';t.textContent=msg;clearTimeout(t._h);t._h=setTimeout(function(){t.className='toast '+(kind||'')},2800)}
+
+// ── JSONP gviz loader ──
+var _q=[],_busy=false;
+function gviz(sid,tab,cb){_q.push({sid:sid,tab:tab,cb:cb});if(!_busy)_gvizNext_();}
+function _gvizNext_(){
+  if(!_q.length){_busy=false;return}_busy=true;
+  var job=_q.shift();
+  if(!window.google)window.google={};
+  if(!window.google.visualization)window.google.visualization={};
+  var done=false;
+  var t=setTimeout(function(){if(done)return;done=true;job.cb(null);_gvizNext_();},10000);
+  window.google.visualization.Query={};
+  window.google.visualization.Query.setResponse=function(r){if(done)return;done=true;clearTimeout(t);job.cb(r);_gvizNext_();};
+  var sc=document.createElement('script');
+  sc.src='https://docs.google.com/spreadsheets/d/'+job.sid+'/gviz/tq?tqx=out:json&headers=1&sheet='+encodeURIComponent(job.tab)+'&_t='+Date.now();
+  sc.onerror=function(){if(done)return;done=true;clearTimeout(t);job.cb(null);_gvizNext_();};
+  document.body.appendChild(sc);
+}
+function parseRows(r){
+  if(!r||!r.table)return[];
+  var headers=[],rows=r.table.rows||[];
+  if(r.table.cols&&r.table.cols.length){
+    var auto=true;r.table.cols.forEach(function(c){var l=(c.label||'').trim();if(l&&!/^[A-Z]+$/.test(l))auto=false;headers.push(l.toLowerCase().replace(/\s+/g,''))});
+    if(auto&&rows[0]){headers=[];rows[0].c.forEach(function(c){var v=c?(c.f!=null?c.f:c.v||''):'';headers.push(String(v).toLowerCase().replace(/\s+/g,''))});rows=rows.slice(1);}
+  }
+  return rows.map(function(row){var o={};if(!row.c)return o;headers.forEach(function(h,j){var c=row.c[j];var v=c?(c.v!=null?String(c.v):(c.f!=null?String(c.f):'')):'';o[h]=String(v).trim()});return o;});
+}
+
+// ── Slug resolver ──
+function resolveSlug(){
+  var qs=new URLSearchParams(location.search);var s=qs.get('store');
+  if(s)return s.toLowerCase();
+  var m=location.hostname.match(/^([a-z0-9-]+)\./);
+  if(m&&!{www:1,admin:1,app:1}[m[1]])return m[1];
+  return '';
+}
+
+// ── Tenant lookup ──
+function boot(){
+  SLUG=resolveSlug();
+  if(!SLUG){splashErr('No store specified.<br><small>Add ?store=study-point to the URL.</small>');return;}
+  $('splashMsg').textContent='Looking up library…';
+  gviz(MASTER_SHEET_ID,'Stores',function(r){
+    if(!r){splashErr('Could not reach the registry. Check your connection.');return;}
+    var rows=parseRows(r);
+    var found=rows.find(function(o){return (o.slug||'').toLowerCase()===SLUG;});
+    if(!found){splashErr('Library "<b>'+SLUG+'</b>" not found.');return;}
+    SHEET_ID=found.sheetid||found.sheet||found.id||'';
+    SCRIPT_URL=found.scripturl||found.script||'';
+    if(!SHEET_ID){splashErr('Library found but Sheet ID is empty.');return;}
+    loadConfig();
+  });
+}
+
+function loadConfig(){
+  $('splashMsg').textContent='Loading library info…';
+  gviz(SHEET_ID,'Config',function(r){
+    var cfg={};
+    if(r){parseRows(r).forEach(function(row){var k=(row.key||row.setting||'').toLowerCase().replace(/\s+/g,'');var v=row.value||row.val||'';if(k)cfg[k]=v;});}
+    SHOP_NAME=cfg['shopname']||cfg['libraryname']||cfg['storename']||'Library';
+    showApp(cfg);
+  });
+}
+
+function showApp(cfg){
+  $('splash').style.display='none';
+  $('hdr').style.display='block';
+  $('mainContent').style.display='block';
+  $('hdrName').textContent=SHOP_NAME;
+  var emoji=cfg['storeemoji']||cfg['shopemoji']||'📚';
+  $('hdrLogo').textContent=emoji;
+}
+
+function splashErr(msg){
+  $('splash').innerHTML='<div class="splash-err">'+msg+'</div>';
+}
+
+// ── Step navigation ──
+function goStep1(){
+  $('page2').style.display='none';
+  $('page1').style.display='';
+  setStepActive_(1);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goStep2(){
+  if(!validateStep1())return;
+  $('page1').style.display='none';
+  $('page2').style.display='';
+  setStepActive_(2);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setStepActive_(n){
+  [1,2,3].forEach(function(i){
+    var el=$('step'+i);
+    el.classList.remove('active','done');
+    if(i<n)el.classList.add('done');
+    else if(i===n)el.classList.add('active');
+  });
+}
+
+// ── Validation ──
+function validateStep1(){
+  return true;
+}
+function setErr_(id,isErr){
+  var el=$(id);
+  el.classList.toggle('err',isErr);
+}
+
+// ── Category picker ──
+function pickCat(btn){
+  document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('sel')});
+  btn.classList.add('sel');
+  selectedCat=btn.dataset.cat;
+  $('catErr').style.display='none';
+}
+
+// ── Priority picker ──
+function pickPriority(btn){
+  document.querySelectorAll('.priority-chip').forEach(function(c){c.classList.remove('sel')});
+  btn.classList.add('sel');
+  selectedPriority=btn.dataset.p;
+}
+
+// ── Star rating ──
+var starLabels=['','Very Poor','Poor','Average','Good','Excellent'];
+function pickStar(n){
+  selectedStar=n;
+  document.querySelectorAll('.star-btn').forEach(function(s,i){s.classList.toggle('lit',i<n)});
+  $('starHint').textContent=starLabels[n]||'';
+}
+
+// ── Complaint ID generator ──
+function makeCmpId(){
+  return 'CMP-'+Date.now().toString(36).toUpperCase().slice(-6);
+}
+
+// ── Submit ──
+function submitComplaint(){
+  if(!selectedCat){$('catErr').style.display='block';window.scrollTo({top:0,behavior:'smooth'});return;}
+  var subject=$('fSubject').value.trim();
+  var desc=$('fDesc').value.trim();
+  setErr_('fSubject',!subject);
+  setErr_('fDesc',!desc);
+  if(!subject||!desc)return;
+
+  var cmpId=makeCmpId();
+  var now=new Date();
+  var dateStr=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+' '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  var params={
+    action:'newComplaint',
+    complaintId:cmpId,
+    date:dateStr,
+    name:$('fName').value.trim(),
+    phone:$('fPhone').value.replace(/\D/g,''),
+    email:$('fEmail').value.trim(),
+    seat:$('fSeat').value.trim(),
+    category:selectedCat,
+    priority:selectedPriority,
+    subject:subject,
+    description:desc,
+    rating:selectedStar||'',
+    status:'Open',
+    store:SLUG
+  };
+
+  var btn=$('btnSubmit');
+  btn.disabled=true;
+  btn.parentElement.classList.add('submitting');
+
+  if(!SCRIPT_URL){
+    // No script URL — still show success (complaint stored client-side in demo)
+    setTimeout(function(){showSuccess(cmpId);},1000);
+    return;
+  }
+
+  var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k])}).join('&');
+  var img=new Image();var sent=false;
+  function done(){
+    if(sent)return;sent=true;
+    showSuccess(cmpId);
+  }
+  img.onload=img.onerror=done;
+  img.src=SCRIPT_URL+'?'+qs+'&_t='+Date.now();
+  setTimeout(done,3000);
+}
+
+function showSuccess(cmpId){
+  $('mainContent').style.display='none';
+  $('successWrap').style.display='flex';
+  $('hdr').style.display='none';
+  $('successRef').textContent=cmpId;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetForm(){
+  $('successWrap').style.display='none';
+  $('hdr').style.display='block';
+  $('mainContent').style.display='block';
+  $('page2').style.display='none';
+  $('page1').style.display='';
+  setStepActive_(1);
+  ['fName','fPhone','fEmail','fSeat','fSubject','fDesc'].forEach(function(id){$(id).value='';$(id).classList.remove('err');});
+  document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('sel')});
+  document.querySelectorAll('.priority-chip').forEach(function(c){c.classList.remove('sel')});
+  document.querySelector('.priority-chip.low').classList.add('sel');
+  document.querySelectorAll('.star-btn').forEach(function(s){s.classList.remove('lit')});
+  selectedCat='';selectedPriority='Low';selectedStar=0;
+  $('starHint').textContent='Tap to rate (optional)';
+  var btn=$('btnSubmit');btn.disabled=false;btn.parentElement.classList.remove('submitting');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Boot ──
+window.addEventListener('DOMContentLoaded',boot);
+</script>
+</body>
+</html>

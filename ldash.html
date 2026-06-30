@@ -267,6 +267,66 @@ a{text-decoration:none;color:inherit}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.ok{background:#15803d}
 .toast.err{background:#b91c1c}
+
+/* ── Insights ── */
+.ins-wrap{display:flex;flex-direction:column;gap:20px}
+.ins-cycle-card{background:linear-gradient(135deg,#0d9488 0%,#0f766e 100%);border-radius:var(--r-lg);padding:20px 24px;color:#fff}
+.ins-cycle-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px}
+.ins-cycle-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;opacity:.75;margin-bottom:4px}
+.ins-cycle-period{font-size:20px;font-weight:800;letter-spacing:-.3px}
+.ins-cycle-right{text-align:right;flex-shrink:0}
+.ins-cycle-days-big{font-size:28px;font-weight:800;line-height:1}
+.ins-cycle-days-label{font-size:11px;opacity:.75;margin-top:2px}
+.ins-cycle-bar-wrap{background:rgba(255,255,255,.2);border-radius:99px;height:7px;overflow:hidden;margin-bottom:8px}
+.ins-cycle-bar-fill{background:#fff;height:7px;border-radius:99px;transition:width .5s}
+.ins-cycle-meta{display:flex;justify-content:space-between;font-size:11.5px;opacity:.8;font-weight:500}
+
+.ins-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.ins-kpi-row{grid-template-columns:repeat(2,1fr)}}
+.ins-kpi{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.ins-kpi-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.ins-kpi-ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.ins-kpi-val{font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1;margin-bottom:3px}
+.ins-kpi-label{font-size:12px;color:var(--ink-3);font-weight:500}
+.ins-kpi-badge{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:99px;margin-top:6px}
+
+.ins-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.ins-two-col{grid-template-columns:1fr}}
+.ins-card{background:var(--card);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow)}
+.ins-card-title{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ins-collect-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ins-collect-label{font-size:12.5px;color:var(--ink-3);font-weight:500}
+.ins-collect-val{font-size:14px;font-weight:700;color:var(--ink)}
+.ins-collect-bar-wrap{background:var(--bg);border-radius:99px;height:8px;overflow:hidden;margin-bottom:6px}
+.ins-collect-bar-fill{height:8px;border-radius:99px}
+.ins-collect-footer{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);font-weight:500}
+
+.ins-member-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.ins-member-row:last-child{border-bottom:none}
+.ins-member-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.ins-member-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.2}
+.ins-member-sub{font-size:11px;color:var(--ink-3);margin-top:1px}
+.ins-member-right{margin-left:auto;text-align:right;flex-shrink:0}
+.ins-member-amt{font-size:13px;font-weight:700;color:var(--ok)}
+.ins-member-date{font-size:10.5px;color:var(--ink-3);margin-top:2px}
+
+.ins-expiry-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.ins-expiry-row:last-child{border-bottom:none}
+.ins-expiry-seat{background:var(--bg);border-radius:7px;padding:3px 8px;font-size:12px;font-weight:700;color:var(--ink-2);flex-shrink:0}
+.ins-expiry-name{font-size:13px;font-weight:600;color:var(--ink)}
+.ins-expiry-shift{font-size:11px;color:var(--ink-3);margin-top:1px}
+.ins-expiry-date{margin-left:auto;font-size:12px;font-weight:600;flex-shrink:0;padding:3px 9px;border-radius:99px}
+.ins-expiry-date.urgent{background:var(--err-bg);color:var(--err)}
+.ins-expiry-date.soon{background:var(--warn-bg);color:var(--warn)}
+.ins-expiry-date.ok{background:var(--ok-bg);color:var(--ok)}
+.ins-expiry-date.gone{background:#f1f5f9;color:var(--ink-3)}
+.ins-shift-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ins-shift-row:last-child{border-bottom:none}
+.ins-shift-label{font-size:13px;font-weight:600;color:var(--ink);flex:1}
+.ins-shift-bar-wrap{flex:1;background:var(--bg);border-radius:99px;height:6px;overflow:hidden}
+.ins-shift-bar-fill{height:6px;border-radius:99px}
+.ins-shift-count{font-size:12px;font-weight:700;color:var(--ink-2);min-width:28px;text-align:right}
+.ins-empty{padding:20px 0;text-align:center;color:var(--ink-3);font-size:13px}
 </style>
 </head>
 <body>
@@ -480,6 +540,46 @@ a{text-decoration:none;color:inherit}
           <div class="section-card">
             <div class="section-hdr"><h3>Upcoming Expiry</h3><a class="view-all" onclick="showSection('students')">View All</a></div>
             <div id="upcomingExpiry"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insights section -->
+      <div id="secInsights" style="display:none">
+        <div class="ins-wrap">
+          <div class="ins-cycle-card" id="insCycleCard"></div>
+          <div class="ins-kpi-row" id="insKpiRow"></div>
+          <div class="ins-two-col">
+            <div class="ins-card">
+              <div class="ins-card-title">
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:var(--brand);stroke-width:2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                Fee Collection — This Cycle
+              </div>
+              <div id="insCollect"></div>
+            </div>
+            <div class="ins-card">
+              <div class="ins-card-title">
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:var(--brand);stroke-width:2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                New Enrollments — This Cycle
+              </div>
+              <div id="insNewMembers"></div>
+            </div>
+          </div>
+          <div class="ins-two-col">
+            <div class="ins-card">
+              <div class="ins-card-title">
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:var(--warn);stroke-width:2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Expiring / Expired This Cycle
+              </div>
+              <div id="insExpiry"></div>
+            </div>
+            <div class="ins-card">
+              <div class="ins-card-title">
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:var(--brand);stroke-width:2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Enrollments by Shift — This Cycle
+              </div>
+              <div id="insShiftBreak"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1049,10 +1149,186 @@ function updatePendingBadge(){
 function showSection(name){
   var titles={dashboard:'Dashboard',students:'Student List',insights:'Reports',settings:'Settings',attendance:'Attendance',due:'Due Payments'};
   $('topbarTitle').textContent=titles[name]||name;
-  // For now just show dashboard for all — extend per section
   document.querySelectorAll('.sb-item').forEach(function(el){el.classList.remove('active')});
+  [$('secDashboard'),$('secInsights')].forEach(function(el){if(el)el.style.display='none';});
   if(name==='dashboard'){$('secDashboard').style.display='';renderSeatGrid();}
+  else if(name==='insights'){$('secInsights').style.display='';renderInsights();}
   else toast('Section "'+name+'" — coming soon','');
+}
+
+// ─── Insights ─────────────────────────────────────────────
+function getBillingCycle(){
+  var today=new Date();
+  var d=today.getDate(),m=today.getMonth(),y=today.getFullYear();
+  var start,end;
+  if(d>=26){start=new Date(y,m,26);end=new Date(y,m+1,25);}
+  else{start=new Date(y,m-1,26);end=new Date(y,m,25);}
+  end.setHours(23,59,59,999);
+  var totalDays=Math.round((end-start)/(864e5))+1;
+  var elapsed=Math.min(totalDays,Math.max(0,Math.floor((today-start)/(864e5))+1));
+  var remaining=Math.max(0,totalDays-elapsed);
+  return{start:start,end:end,totalDays:totalDays,elapsed:elapsed,remaining:remaining};
+}
+function parseMemberDate(str){
+  if(!str)return null;
+  var gm=str.match(/^Date\((\d+),(\d+),(\d+)\)$/);
+  var d=gm?new Date(+gm[1],+gm[2],+gm[3]):new Date(str.replace(/\//g,'-'));
+  return isNaN(d.getTime())?null:d;
+}
+function fmtCycleDate(d){
+  var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return d.getDate()+' '+mo[d.getMonth()]+' '+d.getFullYear();
+}
+function planPrice(planName){
+  var p=plans.filter(function(p){return (p.name||p.plan||'')===planName})[0];
+  return p?parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0:0;
+}
+
+function renderInsights(){
+  var cycle=getBillingCycle();
+  var cur=cfg('currency','₹');
+  var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Members enrolled this cycle
+  var newMembers=members.filter(function(m){
+    var dt=parseMemberDate(m.enrolledat);
+    return dt&&dt>=cycle.start&&dt<=cycle.end;
+  });
+
+  // Members expiring this cycle (any status)
+  var expiringThis=members.filter(function(m){
+    var dt=parseMemberDate(m.expirydate);
+    return dt&&dt>=cycle.start&&dt<=cycle.end;
+  }).sort(function(a,b){return parseMemberDate(a.expirydate)-parseMemberDate(b.expirydate);});
+
+  // Fee collection for all currently active members
+  var active=activeMembers();
+  var collected=active.reduce(function(s,m){var n=parseFloat(m.totalpaid||'0');return s+(isNaN(n)?0:n);},0);
+  var expected=active.reduce(function(s,m){return s+planPrice(m.plan);},0);
+  var outstanding=Math.max(0,expected-collected);
+  var collectPct=expected>0?Math.round(collected/expected*100):100;
+
+  // Cycle revenue = totalpaid sum for new members this cycle
+  var cycleRev=newMembers.reduce(function(s,m){var n=parseFloat(m.totalpaid||'0');return s+(isNaN(n)?0:n);},0);
+
+  // Shift breakdown for new enrollments
+  var shiftLabels={};
+  var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  for(var i=1;i<=n;i++)shiftLabels['S'+i]=cfg('shift'+i+'label','Shift '+i);
+  if(isYes('enablefullday'))shiftLabels['FULL']=cfg('fulldaylabel','Full Day');
+  var shiftCounts={};
+  newMembers.forEach(function(m){var k=(m.shift||'').toUpperCase()||'—';shiftCounts[k]=(shiftCounts[k]||0)+1;});
+
+  // ── Cycle header ──
+  var pct=Math.round(cycle.elapsed/cycle.totalDays*100);
+  $('insCycleCard').innerHTML=
+    '<div class="ins-cycle-top">'+
+      '<div>'+
+        '<div class="ins-cycle-label">Billing Cycle</div>'+
+        '<div class="ins-cycle-period">'+fmtCycleDate(cycle.start)+' – '+fmtCycleDate(cycle.end)+'</div>'+
+      '</div>'+
+      '<div class="ins-cycle-right">'+
+        '<div class="ins-cycle-days-big">'+cycle.remaining+'</div>'+
+        '<div class="ins-cycle-days-label">days left</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="ins-cycle-bar-wrap"><div class="ins-cycle-bar-fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="ins-cycle-meta"><span>'+cycle.elapsed+' days elapsed</span><span>'+pct+'% of cycle</span><span>'+cycle.totalDays+' days total</span></div>';
+
+  // ── KPI cards ──
+  var kpis=[
+    {ic:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',col:'#16a34a',bg:'#f0fdf4',val:cur+Math.round(cycleRev).toLocaleString('en-IN'),label:'Cycle Revenue',badge:'New enrollments',badgeCls:'background:#f0fdf4;color:#16a34a'},
+    {ic:'<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>',col:'#3b82f6',bg:'#eff6ff',val:newMembers.length,label:'New Members',badge:'Enrolled this cycle',badgeCls:'background:#eff6ff;color:#3b82f6'},
+    {ic:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',col:'#d97706',bg:'#fffbeb',val:expiringThis.length,label:'Expiring / Expired',badge:'Due this cycle',badgeCls:'background:#fffbeb;color:#d97706'},
+    {ic:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',col:'#0d9488',bg:'#f0fdfa',val:collectPct+'%',label:'Collection Rate',badge:'Active members',badgeCls:'background:#f0fdfa;color:#0d9488'},
+  ];
+  $('insKpiRow').innerHTML=kpis.map(function(k){
+    return '<div class="ins-kpi">'+
+      '<div class="ins-kpi-ic" style="background:'+k.bg+';color:'+k.col+'">'+
+        '<svg viewBox="0 0 24 24">'+k.ic+'</svg>'+
+      '</div>'+
+      '<div class="ins-kpi-val" style="color:'+k.col+'">'+E(k.val)+'</div>'+
+      '<div class="ins-kpi-label">'+E(k.label)+'</div>'+
+      '<div class="ins-kpi-badge" style="'+k.badgeCls+'">'+E(k.badge)+'</div>'+
+    '</div>';
+  }).join('');
+
+  // ── Fee collection ──
+  $('insCollect').innerHTML=
+    '<div class="ins-collect-row"><span class="ins-collect-label">Collected</span><span class="ins-collect-val" style="color:var(--ok)">'+cur+Math.round(collected).toLocaleString('en-IN')+'</span></div>'+
+    '<div class="ins-collect-row"><span class="ins-collect-label">Outstanding</span><span class="ins-collect-val" style="color:var(--err)">'+cur+Math.round(outstanding).toLocaleString('en-IN')+'</span></div>'+
+    '<div class="ins-collect-row"><span class="ins-collect-label">Total Expected</span><span class="ins-collect-val">'+cur+Math.round(expected).toLocaleString('en-IN')+'</span></div>'+
+    '<div class="ins-collect-bar-wrap"><div class="ins-collect-bar-fill" style="width:'+collectPct+'%;background:var(--ok)"></div></div>'+
+    '<div class="ins-collect-footer"><span>'+collectPct+'% collected</span><span>'+active.length+' active members</span></div>';
+
+  // ── New members list ──
+  if(!newMembers.length){
+    $('insNewMembers').innerHTML='<div class="ins-empty">No new enrollments this cycle</div>';
+  } else {
+    var colors=['#6366f1','#0d9488','#d97706','#3b82f6','#dc2626','#7c3aed','#16a34a'];
+    $('insNewMembers').innerHTML=newMembers.slice(0,8).map(function(m,i){
+      var price=planPrice(m.plan);
+      var paid=parseFloat(m.totalpaid||'0')||0;
+      var shiftLbl=shiftLabels[(m.shift||'').toUpperCase()]||m.shift||'—';
+      var dt=parseMemberDate(m.enrolledat);
+      var dateStr=dt?dt.getDate()+' '+mo[dt.getMonth()]:'';
+      var av=colors[i%colors.length];
+      return '<div class="ins-member-row">'+
+        '<div class="ins-member-av" style="background:'+av+'22;color:'+av+'">'+E((m.name||'?')[0].toUpperCase())+'</div>'+
+        '<div class="ins-member-info">'+
+          '<div class="ins-member-name">'+E(m.name||'Unknown')+'</div>'+
+          '<div class="ins-member-sub">'+(m.seat?'Seat '+E(m.seat)+' · ':'')+E(shiftLbl)+'</div>'+
+        '</div>'+
+        '<div class="ins-member-right">'+
+          '<div class="ins-member-amt">'+cur+Math.round(paid).toLocaleString('en-IN')+'</div>'+
+          '<div class="ins-member-date">'+dateStr+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('')+(newMembers.length>8?'<div class="ins-empty" style="padding:10px 0">+' +(newMembers.length-8)+' more</div>':'');
+  }
+
+  // ── Expiry list ──
+  if(!expiringThis.length){
+    $('insExpiry').innerHTML='<div class="ins-empty">No expirations this cycle</div>';
+  } else {
+    var today=new Date();
+    $('insExpiry').innerHTML=expiringThis.slice(0,8).map(function(m){
+      var dt=parseMemberDate(m.expirydate);
+      var days=dt?Math.floor((dt-today)/864e5):null;
+      var cls,lbl;
+      if(days===null){cls='gone';lbl='?';}
+      else if(days<0){cls='gone';lbl=Math.abs(days)+'d ago';}
+      else if(days<=3){cls='urgent';lbl=days===0?'Today':days+'d left';}
+      else if(days<=7){cls='soon';lbl=days+'d left';}
+      else{cls='ok';lbl=days+'d left';}
+      var shiftLbl=shiftLabels[(m.shift||'').toUpperCase()]||m.shift||'—';
+      return '<div class="ins-expiry-row">'+
+        '<div class="ins-expiry-seat">'+(m.seat?E(m.seat):'—')+'</div>'+
+        '<div>'+
+          '<div class="ins-expiry-name">'+E(m.name||'Unknown')+'</div>'+
+          '<div class="ins-expiry-shift">'+E(shiftLbl)+(m.plan?' · '+E(m.plan):'')+'</div>'+
+        '</div>'+
+        '<div class="ins-expiry-date '+cls+'">'+lbl+'</div>'+
+      '</div>';
+    }).join('')+(expiringThis.length>8?'<div class="ins-empty" style="padding:10px 0">+' +(expiringThis.length-8)+' more</div>':'');
+  }
+
+  // ── Shift breakdown ──
+  var shiftBarColors={'S1':'#d97706','S2':'#3b82f6','S3':'#7c3aed','S4':'#ec4899','FULL':'#16a34a'};
+  var maxSC=Math.max(1,Object.values?Math.max.apply(null,Object.keys(shiftCounts).map(function(k){return shiftCounts[k];})):1);
+  var shiftHtml='';
+  var allShiftKeys=Object.keys(shiftLabels);
+  allShiftKeys.forEach(function(k){
+    var c=shiftCounts[k]||0;
+    var barColor=shiftBarColors[k]||'#6366f1';
+    shiftHtml+='<div class="ins-shift-row">'+
+      '<div class="ins-shift-label">'+E(shiftLabels[k])+'</div>'+
+      '<div class="ins-shift-bar-wrap"><div class="ins-shift-bar-fill" style="width:'+Math.round(c/maxSC*100)+'%;background:'+barColor+'"></div></div>'+
+      '<div class="ins-shift-count">'+c+'</div>'+
+    '</div>';
+  });
+  if(!allShiftKeys.length||!newMembers.length)shiftHtml='<div class="ins-empty">No enrollment data this cycle</div>';
+  $('insShiftBreak').innerHTML=shiftHtml;
 }
 function toggleSidebar(){$('sidebar').classList.toggle('collapsed');}
 function toggleSub(el){

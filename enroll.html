@@ -50,6 +50,8 @@
   .pill.full{opacity:.55}
   .pill.warn .num{background:#f59e0b}
   .pill.err .num{background:var(--err)}
+  .pill.locked{opacity:.6;border-style:dashed;border-color:#94a3b8}
+  .pill.locked .num{background:#94a3b8;letter-spacing:.02em;font-size:9px}
 
   .wrap{max-width:960px;margin:0 auto;padding:16px 20px 120px}
   .es-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px}
@@ -1149,13 +1151,19 @@ function renderShiftCounter(){
   var shiftHtml='';
   if(isYes('enableshifts')){
     var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+    var _locked=lockedShifts();
     for(var i=1;i<=n;i++){
-      var key='S'+i,label=cfg('shift'+i+'label','Shift '+i),left=shiftLeftCounter_(key,hold);
-      shiftHtml+='<span class="pill'+(left<=0?' full':'')+'">'+shiftIcon_(i,label).em+' '+E(label)+' <span class="num">'+left+'</span></span>';
+      var key='S'+i,label=cfg('shift'+i+'label','Shift '+i);
+      var isLocked=!!_locked[key];
+      var left=isLocked?0:shiftLeftCounter_(key,hold);
+      var pillCls=isLocked?' locked':left<=0?' full':'';
+      shiftHtml+='<span class="pill'+pillCls+'">'+shiftIcon_(i,label).em+' '+E(label)+' <span class="num">'+(isLocked?'🔒':''+left)+'</span></span>';
     }
     if(isYes('enablefullday')){
-      var fl=shiftLeftCounter_('FULL',hold);
-      shiftHtml+='<span class="pill'+(fl<=0?' full':'')+'">☀️ '+E(cfg('fulldaylabel','Full Day'))+' <span class="num">'+fl+'</span></span>';
+      var fdLocked=!!_locked['FULL'];
+      var fl=fdLocked?0:shiftLeftCounter_('FULL',hold);
+      var fdPillCls=fdLocked?' locked':fl<=0?' full':'';
+      shiftHtml+='<span class="pill'+fdPillCls+'">☀️ '+E(cfg('fulldaylabel','Full Day'))+' <span class="num">'+(fdLocked?'🔒':''+fl)+'</span></span>';
     }
   }
   var inner=totalHtml+(shiftHtml?'<div class="counter-div"></div><div class="counter-shifts">'+shiftHtml+'</div>':'');
@@ -1164,23 +1172,22 @@ function renderShiftCounter(){
 }
 function shiftLeftCounter_(shiftKey,hold){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
-  var reservedCount=Object.keys(blockedSeats()).length;
+  var allBlocked=blockedSeats();
+  var reservedCount=Object.keys(allBlocked).filter(function(k){
+    var d=k.lastIndexOf('-');
+    return d<0||k.slice(d+1)===shiftKey;
+  }).length;
   cap=Math.max(0,cap-reservedCount);
   var highOcc=isHighOccupancy();
 
   if(shiftKey==='FULL'){
     var blocked1=blockedSeats();
-    if(highOcc){
-      // Only fully-free non-blocked seats count for Full Day
-      var occupiedSeats={};
-      hold.forEach(function(m){if(m.seat&&!blocked1[m.seat.toUpperCase()])occupiedSeats[m.seat.toUpperCase()]=true});
-      var noSeat=hold.filter(function(m){return !m.seat}).length;
-      return Math.max(0,cap-Object.keys(occupiedSeats).length-noSeat);
-    }
-    var taken=0,seen={};
-    hold.forEach(function(m){var s=String(m.seat||'').trim().toUpperCase();if(s&&!seen[s]&&!blocked1[s]){seen[s]=1;taken++}});
-    var noSeat2=hold.filter(function(m){return !m.seat}).length;
-    return Math.max(0,cap-taken-noSeat2);
+    var occupiedSeats={};
+    hold.forEach(function(m){
+      var s=String(m.seat||'').trim().toUpperCase();
+      if(s&&!blocked1[s])occupiedSeats[s]=true;
+    });
+    return Math.max(0,cap-Object.keys(occupiedSeats).length);
   }
 
   if(highOcc){
@@ -1198,6 +1205,7 @@ function shiftLeftCounter_(shiftKey,hold){
     });
     var count=0;
     Object.keys(bySeat).forEach(function(seat){
+      if(blocked2[seat+'-'+shiftKey])return;
       var shifts=bySeat[seat];
       var thisShiftFree=shifts.indexOf(shiftKey)<0&&shifts.indexOf('FULL')<0;
       var hasOtherOccupant=shifts.some(function(s){return s!==shiftKey&&s!=='FULL'});
@@ -1377,8 +1385,7 @@ function seatStatus(seatId){
 
   if(selectedShift==='FULL'){
     if(isShiftLocked('FULL'))return 'taken';             // Full Day locked globally
-    if(isSeatFree)return 'free';
-    if(highOcc&&fs.length>0)return 'half-available';
+    if(isSeatFree)return shiftLeft('FULL')<=0?'taken':'free';
     return anyHold.every(function(m){return (m.status||'').toLowerCase()==='pending'})?'pending':'taken';
   }
 
@@ -1428,7 +1435,7 @@ function renderSeatMap(){
       continue;
     }
     // Per-shift block: show as reserved when the selected shift matches
-    if(selectedShift&&selectedShift!=='FULL'){
+    if(selectedShift){
       var shiftBlockKey=id.toUpperCase()+'-'+selectedShift;
       if(blocked[shiftBlockKey]){
         cOccupied++;

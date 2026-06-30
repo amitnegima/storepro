@@ -383,6 +383,50 @@ button{border:none;background:none;cursor:pointer}
 .ins-d{font:600 11px var(--F);color:var(--ink3);margin-top:6px}
 .ins-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font:600 13px var(--F)}
 .ins-row:last-child{border-bottom:none}
+
+/* ── Complaints pane ── */
+.cmp-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.cmp-filter-btn{padding:6px 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font:600 12px var(--F);color:var(--ink3);cursor:pointer;transition:.15s;white-space:nowrap}
+.cmp-filter-btn:hover{border-color:var(--brand);color:var(--brand)}
+.cmp-filter-btn.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.cmp-filter-btn.on.rose{background:var(--rose);border-color:var(--rose)}
+.cmp-filter-btn.on.amber{background:var(--amber);border-color:var(--amber)}
+.cmp-filter-btn.on.accent{background:var(--accent);border-color:var(--accent)}
+.cmp-search{flex:1;min-width:160px;padding:7px 12px;border:1.5px solid var(--line);border-radius:10px;font:14px var(--F);color:var(--ink);outline:none;background:var(--card)}
+.cmp-search:focus{border-color:var(--brand)}
+.cmp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.cmp-stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;text-align:center;box-shadow:var(--sh)}
+.cmp-stat-num{font:900 26px var(--F);letter-spacing:-.5px;line-height:1;margin-bottom:3px}
+.cmp-stat-lbl{font:600 11px var(--F);color:var(--ink3);text-transform:uppercase;letter-spacing:.07em}
+.cmp-list{display:flex;flex-direction:column;gap:10px}
+.cmp-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;box-shadow:var(--sh);cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.cmp-card:hover{box-shadow:var(--sh2);border-color:var(--brand-lt)}
+.cmp-card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.cmp-cat-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.cmp-card-body{flex:1;min-width:0}
+.cmp-card-subject{font:700 14px var(--F);color:var(--ink);line-height:1.3;margin-bottom:3px}
+.cmp-card-meta{font:500 12px var(--F);color:var(--ink3);display:flex;gap:10px;flex-wrap:wrap}
+.cmp-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.cmp-pill{padding:3px 9px;border-radius:99px;font:700 11px var(--F);white-space:nowrap}
+.cmp-pill.open{background:#dbeafe;color:#1d4ed8}
+.cmp-pill.progress{background:var(--amber-bg);color:var(--amber)}
+.cmp-pill.resolved{background:var(--accent-bg);color:var(--accent-dk)}
+.cmp-pill.closed{background:var(--line-soft);color:var(--ink3)}
+.cmp-priority{font:700 10px var(--F);display:flex;align-items:center;gap:3px}
+.cmp-priority.high{color:var(--rose)}
+.cmp-priority.med{color:var(--amber)}
+.cmp-priority.low{color:var(--accent)}
+.cmp-card-desc{font:400 13px var(--F);color:var(--ink2);line-height:1.5;padding-top:8px;border-top:1px solid var(--line-soft);margin-top:2px;white-space:pre-wrap;word-break:break-word}
+.cmp-card-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.cmp-act-btn{padding:6px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);font:600 12px var(--F);color:var(--ink2);cursor:pointer;transition:.15s}
+.cmp-act-btn:hover{border-color:var(--brand);color:var(--brand)}
+.cmp-act-btn.resolve{background:var(--accent);border-color:var(--accent);color:#fff}
+.cmp-act-btn.resolve:hover{background:var(--accent-dk)}
+.cmp-empty{text-align:center;padding:48px 20px;color:var(--ink3);font:600 14px var(--F)}
+.cmp-empty-ic{font-size:40px;margin-bottom:12px}
+.cmp-link{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:var(--brand-bg);color:var(--brand);font:700 12px var(--F);border:none;cursor:pointer;text-decoration:none;transition:.15s;margin-top:10px}
+.cmp-link:hover{background:var(--brand);color:#fff}
+@media(max-width:640px){.cmp-stats{grid-template-columns:repeat(2,1fr)}.split-2{grid-template-columns:1fr}}
 .ins-row-l{color:var(--ink2);display:flex;align-items:center;gap:9px;flex:1;min-width:0}
 .ins-row-v{color:var(--ink);font-weight:800;font-feature-settings:'tnum'}
 .bar-h{height:8px;background:var(--line-soft);border-radius:99px;overflow:hidden;margin-top:6px}
@@ -559,6 +603,7 @@ button{border:none;background:none;cursor:pointer}
       <button class="snav" data-pane="orders" onclick="showPane('orders')"><span class="snav-i">📋</span><span class="snav-l">Enrollments</span><span class="snav-b" id="navOrdersB" style="display:none">0</span></button>
       <button class="snav" data-pane="plans" onclick="showPane('plans')"><span class="snav-i">💰</span><span class="snav-l">Plans</span><span class="snav-b" id="navPlansB">0</span></button>
       <button class="snav" data-pane="insights" onclick="showPane('insights')"><span class="snav-i">📊</span><span class="snav-l">Insights</span></button>
+      <button class="snav" data-pane="complaints" onclick="showPane('complaints')"><span class="snav-i">🚨</span><span class="snav-l">Complaints</span><span class="snav-b" id="navComplaintsB" style="display:none">0</span></button>
       <span class="snav-divider"></span>
       <button class="snav" data-pane="settings" onclick="showPane('settings')"><span class="snav-i">⚙️</span><span class="snav-l">Settings</span></button>
     </nav>
@@ -837,6 +882,32 @@ button{border:none;background:none;cursor:pointer}
           <div class="ins-l" style="margin-bottom:12px">👑 Top customers</div>
           <div id="insTopCust"></div>
         </div>
+      </div>
+    </section>
+
+    <section class="pane" id="paneComplaints">
+      <div class="section-hdr">
+        <div class="section-title">🚨 Complaints</div>
+        <a class="cmp-link" href="complaint.html?store=" id="cmpPageLink" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open complaint form
+        </a>
+      </div>
+      <div class="cmp-stats">
+        <div class="cmp-stat"><div class="cmp-stat-num" id="cmpTotal" style="color:var(--ink)">—</div><div class="cmp-stat-lbl">Total</div></div>
+        <div class="cmp-stat"><div class="cmp-stat-num" id="cmpOpen" style="color:#1d4ed8">—</div><div class="cmp-stat-lbl">Open</div></div>
+        <div class="cmp-stat"><div class="cmp-stat-num" id="cmpHigh" style="color:var(--rose)">—</div><div class="cmp-stat-lbl">High Priority</div></div>
+        <div class="cmp-stat"><div class="cmp-stat-num" id="cmpResolved" style="color:var(--accent)">—</div><div class="cmp-stat-lbl">Resolved</div></div>
+      </div>
+      <div class="cmp-toolbar">
+        <button class="cmp-filter-btn on" data-f="all" onclick="filterComplaints('all',this)">All</button>
+        <button class="cmp-filter-btn rose" data-f="Open" onclick="filterComplaints('Open',this)">Open</button>
+        <button class="cmp-filter-btn amber" data-f="In Progress" onclick="filterComplaints('In Progress',this)">In Progress</button>
+        <button class="cmp-filter-btn accent" data-f="Resolved" onclick="filterComplaints('Resolved',this)">Resolved</button>
+        <input class="cmp-search" id="cmpSearch" type="text" placeholder="Search complaints…" oninput="renderComplaintList()">
+      </div>
+      <div class="cmp-list" id="cmpList">
+        <div class="cmp-empty"><div class="cmp-empty-ic">📋</div>Loading complaints…</div>
       </div>
     </section>
   </main>
@@ -2990,18 +3061,15 @@ function renderInsights(){
 // PANE SWITCHING
 // ═══════════════════════════════════════════════════════════════════
 function showPane(name){
-  ['Home','Members','Orders','Plans','Insights','Settings'].forEach(function(p){
+  ['Home','Members','Orders','Plans','Insights','Settings','Complaints'].forEach(function(p){
     var el=$('pane'+p);if(el)el.classList.toggle('show',p.toLowerCase()===name);
   });
   document.querySelectorAll('.snav').forEach(function(b){b.classList.toggle('on',b.dataset.pane===name)});
   closeDetail();
-  // Lazy-render heavier panes only when first opened
   if(name==='orders')renderOrdersTable();
   if(name==='settings')renderSettings();
-  // Stop the slider auto-advance whenever we leave Settings — saves a timer
-  // running in the background. renderGalleryCard restarts it when needed.
+  if(name==='complaints')loadComplaints();
   if(name!=='settings')stopSliderTimer();
-  // Scroll to top on pane switch
   $('main')&&($('main').scrollTop=0);
 }
 
@@ -3090,6 +3158,140 @@ document.addEventListener('keydown',function(e){
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
 else init();
+
+// ═══════════════════════════════════════════════════════════════════
+// COMPLAINTS
+// ═══════════════════════════════════════════════════════════════════
+var _complaints=[],_cmpFilter='all',_cmpLoaded=false;
+
+var CMP_CAT_IC={
+  'Seat / Furniture':'🪑','Noise / Disturbance':'🔊','Cleanliness':'🧹',
+  'WiFi / Electricity':'📶','Staff Behavior':'👤','Fee / Billing':'💰',
+  'AC / Ventilation':'❄️','Other':'💬'
+};
+var CMP_CAT_BG={
+  'Seat / Furniture':'#fef3c7','Noise / Disturbance':'#ede9fe','Cleanliness':'#f0fdf4',
+  'WiFi / Electricity':'#dbeafe','Staff Behavior':'#fce7f3','Fee / Billing':'#d1fae5',
+  'AC / Ventilation':'#e0f2fe','Other':'#f1f5f9'
+};
+
+function loadComplaints(){
+  if(!_cmpLoaded){
+    $('cmpList').innerHTML='<div class="cmp-empty"><div class="cmp-empty-ic" style="font-size:28px;margin-bottom:8px">⏳</div>Loading complaints…</div>';
+  }
+  // Set the complaint form link with the store slug
+  var link=$('cmpPageLink');
+  if(link&&SLUG)link.href='complaint.html?store='+encodeURIComponent(SLUG);
+
+  gviz(SHEET_ID,'Complaints',function(r){
+    if(!r||!r.table){
+      _complaints=[];
+      $('cmpList').innerHTML='<div class="cmp-empty"><div class="cmp-empty-ic">📋</div>No complaints sheet yet.<br><span style="font-size:12px;margin-top:6px;display:block">Complaints will appear here once a member submits one.</span><a class="cmp-link" href="complaint.html?store='+encodeURIComponent(SLUG||'')+'" target="_blank" style="margin:14px auto 0">Open complaint form</a></div>';
+      updateComplaintStats_();
+      return;
+    }
+    _complaints=parseRows(r).filter(function(c){return c.complaintid||c['complaint id']||c.subject;});
+    _complaints.forEach(function(c){
+      if(!c.complaintid)c.complaintid=c['complaint id']||'';
+      if(!c.date)c.date=c['date & time']||c['datetime']||'';
+    });
+    _complaints.sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+    _cmpLoaded=true;
+    updateComplaintStats_();
+    renderComplaintList();
+  });
+}
+
+function updateComplaintStats_(){
+  var all=_complaints;
+  $('cmpTotal').textContent=all.length||'0';
+  $('cmpOpen').textContent=all.filter(function(c){return (c.status||'').toLowerCase()==='open';}).length||'0';
+  $('cmpHigh').textContent=all.filter(function(c){return (c.priority||'').toLowerCase()==='high';}).length||'0';
+  $('cmpResolved').textContent=all.filter(function(c){return (c.status||'').toLowerCase()==='resolved';}).length||'0';
+  // Badge on nav
+  var openCount=all.filter(function(c){return (c.status||'').toLowerCase()==='open';}).length;
+  var badge=$('navComplaintsB');
+  if(badge){badge.textContent=openCount;badge.style.display=openCount?'':'none';if(openCount)badge.classList.add('urgent');else badge.classList.remove('urgent');}
+}
+
+function filterComplaints(f,btn){
+  _cmpFilter=f;
+  document.querySelectorAll('.cmp-filter-btn').forEach(function(b){b.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  renderComplaintList();
+}
+
+function renderComplaintList(){
+  var q=($('cmpSearch').value||'').toLowerCase().trim();
+  var list=_complaints.filter(function(c){
+    if(_cmpFilter!=='all'&&(c.status||'').toLowerCase()!==_cmpFilter.toLowerCase())return false;
+    if(q){
+      var hay=(c.name+c.phone+c.subject+c.category+c.description+c.seat+'').toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    return true;
+  });
+
+  if(!list.length){
+    $('cmpList').innerHTML='<div class="cmp-empty"><div class="cmp-empty-ic">🔍</div>'+(q||_cmpFilter!=='all'?'No matching complaints':'No complaints yet')+'</div>';
+    return;
+  }
+
+  $('cmpList').innerHTML=list.map(function(c,idx){
+    var status=(c.status||'Open');
+    var statusCls={open:'open','in progress':'progress',resolved:'resolved',closed:'closed'}[status.toLowerCase()]||'open';
+    var priority=(c.priority||'Low');
+    var priCls={high:'high',medium:'med',low:'low'}[priority.toLowerCase()]||'low';
+    var priIcon={high:'🔴',medium:'🟡',low:'🟢'}[priority.toLowerCase()]||'🟢';
+    var catIc=CMP_CAT_IC[c.category]||'💬';
+    var catBg=CMP_CAT_BG[c.category]||'#f1f5f9';
+    var realIdx=_complaints.indexOf(c);
+
+    return '<div class="cmp-card" id="cmp-'+realIdx+'">'+
+      '<div class="cmp-card-top">'+
+        '<div class="cmp-cat-ic" style="background:'+catBg+'">'+catIc+'</div>'+
+        '<div class="cmp-card-body">'+
+          '<div class="cmp-card-subject">'+E(c.subject||'(No subject)')+'</div>'+
+          '<div class="cmp-card-meta">'+
+            (c.name?'<span>👤 '+E(c.name)+'</span>':'')+
+            (c.seat?'<span>🪑 '+E(c.seat)+'</span>':'')+
+            (c.phone?'<span>📞 '+E(c.phone)+'</span>':'')+
+            (c.category?'<span>'+E(c.category)+'</span>':'')+
+            (c.date?'<span>'+E(c.date.slice(0,15))+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="cmp-card-right">'+
+          '<span class="cmp-pill '+statusCls+'">'+E(status)+'</span>'+
+          '<span class="cmp-priority '+priCls+'">'+priIcon+' '+E(priority)+'</span>'+
+          (c.rating?'<span style="font-size:11px;color:var(--amber)">'+('★').repeat(parseInt(c.rating)||0)+'</span>':'')+''+
+        '</div>'+
+      '</div>'+
+      '<div class="cmp-card-desc">'+E(c.description||'')+'</div>'+
+      '<div class="cmp-card-actions">'+
+        (c.phone?'<button class="cmp-act-btn" onclick="event.stopPropagation();location.href=\'tel:'+E(c.phone.replace(/\D/g,''))+'\'">📞 Call</button>':'')+
+        (status.toLowerCase()!=='resolved'?'<button class="cmp-act-btn resolve" onclick="event.stopPropagation();updateCmpStatus_('+realIdx+',\'Resolved\')">✓ Mark Resolved</button>':'')+
+        (status.toLowerCase()==='open'?'<button class="cmp-act-btn" onclick="event.stopPropagation();updateCmpStatus_('+realIdx+',\'In Progress\')">⏳ In Progress</button>':'')+
+        (status.toLowerCase()!=='closed'&&status.toLowerCase()==='resolved'?'<button class="cmp-act-btn" onclick="event.stopPropagation();updateCmpStatus_('+realIdx+',\'Closed\')">✕ Close</button>':'')+
+        (c.complaintid?'<span style="font:600 11px var(--F);color:var(--ink4);margin-left:auto;align-self:center">'+E(c.complaintid)+'</span>':'')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function updateCmpStatus_(idx,newStatus){
+  var c=_complaints[idx];
+  if(!c)return;
+  c.status=newStatus;
+  sendCmd('updateComplaintStatus',{complaintId:c.complaintid,status:newStatus}).catch(function(){});
+  updateComplaintStats_();
+  renderComplaintList();
+  toast_('Complaint marked as '+newStatus,'ok');
+}
+
+function toast_(msg,kind){
+  // Use existing toast mechanism if available
+  if(window.toast)window.toast(msg,kind);
+}
 </script>
 
 </body>
