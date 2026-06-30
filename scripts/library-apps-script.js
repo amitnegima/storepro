@@ -34,6 +34,8 @@ function doGet(e) {
 
   if (a === 'version')  return jsonOut_({ version: SCRIPT_VERSION });
   if (a === 'newMember') { return ok(saveMember_(p)); }
+  if (a === 'newComplaint') { saveComplaint_(p); return ok('Complaint saved'); }
+  if (a === 'updateComplaintStatus') return ok(updateComplaintStatus_(p.complaintId || '', p.status || ''));
   if (a === 'verifyPin') {
     if (verifyDashboardPin_(p.pin || '')) return jsonOut_({ ok: true, token: getDashboardToken_() });
     return jsonOut_({ ok: false });
@@ -1139,4 +1141,69 @@ function sendNewMemberAlert_(row) {
       });
     } catch (e) {}
   });
+}
+
+
+// ═══════════════════════════════════
+// COMPLAINTS
+// ═══════════════════════════════════
+function getOrCreateComplaintsSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Complaints');
+  if (!sheet) {
+    sheet = ss.insertSheet('Complaints');
+    sheet.getRange(1, 1, 1, 12).setValues([[
+      'Complaint ID', 'Date & Time', 'Name', 'Phone', 'Email',
+      'Seat / Member ID', 'Category', 'Priority', 'Subject',
+      'Description', 'Rating', 'Status'
+    ]]);
+    sheet.getRange(1, 1, 1, 12)
+      .setFontWeight('bold')
+      .setBackground('#b91c1c')
+      .setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 120);
+    sheet.setColumnWidth(2, 155);
+    sheet.setColumnWidth(3, 140);
+    sheet.setColumnWidth(9, 200);
+    sheet.setColumnWidth(10, 320);
+    sheet.getRange(2, 1, sheet.getMaxRows() - 1, 12).setNumberFormat('@');
+  }
+  return sheet;
+}
+
+function saveComplaint_(p) {
+  if (!p || typeof p !== 'object') p = {};
+  var sheet = getOrCreateComplaintsSheet_();
+  var complaintId = p.complaintid || p.complaintId || ('CMP-' + new Date().getTime().toString(36).toUpperCase().slice(-6));
+  var date = p.date || new Date().toLocaleString('en-IN');
+  var priority = p.priority || 'Low';
+  try { sheet.getRange(sheet.getLastRow() + 1, 1, 1, 12).setNumberFormat('@'); } catch (_) {}
+  sheet.appendRow([
+    complaintId, date,
+    p.name || '', p.phone || '', p.email || '', p.seat || '',
+    p.category || '', priority, p.subject || '',
+    p.description || '', p.rating || '', p.status || 'Open'
+  ]);
+  try {
+    var row = sheet.getLastRow();
+    var bg = { 'High': '#fef2f2', 'Medium': '#fffbeb', 'Low': '#f0fdf4' }[priority] || '#f0fdf4';
+    sheet.getRange(row, 1, 1, 12).setBackground(bg).setNumberFormat('@');
+  } catch (_) {}
+}
+
+function updateComplaintStatus_(complaintId, newStatus) {
+  if (!complaintId || !newStatus) return 'missing params';
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Complaints');
+  if (!sheet) return 'no sheet';
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]).trim() === complaintId.trim()) {
+      sheet.getRange(i + 1, 12).setValue(newStatus);
+      var bg = { 'Open': '#dbeafe', 'In Progress': '#fffbeb', 'Resolved': '#f0fdf4', 'Closed': '#f8fafc' }[newStatus] || '#fff';
+      sheet.getRange(i + 1, 1, 1, 12).setBackground(bg);
+      return 'updated';
+    }
+  }
+  return 'not found';
 }

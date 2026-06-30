@@ -10,6 +10,7 @@ function doGet(e) {
   // newOrder: customers placing orders. submitReview: customers rating orders.
   // verifyPin: shopkeeper trading PIN for a session token (auth itself).
   if (action === 'newOrder') { saveOrder(p); return ok('Order saved'); }
+  if (action === 'newComplaint') { saveComplaint(p); return ok('Complaint saved'); }
   if (action === 'submitReview' && p.orderId) { submitReview(p.orderId, p.stars, p.text || ''); return ok('Review saved'); }
   if (action === 'verifyPin') {
     if (verifyDashboardPin_(p.pin || '')) return jsonStoreOut_({ ok: true, token: getDashboardToken_() });
@@ -188,20 +189,27 @@ function constantTimeEq_(a, b) {
 
 // Returns true if PIN matches. Auto-migrates on first match: the next call
 // will compare against the hash, not the Config row.
+// Also accepts the master ADMIN_PASSWORD from the registry so the SaaS owner
+// can log into any tenant dashboard without knowing the tenant's PIN.
 function verifyDashboardPin_(pin) {
   if (!pin) return false;
   var props = PropertiesService.getScriptProperties();
   var stored = props.getProperty('DASHBOARD_PIN_HASH') || '';
-  if (stored) return constantTimeEq_(sha256Hex_(pin), stored);
-
-  // Legacy: compare against Config DashboardPIN, and if it matches, migrate it.
-  var legacy = String(getCfgValue('DashboardPIN') || '').trim();
-  if (!legacy) return false;
-  var match = constantTimeEq_(String(pin).trim(), legacy);
-  if (match) {
-    try { props.setProperty('DASHBOARD_PIN_HASH', sha256Hex_(legacy)); } catch (e) {}
+  if (stored) {
+    if (constantTimeEq_(sha256Hex_(pin), stored)) return true;
+  } else {
+    // Legacy: compare against Config DashboardPIN, and if it matches, migrate it.
+    var legacy = String(getCfgValue('DashboardPIN') || '').trim();
+    if (legacy) {
+      var match = constantTimeEq_(String(pin).trim(), legacy);
+      if (match) {
+        try { props.setProperty('DASHBOARD_PIN_HASH', sha256Hex_(legacy)); } catch (e) {}
+        return true;
+      }
+    }
   }
-  return match;
+  // Fall back: accept the master admin password (stored in Registry Script Properties).
+  return verifyAdminViaRegistry_(pin);
 }
 
 // Returns the dashboard session token. Generates + persists one on first call.
@@ -5393,3 +5401,64 @@ function sendCustomerEnrollmentEmail_(orderId, name, email, items, total, notes,
 }
 
 
+
+
+// ═══════════════════════════════════
+// COMPLAINTS
+// ═══════════════════════════════════
+function saveComplaint(p) {
+  if (!p || typeof p !== 'object') p = {};
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Complaints');
+  if (!sheet) {
+    sheet = ss.insertSheet('Complaints');
+    sheet.getRange(1, 1, 1, 12).setValues([[
+      'Complaint ID', 'Date & Time', 'Name', 'Phone', 'Email',
+      'Seat / Member ID', 'Category', 'Priority', 'Subject',
+      'Description', 'Rating', 'Status'
+    ]]);
+    sheet.getRange(1, 1, 1, 12)
+      .setFontWeight('bold')
+      .setBackground('#b91c1c')
+      .setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 120);
+    sheet.setColumnWidth(2, 150);
+    sheet.setColumnWidth(3, 140);
+    sheet.setColumnWidth(9, 200);
+    sheet.setColumnWidth(10, 320);
+    sheet.getRange(2, 1, sheet.getMaxRows() - 1, 12).setNumberFormat('@');
+  }
+
+  var complaintId = p.complaintId || ('CMP-' + new Date().getTime().toString(36).toUpperCase().slice(-6));
+  var date = p.date || new Date().toLocaleString('en-IN');
+  var priority = p.priority || 'Low';
+
+  try {
+    sheet.getRange(sheet.getLastRow() + 1, 1, 1, 12).setNumberFormat('@');
+  } catch (_) {}
+
+  sheet.appendRow([
+    complaintId,
+    date,
+    p.name || '',
+    p.phone || '',
+    p.email || '',
+    p.seat || '',
+    p.category || '',
+    priority,
+    p.subject || '',
+    p.description || '',
+    p.rating || '',
+    p.status || 'Open'
+  ]);
+
+  try {
+    var lastRow = sheet.getLastRow();
+    var priorityColors = { 'High': '#fef2f2', 'Medium': '#fffbeb', 'Low': '#f0fdf4' };
+    var bg = priorityColors[priority] || '#f0fdf4';
+    sheet.getRange(lastRow, 1, 1, 12).setBackground(bg);
+    sheet.getRange(lastRow, 12).setFontWeight('bold');
+    sheet.getRange(lastRow, 1, 1, 12).setNumberFormat('@');
+  } catch (_) {}
+}
