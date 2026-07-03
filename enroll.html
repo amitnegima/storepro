@@ -570,8 +570,8 @@
     <div class="card-header">
       <div class="step-badge">4</div>
       <div class="card-header-text">
-        <h2>Pick a seat <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:2px 8px;margin-left:6px">optional</span></h2>
-        <div class="help" id="seatHelp" style="margin:0">Tap any <b style="color:#059669">green seat</b> to reserve it — or skip and we'll assign one.</div>
+        <h2>Pick a seat <span style="color:#e11d48">*</span></h2>
+        <div class="help" id="seatHelp" style="margin:0">Tap any <b style="color:#059669">green seat</b> to reserve it. A seat is required to enroll.</div>
       </div>
     </div>
     <div class="seat-avail" id="seatAvail"></div>
@@ -1690,7 +1690,7 @@ function recomputeTotal(){
     if(selectedPlan.name)parts.push(selectedPlan.name);
     if(passPrice)parts.push(cfg('librarypasslabel','Library Pass')+' +'+cur+passPrice.toLocaleString('en-IN'));
     if(selectedSeat)parts.push('Seat '+selectedSeat);
-    else parts.push('Seat TBD');
+    else parts.push('Seat required');
     meta.textContent=parts.join(' · ');
   }
 }
@@ -1725,6 +1725,7 @@ function validate(){
   else if(aad)need('fAadhar',/^\d{12}$/.test(aad));
   if(!selectedPlan){toast('Pick a plan','err');ok=false}
   if(isYes('enableshifts')&&!selectedShift){toast('Pick a shift','err');ok=false}
+  if(selectedShift&&!selectedSeat){toast('Pick a seat','err');ok=false}
 
   if(!ok){
     var first=document.querySelector('label.err, .card.err');
