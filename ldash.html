@@ -327,6 +327,17 @@ a{text-decoration:none;color:inherit}
 .ins-shift-bar-fill{height:6px;border-radius:99px}
 .ins-shift-count{font-size:12px;font-weight:700;color:var(--ink-2);min-width:28px;text-align:right}
 .ins-empty{padding:20px 0;text-align:center;color:var(--ink-3);font-size:13px}
+.ins-fee-shift-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.ins-fee-shift-row:last-child{border-bottom:none}
+.ins-fee-shift-lbl{font-size:12px;font-weight:600;color:var(--ink);min-width:72px}
+.ins-fee-shift-nums{display:flex;align-items:center;gap:3px;margin-left:auto;font-size:12px;font-weight:700;white-space:nowrap}
+.ins-fee-col{color:var(--ok)}
+.ins-fee-sep{color:var(--ink-3);font-weight:400;margin:0 1px}
+.ins-fee-exp{color:var(--ink)}
+.ins-fee-mini-bar{width:44px;height:5px;background:var(--bg);border-radius:99px;overflow:hidden;flex-shrink:0}
+.ins-fee-mini-bar div{height:100%;border-radius:99px}
+.ins-collect-divider{height:1px;background:var(--line);margin:10px 0}
+.ins-member-scroll{max-height:360px;overflow-y:auto;padding-right:2px}
 </style>
 </head>
 <body>
@@ -1179,8 +1190,18 @@ function fmtCycleDate(d){
   var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return d.getDate()+' '+mo[d.getMonth()]+' '+d.getFullYear();
 }
-function planPrice(planName){
-  var p=plans.filter(function(p){return (p.name||p.plan||'')===planName})[0];
+function planPrice(planName, shiftKey){
+  var sk=shiftKey?String(shiftKey).toUpperCase():'';
+  var p;
+  if(sk){
+    p=plans.filter(function(pl){
+      if((pl.name||pl.plan||'')!==planName)return false;
+      var ps=String(pl.shift||'').trim();
+      if(!ps)return false;
+      return ps.toUpperCase().split(/[|,\s]+/).indexOf(sk)>=0;
+    })[0];
+  }
+  if(!p)p=plans.filter(function(pl){return (pl.name||pl.plan||'')===planName})[0];
   return p?parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0:0;
 }
 
@@ -1201,10 +1222,26 @@ function renderInsights(){
     return dt&&dt>=cycle.start&&dt<=cycle.end;
   }).sort(function(a,b){return parseMemberDate(a.expirydate)-parseMemberDate(b.expirydate);});
 
-  // Fee collection for all currently active members
+  // Fee collection — shift-specific & seat-specific
   var active=activeMembers();
   var collected=active.reduce(function(s,m){var n=parseFloat(m.totalpaid||'0');return s+(isNaN(n)?0:n);},0);
-  var expected=active.reduce(function(s,m){return s+planPrice(m.plan);},0);
+  var sfn=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var shiftFeeKeys=[];
+  for(var sfi=1;sfi<=sfn;sfi++)shiftFeeKeys.push('S'+sfi);
+  if(isYes('enablefullday'))shiftFeeKeys.push('FULL');
+  var shiftFeeMap={};
+  shiftFeeKeys.forEach(function(sk){shiftFeeMap[sk]={col:0,exp:0,cnt:0};});
+  active.forEach(function(m){
+    var sk=(m.shift||'').toUpperCase();
+    if(!shiftFeeMap[sk])return;
+    var paid=parseFloat(m.totalpaid||'0')||0;
+    var price=planPrice(m.plan,sk);
+    if(price===0&&paid>0)price=paid;
+    shiftFeeMap[sk].col+=paid;
+    shiftFeeMap[sk].exp+=price;
+    if(m.seat)shiftFeeMap[sk].cnt++;
+  });
+  var expected=shiftFeeKeys.reduce(function(s,sk){return s+shiftFeeMap[sk].exp;},0);
   var outstanding=Math.max(0,expected-collected);
   var collectPct=expected>0?Math.round(collected/expected*100):100;
 
@@ -1253,8 +1290,26 @@ function renderInsights(){
     '</div>';
   }).join('');
 
-  // ── Fee collection ──
+  // ── Fee collection (shift-specific + seat-specific) ──
+  var sfBarColors={'S1':'#d97706','S2':'#3b82f6','S3':'#7c3aed','S4':'#ec4899','FULL':'#16a34a'};
+  var feeRowsHtml=shiftFeeKeys.map(function(sk){
+    var d=shiftFeeMap[sk];
+    var lbl=shiftLabels[sk]||sk;
+    var pct=d.exp>0?Math.round(d.col/d.exp*100):100;
+    var bc=sfBarColors[sk]||'#6366f1';
+    return '<div class="ins-fee-shift-row">'+
+      '<div class="ins-fee-shift-lbl">'+E(lbl)+'</div>'+
+      '<div class="ins-fee-shift-nums">'+
+        '<span class="ins-fee-col">'+cur+Math.round(d.col).toLocaleString('en-IN')+'</span>'+
+        '<span class="ins-fee-sep">/</span>'+
+        '<span class="ins-fee-exp">'+cur+Math.round(d.exp).toLocaleString('en-IN')+'</span>'+
+      '</div>'+
+      '<div class="ins-fee-mini-bar"><div style="width:'+pct+'%;background:'+bc+'"></div></div>'+
+    '</div>';
+  }).join('');
   $('insCollect').innerHTML=
+    feeRowsHtml+
+    '<div class="ins-collect-divider"></div>'+
     '<div class="ins-collect-row"><span class="ins-collect-label">Collected</span><span class="ins-collect-val" style="color:var(--ok)">'+cur+Math.round(collected).toLocaleString('en-IN')+'</span></div>'+
     '<div class="ins-collect-row"><span class="ins-collect-label">Outstanding</span><span class="ins-collect-val" style="color:var(--err)">'+cur+Math.round(outstanding).toLocaleString('en-IN')+'</span></div>'+
     '<div class="ins-collect-row"><span class="ins-collect-label">Total Expected</span><span class="ins-collect-val">'+cur+Math.round(expected).toLocaleString('en-IN')+'</span></div>'+
@@ -1266,8 +1321,7 @@ function renderInsights(){
     $('insNewMembers').innerHTML='<div class="ins-empty">No new enrollments this cycle</div>';
   } else {
     var colors=['#6366f1','#0d9488','#d97706','#3b82f6','#dc2626','#7c3aed','#16a34a'];
-    $('insNewMembers').innerHTML=newMembers.slice(0,8).map(function(m,i){
-      var price=planPrice(m.plan);
+    var rowsHtml=newMembers.map(function(m,i){
       var paid=parseFloat(m.totalpaid||'0')||0;
       var shiftLbl=shiftLabels[(m.shift||'').toUpperCase()]||m.shift||'—';
       var dt=parseMemberDate(m.enrolledat);
@@ -1284,7 +1338,8 @@ function renderInsights(){
           '<div class="ins-member-date">'+dateStr+'</div>'+
         '</div>'+
       '</div>';
-    }).join('')+(newMembers.length>8?'<div class="ins-empty" style="padding:10px 0">+' +(newMembers.length-8)+' more</div>':'');
+    }).join('');
+    $('insNewMembers').innerHTML='<div class="ins-member-scroll">'+rowsHtml+'</div>';
   }
 
   // ── Expiry list ──

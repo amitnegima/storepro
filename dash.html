@@ -28,6 +28,86 @@
     --shadow:0 4px 16px -4px rgba(0,0,0,.1),0 1px 4px rgba(0,0,0,.04);
     --shadow-lg:0 8px 32px -8px rgba(0,0,0,.14),0 2px 8px rgba(0,0,0,.06);
   }
+  [data-theme="dark"]{
+    --bg:#111827; --card:#1f2937; --line:#374151; --line-dk:#4b5563;
+    --ink:#f9fafb; --ink-2:#e5e7eb; --ink-3:#9ca3af; --ink-4:#6b7280;
+    --brand:#14b8a6; --brand-dk:#0d9488; --brand-lt:#115e59; --brand-bg:#0d2520;
+    --grad-1:#14b8a6; --grad-2:#0d9488;
+    --ok-bg:#052e16; --ok-dk:#4ade80; --ok:#22c55e;
+    --warn-bg:#1c0a00; --warn-dk:#fbbf24; --warn:#f59e0b;
+    --err-bg:#1a0000; --err-dk:#f87171; --err:#ef4444;
+    --hold-bg:#1e1040; --hold-dk:#a78bfa; --hold:#8b5cf6; --info-bg:#0a1628;
+    --shadow-sm:0 1px 4px rgba(0,0,0,.6); --shadow:0 4px 24px rgba(0,0,0,.7);
+    --shadow-lg:0 8px 48px rgba(0,0,0,.8);
+  }
+  /* ── Tab bar ── */
+  [data-theme="dark"] .tabs{background:#1f2937;border-top:1.5px solid #374151;box-shadow:0 -4px 24px rgba(0,0,0,.5)}
+  [data-theme="dark"] .tab{color:#d1d5db}
+  [data-theme="dark"] .tab .dot{border-color:#1f2937}
+  /* ── Header ── */
+  [data-theme="dark"] header,[data-theme="dark"] .hdr{background:#1f2937;border-bottom-color:#374151}
+  [data-theme="dark"] .hdr-btn{background:#374151;border-color:#4b5563;color:#e5e7eb}
+  [data-theme="dark"] .hdr-btn:hover{background:#4b5563}
+  [data-theme="dark"] .hdr-stat-pill{background:#374151;border-color:#4b5563;color:#d1d5db}
+  [data-theme="dark"] .occ-pill{background:#374151;border-color:#4b5563;color:#d1d5db}
+  /* ── Cards & surfaces ── */
+  [data-theme="dark"] .card{background:#1f2937;border-color:#374151}
+  [data-theme="dark"] .card:hover{box-shadow:0 4px 24px rgba(0,0,0,.5)}
+  [data-theme="dark"] .ins-collect-card{background:#1f2937;border-color:#374151}
+  [data-theme="dark"] .ins-cycle{background:#1f2937;border-color:#374151}
+  [data-theme="dark"] .ins-kpi{background:#1f2937;border-color:#374151}
+  [data-theme="dark"] .seats-card{background:#1f2937}
+  [data-theme="dark"] .empty{background:#1f2937;border-color:#374151}
+  /* ── Seat cells ── */
+  [data-theme="dark"] .sc-half{background:#1f2937;border-color:#374151}
+  [data-theme="dark"] .sh-empty{background:#111827;border-color:#374151}
+  [data-theme="dark"] .seat-cell{background:#1f2937;border-color:#374151}
+  /* ── Search & filters ── */
+  [data-theme="dark"] .search input{background:#1f2937;border-color:#4b5563;color:#f9fafb}
+  [data-theme="dark"] .search input::placeholder{color:#6b7280}
+  [data-theme="dark"] .fc{background:#1f2937;border-color:#4b5563;color:#e5e7eb}
+  [data-theme="dark"] .fc .fc-count{background:#374151;color:#9ca3af}
+  [data-theme="dark"] .filter-chips{background:transparent}
+  [data-theme="dark"] .seat-view-btn{background:#1f2937;border-color:#4b5563;color:#9ca3af}
+  [data-theme="dark"] .shift-legend{background:#374151}
+  [data-theme="dark"] .shift-key{background:#374151;border-color:#4b5563}
+  /* ── Member cards ── */
+  [data-theme="dark"] .mb{background:#1f2937;border-color:#374151}
+  [data-theme="dark"] .mb:active{background:#374151}
+  [data-theme="dark"] .mb .plan-name{background:#374151;border-color:#4b5563}
+  [data-theme="dark"] .lt-row{background:#1f2937;border-bottom-color:#374151}
+  [data-theme="dark"] .lt-row td{border-bottom-color:#374151}
+  [data-theme="dark"] .sb-prog-bar-bg{background:#374151}
+  /* ── Pending banner ── */
+  [data-theme="dark"] .pending-banner{background:#1f2937;border-color:#8b5cf6}
+  [data-theme="dark"] .pending-row{background:#1f2937;border-bottom-color:#374151}
+  [data-theme="dark"] .pending-row .av{background:#2d1f4e}
+  /* ── PIN screen ── */
+  [data-theme="dark"] .pinBox{background:#1f2937}
+  [data-theme="dark"] .pinDigits input{background:#374151;border-color:#4b5563;color:#f9fafb}
+  [data-theme="dark"] .pinDigits input:focus{background:#111827}
+  [data-theme="dark"] .pin-bksp{background:#374151;border-color:#4b5563;color:#9ca3af}
+  /* ── Settings ── */
+  [data-theme="dark"] details{background:#1f2937;border-color:#374151}
+  [data-theme="dark"] details summary{color:#f9fafb;border-bottom-color:#374151}
+  [data-theme="dark"] details[open] summary{border-bottom:1px solid #374151}
+  [data-theme="dark"] .setting{border-bottom-color:#374151}
+  [data-theme="dark"] .setting input,[data-theme="dark"] .setting select,[data-theme="dark"] .setting textarea{background:#374151;border-color:#4b5563;color:#f9fafb}
+  [data-theme="dark"] .mark-paid-btn{background:#374151;border-color:#4b5563;color:#e5e7eb}
+  /* ── Insight section headers ── */
+  [data-theme="dark"] .ins-section-hdr{color:#9ca3af;border-bottom-color:#374151}
+  [data-theme="dark"] .ins-cycle-bar-bg{background:#374151}
+  [data-theme="dark"] .ins-bar-bg{background:#374151}
+  [data-theme="dark"] .ins-fee-mini-bar{background:#374151}
+  [data-theme="dark"] .ins-collect-divider{background:#374151}
+  [data-theme="dark"] .ins-new-row,[data-theme="dark"] .ins-fee-shift-row,[data-theme="dark"] .ins-expiry-row,[data-theme="dark"] .exp-row{border-bottom-color:#374151}
+  [data-theme="dark"] .ins-new-scroll{scrollbar-color:#374151 transparent}
+  /* ── Member sheet ── */
+  [data-theme="dark"] .ms-wrap{background:#1f2937}
+  [data-theme="dark"] .ms-header{background:#1f2937;border-bottom-color:#374151}
+  [data-theme="dark"] .ms-field{border-bottom-color:#374151}
+  [data-theme="dark"] .ms-field input,[data-theme="dark"] .ms-field select{background:#374151;border-color:#4b5563;color:#f9fafb}
+  [data-theme="dark"] .cmp-link-bar{background:#1f2937;border-color:#374151}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:14px/1.6 'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
   a{color:var(--brand);text-decoration:none}
@@ -159,7 +239,7 @@
   .tab{
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:3px;padding:10px 4px 9px;
-    color:#94a3b8;
+    color:#0f172a;
     cursor:pointer;position:relative;
     -webkit-user-select:none;user-select:none;
     background:none;border:none;
@@ -180,9 +260,9 @@
   }
   .tab .ic svg{
     width:22px;height:22px;stroke:currentColor;fill:none;
-    stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+    stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
   }
-  .tab .tab-lbl{font-size:10.5px;font-weight:600;line-height:1;letter-spacing:.01em}
+  .tab .tab-lbl{font-size:10.5px;font-weight:700;line-height:1;letter-spacing:.01em}
   .tab.act{color:var(--brand-dk)}
   .tab.act .ic{transform:scale(1.1)}
   .tab.act .ic svg{stroke-width:2.2}
@@ -495,6 +575,7 @@
   .lt-shift-tag.e{color:#7c3aed;background:#f5f3ff;border-color:#ddd6fe}
   .lt-shift-tag.full{color:#d97706;background:#fffbeb;border-color:#fde68a}
   .lt-plan-tag{font-size:10.5px;font-weight:600;color:#64748b}
+  .lib-pass-badge{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;background:#f0fdfa;color:#0d9488;border:1px solid #99f6e4;border-radius:99px;padding:1px 7px;flex-shrink:0;vertical-align:middle;margin-left:4px}
   .lt-fee-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
   .lt-fee-tag.paid{color:#16a34a}
   .lt-fee-tag.due{color:#dc2626}
@@ -593,14 +674,21 @@
   .ins-bar-fill{height:7px;border-radius:99px;background:var(--ok-dk)}
   .ins-bar-footer{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);font-weight:500}
 
-  .ins-new-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .ins-new-row{display:flex;align-items:flex-start;gap:9px;padding:11px 0;border-bottom:1px solid var(--line)}
   .ins-new-row:last-child{border-bottom:none}
-  .ins-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
-  .ins-new-name{font-size:13px;font-weight:600;color:var(--ink)}
-  .ins-new-sub{font-size:11px;color:var(--ink-3);margin-top:1px}
-  .ins-new-right{margin-left:auto;text-align:right;flex-shrink:0}
-  .ins-new-amt{font-size:12.5px;font-weight:700;color:var(--ok-dk)}
-  .ins-new-date{font-size:10.5px;color:var(--ink-3);margin-top:1px}
+  .ins-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+  .ins-new-name{font-size:13px;font-weight:700;color:var(--ink);line-height:1.2}
+  .ins-new-sub{font-size:11px;color:var(--ink-3);margin-top:2px}
+  .ins-new-period{font-size:11px;color:var(--ink-2);font-weight:500;margin-top:3px;display:flex;align-items:center;gap:4px}
+  .ins-new-phone{font-size:10.5px;color:var(--ink-3);margin-top:2px}
+  .ins-new-badge{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:5px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em}
+  .ins-new-badge.active{background:var(--ok-bg);color:var(--ok-dk)}
+  .ins-new-badge.pending{background:var(--warn-bg);color:var(--warn-dk)}
+  .ins-new-right{margin-left:auto;text-align:right;flex-shrink:0;padding-top:1px}
+  .ins-new-amt{font-size:13px;font-weight:800;color:var(--ok-dk)}
+  .ins-new-amt-lbl{font-size:10px;color:var(--ink-3);margin-top:2px;font-weight:500}
+  .ins-remind-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:8px;border:none;background:#25d366;color:#fff;font:700 11.5px var(--F);cursor:pointer;transition:.13s;box-shadow:0 2px 6px rgba(37,211,102,.3)}
+  .ins-remind-btn:hover{background:#1ebe5d;box-shadow:0 3px 10px rgba(37,211,102,.4)}
 
   .ins-shift-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
   .ins-shift-row:last-child{border-bottom:none}
@@ -608,6 +696,26 @@
   .ins-shift-bar-bg{flex:1;background:var(--line);border-radius:99px;height:5px;overflow:hidden}
   .ins-shift-bar-fill{height:5px;border-radius:99px}
   .ins-shift-n{font-size:12px;font-weight:700;color:var(--ink-2);width:20px;text-align:right;flex-shrink:0}
+  .ins-fee-shift-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+  .ins-fee-shift-row:last-child{border-bottom:none}
+  .ins-fee-shift-lbl{font-size:12px;font-weight:600;color:var(--ink);min-width:72px}
+  .ins-fee-shift-nums{display:flex;align-items:center;gap:2px;margin-left:auto;font-size:12px;font-weight:700;white-space:nowrap}
+  .ins-fee-col{color:var(--ok-dk)}
+  .ins-fee-sep{color:var(--ink-3);font-weight:400;margin:0 2px}
+  .ins-fee-exp{color:var(--ink)}
+  .ins-fee-mini-bar{width:40px;height:5px;background:var(--line);border-radius:99px;overflow:hidden;flex-shrink:0}
+  .ins-fee-mini-bar div{height:100%;border-radius:99px}
+  .ins-collect-divider{height:1px;background:var(--line);margin:8px 0}
+  .ins-new-scroll{max-height:340px;overflow-y:auto;padding-right:2px}
+  .ins-fee-total-amt{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1}
+  .ins-fee-total-lbl{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px}
+  .ins-fee-seg-bar{display:flex;height:10px;border-radius:99px;overflow:hidden;margin:10px 0 8px;background:var(--line)}
+  .ins-fee-seg-col{height:100%;background:var(--ok-dk);border-radius:99px 0 0 99px;transition:width .4s}
+  .ins-fee-seg-out{height:100%;background:var(--err-dk)}
+  .ins-fee-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .ins-fee-chip{flex:1;min-width:100px;border-radius:8px;padding:8px 10px}
+  .ins-fee-chip-amt{font-size:14px;font-weight:700;line-height:1}
+  .ins-fee-chip-lbl{font-size:10.5px;font-weight:500;margin-top:2px;opacity:.8}
 
   .ins-empty-sm{padding:16px 0;text-align:center;color:var(--ink-3);font-size:13px}
   .exp-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
@@ -1281,6 +1389,7 @@
     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
       <button class="hdr-btn" id="hdrPendingBtn" onclick="goTab('Active');scrollToPending()" style="display:none" title="Pending approvals">⏳<span class="badge" id="hdrPendingBadge">0</span></button>
       <button class="hdr-btn" id="hdrMaintBtn" onclick="toggleMaintenanceMode()" title="Toggle maintenance mode" style="font-size:15px">🔧</button>
+      <button class="hdr-btn" id="hdrThemeBtn" onclick="toggleTheme()" title="Toggle dark/light theme" style="font-size:16px">🌙</button>
       <button class="hdr-btn" onclick="reloadAll()" title="Refresh">↻</button>
     </div>
   </div>
@@ -1363,8 +1472,6 @@
     <div class="ins-collect-card" id="insCollect"></div>
     <div class="ins-section-hdr">New This Cycle</div>
     <div id="insNew"></div>
-    <div class="ins-section-hdr">By Shift — This Cycle</div>
-    <div id="insShift"></div>
     <div class="ins-section-hdr">Expiring / Expired This Cycle</div>
     <div id="insExp"></div>
   </div>
@@ -1400,6 +1507,17 @@
   <div id="pgMore" class="page">
     <h2>Settings</h2>
 
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:10px;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0" id="themeIconCard">🌙</div>
+        <div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink)">Dark Theme</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:1px">Switch between light and dark mode</div>
+        </div>
+      </div>
+      <button onclick="toggleTheme()" id="themeToggleBtn" style="padding:7px 16px;border-radius:10px;border:1.5px solid var(--line-dk);background:var(--card);color:var(--ink);font:600 12px var(--F);cursor:pointer;transition:.15s;min-width:64px">Light</button>
+    </div>
+
     <details open>
       <summary>
         <div style="display:flex;align-items:center;gap:10px">
@@ -1413,6 +1531,7 @@
       <div id="setShifts"></div>
     </details>
     <details><summary>Enrollment fields &amp; approval</summary><div id="setEnroll"></div></details>
+    <details><summary>🎫 Library Pass</summary><div id="setLibraryPass"></div></details>
     <details><summary>Expiry reminders</summary><div id="setReminders"></div></details>
     <details><summary>History &amp; archive</summary><div id="setHistory"></div></details>
     <details><summary>⭐ Google Reviews</summary><div id="setGoogleReviews"></div></details>
@@ -1793,6 +1912,20 @@ function loadAll(){
   });
 }
 function reloadAll(){$('splash').style.display='flex';$('splashMsg').textContent='Refreshing…';loadAll()}
+function applyTheme(dark){
+  document.documentElement.setAttribute('data-theme',dark?'dark':'');
+  var btn=$('hdrThemeBtn'),tb=$('themeToggleBtn'),ic=$('themeIconCard');
+  if(btn)btn.textContent=dark?'☀️':'🌙';
+  if(tb)tb.textContent=dark?'Dark':'Light';
+  if(ic)ic.textContent=dark?'☀️':'🌙';
+}
+function toggleTheme(){
+  var dark=document.documentElement.getAttribute('data-theme')==='dark';
+  var next=!dark;
+  localStorage.setItem('dash_theme',next?'dark':'light');
+  applyTheme(next);
+}
+(function(){applyTheme(localStorage.getItem('dash_theme')==='dark');})()
 function toggleMaintenanceMode(){
   var isOn=cfg('maintenancemode','no').toLowerCase()==='yes';
   var next=isOn?'no':'yes';
@@ -2456,7 +2589,7 @@ function renderActiveList(rows){
     var feeTag=paid
       ?'<span class="lt-fee-tag paid">'+IC_OK+' '+cur+paid+'</span>'
       :'<span class="lt-fee-tag due">'+IC_WARN+' Fee due</span>';
-    var planTag=m.plan?'<span class="lt-plan-tag">'+E(m.plan)+'</span>':'';
+    var planTag=(m.plan?'<span class="lt-plan-tag">'+E(m.plan)+'</span>':'')+(hasLibPass(m)?libPassBadge():'');
     var daysEnrolled=m.enrolledat?Math.floor((Date.now()-new Date(m.enrolledat).getTime())/86400000):null;
     var newBadge=(daysEnrolled!=null&&daysEnrolled<=14)?'<span class="new-badge">New</span>':'';
     var phone=(m.phone||'').replace(/\D/g,'');
@@ -2550,6 +2683,7 @@ function renderActive(){
           (m.seat?'<span class="tag seat">'+IC_SEAT+' '+E(m.seat)+'</span>':'')+
           (shiftLbl?'<span class="tag shift'+(isFullShift?' full-day':'')+'">'+E(shiftLbl)+'</span>':'')+
           (m.plan?'<span class="plan-name">'+E(m.plan)+'</span>':'')+
+          (hasLibPass(m)?libPassBadge():'')+
           (paid?'<span class="tag paid">✓ '+cur+paid+'</span>':'<span class="tag fee-due">Fee Due</span>')+
         '</div>'+
         '<div class="submeta">'+
@@ -2780,7 +2914,15 @@ function parseMD_(str){
   return isNaN(d.getTime())?null:d;
 }
 function fmtMD_(d){var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+mo[d.getMonth()];}
-function planPrice_(name){var p=plans.filter(function(p){return (p.name||p.plan||'')===name})[0];return p?parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0:0;}
+function hasLibPass(m){return (m.notes||'').indexOf('[Library Pass opted]')>=0;}
+function libPassBadge(){return '<span class="lib-pass-badge">🎫 Pass</span>';}
+function planPrice_(name,shiftKey){
+  var sk=shiftKey?String(shiftKey).toUpperCase():'';
+  var p;
+  if(sk){p=plans.filter(function(pl){if((pl.name||pl.plan||'')!==name)return false;var ps=String(pl.shift||'').trim();if(!ps)return false;return ps.toUpperCase().split(/[|,\s]+/).indexOf(sk)>=0;})[0];}
+  if(!p)p=plans.filter(function(pl){return (pl.name||pl.plan||'')===name})[0];
+  return p?parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0:0;
+}
 
 function renderInsights(){
   var cycle=billingCycle_();
@@ -2790,15 +2932,31 @@ function renderInsights(){
   var all=act.concat(pend);
 
   // Members whose plan startdate falls in this cycle (new enrollments + renewals)
-  var newM=all.filter(function(m){var d=parseMD_(m.startdate);return d&&d>=cycle.start&&d<=cycle.end;});
+  var newM=all.filter(function(m){var d=parseMD_(m.startdate);return d&&d>=cycle.start&&d<=cycle.end;}).sort(function(a,b){return (parseMD_(b.startdate)||0)-(parseMD_(a.startdate)||0);});
 
   // Members whose expirydate falls in this cycle
   var expM=all.filter(function(m){var d=parseMD_(m.expirydate);return d&&d>=cycle.start&&d<=cycle.end;})
     .sort(function(a,b){return parseMD_(a.expirydate)-parseMD_(b.expirydate);});
 
-  // Fee totals for all active members
+  // Fee totals — shift-specific & seat-specific
   var collected=act.reduce(function(s,m){var n=parseFloat(m.totalpaid||0);return s+(isNaN(n)?0:n);},0);
-  var expected=act.reduce(function(s,m){return s+planPrice_(m.plan);},0);
+  var sfShiftN=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var sfKeys=[];for(var sfi=1;sfi<=sfShiftN;sfi++)sfKeys.push('S'+sfi);
+  if(isYes('enablefullday'))sfKeys.push('FULL');
+  var sfMap={};sfKeys.forEach(function(sk){sfMap[sk]={col:0,exp:0,cnt:0,paidCnt:0};});
+  act.forEach(function(m){
+    var sk=(m.shift||'').toUpperCase();
+    if(!sfMap[sk])return;
+    var sd=parseMD_(m.startdate);
+    if(!sd||sd<cycle.start||sd>cycle.end)return;
+    var paid=parseFloat(m.totalpaid||0)||0;
+    var price=planPrice_(m.plan,sk);
+    if(price===0&&paid>0)price=paid;
+    sfMap[sk].col+=paid;sfMap[sk].exp+=price;
+    sfMap[sk].cnt++;
+    if(paid>0)sfMap[sk].paidCnt++;
+  });
+  var expected=sfKeys.reduce(function(s,sk){return s+sfMap[sk].exp;},0);
   var outstanding=Math.max(0,expected-collected);
   var colPct=expected>0?Math.round(collected/expected*100):100;
 
@@ -2825,65 +2983,99 @@ function renderInsights(){
     statCard('Active','👥',act.length,'ok','enrolled members')+
     statCard('Expiring','⚠️',expM.length,expM.length?'warn':'','this cycle');
 
-  // ── Fee collection ──
+  // ── Fee collection (shift-specific + seat-specific) ──
+  var sfBarColors={'S1':'#d97706','S2':'#3b82f6','S3':'#7c3aed','S4':'#ec4899','FULL':'#16a34a'};
+  var feeRowsHtml=sfKeys.map(function(sk){
+    var d=sfMap[sk];
+    var lbl=sk==='FULL'?cfg('fulldaylabel','Full Day'):cfg('shift'+(sk.slice(1))+'label','Shift '+sk.slice(1));
+    var pct=d.exp>0?Math.round(d.col/d.exp*100):100;
+    var bc=sfBarColors[sk]||'#6366f1';
+    return '<div class="ins-fee-shift-row">'+
+      '<div class="ins-fee-shift-lbl">'+E(lbl)+'</div>'+
+      '<div style="display:flex;align-items:center;justify-content:center;min-width:52px;padding:3px 8px;background:'+bc+'18;border-radius:6px;flex-shrink:0;text-align:center">'+
+        '<div>'+
+          '<div style="font-size:13px;font-weight:800;color:'+bc+';line-height:1">'+d.paidCnt+'/'+d.cnt+'</div>'+
+          '<div style="font-size:9px;font-weight:600;color:'+bc+';opacity:.8;white-space:nowrap">paid</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="ins-fee-shift-nums">'+
+        '<span class="ins-fee-col">'+cur+Math.round(d.col).toLocaleString('en-IN')+'</span>'+
+        '<span class="ins-fee-sep">/</span>'+
+        '<span class="ins-fee-exp">'+cur+Math.round(d.exp).toLocaleString('en-IN')+'</span>'+
+      '</div>'+
+      '<div class="ins-fee-mini-bar"><div style="width:'+pct+'%;background:'+bc+'"></div></div>'+
+    '</div>';
+  }).join('');
+  var totalSeats=sfKeys.reduce(function(s,sk){return s+sfMap[sk].cnt;},0);
+  var perSeat=totalSeats>0?Math.round(collected/totalSeats):0;
   $('insCollect').innerHTML=
     '<div style="font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Fee Collection — Active Members</div>'+
-    '<div class="ins-collect-row"><span class="ins-collect-lbl">Collected</span><span class="ins-collect-val" style="color:var(--ok-dk)">'+cur+Math.round(collected).toLocaleString('en-IN')+'</span></div>'+
-    '<div class="ins-collect-row"><span class="ins-collect-lbl">Outstanding</span><span class="ins-collect-val" style="color:var(--err-dk)">'+cur+Math.round(outstanding).toLocaleString('en-IN')+'</span></div>'+
-    '<div class="ins-collect-row"><span class="ins-collect-lbl">Total Expected</span><span class="ins-collect-val">'+cur+Math.round(expected).toLocaleString('en-IN')+'</span></div>'+
-    '<div class="ins-bar-bg"><div class="ins-bar-fill" style="width:'+colPct+'%;background:'+(colPct<70?'var(--err-dk)':colPct<90?'var(--warn-dk)':'var(--ok-dk)')+'"></div></div>'+
-    '<div class="ins-bar-footer"><span>'+colPct+'% collected</span><span>'+act.length+' active members</span></div>';
+    feeRowsHtml+
+    '<div class="ins-collect-divider"></div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center">'+
+      '<div style="text-align:center;flex:1">'+
+        '<div style="font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.02em">'+totalSeats+'</div>'+
+        '<div style="font-size:10.5px;color:var(--ink-3);font-weight:500;margin-top:2px">Members This Cycle</div>'+
+      '</div>'+
+      '<div style="width:1px;background:var(--line);align-self:stretch"></div>'+
+      '<div style="text-align:center;flex:1">'+
+        '<div style="font-size:17px;font-weight:800;color:var(--ok-dk);letter-spacing:-.02em">'+cur+perSeat.toLocaleString('en-IN')+'</div>'+
+        '<div style="font-size:10.5px;color:var(--ink-3);font-weight:500;margin-top:2px">Avg Collected / Seat</div>'+
+      '</div>'+
+    '</div>';
 
   // ── New members list ──
   var avColors=['#6366f1','#0d9488','#d97706','#3b82f6','#dc2626','#7c3aed','#16a34a'];
   if(!newM.length){
     $('insNew').innerHTML='<div class="ins-empty-sm">No new enrollments this cycle</div>';
   } else {
-    $('insNew').innerHTML=newM.slice(0,6).map(function(m,i){
+    var newRowsHtml=newM.map(function(m,i){
       var paid=parseFloat(m.totalpaid||0)||0;
+      var planAmt=planPrice_(m.plan,(m.shift||'').toUpperCase());
+      var unpaid=paid===0||(planAmt>0&&paid<planAmt);
       var shiftKey=(m.shift||'').toUpperCase();
-      var shiftLbl=shiftKey==='FULL'?cfg('fulldaylabel','Full Day'):shiftKey?cfg('shift'+(shiftKey.slice(1))+'label',shiftKey):'—';
-      var dt=parseMD_(m.startdate);
+      var shiftLbl=shiftKey==='FULL'?cfg('fulldaylabel','Full Day'):shiftKey?cfg('shift'+(shiftKey.slice(1))+'label',shiftKey):'';
+      var sd=parseMD_(m.startdate),ed=parseMD_(m.expirydate);
+      var duration=sd&&ed?Math.round((ed-sd)/864e5)+' days':'';
+      var periodStr=(sd?fmtMD_(sd):'?')+' – '+(ed?fmtMD_(ed):'?');
       var av=avColors[i%avColors.length];
+      var st=(m.status||'').toLowerCase();
+      var badgeCls=st==='pending'?'pending':'active';
+      var meta=[m.seat?'Seat '+E(m.seat):'',E(shiftLbl),E(m.plan||'')].filter(Boolean).join(' · ');
+      var hasPhone=!!(m.phone||'').replace(/\D/g,'');
+      var remindBtn=unpaid&&hasPhone
+        ?'<button class="ins-remind-btn" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="Send fee reminder on WhatsApp">'+
+            '💬 Fee Reminder'+
+          '</button>'
+        :'';
       return '<div class="ins-new-row">'+
         '<div class="ins-av" style="background:'+av+'22;color:'+av+'">'+E(ini(m.name))+'</div>'+
-        '<div>'+
-          '<div class="ins-new-name">'+E(m.name||'Unknown')+'</div>'+
-          '<div class="ins-new-sub">'+(m.seat?'Seat '+E(m.seat)+' · ':'')+E(shiftLbl||'—')+'</div>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">'+
+            '<span class="ins-new-name">'+E(m.name||'Unknown')+'</span>'+
+            '<span class="ins-new-badge '+badgeCls+'">'+st+'</span>'+
+          '</div>'+
+          '<div class="ins-new-sub">'+meta+(hasLibPass(m)?(' '+libPassBadge()):'')+'</div>'+
+          '<div class="ins-new-period">📅 '+periodStr+(duration?' · '+duration:'')+'</div>'+
+          (hasPhone?'<div class="ins-new-phone">📞 '+E(m.phone)+'</div>':'')+
+          (remindBtn?'<div style="margin-top:6px">'+remindBtn+'</div>':'')+
         '</div>'+
         '<div class="ins-new-right">'+
-          '<div class="ins-new-amt">'+cur+Math.round(paid).toLocaleString('en-IN')+'</div>'+
-          '<div class="ins-new-date">'+(dt?fmtMD_(dt):'')+'</div>'+
+          '<div class="ins-new-amt" style="color:'+(paid===0?'var(--err-dk)':unpaid?'var(--warn-dk)':'var(--ok-dk)')+'">'+cur+Math.round(paid).toLocaleString('en-IN')+'</div>'+
+          '<div class="ins-new-amt-lbl">'+(paid===0?'unpaid':unpaid?'partial':'paid')+'</div>'+
         '</div>'+
       '</div>';
-    }).join('')+(newM.length>6?'<div class="ins-empty-sm" style="padding:8px 0">+' +(newM.length-6)+' more</div>':'');
+    }).join('');
+    $('insNew').innerHTML='<div class="ins-new-scroll">'+newRowsHtml+'</div>';
   }
 
-  // ── Shift breakdown ──
-  var shiftN=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
-  var shiftKeys=[];
-  for(var i=1;i<=shiftN;i++)shiftKeys.push('S'+i);
-  if(isYes('enablefullday'))shiftKeys.push('FULL');
-  var shiftColors=['#d97706','#3b82f6','#7c3aed','#ec4899','#16a34a'];
-  var shiftCounts={};
-  newM.forEach(function(m){var k=(m.shift||'').toUpperCase();shiftCounts[k]=(shiftCounts[k]||0)+1;});
-  var maxSC=Math.max(1,shiftKeys.reduce(function(mx,k){return Math.max(mx,shiftCounts[k]||0);},0));
-  $('insShift').innerHTML=shiftKeys.map(function(k,idx){
-    var lbl=k==='FULL'?cfg('fulldaylabel','Full Day'):cfg('shift'+(k.slice(1))+'label','Shift '+k.slice(1));
-    var c=shiftCounts[k]||0;
-    return '<div class="ins-shift-row">'+
-      '<div class="ins-shift-lbl">'+E(lbl)+'</div>'+
-      '<div class="ins-shift-bar-bg"><div class="ins-shift-bar-fill" style="width:'+Math.round(c/maxSC*100)+'%;background:'+shiftColors[idx%shiftColors.length]+'"></div></div>'+
-      '<div class="ins-shift-n">'+c+'</div>'+
-    '</div>';
-  }).join('')||'<div class="ins-empty-sm">Shifts not configured</div>';
 
   // ── Expiry list ──
   if(!expM.length){
     $('insExp').innerHTML='<div class="ins-empty-sm">No expirations this cycle 🎉</div>';
   } else {
     var today=new Date();
-    $('insExp').innerHTML=expM.slice(0,8).map(function(m){
+    var expRowsHtml=expM.map(function(m){
       var dt=parseMD_(m.expirydate);
       var days=dt?Math.floor((dt-today)/864e5):null;
       var cls,lbl;
@@ -2902,7 +3094,8 @@ function renderInsights(){
         '</div>'+
         '<div class="exp-pill '+cls+'">'+lbl+'</div>'+
       '</div>';
-    }).join('')+(expM.length>8?'<div class="ins-empty-sm" style="padding:8px 0">+' +(expM.length-8)+' more</div>':'');
+    }).join('');
+    $('insExp').innerHTML='<div class="ins-new-scroll">'+expRowsHtml+'</div>';
   }
 }
 function statCard(label,icon,val,kind,sub){
@@ -3118,6 +3311,19 @@ function renderSettings(){
     tog('RequireAadhar','Require Aadhar','Off = optional. Validation still applies if filled.','no')+
     tog('RequirePreparation','Require preparation type','','yes')+
     tog('RequireExamDetails','Require exam details','','yes');
+
+  var libPassMode=cfg('librarypassmode','no');
+  $('setLibraryPass').innerHTML=
+    '<div class="setting"><div class="desc"><div class="lab">Visibility on enrollment page</div><div class="hint">Hidden = not shown · Locked = shown but grayed out · Active = selectable by student</div></div>'+
+      '<select onchange="saveCfg(\'LibraryPassMode\',this.value,true)" style="margin-left:10px">'+
+        ['no','locked','yes'].map(function(v){return '<option value="'+v+'"'+(libPassMode===v?' selected':'')+'>'+{no:'Hidden',locked:'Locked (show grayed)',yes:'Active (student can select)'}[v]+'</option>';}).join('')+
+      '</select></div>'+
+    '<div class="setting"><div class="desc"><div class="lab">Label</div><div class="hint">Title shown on the enrollment card (e.g. "Library Pass")</div></div>'+
+      '<input type="text" value="'+E(cfg('librarypasslabel','Library Pass'))+'" placeholder="Library Pass" onchange="saveCfg(\'LibraryPassLabel\',this.value)" style="margin-left:10px"></div>'+
+    '<div class="setting"><div class="desc"><div class="lab">Amount (₹)</div><div class="hint">Add-on fee shown to the student</div></div>'+
+      '<input type="number" value="'+E(cfg('librarypassprice','500'))+'" placeholder="500" onchange="saveCfg(\'LibraryPassPrice\',this.value)" style="margin-left:10px;width:90px;text-align:center"></div>'+
+    '<div class="setting"><div class="desc"><div class="lab">Description</div><div class="hint">Short text shown below the title (optional)</div></div>'+
+      '<input type="text" value="'+E(cfg('librarypassdesc',''))+'" placeholder="e.g. Includes reading room access" onchange="saveCfg(\'LibraryPassDesc\',this.value)" style="margin-left:10px"></div>';
 
   $('setReminders').innerHTML=
     tog('ReminderEnabled','Send expiry reminders','Daily cron — needs the trigger set up once.','yes')+
@@ -3447,7 +3653,9 @@ function openMemberSheet(memberId){
   }
 
   // ─── Notes ───
-  var notesText=(m.notes||'').replace(/AadharPhoto:\s*https?:\/\/\S+/g,'').trim();
+  var notesText=(m.notes||'').replace(/AadharPhoto:\s*https?:\/\/\S+/g,'').replace(/\[Library Pass opted\]/g,'').trim();
+  var libPassAmt=parseFloat(String(cfg('librarypassprice','500')).replace(/[^\d.]/g,''))||0;
+  var libPassSec=hasLibPass(m)?'<div class="msh-sec"><div class="msh-sec-h">Add-ons</div><div style="display:flex;align-items:center;gap:8px;padding:8px 0"><span style="font-size:18px">🎫</span><div><div style="font-size:13px;font-weight:700;color:var(--ink)">'+E(cfg('librarypasslabel','Library Pass'))+'</div><div style="font-size:11px;color:var(--ink-3);margin-top:1px">Opted at enrollment · '+cfg('currency','₹')+libPassAmt.toLocaleString('en-IN')+'</div></div></div></div>':'';
   var notesSec=notesText?'<div class="msh-sec"><div class="msh-sec-h">Notes</div><div class="m-notes">'+E(notesText)+'</div></div>':'';
 
   // ─── Manage section ───
@@ -3465,7 +3673,7 @@ function openMemberSheet(memberId){
 
   var enrolledAt=m.enrolledat?'<div class="m-enrolled-at">Enrolled '+E(fmtDate(m.enrolledat))+'</div>':'';
 
-  $('sheetBody').innerHTML=header+'<div class="msh-body">'+facts+statusActs+primaryActs+membershipSec+personalSec+aadharSec+notesSec+manageSec+enrolledAt+'</div>';
+  $('sheetBody').innerHTML=header+'<div class="msh-body">'+facts+statusActs+primaryActs+membershipSec+personalSec+aadharSec+libPassSec+notesSec+manageSec+enrolledAt+'</div>';
   openSheet();
 }
 
