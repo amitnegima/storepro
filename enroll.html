@@ -1240,6 +1240,17 @@ function shiftLeftCounter_(shiftKey,hold){
       var hasOtherOccupant=shifts.some(function(s){return s!==shiftKey&&s!=='FULL'});
       if(thisShiftFree&&hasOtherOccupant)count++;
     });
+    // Also count fully free half-shift seats (they bypass the 50% rule)
+    var hss=halfShiftSeats();
+    var pfx2=cfg('seatprefix','S');
+    var cap2=parseInt(cfg('seatcapacity','40'),10)||40;
+    for(var hi=1;hi<=cap2;hi++){
+      var hsId=(pfx2+hi).toUpperCase();
+      if(hss.indexOf(hsId)<0)continue;
+      if(blocked2[hsId]||blocked2[hsId+'-'+shiftKey])continue;
+      if(bySeat[hsId])continue; // already counted above or occupied
+      count++;
+    }
     return count;
   }
 
@@ -1373,6 +1384,12 @@ function pickShift(k){
 }
 
 // ─── Seat map ───
+function halfShiftSeats(){
+  return (cfg('halfshiftseats','')||'').split(',').map(function(s){return s.trim().toUpperCase()}).filter(Boolean);
+}
+function isHalfShiftSeat(seatId){
+  return halfShiftSeats().indexOf((seatId||'').toUpperCase())>=0;
+}
 function isHighOccupancy(){
   var cap=parseInt(cfg('seatcapacity','40'),10)||40;
   var reserved=Object.keys(blockedSeats()).length;
@@ -1423,8 +1440,9 @@ function seatStatus(seatId){
   var shiftBlockKey=seatId.toUpperCase()+'-'+selectedShift;
   if(blockedSeats()[shiftBlockKey])return 'taken';      // seat-level shift block
 
-  if(highOcc&&isSeatFree){
+  if(highOcc&&isSeatFree&&!isHalfShiftSeat(seatId)){
     // Fully free seat at >50% occupancy: must be booked as Full Day only
+    // (seats in HalfShiftSeats config bypass this rule)
     return 'restricted';
   }
   var same=occupants(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()===selectedShift});
