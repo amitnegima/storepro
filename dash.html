@@ -1274,6 +1274,7 @@
   .splash .msg{color:var(--ink-3);font-size:12.5px;font-weight:500;letter-spacing:.01em;text-align:center;max-width:220px;line-height:1.5}
   .spin{width:32px;height:32px;border:2.5px solid var(--line-dk);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes cmpPopIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 
   .skeleton{position:relative;overflow:hidden;background:var(--line);border-radius:8px}
   .skeleton::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shimmer 1.5s infinite}
@@ -1505,10 +1506,10 @@
     <div class="pin-entry">
       <div class="pin-entry-label">🔒 Enter PIN to unlock</div>
       <div class="pinDigits">
-        <input type="tel" maxlength="1" id="p1" inputmode="numeric" oninput="pinNext(this,2)">
-        <input type="tel" maxlength="1" id="p2" inputmode="numeric" oninput="pinNext(this,3)">
-        <input type="tel" maxlength="1" id="p3" inputmode="numeric" oninput="pinNext(this,4)">
-        <input type="tel" maxlength="1" id="p4" inputmode="numeric" oninput="pinNext(this,5)">
+        <input type="password" maxlength="1" id="p1" inputmode="numeric" oninput="pinNext(this,2)">
+        <input type="password" maxlength="1" id="p2" inputmode="numeric" oninput="pinNext(this,3)">
+        <input type="password" maxlength="1" id="p3" inputmode="numeric" oninput="pinNext(this,4)">
+        <input type="password" maxlength="1" id="p4" inputmode="numeric" oninput="pinNext(this,5)">
       </div>
       <div class="pinErr" id="pinErr"></div>
       <div class="pinSpinner" id="pinSpin"></div>
@@ -1840,6 +1841,30 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ─── New complaints popup ─── -->
+<div id="cmpPopup" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(15,23,42,.55);align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)">
+  <div style="background:#fff;border-radius:22px;width:100%;max-width:380px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.1);animation:cmpPopIn .35s cubic-bezier(.34,1.56,.64,1)">
+    <div style="background:linear-gradient(135deg,#dc2626 0%,#ef4444 100%);padding:28px 24px 22px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;right:-18px;top:-18px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)"></div>
+      <div style="position:absolute;left:-12px;bottom:-12px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
+      <div style="position:relative">
+        <div style="width:64px;height:64px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;backdrop-filter:blur(4px)">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div id="cmpPopupCount" style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-.03em">1</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:4px;font-weight:500">New Complaint<span id="cmpPopupPlural"></span> Received</div>
+      </div>
+    </div>
+    <div style="padding:18px 20px 6px">
+      <div id="cmpPopupList" style="display:flex;flex-direction:column;gap:8px;max-height:180px;overflow-y:auto"></div>
+    </div>
+    <div style="padding:16px 20px 20px;display:flex;gap:10px">
+      <button onclick="closeCmpPopup()" style="flex:1;padding:11px;border:1.5px solid #e5e7eb;border-radius:11px;background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;transition:.15s">Later</button>
+      <button onclick="viewCmpPopup()" style="flex:2;padding:11px;border:none;border-radius:11px;background:#dc2626;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.15s">View Complaints →</button>
+    </div>
+  </div>
+</div>
 
 <!-- ─── Welcome message modal (shown after approving an online enrollment) ─── -->
 <div id="welcomeModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center">
@@ -2274,6 +2299,7 @@ function render(){
   if(window.innerWidth>=1120){$('dsLeft').style.display='block';$('dsRight').style.display='block';renderDesktopSidebars()}
   lastPendingCount=pendingMembers().length;
   startPolling();
+  setTimeout(function(){loadComplaints_();},1800);
 
   $('hdr').style.display='block';$('main').style.display='block';
   if(window.innerWidth<1120)$('tabs').style.display='flex';else $('tabs').style.display='none';
@@ -3484,6 +3510,45 @@ function updateCmpStats_(){
   $('cmpStResolved').textContent=_cmps.filter(function(c){return (c.status||'').toLowerCase()==='resolved';}).length||'0';
   var openN=_cmps.filter(function(c){return (c.status||'').toLowerCase()==='open';}).length;
   var dot=$('tabComplaintsDot');if(dot)dot.classList.toggle('show',openN>0);
+  maybeShowCmpPopup_();
+}
+
+var _cmpPopupShownKey='cmpPopupSeen';
+function maybeShowCmpPopup_(){
+  var open=_cmps.filter(function(c){return (c.status||'').toLowerCase()==='open';});
+  if(!open.length)return;
+  var ids=open.map(function(c){return c.complaintid||c.subject||''}).join('|');
+  try{if(sessionStorage.getItem(_cmpPopupShownKey)===ids)return;}catch(e){}
+  var count=$('cmpPopupCount'),plural=$('cmpPopupPlural'),list=$('cmpPopupList');
+  if(!count||!list)return;
+  count.textContent=open.length;
+  plural.textContent=open.length>1?'s':'';
+  var priorityClr={'high':'#dc2626','medium':'#d97706','low':'#16a34a'};
+  list.innerHTML=open.slice(0,4).map(function(c){
+    var pri=(c.priority||'low').toLowerCase();
+    var clr=priorityClr[pri]||'#64748b';
+    var cat=c.category||'General';
+    var ic=_cmpCatIc[cat]||'💬';
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fafafa;border-radius:10px;border:1px solid #f1f5f9">'+
+      '<span style="font-size:18px;line-height:1;flex-shrink:0;margin-top:1px">'+ic+'</span>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(c.subject||'No subject')+'</div>'+
+        '<div style="font-size:11px;color:#94a3b8;margin-top:2px">'+cat+(c.name?' · '+c.name:'')+'</div>'+
+      '</div>'+
+      '<span style="flex-shrink:0;font-size:10px;font-weight:700;color:'+clr+';background:'+clr+'18;border-radius:5px;padding:2px 7px;align-self:center;text-transform:uppercase">'+(c.priority||'Low')+'</span>'+
+    '</div>';
+  }).join('');
+  var el=$('cmpPopup');
+  el.style.display='flex';
+  try{sessionStorage.setItem(_cmpPopupShownKey,ids);}catch(e){}
+}
+function closeCmpPopup(){
+  var el=$('cmpPopup');if(el)el.style.display='none';
+}
+function viewCmpPopup(){
+  closeCmpPopup();
+  goTab('Complaints');
+  loadComplaints_();
 }
 
 function setCmpFilter_(btn,f){
