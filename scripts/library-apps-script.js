@@ -15,13 +15,13 @@
 // this via the `version` action and warns the shopkeeper if it's older than
 // expected (so they know to redeploy after pulling new code).
 // ═══════════════════════════════════════════════════════════════════
-var SCRIPT_VERSION = 5;  // 5: EnrollmentMode column (Online / Walk-in)
+var SCRIPT_VERSION = 6;  // 6: Discount column added to Members
 
 var MEMBERS_HEADERS = [
   'MemberID', 'EnrolledAt', 'Name', 'FatherName', 'Phone', 'DOB',
   'Email', 'Aadhar', 'Preparation', 'ExamDetails', 'PhotoURL',
   'Plan', 'StartDate', 'ExpiryDate', 'Seat', 'Shift',
-  'TotalPaid', 'Status', 'LastReminderSent', 'Notes',
+  'TotalPaid', 'Discount', 'Status', 'LastReminderSent', 'Notes',
   'AadharPhotoURL', 'EnrollmentMode'
 ];
 
@@ -156,7 +156,11 @@ function saveMember_(p) {
 
   var isAuthenticated = !!(p.token && verifyDashboardToken_(p.token));
   var enrolledAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-  var row = MEMBERS_HEADERS.map(function(h){
+  // Use actual sheet headers so existing sheets without a Discount column
+  // don't get values shifted into wrong columns.
+  var info = membersIndex_(sh);
+  var actualHeaders = info.headers.length ? info.headers : MEMBERS_HEADERS;
+  var row = actualHeaders.map(function(h){
     switch (h) {
       case 'MemberID':         return memberId;
       case 'EnrolledAt':       return enrolledAt;
@@ -176,6 +180,7 @@ function saveMember_(p) {
       case 'Seat':             return p.seat || '';
       case 'Shift':            return p.shift || '';
       case 'TotalPaid':        return p.total || '';
+      case 'Discount':         return p.discount || '';
       case 'Status':           return decideInitialStatus_(p.status || '', isAuthenticated);
       case 'LastReminderSent': return '';
       case 'Notes':            return p.notes || '';
@@ -188,8 +193,8 @@ function saveMember_(p) {
   rememberMemberId_(memberId);
 
   // Optional shopkeeper alerts — best-effort, never block enrollment.
-  try { sendNewMemberAlert_(row); } catch (e) {}
-  try { sendEnrollmentAlertEmail_(row); } catch (e) {}
+  try { sendNewMemberAlert_(row, actualHeaders); } catch (e) {}
+  try { sendEnrollmentAlertEmail_(row, actualHeaders); } catch (e) {}
 
   return memberId;
 }
@@ -308,6 +313,15 @@ function updateMember_(p) {
     if (p.shift)             set('Shift',      p.shift);
     if (p.seat != null)      set('Seat',       p.seat);
     if (p.totalPaid != null) set('TotalPaid',  p.totalPaid);
+    if (p.discount != null) {
+      if (info.idx['Discount'] == null) {
+        var dc = sh.getLastColumn() + 1;
+        sh.getRange(1, dc).setValue('Discount').setFontWeight('bold').setBackground('#0f766e').setFontColor('#ffffff');
+        sh.getRange(2, dc, sh.getMaxRows() - 1, 1).setNumberFormat('@');
+        info.idx['Discount'] = dc - 1;
+      }
+      set('Discount', p.discount);
+    }
     if (p.photoURL != null)  set('PhotoURL',   p.photoURL);
     if (p.notes != null)     set('Notes',      p.notes);
     if (p.startDate)         set('StartDate',  p.startDate);
@@ -1030,12 +1044,12 @@ function setupPin() {
 
 // ─── Shopkeeper email alert on new enrollment ──────────────────
 
-function sendEnrollmentAlertEmail_(row) {
+function sendEnrollmentAlertEmail_(row, headers) {
   var to = getCfg_('ShopkeeperEmail', '');
   if (!to || to.indexOf('@') < 1) return;
 
   var hi = {};
-  MEMBERS_HEADERS.forEach(function(h, i){ hi[h] = i; });
+  (headers || MEMBERS_HEADERS).forEach(function(h, i){ hi[h] = i; });
 
   var name     = String(row[hi['Name']]       || '—');
   var phone    = String(row[hi['Phone']]      || '—');
@@ -1117,12 +1131,12 @@ function sendEnrollmentAlertEmail_(row) {
 
 // ─── Optional new-member alert (Telegram if configured) ────────
 
-function sendNewMemberAlert_(row) {
+function sendNewMemberAlert_(row, headers) {
   var token = PropertiesService.getScriptProperties().getProperty('TELEGRAM_TOKEN') || '';
   var chatIds = (PropertiesService.getScriptProperties().getProperty('TELEGRAM_CHAT_IDS') || '').split(',').filter(Boolean);
   if (!token || !chatIds.length) return;
   var headerIdx = {};
-  MEMBERS_HEADERS.forEach(function(h, i){ headerIdx[h] = i; });
+  (headers || MEMBERS_HEADERS).forEach(function(h, i){ headerIdx[h] = i; });
   var status = String(row[headerIdx['Status']] || 'Active');
   var prefix = status === 'Pending' ? '🟠 Awaiting approval — ' : '📚 New enrollment — ';
   var lines = [
@@ -1190,6 +1204,57 @@ function saveComplaint_(p) {
     var bg = { 'High': '#fef2f2', 'Medium': '#fffbeb', 'Low': '#f0fdf4' }[priority] || '#f0fdf4';
     sheet.getRange(row, 1, 1, 12).setBackground(bg).setNumberFormat('@');
   } catch (_) {}
+  try { sendComplaintAlertEmail_(p, complaintId); } catch (_) {}
+}
+
+function sendComplaintAlertEmail_(p, complaintId) {
+  var to = getCfg_('ShopkeeperEmail', '');
+  if (!to || to.indexOf('@') < 1) return;
+  var shop = getCfg_('ShopName', 'Library');
+  var priority = p.priority || 'Low';
+  var category = p.category || 'General';
+  var dashUrl  = getCfg_('DashboardURL', '');
+  var priorityColor = { 'High': '#dc2626', 'Medium': '#d97706', 'Low': '#16a34a' }[priority] || '#64748b';
+  var priorityBg    = { 'High': '#fef2f2', 'Medium': '#fffbeb', 'Low': '#f0fdf4' }[priority] || '#f8fafc';
+  var subject = '⚠️ [' + priority + ' Priority] New Complaint — ' + (p.subject || 'No subject') + ' · ' + shop;
+  var rows = [
+    ['Complaint ID', complaintId],
+    ['Category',     category],
+    ['Priority',     priority],
+    ['Subject',      p.subject || '—'],
+    ['Description',  p.description || '—'],
+    ['Name',         p.name || 'Anonymous'],
+    ['Phone',        p.phone || '—'],
+    ['Seat',         p.seat || '—'],
+    ['Submitted',    p.date || new Date().toLocaleString('en-IN')]
+  ];
+  var tableRows = rows.map(function(r){
+    return '<tr><td style="padding:7px 0;font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;width:120px;vertical-align:top">'+r[0]+'</td>'+
+           '<td style="padding:7px 0;font-size:13.5px;color:#0f172a;font-weight:500;vertical-align:top">'+String(r[1])+'</td></tr>';
+  }).join('');
+  var html =
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<style>body{margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif}</style></head>'+
+    '<body><div style="max-width:520px;margin:28px auto;padding:0 16px">'+
+      '<div style="background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)">'+
+        '<div style="background:linear-gradient(135deg,#1e293b 0%,#334155 100%);padding:26px 28px 22px">'+
+          '<div style="display:inline-flex;align-items:center;gap:8px;background:'+priorityBg+';border-radius:8px;padding:4px 12px;margin-bottom:12px">'+
+            '<span style="width:8px;height:8px;border-radius:50%;background:'+priorityColor+';display:inline-block"></span>'+
+            '<span style="font-size:11px;font-weight:700;color:'+priorityColor+';text-transform:uppercase;letter-spacing:.06em">'+priority+' Priority</span>'+
+          '</div>'+
+          '<div style="font-size:21px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:4px">New Complaint Received</div>'+
+          '<div style="font-size:13px;color:rgba(255,255,255,.65)">'+shop+'</div>'+
+        '</div>'+
+        '<div style="padding:24px 28px">'+
+          '<div style="background:#f8fafc;border-radius:12px;padding:4px 18px;margin-bottom:20px">'+
+            '<table width="100%" cellpadding="0" cellspacing="0">'+tableRows+'</table>'+
+          '</div>'+
+          (dashUrl?'<div style="text-align:center"><a href="'+dashUrl+'" style="display:inline-block;padding:12px 32px;background:#0f766e;color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px">Open Dashboard →</a></div>':'')+'</div>'+
+        '<div style="padding:12px 28px;background:#f8fafc;border-top:1px solid #f1f5f9;text-align:center">'+
+          '<p style="margin:0;font-size:11px;color:#94a3b8">StorePro · '+shop+'</p></div>'+
+      '</div></div></body></html>';
+  var plain = 'New complaint at '+shop+'\n\nID: '+complaintId+'\nCategory: '+category+'\nPriority: '+priority+'\nSubject: '+(p.subject||'—')+'\nDescription: '+(p.description||'—')+'\nName: '+(p.name||'Anonymous')+'\nPhone: '+(p.phone||'—')+'\nSeat: '+(p.seat||'—')+(dashUrl?'\n\nDashboard: '+dashUrl:'');
+  MailApp.sendEmail({ to: to, subject: subject, body: plain, htmlBody: html, name: shop });
 }
 
 function updateComplaintStatus_(complaintId, newStatus) {
