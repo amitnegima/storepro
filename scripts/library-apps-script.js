@@ -65,6 +65,9 @@ function doGet(e) {
   if (a === 'sendRenewalEmail')     return jsonOut_(sendRenewalEmail_(p.memberId || '', p.customMsg || ''));
   if (a === 'lockPlan')             return ok(lockPlan_(p.planName || '', p.locked || ''));
   if (a === 'changePin')            return jsonOut_(changePin_(p.oldPin || '', p.newPin || ''));
+  if (a === 'snapshotCycle')        return jsonOut_(snapshotCycle_());
+  if (a === 'backfillRevenue')      return jsonOut_(backfillRevenue_());
+  if (a === 'getRevenueSummary')    return jsonOut_(getRevenueSummary_());
 
   return ok('Library v2 API active.');
 }
@@ -1157,6 +1160,126 @@ function sendNewMemberAlert_(row, headers) {
   });
 }
 
+
+// ═══════════════════════════════════
+// REVENUE HISTORY
+// ═══════════════════════════════════
+
+function getOrCreateRevenueHistorySheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName('Revenue_History');
+  if (!sh) {
+    sh = ss.insertSheet('Revenue_History');
+    var h = ['CycleLabel','CycleStart','CycleEnd','Revenue','Discount','TotalSettled','MemberCount','SavedAt'];
+    sh.getRange(1,1,1,h.length).setValues([h]).setFontWeight('bold').setBackground('#0f766e').setFontColor('#ffffff');
+    sh.setFrozenRows(1);
+    sh.setColumnWidth(1,150);sh.setColumnWidth(2,110);sh.setColumnWidth(3,110);
+  }
+  return sh;
+}
+
+function cycleForDate_(d) {
+  var day=d.getDate(),m=d.getMonth(),y=d.getFullYear();
+  var s,e;
+  if(day>=26){s=new Date(y,m,26);e=new Date(y,m+1,25);}
+  else{s=new Date(y,m-1,26);e=new Date(y,m,25);}
+  e.setHours(23,59,59,999);
+  return{start:s,end:e};
+}
+
+function cycleLabel_(s,e){
+  var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return mo[s.getMonth()]+' 26–'+mo[e.getMonth()]+' 25';
+}
+
+function fmtDate_(d){return Utilities.formatDate(d,'Asia/Kolkata','yyyy-MM-dd');}
+
+function snapshotCycle_() {
+  // Snapshot the most-recently COMPLETED cycle (end date strictly in the past)
+  var today=new Date();
+  var day=today.getDate(),m=today.getMonth(),y=today.getFullYear();
+  var prevStart,prevEnd;
+  if(day>=26){prevStart=new Date(y,m-1,26);prevEnd=new Date(y,m,25);}
+  else{prevStart=new Date(y,m-2,26);prevEnd=new Date(y,m-1,25);}
+  prevEnd.setHours(23,59,59,999);
+  if(prevEnd>=today)return{skipped:true,reason:'cycle not yet ended'};
+
+  var label=cycleLabel_(prevStart,prevEnd);
+  var sh=getOrCreateRevenueHistorySheet_();
+  var vals=sh.getDataRange().getValues();
+  for(var i=1;i<vals.length;i++){if(String(vals[i][0]).trim()===label)return{skipped:true,label:label};}
+
+  var msh=getMembersSheet_();
+  var info=membersIndex_(msh);
+  var revenue=0,discount=0,count=0;
+  info.rows.forEach(function(row){
+    var status=String(row[info.idx['Status']]||'').toLowerCase();
+    if(status==='rejected')return;
+    var sd=parseDate_(String(row[info.idx['StartDate']]||''));
+    if(!sd||sd<prevStart||sd>prevEnd)return;
+    revenue+=parseFloat(String(row[info.idx['TotalPaid']]||'').replace(/[^\d.]/g,''))||0;
+    discount+=parseFloat(String(row[info.idx['Discount']]||'').replace(/[^\d.]/g,''))||0;
+    count++;
+  });
+  var now=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});
+  sh.appendRow([label,fmtDate_(prevStart),fmtDate_(prevEnd),revenue,discount,revenue+discount,count,now]);
+  return{saved:true,label:label,revenue:revenue,discount:discount,totalSettled:revenue+discount,memberCount:count};
+}
+
+function backfillRevenue_() {
+  var allRows=[];
+  var msh=getMembersSheet_();
+  var mInfo=membersIndex_(msh);
+  mInfo.rows.forEach(function(r){allRows.push({row:r,idx:mInfo.idx});});
+  try{
+    var ss=SpreadsheetApp.getActiveSpreadsheet();
+    var ash=ss.getSheetByName('Members_Archive');
+    if(ash){var aInfo=membersIndex_(ash);aInfo.rows.forEach(function(r){allRows.push({row:r,idx:aInfo.idx});});}
+  }catch(e){}
+
+  var cycleMap={};
+  var today=new Date();
+  allRows.forEach(function(entry){
+    var row=entry.row,idx=entry.idx;
+    var status=String(row[idx['Status']]||'').toLowerCase();
+    if(status==='rejected')return;
+    var sd=parseDate_(String(row[idx['StartDate']]||''));
+    if(!sd)return;
+    var c=cycleForDate_(sd);
+    if(c.end>=today)return; // skip in-progress cycle
+    var label=cycleLabel_(c.start,c.end);
+    if(!cycleMap[label])cycleMap[label]={start:c.start,end:c.end,revenue:0,discount:0,count:0};
+    cycleMap[label].revenue+=parseFloat(String(row[idx['TotalPaid']]||'').replace(/[^\d.]/g,''))||0;
+    cycleMap[label].discount+=parseFloat(String(row[idx['Discount']]||'').replace(/[^\d.]/g,''))||0;
+    cycleMap[label].count++;
+  });
+
+  var sh=getOrCreateRevenueHistorySheet_();
+  var existing={};
+  var vals=sh.getDataRange().getValues();
+  for(var i=1;i<vals.length;i++)existing[String(vals[i][0]).trim()]=true;
+
+  var labels=Object.keys(cycleMap).sort(function(a,b){return cycleMap[a].start-cycleMap[b].start;});
+  var inserted=0,skipped=0;
+  var now=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});
+  labels.forEach(function(label){
+    if(existing[label]){skipped++;return;}
+    var c=cycleMap[label];
+    sh.appendRow([label,fmtDate_(c.start),fmtDate_(c.end),c.revenue,c.discount,c.revenue+c.discount,c.count,now]);
+    inserted++;
+  });
+  return{inserted:inserted,skipped:skipped};
+}
+
+function getRevenueSummary_() {
+  var sh=getOrCreateRevenueHistorySheet_();
+  var vals=sh.getDataRange().getValues();
+  if(vals.length<2)return[];
+  var headers=vals[0];
+  return vals.slice(1).map(function(row){
+    var obj={};headers.forEach(function(h,i){obj[String(h).toLowerCase().replace(/\s+/g,'')]=row[i];});return obj;
+  });
+}
 
 // ═══════════════════════════════════
 // COMPLAINTS
