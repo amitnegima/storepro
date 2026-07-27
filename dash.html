@@ -223,7 +223,7 @@
 
   /* ─── Header ─── */
   .hdr{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(0,0,0,.05)}
-  .hdr-stats{display:flex;align-items:center;gap:6px;margin-left:auto;margin-right:8px;flex-shrink:0;flex-wrap:nowrap;overflow:hidden}
+  .hdr-stats{display:flex;align-items:center;gap:6px;margin-right:8px;flex-shrink:0;flex-wrap:nowrap;overflow:hidden}
   @media(max-width:860px){.hdr-stats{display:none}}
   .hdr-stat-pill{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line-dk);background:#fff;white-space:nowrap;cursor:default;flex-shrink:0;transition:.15s}
   .hdr-stat-pill .sp-ic{font-size:15px;flex-shrink:0;line-height:1}
@@ -523,7 +523,8 @@
   .sb-half:last-child{border-right:none}
   /* occupant block */
   .sb-occ{flex:1;padding:8px 6px 8px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
-  .sb-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;background:#fff;border:2px solid var(--rc,#059669);box-shadow:0 0 0 3px var(--rb,#ECFDF5);margin-bottom:4px;flex-shrink:0;background-size:cover;background-position:center}
+  .sb-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;background:#fff;border:2px solid var(--rc,#059669);box-shadow:0 0 0 3px var(--rb,#ECFDF5);margin-bottom:4px;flex-shrink:0;overflow:hidden}
+  .sb-av-lg{width:52px;height:52px;font-size:15px;}
   .sb-name{font-weight:700;font-size:10.5px;color:#0F172A;letter-spacing:-.01em;line-height:1.25;word-break:break-word}
   .sb-plan{font-size:9px;color:#64748B;font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
   .sb-prog{width:100%;margin-top:5px}
@@ -626,7 +627,7 @@
   .mb.expired::before{background:var(--err)}
   .mb.expired{opacity:.72}
   .mb:active{transform:scale(.99);box-shadow:0 1px 3px rgba(0,0,0,.06)}
-  .mb .avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;background-size:cover;background-position:center;position:relative;letter-spacing:-.02em}
+  .mb .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;background-size:cover;background-position:center;position:relative;letter-spacing:-.02em}
   .mb .avatar .status-dot{position:absolute;bottom:-3px;right:-3px;width:12px;height:12px;border-radius:50%;border:2.5px solid #fff;background:var(--ok)}
   .mb .avatar.pending .status-dot{background:var(--hold)}
   .mb .avatar.expired .status-dot{background:var(--err)}
@@ -831,7 +832,7 @@
   [data-theme="dark"] .ins-new-grid{scrollbar-color:#4b5563 #1f2937}
   .ins-new-card{background:#fff;border-radius:var(--r);padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:box-shadow .15s,border-color .15s,background .1s;border:1px solid var(--line-dk);box-shadow:var(--shadow-sm)}
   .ins-new-card:hover{box-shadow:var(--shadow);border-color:#cbd5e1;background:#fafbfc}
-  .ins-new-card-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+  .ins-new-card-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;overflow:hidden}
   [data-theme="dark"] .ins-new-card{background:#1f2937;border-color:#374151}
   [data-theme="dark"] .ins-new-card:hover{background:#374151}
   .ins-fee-total-amt{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1}
@@ -1416,14 +1417,16 @@
     .ds-left{left:72px;padding-top:148px;padding-left:14px;border-left:none}
     .ds-right{right:0;border-right:none;border-left:1px solid var(--line);padding-top:148px}
     #main{margin-left:332px;margin-right:260px;max-width:none!important}
-    .hdr-row,.occ{max-width:none!important;margin-left:332px!important;margin-right:260px!important}
+    .occ{max-width:none!important;margin-left:332px!important;margin-right:260px!important}
+    .hdr-row{max-width:none!important;margin-left:332px!important;margin-right:0!important}
     .tabs{left:8px;bottom:16px}
   }
   @media(min-width:1400px){
     .ds-left,.ds-right{width:280px}
     .ds-left{left:72px}
     #main{margin-left:352px;margin-right:280px}
-    .hdr-row,.occ{margin-left:352px!important;margin-right:280px!important}
+    .occ{margin-left:352px!important;margin-right:280px!important}
+    .hdr-row{margin-left:352px!important;margin-right:0!important}
   }
 
   .ds-card{background:#fff;border:1px solid var(--line-dk);border-radius:var(--r-lg);padding:18px 16px 16px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
@@ -1614,6 +1617,7 @@
 
 <!-- ─── Desktop sidebars ─── -->
 <aside class="ds-left" id="dsLeft" style="display:none">
+  <div class="ds-card" id="dsExpiredCard"></div>
   <div class="ds-card" id="dsFeeDueCard"></div>
   <div class="ds-card" id="dsPendingCard"></div>
   <div class="ds-card" id="dsAlertCard"></div>
@@ -1670,10 +1674,13 @@
       <div class="pending-list" id="pendingList"></div>
     </div>
 
-    <div class="search">
-      <input type="text" id="actSearch" placeholder="Search name, phone, seat, exam…" oninput="onSearchInput()">
-      <button class="clear-q" id="clearQ" onclick="clearSearch()" aria-label="Clear">✕</button>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+      <div class="search" style="flex:1;margin-bottom:0">
+        <input type="text" id="actSearch" placeholder="Search name, phone, seat, exam…" oninput="onSearchInput()">
+        <button class="clear-q" id="clearQ" onclick="clearSearch()" aria-label="Clear">✕</button>
+      </div>
       <button class="view-toggle" id="viewToggle" onclick="toggleActiveView()" title="Switch view"></button>
+      <button class="view-toggle" onclick="exportMembersCSV_()" title="Export to CSV" style="font-size:14px">⬇</button>
     </div>
     <div class="filter-chips" id="filterChips"></div>
     <div class="shift-legend" id="shiftLegend"></div>
@@ -1842,6 +1849,19 @@
 <div class="toast" id="toast"></div>
 
 <!-- ─── New complaints popup ─── -->
+<!-- ─── Fee Receipt modal ─── -->
+<div id="receiptModal" style="display:none;position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,.6);align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)">
+  <div style="background:#fff;border-radius:18px;width:100%;max-width:360px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <div id="receiptContent"></div>
+    <div style="display:flex;gap:8px;padding:12px 16px;border-top:1px solid #f1f5f9">
+      <button onclick="closeReceipt_()" style="flex:1;padding:10px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#64748b">Close</button>
+      <button onclick="printReceipt_()" style="flex:1;padding:10px;border:none;border-radius:10px;background:#f1f5f9;font-size:13px;font-weight:600;cursor:pointer;color:#334155">🖨 Print</button>
+      <button id="receiptWaBtn" style="flex:1;padding:10px;border:none;border-radius:10px;background:#25d366;color:#fff;font-size:13px;font-weight:700;cursor:pointer">💬 WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+
 <div id="cmpPopup" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(15,23,42,.55);align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)">
   <div style="background:#fff;border-radius:22px;width:100%;max-width:380px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.1);animation:cmpPopIn .35s cubic-bezier(.34,1.56,.64,1)">
     <div style="background:linear-gradient(135deg,#dc2626 0%,#ef4444 100%);padding:28px 24px 22px;text-align:center;position:relative;overflow:hidden">
@@ -2478,6 +2498,8 @@ function isSeatFullyBooked(list){
 
 var seatCardCols=parseInt(localStorage.getItem('dash_seat_cols')||(window.innerWidth<600?'3':'6'),10)||(window.innerWidth<600?3:6);
 function setSeatCols(n){seatCardCols=n;localStorage.setItem('dash_seat_cols',n);renderSeatsModern();}
+var seatShowPhotos=localStorage.getItem('dash_seat_photos')==='1';
+function setSeatPhotos(val){seatShowPhotos=val;localStorage.setItem('dash_seat_photos',val?'1':'0');renderSeatsModern();}
 function _setSeatCols_modern_only(n){
   seatCardCols=n;localStorage.setItem('dash_seat_cols',n);
   renderSeatsModern();
@@ -2532,10 +2554,14 @@ function renderSeatsModern(){
   function occBlock(m){
     var ps=payStatus(m);
     var rc=ringColors(ps);
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+');background-color:#e2e8f0':'';
+    var showBigPhoto=seatShowPhotos&&!!m.photourl;
+    var avCls='sb-av'+(showBigPhoto?' sb-av-lg':'');
+    var avContent=showBigPhoto
+      ?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+      :(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)));
     return '<div class="sb-occ">'+
-      '<div class="sb-av" style="--rc:'+rc.rc+';--rb:'+rc.rb+';'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
-      '<div class="sb-name">'+E(ini(m.name)===E(ini(m.name))?m.name.toUpperCase().split(' ')[0]:m.name)+'</div>'+
+      '<div class="'+avCls+'" style="--rc:'+rc.rc+';--rb:'+rc.rb+'">'+avContent+'</div>'+
+      '<div class="sb-name">'+E(m.name.toUpperCase().split(' ')[0])+'</div>'+
       '<div class="sb-plan">'+(m.plan||'').split(/[\s\-–]/)[0]+'</div>'+
       progBar(m)+
       payChip(ps)+
@@ -2555,7 +2581,8 @@ function renderSeatsModern(){
   var colsBtns=[4,5,6,8].map(function(n){
     return '<button class="sb-col-btn'+(seatCardCols===n?' act':'')+'" onclick="setSeatCols('+n+')">'+n+'</button>';
   }).join('');
-  var toolbar='<div class="sb-toolbar"><span class="sb-col-lbl">Columns:</span>'+colsBtns+'</div>';
+  var photoToggle='<button class="sb-col-btn'+(seatShowPhotos?' act':'')+'" onclick="setSeatPhotos('+(seatShowPhotos?'false':'true')+')" title="Toggle student photos" style="margin-left:10px;gap:4px">📷 Photos</button>';
+  var toolbar='<div class="sb-toolbar" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="sb-col-lbl">Columns:</span>'+colsBtns+photoToggle+'</div>';
 
   var html='<div class="sb-wrap"><div class="sb-grid" style="grid-template-columns:repeat('+seatCardCols+',1fr)">';
 
@@ -2711,17 +2738,19 @@ function renderPending(){
   $('pendingSub').innerHTML='&nbsp;· '+pend.length+' to review';
   console.log('[dash] renderPending displaying',pend.length,'members');
   $('pendingList').innerHTML=pend.map(function(m){
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
     var shiftPill='';
     if(m.shift){
       var isFullShift=(m.shift||'').toUpperCase()==='FULL';
       var shiftTxt=isFullShift?('☀️ '+cfg('fulldaylabel','Full Day')):(shiftIcon_(parseInt((m.shift||'').slice(1),10)||1,cfg('shift'+(m.shift||'').slice(1)+'label',''))+' '+cfg('shift'+(m.shift||'').slice(1)+'label',m.shift));
       shiftPill='<span class="pr-shift-pill">'+E(shiftTxt)+'</span>';
     }
+    var ph=(m.phone||'').replace(/\D/g,'');
+    var dupMatch=ph?activeMembers().filter(function(a){return (a.phone||'').replace(/\D/g,'')==ph&&a.memberid!==m.memberid})[0]:null;
+    var dupBadge=dupMatch?'<span style="font-size:9.5px;font-weight:700;background:#fffbeb;color:#b45309;border:1px solid #fde68a;border-radius:5px;padding:1px 6px;margin-left:4px">⚠ exists · '+E(dupMatch.name)+'</span>':'';
     return '<div class="pending-row">'+
-      '<div class="av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+      '<div class="av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">':E(ini(m.name)))+'</div>'+
       '<div class="body" onclick="openMemberSheet(\''+E(m.memberid)+'\')" style="cursor:pointer">'+
-        '<div class="nm">'+E(m.name)+'</div>'+
+        '<div class="nm">'+E(m.name)+dupBadge+'</div>'+
         '<div class="meta">'+E(m.plan||'—')+shiftPill+'</div>'+
       '</div>'+
       '<div class="actions">'+
@@ -2840,8 +2869,8 @@ function renderActiveList(rows){
     var pillCls=isExpired?'err':isPending?'hold':d!=null&&d<=7?'warn':'ok';
     var pillIcon=isExpired?IC_WARN:isPending?'':d!=null&&d<=7?IC_CLOCK:IC_OK;
     var pillTxt=isExpired?Math.abs(d)+'d overdue':isPending?'Pending':d==null?'—':d+'d left';
-    var avStyle=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+');background-size:cover;background-position:center':'';
-    var avContent=m.photourl?'':E(ini(m.name));
+    var avStyle='';
+    var avContent=m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name));
     var shiftKey=(m.shift||'').toUpperCase();
     var shiftTag='';
     if(shiftKey==='FULL'){
@@ -2937,8 +2966,11 @@ function renderActive(){
     var planDetail=(planDur||planPrice)?('<span class="plan-detail">'+(planDur?'⏱ '+E(planDur):'')+(planDur&&planPrice?' · ':'' )+(planPrice?cur+planPrice:'')+'</span>'):'';
     var dateCls=isExpired?'err':d!=null&&d<=7?'warn':'';
     var avPalette=['#0d9488','#7c3aed','#b45309','#1d4ed8','#be185d','#0369a1','#15803d','#9333ea','#c2410c'];
-    var avClr=m.photourl?null:avPalette[(m.name||'').charCodeAt(0)%avPalette.length];
-    var avStyle=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+');background-size:cover;background-position:center':(avClr?'background:'+avClr+'18;color:'+avClr:'');
+    var avClr=avPalette[(m.name||'').charCodeAt(0)%avPalette.length];
+    var avStyle='background:'+avClr+'18;color:'+avClr;
+    var avInner=m.photourl
+      ?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+      :E(ini(m.name));
     var IC_SEAT='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="11" height="7" rx="1"/><path d="M5 6V4.5A1.5 1.5 0 016.5 3h3A1.5 1.5 0 0111 4.5V6M5.5 13v1.5M10.5 13v1.5"/></svg>';
     var IC_CAL='<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="3.5" width="13" height="11" rx="1.5"/><path d="M11 1.5v4M5 1.5v4M1.5 7.5h13"/></svg>';
     var IC_PHONE='<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 11.2v1.9a1.3 1.3 0 01-1.4 1.3A12.9 12.9 0 015.7 12a12.7 12.7 0 01-3.9-3.9A12.9 12.9 0 011.5 2.4 1.3 1.3 0 012.8 1h2A1.3 1.3 0 016 2.1c.1.6.3 1.2.5 1.8a1.3 1.3 0 01-.3 1.4l-.8.9A10.4 10.4 0 009 10l.9-.9a1.3 1.3 0 011.4-.3c.6.2 1.2.4 1.8.5A1.3 1.3 0 0114 10.6v.6z"/></svg>';
@@ -2948,7 +2980,7 @@ function renderActive(){
     var feeTag=totalSettled_===0?'<span class="tag fee-due">Fee Due</span>':(planPrice&&totalSettled_<planPrice?'<span class="tag partial">Partial</span>':'<span class="tag paid">✓ Paid</span>');
     var amtClr=totalSettled_===0?'#dc2626':(planPrice&&totalSettled_<planPrice?'#b45309':'#0d9488');
     return '<div class="mb '+cardCls+'" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
-      '<div class="avatar '+(isExpired?'expired':isPending?'pending':'')+'" style="'+avStyle+'">'+(m.photourl?'':E(ini(m.name)))+'<span class="status-dot"></span></div>'+
+      '<div class="avatar '+(isExpired?'expired':isPending?'pending':'')+'" style="'+avStyle+'">'+avInner+'<span class="status-dot"></span></div>'+
       '<div class="body">'+
         '<div style="display:flex;align-items:center;gap:6px;margin-bottom:1px">'+
           '<div class="nm">'+E(m.name||'—')+'</div>'+
@@ -2986,7 +3018,7 @@ function renderActive(){
 // ─── Desktop sidebars ───
 function renderDesktopSidebars(){
   if(window.innerWidth<1120)return;
-  renderDsFeeDue();renderDsPending();renderDsAlerts();renderDsBirthdays();renderDsExpiring();renderDsRecent();
+  renderDsExpiredMembers();renderDsFeeDue();renderDsPending();renderDsAlerts();renderDsBirthdays();renderDsExpiring();renderDsRecent();
 }
 function renderDsNewCycle(){
   var el=$('dsNewCycleCard');if(!el)return;
@@ -3008,11 +3040,10 @@ function renderDsNewCycle(){
       '<span style="background:var(--ok-bg);color:var(--ok-dk);width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">'+newM.length+'</span>'+
     '</div>'+
     newM.slice(0,4).map(function(m){
-      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       var st=(m.status||'').toLowerCase();
       var enrolled=m.enrolledat?new Date(m.enrolledat).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
       return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
-        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
         '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
         '<div style="text-align:right;flex-shrink:0">'+
           '<span class="ds-pill '+(st==='pending'?'hold':'ok')+'" style="display:block;margin-bottom:2px">'+(st==='pending'?'Pending':'Active')+'</span>'+
@@ -3025,13 +3056,14 @@ function renderDsNewCycle(){
 function renderDsFeeDue(){
   var el=$('dsFeeDueCard');if(!el)return;
   var due=activeMembers().filter(function(m){
-    var paid=parseFloat(m.totalpaid||'0')||0;
+    var settled=(parseFloat(m.totalpaid||'0')||0)+(parseFloat(m.discount||'0')||0);
     var plan=plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0];
     var price=plan?parseFloat(String(plan.price||'0').replace(/[^\d.]/g,''))||0:0;
-    return price>0&&paid<price;
+    return price>0&&settled<price;
   }).sort(function(a,b){
-    var pa=parseFloat(a.totalpaid||'0')||0,pb=parseFloat(b.totalpaid||'0')||0;
-    return pa-pb;
+    var sa=(parseFloat(a.totalpaid||'0')||0)+(parseFloat(a.discount||'0')||0);
+    var sb=(parseFloat(b.totalpaid||'0')||0)+(parseFloat(b.discount||'0')||0);
+    return sa-sb;
   });
   if(!due.length){el.innerHTML='';el.style.display='none';return}
   el.style.display='';
@@ -3042,20 +3074,21 @@ function renderDsFeeDue(){
     '</div>'+
     '<div style="max-height:280px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent">'+
     due.map(function(m){
-      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       var paid=parseFloat(m.totalpaid||'0')||0;
+      var disc=parseFloat(m.discount||'0')||0;
+      var settled=paid+disc;
       var plan=plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0];
       var price=plan?parseFloat(String(plan.price||'0').replace(/[^\d.]/g,''))||0:0;
-      var unpaid=price-paid;
+      var unpaid=price-settled;
       var ph=(m.phone||'').replace(/\D/g,'');
       var waPh=ph.length===10?'91'+ph:ph;
       return '<div class="ds-member" onclick="if(!event.target.closest(\'button\'))openMemberSheet(\''+E(m.memberid)+'\')">'+
-        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
         '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.seat||'—')+' · '+E(m.plan||'—')+'</div></div>'+
         '<div style="text-align:right;flex-shrink:0;display:flex;align-items:center;gap:5px">'+
           '<div>'+
             '<div style="font-size:12px;font-weight:800;color:var(--err-dk)">'+cur+Math.round(unpaid).toLocaleString('en-IN')+'</div>'+
-            '<div style="font-size:9.5px;color:var(--ink-3)">'+(paid?'partial':'unpaid')+'</div>'+
+            '<div style="font-size:9.5px;color:var(--ink-3)">'+(settled?'partial':'unpaid')+'</div>'+
           '</div>'+
           (waPh?'<button onclick="waRenew(\''+E(m.memberid)+'\')" style="appearance:none;border:none;background:#25d366;color:#fff;border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="Send fee reminder">💬</button>':'')+
         '</div>'+
@@ -3108,9 +3141,8 @@ function renderDsPending(){
       '<span style="background:var(--hold-bg);color:var(--hold-dk);width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">'+pend.length+'</span>'+
     '</div>'+
     pend.slice(0,5).map(function(m){
-      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       return '<div class="ds-member">'+
-        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
         '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
         '<div class="ds-acts">'+
           '<button class="ds-approve" onclick="event.stopPropagation();approveMember(\''+E(m.memberid)+'\')" title="Approve">✓</button>'+
@@ -3128,11 +3160,10 @@ function renderDsAlerts(){
   el.style.display='';
   var rows=expiring7.slice(0,7).map(function(m){
     var d=daysToExpiry(m);
-    var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
     var pillCls=d===0?'err':d<=2?'warn':'hold';
     var pillTxt=d===0?'Today':d===1?'Tomorrow':d+'d left';
     return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
-      '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+      '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
       '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · S'+E(m.seat):'')+'</div></div>'+
       '<span class="ds-pill '+pillCls+'">'+pillTxt+'</span>'+
     '</div>';
@@ -3148,6 +3179,46 @@ function renderDsAlerts(){
 }
 var _bdayWA={};
 function openBdayWA(id){var d=_bdayWA[id];if(d)openWAPreview(d.phone,d.name,d.msg);}
+function renderDsExpiredMembers(){
+  var el=$('dsExpiredCard');if(!el)return;
+  var expired=activeMembers().filter(function(m){var d=daysToExpiry(m);return d!=null&&d<0})
+    .sort(function(a,b){return (daysToExpiry(b)||0)-(daysToExpiry(a)||0)}); // most overdue first
+  if(!expired.length){el.innerHTML='';el.style.display='none';return}
+  el.style.display='';
+  var cur=cfg('currency','₹');
+  el.innerHTML=
+    '<div class="ds-card-title" style="gap:7px">'+
+      '<span style="display:flex;align-items:center;gap:5px">'+
+        '<span style="width:8px;height:8px;border-radius:50%;background:#dc2626;flex-shrink:0"></span>'+
+        'EXPIRED MEMBERS'+
+      '</span>'+
+      '<span style="background:#fef2f2;color:#dc2626;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:800">'+expired.length+'</span>'+
+    '</div>'+
+    expired.slice(0,6).map(function(m){
+      var d=daysToExpiry(m);
+      var daysAgo=Math.abs(d);
+      var ph=(m.phone||'').replace(/\D/g,'');var waPh=ph.length===10?'91'+ph:ph;
+      var settled=(parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0);
+      var planObj=m.plan?plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0]:null;
+      var price=planObj?parseFloat(String(planObj.price||'0').replace(/[^\d.]/g,''))||0:0;
+      var feeDue=price>0&&settled<price;
+      return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
+        '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
+        '<div class="ds-info">'+
+          '<div class="ds-name">'+E(m.name)+'</div>'+
+          '<div class="ds-meta">'+(m.seat?E(m.seat)+' · ':'')+E(m.plan||'—')+'</div>'+
+        '</div>'+
+        '<div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px">'+
+          '<span class="ds-pill err">'+daysAgo+'d ago</span>'+
+          (feeDue?'<span style="font-size:9px;color:#dc2626;font-weight:700">Fee Due</span>':'')+
+          (waPh?'<button onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" style="appearance:none;border:none;background:#25d366;color:#fff;border-radius:5px;width:22px;height:22px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center" title="Remind on WhatsApp">💬</button>':'')+
+        '</div>'+
+      '</div>';
+    }).join('')+
+    (expired.length>6?'<div style="font-size:11px;color:var(--brand);text-align:center;padding:6px 0;cursor:pointer;font-weight:600" onclick="goTab(\'Active\');setFilter(\'expired\')">View all '+expired.length+' →</div>':
+    '<div style="font-size:11px;color:var(--brand);text-align:center;padding:6px 0;cursor:pointer;font-weight:600" onclick="goTab(\'Active\');setFilter(\'expired\')">View in Active tab →</div>');
+}
+
 function renderDsBirthdays(){
   var el=$('dsBdayCard');if(!el)return;
   var now=new Date();
@@ -3174,7 +3245,6 @@ function renderDsBirthdays(){
     '</div>'+
     upcoming.slice(0,5).map(function(item){
       var m=item.m,diff=item.diff;
-      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       var isToday=diff===0;
       var ph=(m.phone||'').replace(/\D/g,'');
       var waPh=ph.length===10?'91'+ph:ph;
@@ -3193,7 +3263,7 @@ function renderDsBirthdays(){
         ?'<button onclick="openBdayWA(\''+E(m.memberid)+'\')" style="appearance:none;border:none;background:#25d366;color:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="Send birthday wish on WhatsApp">📲</button>'
         :'';
       return '<div class="ds-member" onclick="if(!event.target.closest(\'button\'))openMemberSheet(\''+E(m.memberid)+'\')">'+
-        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
         '<div class="ds-info"><div class="ds-name">'+E(m.name)+(isToday?' 🎂':'')+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
         '<div style="display:flex;align-items:center;gap:5px;flex-shrink:0">'+
           '<span class="ds-pill '+pillCls+'">'+dayLabel+'</span>'+
@@ -3211,10 +3281,9 @@ function renderDsExpiring(){
   el.innerHTML='<div class="ds-card-title">Expiring soon <a onclick="goTab(\'Active\');setFilter(\'expiring\')">View all →</a></div>'+
     soon.slice(0,6).map(function(m){
       var d=daysToExpiry(m);
-      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       var ph=(m.phone||'').replace(/\D/g,'');var waPh=ph.length===10?'91'+ph:ph;
       return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
-        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
         '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.seat||'—')+' · '+E(m.plan||'—')+'</div></div>'+
         '<span class="ds-pill '+(d<=3?'err':'warn')+'">'+d+'d</span>'+
       '</div>';
@@ -3230,10 +3299,9 @@ function renderDsRecent(){
   var el=$('dsRecentCard');
   el.innerHTML='<div class="ds-card-title">Recent enrollments</div>'+
     (recent.length?recent.map(function(m){
-      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       var st=(m.status||'').toLowerCase();
       return '<div class="ds-member" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
-        '<div class="ds-av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
         '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.plan||'—')+(m.seat?' · '+E(m.seat):'')+'</div></div>'+
         '<span class="ds-pill '+(st==='pending'?'hold':'ok')+'">'+(st==='pending'?'Pending':'Active')+'</span>'+
       '</div>';
@@ -3551,7 +3619,7 @@ function renderRevDetail_(){
   }
 
   // Member list — current cycle only, unpaid first
-  var mList=b.done?[]:b.members||[];
+  var mList=b.done?getMembersForCycle_(b.cyclestart,b.cycleend):b.members||[];
   mList=mList.slice().sort(function(a,b2){
     var at=(parseFloat(a.totalpaid||0)||0)+(parseFloat(a.discount||0)||0);
     var bt=(parseFloat(b2.totalpaid||0)||0)+(parseFloat(b2.discount||0)||0);
@@ -3579,9 +3647,9 @@ function renderRevDetail_(){
             ?'<button class="ins-remind-btn" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="Send fee reminder">💬 Remind</button>'
             :'';
           return '<div class="ins-new-card" onclick="if(!event.target.closest(\'button\'))openMemberSheet(\''+E(m.memberid)+'\')">'+
-            '<div class="ins-new-card-av" style="background:'+av+'22;color:'+av+'">'+E(ini(m.name))+'</div>'+
+            '<div class="ins-new-card-av" style="background:'+av+'22;color:'+av+'">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
             '<div class="mb body" style="flex:1;min-width:0">'+
-              '<div class="nm">'+E(m.name||'Unknown')+'</div>'+
+              '<div class="nm" style="white-space:normal;overflow:visible">'+E(m.name||'Unknown')+'</div>'+
               '<div class="meta">'+
                 (m.seat?'<span class="tag seat">'+E(m.seat)+'</span>':'')+
                 (shiftLbl?'<span class="tag shift'+(shiftKey==='FULL'?' full-day':'')+'">'+E(shiftLbl)+'</span>':'')+
@@ -4338,7 +4406,6 @@ function openSeatSheet(seatId){
       var d=daysToExpiry(m);
       var status=(m.status||'').toLowerCase();
       var cls=status==='pending'?'pending':(d!=null&&d<0?'expired':(d!=null&&d<=7?'expiring':''));
-      var av=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
       var shiftLbl=(m.shift||'').toUpperCase()==='FULL'?'☀️ '+cfg('fulldaylabel','Full Day'):(m.shift?shiftIcon_(parseInt(m.shift.slice(1),10)||1,cfg('shift'+m.shift.slice(1)+'label',''))+' '+cfg('shift'+m.shift.slice(1)+'label',m.shift):'—');
       var pill='';
       if(status==='pending'&&(d==null||d>=0)){pill='<span class="sc-pill hold">⏳ Pending</span>'}
@@ -4347,7 +4414,7 @@ function openSeatSheet(seatId){
       else if(d!=null){pill='<span class="sc-pill ok">'+d+'d left</span>'}
       var phoneLine=m.phone?'<div class="meta" style="margin-top:1px">📱 '+E(m.phone)+(m.expirydate?' · '+E(fmtDate(m.expirydate)):'')+'</div>':'';
       return '<div class="seat-shift-card '+cls+'" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
-        '<div class="av" style="'+av+'">'+(m.photourl?'':E(ini(m.name)))+'</div>'+
+        '<div class="av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">':E(ini(m.name)))+'</div>'+
         '<div class="body"><div class="nm">'+E(m.name)+'</div>'+
         '<div class="meta"><b>'+E(shiftLbl)+'</b>'+(m.plan?' · '+E(m.plan):'')+'</div>'+
         phoneLine+
@@ -4464,10 +4531,11 @@ function openMemberSheet(memberId){
     var renewalEmailBtn=m.email?'<button class="msh-actb" onclick="sendRenewalEmail(\''+E(memberId)+'\')" title="Send renewal email" style="flex:1">✉️ Email — Renew</button>':'';
     var renewalLabel='<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:14px 0 6px;padding:0 18px">Renewal Reminders</div>';
     var receiptBtn=totalSettledAmt?'<button class="msh-actb" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_DOC+' Update Payment</button>':'<button class="msh-actb" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_CHECK+' Mark Paid</button>';
+    var feeReceiptBtn=totalSettledAmt?'<button class="msh-actb" onclick="openReceipt_(\''+E(memberId)+'\')">🧾 Fee Receipt</button>':'';
     primaryActs=rowActs+renewBtn+
       remindersLabel+'<div class="msh-acts2">'+waReminderBtn+emailReminderBtn+'</div>'+
       renewalLabel+'<div class="msh-acts2">'+renewalWaBtn+renewalEmailBtn+'</div>'+
-      '<div class="msh-acts2" style="margin-top:10px">'+receiptBtn+'</div>';
+      '<div class="msh-acts2" style="margin-top:10px">'+receiptBtn+(feeReceiptBtn||'')+'</div>';
   }
 
   // ─── Membership section ───
@@ -4498,6 +4566,8 @@ function openMemberSheet(memberId){
   if(m.email)personalRows+=mshDrowAct(I_MAIL,'Email',m.email,'Send','location.href=\'mailto:'+E(m.email)+'\'');
   if(m.fathername)personalRows+=mshDrow('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z"/></svg>','Father\'s name',m.fathername);
   if(m.dob)personalRows+=mshDrow(I_CAL,'Date of birth',fmtDate(m.dob));
+  if(m.preparation)personalRows+=mshDrow('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>','Preparation',m.preparation);
+  if(m.examdetails)personalRows+=mshDrow('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h6"/></svg>','Exam details',m.examdetails);
   var personalSec=personalRows?'<div class="msh-sec"><div class="msh-sec-h">Personal</div><div class="msh-rows">'+personalRows+'</div></div>':'';
 
   // ─── Aadhar ───
@@ -4628,6 +4698,10 @@ function openEditMember(memberId){
         '<div class="ef-field"><div class="ef-label">Discount ('+cur+')</div><input id="ef-discount" type="number" min="0" value="'+E(m.discount||'0')+'" oninput="efUpdateTotal()"></div>'+
         '<div class="ef-field"><div class="ef-label" style="color:#0f766e;font-weight:700">Total settled ('+cur+')</div><input id="ef-total" type="number" readonly tabindex="-1" style="background:#f0fdf4;color:#0f766e;font-weight:700;cursor:default" value="'+((parseFloat(m.totalpaid||'0')||0)+(parseFloat(m.discount||'0')||0))+'"></div>'+
       '</div>'+
+      '<div class="ef-row">'+
+        '<div class="ef-field"><div class="ef-label">Preparation for</div><input id="ef-prep" placeholder="e.g. UPSC, JEE, NEET" value="'+E(m.preparation||'')+'"></div>'+
+        '<div class="ef-field"><div class="ef-label">Exam details</div><input id="ef-exam" placeholder="e.g. Prelims 2026" value="'+E(m.examdetails||'')+'"></div>'+
+      '</div>'+
       '<div class="ef-field"><div class="ef-label">Notes</div><textarea id="ef-notes">'+E(m.notes||'')+'</textarea></div>'+
       '<div class="m-edit-actions">'+
         '<button class="ef-cancel" onclick="openMemberSheet(\''+E(memberId)+'\')">Cancel</button>'+
@@ -4684,6 +4758,8 @@ function saveEditMember(memberId){
     totalPaid:String(($('ef-paid').value||'0').trim()),
     discount:String(($('ef-discount').value||'0').trim()),
     photoURL:String(_editPhotoURL||''),
+    preparation:String(($('ef-prep').value||'').trim()),
+    examDetails:String(($('ef-exam').value||'').trim()),
     notes:String(($('ef-notes').value||'').trim())
   };
   sendCmd(params,function(res){
@@ -5492,6 +5568,83 @@ function backfillRevenue_(){
     loadRevHistory_(function(){renderRevTrend_();});
   });
 }
+
+// ─── Export Members to CSV ───
+function exportMembersCSV_(){
+  var q=($('actSearch').value||'').toLowerCase().trim();
+  var rows=(activeFilter==='all'||activeFilter==='pending')?activeMembers().concat(pendingMembers()):activeMembers();
+  rows=applyActiveFilter(rows);
+  if(q)rows=rows.filter(function(m){return [m.name,m.phone,m.seat,m.plan,m.examdetails,m.fathername].some(function(v){return (v||'').toLowerCase().indexOf(q)>=0})});
+  if(!rows.length){toast('No members to export','err');return}
+  var cur=cfg('currency','₹').replace('₹','Rs');
+  var headers=['Name','Phone','Email','Plan','Seat','Shift','Start Date','Expiry Date','Status','Cash Paid','Discount','Total Settled','Preparation','Exam Details','Notes'];
+  var csv=headers.join(',')+'\n';
+  rows.forEach(function(m){
+    var paid=parseFloat(m.totalpaid||0)||0;
+    var disc=parseFloat(m.discount||0)||0;
+    var cols=[m.name||'',m.phone||'',m.email||'',m.plan||'',m.seat||'',m.shift||'',m.startdate||'',m.expirydate||'',m.status||'',paid,disc,paid+disc,m.preparation||'',m.examdetails||'',((m.notes||'').replace(/AadharPhoto:[^\s]+/g,'').replace(/\[Library Pass opted\]/g,'').trim())];
+    csv+=cols.map(function(v){var s=String(v).replace(/"/g,'""');return /[,\n"]/.test(s)?'"'+s+'"':s;}).join(',')+'\n';
+  });
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=(cfg('shopname','Library')+'-members-'+new Date().toISOString().slice(0,10)+'.csv');
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1000);
+  toast('Exported '+rows.length+' members ✓','ok');
+}
+
+// ─── Fee Receipt ───
+function openReceipt_(memberId){
+  var m=members.filter(function(x){return x.memberid===memberId})[0];if(!m)return;
+  var cur=cfg('currency','₹');
+  var shop=cfg('shopname','Library');
+  var paid=parseFloat(m.totalpaid||0)||0;
+  var disc=parseFloat(m.discount||0)||0;
+  var total=paid+disc;
+  var receiptNo='RCP-'+Date.now().toString(36).toUpperCase().slice(-6);
+  var planObj=m.plan?plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0]:null;
+  var planPrice=planObj?parseFloat(String(planObj.price||'0').replace(/[^\d.]/g,''))||0:0;
+  var balance=Math.max(0,planPrice-total);
+  var html=
+    '<div style="padding:20px 18px 10px">'+
+      '<div style="text-align:center;margin-bottom:16px">'+
+        '<div style="font-size:18px;font-weight:900;color:var(--ink);letter-spacing:-.03em">'+E(shop)+'</div>'+
+        '<div style="font-size:10px;color:var(--ink-3);margin-top:2px;font-weight:500;text-transform:uppercase;letter-spacing:.08em">Fee Receipt</div>'+
+      '</div>'+
+      '<div style="border:1.5px dashed #e8edf2;border-radius:10px;padding:12px 14px;margin-bottom:12px">'+
+        '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:10px;color:var(--ink-3);font-weight:600;text-transform:uppercase">Receipt No</span><span style="font-size:11px;font-weight:700;font-family:monospace;color:var(--ink)">'+receiptNo+'</span></div>'+
+        '<div style="display:flex;justify-content:space-between"><span style="font-size:10px;color:var(--ink-3);font-weight:600;text-transform:uppercase">Date</span><span style="font-size:11px;font-weight:600;color:var(--ink)">'+new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+'</span></div>'+
+      '</div>'+
+      '<div style="margin-bottom:12px">'+
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9">'+
+          '<div style="width:36px;height:36px;border-radius:9px;background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">'+E(ini(m.name))+'</div>'+
+          '<div><div style="font-size:13.5px;font-weight:700;color:var(--ink)">'+E(m.name)+'</div><div style="font-size:11px;color:var(--ink-3);margin-top:1px">'+(m.seat?'Seat '+E(m.seat)+' · ':'')+E(m.plan||'—')+'</div></div>'+
+        '</div>'+
+        '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8fafc"><span style="font-size:12px;color:var(--ink-3)">Validity</span><span style="font-size:12px;font-weight:600;color:var(--ink)">'+(m.startdate?m.startdate.slice(0,10):'')+' → '+(m.expirydate?m.expirydate.slice(0,10):'')+'</span></div>'+
+        '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8fafc"><span style="font-size:12px;color:var(--ink-3)">Cash Paid</span><span style="font-size:12px;font-weight:700;color:#0f766e">'+cur+paid.toLocaleString('en-IN')+'</span></div>'+
+        (disc?'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8fafc"><span style="font-size:12px;color:var(--ink-3)">Discount</span><span style="font-size:12px;font-weight:700;color:#6366f1">-'+cur+disc.toLocaleString('en-IN')+'</span></div>':'')+
+        '<div style="display:flex;justify-content:space-between;padding:10px 0;background:#f0fdf4;margin:0 -14px;padding-left:14px;padding-right:14px;border-radius:0 0 8px 8px"><span style="font-size:13px;font-weight:700;color:#15803d">Total Settled</span><span style="font-size:16px;font-weight:900;color:#15803d">'+cur+total.toLocaleString('en-IN')+'</span></div>'+
+        (balance?'<div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:4px"><span style="font-size:12px;color:#dc2626;font-weight:600">Balance Due</span><span style="font-size:12px;font-weight:700;color:#dc2626">'+cur+balance.toLocaleString('en-IN')+'</span></div>':'')+
+      '</div>'+
+      '<div style="text-align:center;font-size:10px;color:var(--ink-3);padding-top:4px">Thank you for being a member of '+E(shop)+'</div>'+
+    '</div>';
+  $('receiptContent').innerHTML=html;
+  var waText=shop+' - Fee Receipt\n\nDear '+m.name+',\nThank you for your payment!\n\nReceipt: '+receiptNo+'\nPlan: '+(m.plan||'—')+'\nSeat: '+(m.seat||'—')+'\nValidity: '+(m.startdate?m.startdate.slice(0,10):'')+' to '+(m.expirydate?m.expirydate.slice(0,10):'')+'\nAmount Paid: '+cur+paid.toLocaleString('en-IN')+(disc?'\nDiscount: -'+cur+disc.toLocaleString('en-IN'):'')+'\nTotal Settled: '+cur+total.toLocaleString('en-IN')+(balance?'\nBalance Due: '+cur+balance.toLocaleString('en-IN'):'')+'\n\nThank you!';
+  var ph=(m.phone||'').replace(/\D/g,'');var waPh=ph.length===10?'91'+ph:ph;
+  var waBtn=$('receiptWaBtn');
+  if(waBtn)waBtn.onclick=waPh?function(){window.open('https://wa.me/'+waPh+'?text='+encodeURIComponent(waText),'_blank');}:function(){toast('No phone number','err');};
+  if(waBtn)waBtn.style.display=waPh?'':'none';
+  var el=$('receiptModal');el.style.display='flex';
+}
+function closeReceipt_(){var el=$('receiptModal');if(el)el.style.display='none';}
+function printReceipt_(){
+  var content=$('receiptContent');if(!content)return;
+  var w=window.open('','_blank','width=400,height=600');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><sty'+'le>body{margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}</sty'+'le></head><bod'+'y>'+content.innerHTML+'</bod'+'y></htm'+'l>');
+  w.document.close();w.print();
+}
+
 
 // ─── Time-based greeting ───
 function getGreeting(){
