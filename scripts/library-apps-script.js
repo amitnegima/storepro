@@ -306,7 +306,9 @@ function updateMember_(p) {
       var col = info.idx[key];
       if (col != null && val != null) sh.getRange(row, col + 1).setValue(String(val));
     };
-    if (p.name)       set('Name',        p.name);
+    if (p.name)            set('Name',        p.name);
+    if (p.preparation != null) set('Preparation', p.preparation);
+    if (p.examDetails != null) set('ExamDetails',  p.examDetails);
     if (p.phone)      set('Phone',       p.phone);
     if (p.email != null) set('Email',    p.email);
     if (p.fatherName != null) set('FatherName', p.fatherName);
