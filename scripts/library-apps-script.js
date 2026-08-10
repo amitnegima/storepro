@@ -15,7 +15,7 @@
 // this via the `version` action and warns the shopkeeper if it's older than
 // expected (so they know to redeploy after pulling new code).
 // ═══════════════════════════════════════════════════════════════════
-var SCRIPT_VERSION = 6;  // 6: Discount column added to Members
+var SCRIPT_VERSION = 7;  // 7: Archive-on-renewal, archiveMemberSnapshot_, ArchivedReason/ArchivedAt columns
 
 var MEMBERS_HEADERS = [
   'MemberID', 'EnrolledAt', 'Name', 'FatherName', 'Phone', 'DOB',
@@ -68,6 +68,14 @@ function doGet(e) {
   if (a === 'snapshotCycle')        return jsonOut_(snapshotCycle_());
   if (a === 'backfillRevenue')      return jsonOut_(backfillRevenue_());
   if (a === 'getRevenueSummary')    return jsonOut_(getRevenueSummary_());
+  if (a === 'renewMember') {
+    archiveMemberSnapshot_(p.memberId, 'Renewed');
+    return ok(updateMember_({memberId:p.memberId, startDate:p.startDate, expiryDate:p.expiryDate, plan:p.plan||'', status:'Active', totalPaid:'0', discount:'0'}));
+  }
+  if (a === 'archiveSnapshot') {
+    var result = archiveMemberSnapshot_(p.memberId, p.reason || 'Manual');
+    return jsonOut_({ ok: result === 'archived', result: result });
+  }
 
   return ok('Library v2 API active.');
 }
@@ -104,17 +112,51 @@ function getMembersSheet_() {
   return sh;
 }
 
+var ARCHIVE_EXTRA = ['ArchivedReason', 'ArchivedAt'];
+
 function getArchiveSheet_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName('Members_Archive');
+  var fullHeaders = MEMBERS_HEADERS.concat(ARCHIVE_EXTRA);
   if (!sh) {
     sh = ss.insertSheet('Members_Archive');
-    sh.getRange(1, 1, 1, MEMBERS_HEADERS.length).setValues([MEMBERS_HEADERS]);
-    sh.getRange(1, 1, 1, MEMBERS_HEADERS.length).setFontWeight('bold').setBackground('#475569').setFontColor('#ffffff');
+    sh.getRange(1, 1, 1, fullHeaders.length).setValues([fullHeaders]);
+    sh.getRange(1, 1, 1, fullHeaders.length).setFontWeight('bold').setBackground('#475569').setFontColor('#ffffff');
     sh.setFrozenRows(1);
-    sh.getRange(2, 1, sh.getMaxRows() - 1, MEMBERS_HEADERS.length).setNumberFormat('@');
+    sh.getRange(2, 1, sh.getMaxRows() - 1, fullHeaders.length).setNumberFormat('@');
+  } else {
+    // Ensure ArchivedReason / ArchivedAt columns exist on existing sheets
+    var hdrs = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+    ARCHIVE_EXTRA.forEach(function(col) {
+      if (hdrs.indexOf(col) < 0) {
+        var c = sh.getLastColumn() + 1;
+        sh.getRange(1, c).setValue(col).setFontWeight('bold').setBackground('#475569').setFontColor('#ffffff');
+        sh.getRange(2, c, sh.getMaxRows() - 1, 1).setNumberFormat('@');
+        hdrs.push(col);
+      }
+    });
   }
   return sh;
+}
+
+function archiveMemberSnapshot_(memberId, reason) {
+  if (!memberId) return 'missing-memberId';
+  var src = getMembersSheet_();
+  var info = membersIndex_(src);
+  var idCol = info.idx['MemberID'];
+  for (var i = 0; i < info.rows.length; i++) {
+    if (String(info.rows[i][idCol] || '').trim() !== memberId) continue;
+    var dst = getArchiveSheet_();
+    var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    var archiveRow = info.rows[i].slice(); // copy current row
+    // Pad to MEMBERS_HEADERS length if needed
+    while (archiveRow.length < MEMBERS_HEADERS.length) archiveRow.push('');
+    archiveRow.push(reason || 'Manual');
+    archiveRow.push(now);
+    dst.appendRow(archiveRow);
+    return 'archived';
+  }
+  return 'not-found';
 }
 
 function membersIndex_(sh) {
@@ -435,23 +477,36 @@ function updateConfig_(key, value) {
 function archiveOldMembers_() {
   var cutoffDays = parseInt(getCfg_('ArchiveAfterDays', '365'), 10) || 365;
   var cutoff = Date.now() - cutoffDays * 24 * 60 * 60 * 1000;
+  var graceDays = 7; // auto-archive Active members expired >7 days (didn't renew)
+  var graceCutoff = Date.now() - graceDays * 24 * 60 * 60 * 1000;
   var src = getMembersSheet_(), dst = getArchiveSheet_();
   var info = membersIndex_(src);
   var expCol = info.idx['ExpiryDate'], statusCol = info.idx['Status'];
-  var toMove = [], toMoveRowNums = [];
+  var toMove = [], toMoveRowNums = [], reasons = [];
+  var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
   for (var i = 0; i < info.rows.length; i++) {
     var row = info.rows[i];
     var status = String(row[statusCol] || '').trim();
-    if (status !== 'Deleted' && status !== 'Expired') continue;
     var exp = parseDate_(row[expCol]);
-    if (!exp || exp.getTime() < cutoff) {
-      toMove.push(row);
+    var reason = '';
+    if ((status === 'Deleted' || status === 'Expired') && exp && exp.getTime() < cutoff) {
+      reason = status === 'Deleted' ? 'Deleted' : 'Expired';
+    } else if (status === 'Active' && exp && exp.getTime() < graceCutoff) {
+      reason = 'Expired'; // Active but not renewed within grace period
+    }
+    if (reason) {
+      var archiveRow = row.slice();
+      while (archiveRow.length < MEMBERS_HEADERS.length) archiveRow.push('');
+      archiveRow.push(reason);
+      archiveRow.push(now);
+      toMove.push(archiveRow);
       toMoveRowNums.push(i + 2);
     }
   }
   if (toMove.length) {
-    dst.getRange(dst.getLastRow() + 1, 1, toMove.length, MEMBERS_HEADERS.length).setValues(toMove);
-    // Delete from bottom to top so row numbers stay stable.
+    toMove.forEach(function(archiveRow) {
+      dst.appendRow(archiveRow);
+    });
     toMoveRowNums.sort(function(a,b){ return b - a; });
     toMoveRowNums.forEach(function(n){ src.deleteRow(n); });
   }
