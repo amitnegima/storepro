@@ -2291,7 +2291,8 @@ function render(){
   var expSoon=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=0&&d<=3}).length;
   var expired=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d<0}).length;
   var cur=cfg('currency','₹');
-  var totalRev=holdingMembers().reduce(function(s,m){var n=parseFloat(m.totalpaid||'0');return s+(isNaN(n)?0:n);},0);
+  var _hdrCycle=billingCycle_();
+  var totalRev=holdingMembers().filter(function(m){var d=parseMD_(m.startdate);return d&&d>=_hdrCycle.start&&d<=_hdrCycle.end;}).reduce(function(s,m){return s+(parseFloat(m.totalpaid||'0')||0)+(parseFloat(m.discount||'0')||0);},0);
   function pill_(cls,ic,val,lbl,extra){return '<div class="hdr-stat-pill '+cls+'" title="'+lbl+'"'+(extra?(' '+extra):'')+'>'+( ic?'<span class="sp-ic">'+ic+'</span>':'' )+'<div class="sp-body"><span class="sp-val">'+val+'</span><span class="sp-lbl">'+lbl+'</span></div></div>';}
   var statsEl=$('hdrStats');
   if(statsEl) statsEl.innerHTML=
@@ -2300,7 +2301,7 @@ function render(){
     (pend.length?pill_('sp-hold','⏳',pend.length+' pending','Approvals','onclick="goTab(\'Active\');scrollToPending()"'):'')+
     (expSoon?pill_('sp-warn','⚠️',expSoon+' expiring','≤3 days'):'')+
     (expired?pill_('sp-err','🔴',expired+' expired','Expired'):'')+
-    pill_('sp-hide-md','',cur+Math.round(totalRev).toLocaleString('en-IN'),'Revenue');
+    pill_('sp-hide-md','',cur+Math.round(totalRev).toLocaleString('en-IN'),'This Cycle');
   var brand=cfg('brandcolor','');
   if(/^#[0-9a-f]{6}$/i.test(brand)){
     document.documentElement.style.setProperty('--brand',brand);
@@ -3003,6 +3004,7 @@ function renderActive(){
         (totalSettled_?'<div class="mb-amt" style="color:'+amtClr+'">'+cur+totalSettled_.toLocaleString('en-IN')+'</div>':'')+
         (discountAmt_?'<div class="mb-disc">🏷 -'+cur+discountAmt_.toLocaleString('en-IN')+'</div>':'')+
         '<div class="days-pill '+pillCls+'">'+dTxt+'</div>'+
+        '<button onclick="event.stopPropagation();generateMemberCard_(\''+E(m.memberid)+'\')" title="Download ID Card" style="appearance:none;border:1px solid #e8edf2;background:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px">🪪</button>'+
         (isExpired?'<button class="renew-cta renew-exp" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\');setTimeout(function(){openRenewMember(\''+E(m.memberid)+'\')},120)" title="Renew membership">'+IC_RENEW+' Renew</button>':'')+
         (renewUrgent?'<button class="renew-cta" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')" title="Send WhatsApp renewal reminder">'+IC_RENEW+' Remind</button>':'')+
         (phone&&!renewUrgent&&!isExpired?'<div class="mb-quick">'+
@@ -3749,11 +3751,15 @@ function renderInsights(){
     var sd=parseMD_(m.startdate);
     if(!sd||sd<cycle.start||sd>cycle.end)return;
     var paid=parseFloat(m.totalpaid||0)||0;
+    var disc=parseFloat(m.discount||0)||0;
+    var settled=paid+disc;
     var price=planPrice_(m.plan,sk);
-    if(price===0&&paid>0)price=paid;
-    sfMap[sk].col+=paid;sfMap[sk].exp+=price;
+    if(price===0)price=settled; // no plan price configured — use what was settled
+    var colAmt=Math.min(settled,price); // cap at plan price so extras (Library Pass) don't inflate
+    sfMap[sk].col+=colAmt;sfMap[sk].exp+=price;
+    sfMap[sk].disc=(sfMap[sk].disc||0)+disc;
     sfMap[sk].cnt++;
-    if(paid>0)sfMap[sk].paidCnt++;
+    if(settled>=price)sfMap[sk].paidCnt++;
   });
   var expected=sfKeys.reduce(function(s,sk){return s+sfMap[sk].exp;},0);
   var outstanding=Math.max(0,expected-collected);
@@ -3787,7 +3793,7 @@ function renderInsights(){
   var feeRowsHtml=sfKeys.map(function(sk){
     var d=sfMap[sk];
     var lbl=sk==='FULL'?cfg('fulldaylabel','Full Day'):cfg('shift'+(sk.slice(1))+'label','Shift '+sk.slice(1));
-    var pct=d.exp>0?Math.round(d.col/d.exp*100):100;
+    var pct=d.exp>0?Math.min(100,Math.round(d.col/d.exp*100)):100;
     var bc=sfBarColors[sk]||'#6366f1';
     return '<div class="ins-fee-shift-row">'+
       '<div class="ins-fee-shift-lbl">'+E(lbl)+'</div>'+
@@ -3797,10 +3803,13 @@ function renderInsights(){
           '<div style="font-size:9px;font-weight:600;color:'+bc+';opacity:.8;white-space:nowrap">paid</div>'+
         '</div>'+
       '</div>'+
-      '<div class="ins-fee-shift-nums">'+
-        '<span class="ins-fee-col">'+cur+Math.round(d.col).toLocaleString('en-IN')+'</span>'+
-        '<span class="ins-fee-sep">/</span>'+
-        '<span class="ins-fee-exp">'+cur+Math.round(d.exp).toLocaleString('en-IN')+'</span>'+
+      '<div class="ins-fee-shift-nums" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">'+
+        '<div style="display:flex;align-items:center;gap:4px">'+
+          '<span class="ins-fee-col">'+cur+Math.round(d.col).toLocaleString('en-IN')+'</span>'+
+          '<span class="ins-fee-sep">/</span>'+
+          '<span class="ins-fee-exp">'+cur+Math.round(d.exp).toLocaleString('en-IN')+'</span>'+
+        '</div>'+
+        (d.disc?'<div style="font-size:9.5px;color:#6366f1;font-weight:600">🏷 -'+cur+Math.round(d.disc).toLocaleString('en-IN')+' disc</div>':'')+
       '</div>'+
       '<div class="ins-fee-mini-bar"><div style="width:'+pct+'%;background:'+bc+'"></div></div>'+
     '</div>';
@@ -3808,7 +3817,10 @@ function renderInsights(){
   var totalSeats=sfKeys.reduce(function(s,sk){return s+sfMap[sk].cnt;},0);
   var perSeat=totalSeats>0?Math.round(collected/totalSeats):0;
   $('insCollect').innerHTML=
-    '<div style="font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Fee Collection — Active Members</div>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+    '<div style="font-size:12px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em">Fee Collection</div>'+
+    '<div style="font-size:10.5px;color:var(--ink-3);font-weight:500;background:var(--bg);border:1px solid var(--line-dk);border-radius:5px;padding:2px 8px">New enrollments this cycle only</div>'+
+  '</div>'+
     feeRowsHtml+
     '<div class="ins-collect-divider"></div>'+
     '<div style="display:flex;justify-content:space-between;align-items:center">'+
@@ -4603,6 +4615,7 @@ function openMemberSheet(memberId){
         '<button class="msh-mbtn" onclick="openExtendDate()">'+I_CAL+' Set expiry</button>'+
         '<button class="msh-mbtn" onclick="reassignPrompt()">'+I_SEAT+' Reassign seat</button>'+
         '<button class="msh-mbtn danger" onclick="deleteMember()">'+I_TRASH+' Delete</button>'+
+        '<button class="msh-mbtn" onclick="testArchiveSnapshot(\''+E(memberId)+'\')" style="border-color:#6366f1;color:#4f46e5" title="Test: saves this member\'s current record to Members_Archive without changing anything">🗃 Test Archive</button>'+
       '</div>'+
     '</div>';
   }
@@ -5042,7 +5055,7 @@ function saveRenewMember(memberId){
   if(!start){toast('Pick a start date','err');return}
   if(!expiry){toast('Pick an expiry date','err');return}
   if(expiry<=start){toast('Expiry must be after start date','err');return}
-  var params={action:'updateMember',memberId:String(memberId),startDate:start,expiryDate:expiry+' 23:59:59',status:'Active'};
+  var params={action:'renewMember',memberId:String(memberId),startDate:start,expiryDate:expiry+' 23:59:59'};
   if(_rnwPlan)params.plan=_rnwPlan;
   sendCmd(params,function(res){
     if(res&&res.error){toast(res.hint||'Save failed','err');return}
@@ -5232,6 +5245,161 @@ function confirmReassign(){
     reloadAll();
   });
 }
+// ─── Digital Membership Card ───
+function generateMemberCard_(memberId){
+  var m=members.filter(function(x){return x.memberid===memberId})[0];if(!m)return;
+  var shop=cfg('shopname','Library');
+  var cur=cfg('currency','₹');
+  var shiftLbl=(m.shift||'').toUpperCase()==='FULL'?cfg('fulldaylabel','Full Day'):m.shift?cfg('shift'+(m.shift||'').slice(1)+'label',m.shift):'';
+  var startTxt=fmtDate(m.startdate)||'—';
+  var expiryTxt=fmtDate(m.expirydate)||'—';
+  var paid=parseFloat(m.totalpaid||0)||0;
+  var disc=parseFloat(m.discount||0)||0;
+  var W=880,H=500;
+  var canvas=document.createElement('canvas');
+  canvas.width=W;canvas.height=H;
+  var ctx=canvas.getContext('2d');
+
+  function roundRect_(x,y,w,h,r){
+    ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+    ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
+    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+  }
+
+  function drawCard(){
+    // Background
+    var grad=ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,'#0f766e');grad.addColorStop(1,'#134e4a');
+    ctx.fillStyle=grad;roundRect_(0,0,W,H,24);ctx.fill();
+
+    // Decorative circles
+    ctx.save();ctx.globalAlpha=0.08;ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(W-60,80,180,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(80,H+40,160,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+
+    // Left accent strip
+    ctx.fillStyle='rgba(255,255,255,0.12)';
+    roundRect_(0,0,8,H,0);ctx.fill();
+
+    // Library name top-left
+    ctx.fillStyle='rgba(255,255,255,0.55)';
+    ctx.font='600 17px system-ui,sans-serif';
+    ctx.fillText(shop.toUpperCase(),52,48);
+
+    // "MEMBERSHIP CARD" label top-right
+    ctx.fillStyle='rgba(255,255,255,0.35)';
+    ctx.font='600 13px system-ui,sans-serif';
+    ctx.textAlign='right';
+    ctx.fillText('MEMBERSHIP CARD',W-44,48);
+    ctx.textAlign='left';
+
+    // Divider
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(52,64);ctx.lineTo(W-44,64);ctx.stroke();
+
+    // Member name
+    ctx.fillStyle='#ffffff';
+    ctx.font='bold 46px system-ui,sans-serif';
+    ctx.fillText(E(m.name||'—'),52,148);
+
+    // Plan
+    ctx.fillStyle='rgba(255,255,255,0.75)';
+    ctx.font='400 26px system-ui,sans-serif';
+    ctx.fillText(E(m.plan||'—'),52,192);
+
+    // Info row - Seat & Shift
+    var pill=function(label,val,x,y){
+      ctx.fillStyle='rgba(255,255,255,0.12)';
+      roundRect_(x,y-22,val.length*11+label.length*9+28,32,8);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.55)';ctx.font='400 14px system-ui,sans-serif';ctx.fillText(label,x+10,y);
+      ctx.fillStyle='#ffffff';ctx.font='700 14px system-ui,sans-serif';ctx.fillText(val,x+10+label.length*9+4,y);
+    };
+    var px=52;
+    if(m.seat){pill('SEAT  ',m.seat,px,272);px+=m.seat.length*11+100;}
+    if(shiftLbl){pill('SHIFT  ',shiftLbl,px,272);px+=shiftLbl.length*11+100;}
+
+    // Validity
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='600 14px system-ui,sans-serif';
+    ctx.fillText('VALID',52,330);
+    ctx.fillStyle='#ffffff';ctx.font='600 22px system-ui,sans-serif';
+    ctx.fillText(startTxt+'  →  '+expiryTxt,52,360);
+
+    // Amount paid
+    if(paid+disc>0){
+      ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='600 14px system-ui,sans-serif';
+      ctx.fillText('PAID',52,408);
+      ctx.fillStyle='#4ade80';ctx.font='700 22px system-ui,sans-serif';
+      ctx.fillText(cur+(paid+disc).toLocaleString('en-IN'),52,438);
+    }
+
+    // Member ID bottom-right
+    ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 15px monospace';
+    ctx.textAlign='right';ctx.fillText(memberId,W-44,H-28);ctx.textAlign='left';
+
+    // StorePro watermark
+    ctx.fillStyle='rgba(255,255,255,0.18)';ctx.font='500 13px system-ui,sans-serif';
+    ctx.fillText('StorePro',52,H-28);
+
+    // Download
+    var link=document.createElement('a');
+    link.download=(m.name||'member').replace(/\s+/g,'_')+'_MemberCard.png';
+    link.href=canvas.toDataURL('image/png');
+    document.body.appendChild(link);link.click();link.remove();
+    toast('Card downloaded ✓','ok');
+  }
+
+  // Load photo if available
+  if(m.photourl){
+    var img=new Image();img.crossOrigin='anonymous';
+    img.onload=function(){
+      drawCard();
+      // Draw circular photo over name area
+      var cx=W-130,cy=H/2,r=90;
+      ctx.save();
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
+      ctx.drawImage(img,cx-r,cy-r,r*2,r*2);
+      ctx.restore();
+      ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+      // Re-download with photo
+      var link2=document.createElement('a');
+      link2.download=(m.name||'member').replace(/\s+/g,'_')+'_MemberCard.png';
+      link2.href=canvas.toDataURL('image/png');
+      document.body.appendChild(link2);link2.click();link2.remove();
+    };
+    img.onerror=function(){drawCard();};
+    img.src=m.photourl;
+  } else {
+    drawCard();
+    // Draw initials circle
+    var cx=W-130,cy=H/2,r=90;
+    var pal=['#0d9488','#7c3aed','#b45309','#1d4ed8','#be185d'];
+    ctx.fillStyle=pal[(m.name||'').charCodeAt(0)%pal.length];
+    ctx.globalAlpha=0.25;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='bold 52px system-ui,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(ini(m.name),cx,cy);
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  }
+}
+
+function testArchiveSnapshot(memberId){
+  if(!confirm('This will copy '+memberId+'\'s current record to Members_Archive with reason "Manual". No data in Members will change. Continue?'))return;
+  toast('Archiving snapshot…');
+  sendCmd({action:'archiveSnapshot',memberId:String(memberId),reason:'Manual'},function(res){
+    if(res&&res.ok){
+      toast('Snapshot saved to Members_Archive ✓','ok');
+    } else {
+      toast('Archive failed: '+(res&&res.result||'error'),'err');
+    }
+  });
+}
+
 function deleteMember(){
   if(!confirm('Delete this member? They\'ll move to History (if enabled).'))return;
   var mid=String(openMemberId);
