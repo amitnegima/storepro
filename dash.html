@@ -1573,6 +1573,12 @@
       </svg>
       Insights
     </button>
+    <button class="nav-sb-item" onclick="navGoTab('Analytics')" id="navReports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-5"/>
+      </svg>
+      Reports
+    </button>
     <button class="nav-sb-item" onclick="navGoTab('Complaints')" id="navIssues">
       <div class="nb-badge" id="navIssuesBadge"></div>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1686,6 +1692,8 @@
     <div class="shift-legend" id="shiftLegend"></div>
     <div id="actList"></div>
   </div>
+
+  <div id="pgAnalytics" class="page"></div>
 
   <div id="pgInsights" class="page">
     <div class="ins-cycle" id="insCycle"></div>
@@ -1826,6 +1834,10 @@
   <div class="tab" onclick="goTab('Insights')" id="tabInsights">
     <span class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="13" width="5" height="8" rx="1"/><rect x="9.5" y="8" width="5" height="13" rx="1"/><rect x="17" y="3" width="5" height="18" rx="1"/></svg></span>
     <span class="tab-lbl">Insights</span>
+  </div>
+  <div class="tab" onclick="goTab('Analytics')" id="tabAnalytics">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-5"/></svg></span>
+    <span class="tab-lbl">Reports</span>
   </div>
   <div class="tab" onclick="goTab('Complaints')" id="tabComplaints">
     <span class="ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
@@ -2292,7 +2304,7 @@ function render(){
   var expired=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d<0}).length;
   var cur=cfg('currency','₹');
   var _hdrCycle=billingCycle_();
-  var totalRev=holdingMembers().filter(function(m){var d=parseMD_(m.startdate);return d&&d>=_hdrCycle.start&&d<=_hdrCycle.end;}).reduce(function(s,m){return s+(parseFloat(m.totalpaid||'0')||0)+(parseFloat(m.discount||'0')||0);},0);
+  var totalRev=holdingMembers().filter(function(m){var d=cashDate_(m);return d&&d>=_hdrCycle.start&&d<=_hdrCycle.end;}).reduce(function(s,m){return s+(parseFloat(m.totalpaid||'0')||0)+(parseFloat(m.discount||'0')||0);},0);
   function pill_(cls,ic,val,lbl,extra){return '<div class="hdr-stat-pill '+cls+'" title="'+lbl+'"'+(extra?(' '+extra):'')+'>'+( ic?'<span class="sp-ic">'+ic+'</span>':'' )+'<div class="sp-body"><span class="sp-val">'+val+'</span><span class="sp-lbl">'+lbl+'</span></div></div>';}
   var statsEl=$('hdrStats');
   if(statsEl) statsEl.innerHTML=
@@ -2430,14 +2442,15 @@ function renderOccupancy(){
 
 function goTab(t){
   currentTab=t;
-  ['Seats','Active','Insights','Complaints','More'].forEach(function(name){
-    $('pg'+name).classList.toggle('act',name===t);
-    $('tab'+name).classList.toggle('act',name===t);
+  ['Seats','Active','Insights','Analytics','Complaints','More'].forEach(function(name){
+    var pg=$('pg'+name);if(pg)pg.classList.toggle('act',name===t);
+    var tb=$('tab'+name);if(tb)tb.classList.toggle('act',name===t);
   });
   if(t==='Complaints')loadComplaints_();
+  if(t==='Analytics')renderAnalytics();
   window.scrollTo({top:0,behavior:'smooth'});
-  var navMap={Active:'Dash',Seats:'Seats',Insights:'Insights',Complaints:'Issues',More:'More'};
-  ['Dash','Seats','Active','Insights','Issues','More'].forEach(function(n){var el=$('nav'+n);if(el)el.classList.remove('act');});
+  var navMap={Active:'Dash',Seats:'Seats',Insights:'Insights',Analytics:'Reports',Complaints:'Issues',More:'More'};
+  ['Dash','Seats','Active','Insights','Reports','Issues','More'].forEach(function(n){var el=$('nav'+n);if(el)el.classList.remove('act');});
   var nk=navMap[t];if(nk&&$('nav'+nk))$('nav'+nk).classList.add('act');
 }
 function navGoTab(t){
@@ -3004,6 +3017,7 @@ function renderActive(){
         (totalSettled_?'<div class="mb-amt" style="color:'+amtClr+'">'+cur+totalSettled_.toLocaleString('en-IN')+'</div>':'')+
         (discountAmt_?'<div class="mb-disc">🏷 -'+cur+discountAmt_.toLocaleString('en-IN')+'</div>':'')+
         '<div class="days-pill '+pillCls+'">'+dTxt+'</div>'+
+        (!isExpired&&(totalSettled_===0||(planPrice&&totalSettled_<planPrice))?'<button onclick="event.stopPropagation();quickMarkPaid(\''+E(m.memberid)+'\')" title="Record payment" style="appearance:none;border:none;background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;margin-top:2px;box-shadow:0 2px 6px rgba(13,148,136,.35)">'+cur+'</button>':'')+
         '<button onclick="event.stopPropagation();generateMemberCard_(\''+E(m.memberid)+'\')" title="Download ID Card" style="appearance:none;border:1px solid #e8edf2;background:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px">🪪</button>'+
         (isExpired?'<button class="renew-cta renew-exp" onclick="event.stopPropagation();openMemberSheet(\''+E(m.memberid)+'\');setTimeout(function(){openRenewMember(\''+E(m.memberid)+'\')},120)" title="Renew membership">'+IC_RENEW+' Renew</button>':'')+
         (renewUrgent?'<button class="renew-cta" onclick="event.stopPropagation();waRenewal(\''+E(m.memberid)+'\')" title="Send WhatsApp renewal reminder">'+IC_RENEW+' Remind</button>':'')+
@@ -3086,7 +3100,11 @@ function renderDsFeeDue(){
       var waPh=ph.length===10?'91'+ph:ph;
       return '<div class="ds-member" onclick="if(!event.target.closest(\'button\'))openMemberSheet(\''+E(m.memberid)+'\')">'+
         '<div class="ds-av">'+(m.photourl?'<img src="'+E(m.photourl)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':E(ini(m.name)))+'</div>'+
-        '<div class="ds-info"><div class="ds-name">'+E(m.name)+'</div><div class="ds-meta">'+E(m.seat||'—')+' · '+E(m.plan||'—')+'</div></div>'+
+        '<div class="ds-info">'+
+          '<div class="ds-name">'+E(m.name)+'</div>'+
+          '<div class="ds-meta">'+E(m.seat||'—')+' · '+E(m.plan||'—')+'</div>'+
+          ((m.paymentdate||m.paymentDate)?'<div style="font-size:9.5px;color:#6366f1;font-weight:600;margin-top:2px">💳 paid '+fmtDate(m.paymentdate||m.paymentDate)+'</div>':'')+
+        '</div>'+
         '<div style="text-align:right;flex-shrink:0;display:flex;align-items:center;gap:5px">'+
           '<div>'+
             '<div style="font-size:12px;font-weight:800;color:var(--err-dk)">'+cur+Math.round(unpaid).toLocaleString('en-IN')+'</div>'+
@@ -3332,6 +3350,12 @@ function dsMemberSearch(q){
 }
 
 // ─── Insights ───
+// Cash-based date: use PaymentDate if set, otherwise fall back to StartDate
+function cashDate_(m){
+  var pd=parseMD_(m.paymentdate||m.paymentDate||'');
+  return pd||parseMD_(m.startdate);
+}
+
 function billingCycle_(){
   var t=new Date(),d=t.getDate(),m=t.getMonth(),y=t.getFullYear();
   var s,e;
@@ -3724,8 +3748,266 @@ function planPrice_(name,shiftKey){
   return p?parseFloat(String(p.price||'0').replace(/[^\d.]/g,''))||0:0;
 }
 
+function _bStat_(val,lbl,ic,bg){
+  return '<div style="background:'+bg+';border-radius:9px;padding:10px 8px;text-align:center">'+
+    '<div style="font-size:11px;margin-bottom:3px">'+ic+'</div>'+
+    '<div style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">'+val+'</div>'+
+    '<div style="font-size:9.5px;color:rgba(255,255,255,.5);margin-top:3px;font-weight:500">'+lbl+'</div>'+
+  '</div>';
+}
+function renderMorningBrief(){
+  var el=$('morningBrief');if(!el)return;
+  var h=new Date().getHours();
+  var sessKey='brief_'+todayISO();
+  try{if(sessionStorage.getItem(sessKey)==='done'){el.innerHTML='';return;}}catch(e){}
+
+  var cur=cfg('currency','₹');
+  var act=activeMembers(),pend=pendingMembers();
+  var todayStr=todayISO();
+
+  // Pending approvals
+  var pendN=pend.length;
+  // Today's payments
+  var todayPaid=act.filter(function(m){return (m.paymentdate||m.paymentDate||'').slice(0,10)===todayStr;});
+  var todayColl=todayPaid.reduce(function(s,m){return s+(parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0);},0);
+  // Expiring tomorrow / today
+  var expSoon=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=0&&d<=1;});
+  // New this week
+  var weekAgo_=new Date(new Date().getTime()-7*864e5);
+  var newThisWeek=act.filter(function(m){var d=parseMD_(m.startdate);return d&&d>=weekAgo_;}).length;
+  // Fee due
+  var feeDue=act.filter(function(m){
+    var s=(parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0);
+    var pl=plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0];
+    var pr=pl?parseFloat(String(pl.price||'0').replace(/[^\d.]/g,''))||0:0;
+    return pr>0&&s<pr;
+  }).length;
+
+  // Build greeting
+  var greet=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤':h<21?'Good evening 🌙':'Late night 🌑';
+  var shop=cfg('shopname','');
+
+  // ── Always-visible stats row ──
+  var totalSeats=parseInt(cfg('seatcapacity','40'),10)||40;
+  var occPct=Math.round(act.length/totalSeats*100);
+  var paidCount=act.filter(function(m){return (parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0)>0;}).length;
+  var paidPct=act.length?Math.round(paidCount/act.length*100):0;
+
+  var statsHtml=
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'+
+      _bStat_(act.length,'Active','👥','rgba(255,255,255,.12)')+
+      _bStat_(occPct+'%','Occupied','🪑','rgba(255,255,255,.12)')+
+      _bStat_(todayColl>0?cur+Math.round(todayColl/1000)+'k':'—','Today','💰','rgba(255,255,255,.12)')+
+    '</div>';
+
+  // ── Attention flags (only non-zero) ──
+  var flags=[];
+  if(pendN) flags.push({ic:'⏳',txt:pendN+' pending',clr:'#fbbf24',fn:"goTab('Active');scrollToPending()"});
+  if(expSoon.length) flags.push({ic:'⏰',txt:expSoon.length+' expiring '+(expSoon.some(function(m){return daysToExpiry(m)===0})?'today':'tomorrow'),clr:'#f87171',fn:"goTab('Active');setFilter('expiring')"});
+  if(feeDue>0) flags.push({ic:'💳',txt:feeDue+' fee due',clr:'#fb923c',fn:"goTab('Active')"});
+  if(newThisWeek>0) flags.push({ic:'🆕',txt:newThisWeek+' enrolled this week',clr:'#34d399',fn:''});
+
+  var flagsHtml=flags.length
+    ?'<div style="display:flex;flex-wrap:wrap;gap:6px">'+
+      flags.map(function(f){
+        return '<div onclick="'+(f.fn?'dismissBrief_();'+f.fn:'')+'" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(255,255,255,.12);border-radius:8px;cursor:'+(f.fn?'pointer':'default')+'">'  +
+          '<span style="font-size:13px">'+f.ic+'</span>'+
+          '<span style="font-size:12px;font-weight:700;color:'+f.clr+'">'+f.txt+'</span>'+
+          (f.fn?'<span style="font-size:10px;color:rgba(255,255,255,.4)">›</span>':'')+
+        '</div>';
+      }).join('')+
+    '</div>'
+    :'<div style="font-size:12px;color:rgba(255,255,255,.5);font-weight:500">✅ No urgent items — all good!</div>';
+
+  el.innerHTML=
+    '<div style="background:linear-gradient(135deg,#0f766e 0%,#134e4a 100%);border-radius:16px;padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden">'+
+      '<div style="position:absolute;right:-20px;top:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.05)"></div>'+
+      '<button onclick="dismissBrief_()" style="position:absolute;top:10px;right:10px;z-index:10;appearance:none;border:none;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:14px;font-weight:700;line-height:26px;text-align:center;padding:0">✕</button>'+
+      '<div style="position:relative">'+
+        '<div style="font-size:11.5px;color:rgba(255,255,255,.55);font-weight:500;margin-bottom:10px">'+greet+(shop?' · '+shop:'')+' </div>'+
+        statsHtml+
+        '<div style="height:1px;background:rgba(255,255,255,.1);margin-bottom:12px"></div>'+
+        flagsHtml+
+      '</div>'+
+    '</div>';
+}
+function dismissBrief_(){
+  var el=$('morningBrief');if(el)el.innerHTML='';
+  try{sessionStorage.setItem('brief_'+todayISO(),'done');}catch(e){}
+}
+
+function renderAnalytics(){
+  var el=$('pgAnalytics');if(!el)return;
+  var cur=cfg('currency','₹');
+  var act=activeMembers();
+  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var todayStr=todayISO();
+  var now=new Date();
+
+  // ── Today's collection ──
+  var todayColl=act.reduce(function(s,m){
+    var pd=(m.paymentdate||m.paymentDate||'').slice(0,10);
+    if(pd!==todayStr)return s;
+    return s+(parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0);
+  },0);
+  var todayCount=act.filter(function(m){return (m.paymentdate||m.paymentDate||'').slice(0,10)===todayStr;}).length;
+
+  // ── This week (last 7 days) ──
+  var weekAgo=new Date(now.getTime()-7*864e5);
+  var newThisWeek=act.filter(function(m){var d=parseMD_(m.startdate);return d&&d>=weekAgo;}).length;
+  var expiredThisWeek=act.filter(function(m){var d=daysToExpiry(m);return d!=null&&d<0&&d>=-7;}).length;
+
+  // ── Fee status breakdown ──
+  var totalAct=act.length;
+  var fullyPaid=act.filter(function(m){
+    var s=(parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0);
+    var pl=plans.filter(function(p){return (p.name||p.plan||'')===m.plan})[0];
+    var pr=pl?parseFloat(String(pl.price||'0').replace(/[^\d.]/g,''))||0:0;
+    return pr>0?s>=pr:s>0;
+  }).length;
+  var unpaidCount=act.filter(function(m){return (parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0)===0;}).length;
+  var partialCount=totalAct-fullyPaid-unpaidCount;
+
+  // ── Shift utilization ──
+  var sfN=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  var sfUtil=[];
+  for(var si=1;si<=sfN;si++){
+    var k='S'+si;
+    var cnt=act.filter(function(m){return (m.shift||'').toUpperCase()===k;}).length;
+    sfUtil.push({key:k,lbl:cfg('shift'+si+'label','Shift '+si),cnt:cnt,pct:Math.round(cnt/cap*100)});
+  }
+  if(isYes('enablefullday')){
+    var fdCnt=act.filter(function(m){return (m.shift||'').toUpperCase()==='FULL';}).length;
+    sfUtil.push({key:'FULL',lbl:cfg('fulldaylabel','Full Day'),cnt:fdCnt,pct:Math.round(fdCnt/cap*100)});
+  }
+  var sfColors={'S1':'#d97706','S2':'#3b82f6','S3':'#7c3aed','S4':'#ec4899','FULL':'#16a34a'};
+
+  // ── Top plans by revenue ──
+  var planRev={};
+  act.forEach(function(m){
+    var p=m.plan||'Unknown';
+    if(!planRev[p])planRev[p]={revenue:0,count:0};
+    planRev[p].revenue+=(parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0);
+    planRev[p].count++;
+  });
+  var topPlans=Object.keys(planRev).map(function(k){return{name:k,revenue:planRev[k].revenue,count:planRev[k].count};})
+    .sort(function(a,b){return b.revenue-a.revenue;}).slice(0,5);
+  var maxPlanRev=topPlans.length?topPlans[0].revenue:1;
+
+  // ── Retention approx: members active for >30 days ──
+  var retained=act.filter(function(m){
+    var ea=m.enrolledat?new Date(m.enrolledat):null;
+    return ea&&(now-ea)>30*864e5;
+  }).length;
+  var retPct=totalAct>0?Math.round(retained/totalAct*100):0;
+
+  function aCard_(title,icon,content){
+    return '<div style="background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid #e8edf2;box-shadow:0 1px 4px rgba(0,0,0,.05)">'+
+      '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:12px;display:flex;align-items:center;gap:6px"><span style="font-size:14px">'+icon+'</span>'+title+'</div>'+
+      content+'</div>';
+  }
+
+  // Today card
+  var todayHtml=aCard_("Today's Collection",'💰',
+    '<div style="display:flex;gap:12px">'+
+      '<div style="flex:1;background:#f0fdf4;border-radius:10px;padding:12px 14px;text-align:center">'+
+        '<div style="font-size:22px;font-weight:900;color:#16a34a;letter-spacing:-.04em">'+cur+Math.round(todayColl).toLocaleString('en-IN')+'</div>'+
+        '<div style="font-size:10px;color:#64748b;margin-top:2px;font-weight:500">Cash received today</div>'+
+      '</div>'+
+      '<div style="flex:1;background:#f8fafc;border-radius:10px;padding:12px 14px;text-align:center">'+
+        '<div style="font-size:22px;font-weight:900;color:var(--ink);letter-spacing:-.04em">'+todayCount+'</div>'+
+        '<div style="font-size:10px;color:#64748b;margin-top:2px;font-weight:500">Payments recorded</div>'+
+      '</div>'+
+    '</div>');
+
+  // This week card
+  var weekHtml=aCard_('This Week','📅',
+    '<div style="display:flex;gap:12px">'+
+      '<div style="flex:1;background:#eff6ff;border-radius:10px;padding:12px;text-align:center">'+
+        '<div style="font-size:22px;font-weight:900;color:#1d4ed8;letter-spacing:-.04em">'+newThisWeek+'</div>'+
+        '<div style="font-size:10px;color:#64748b;margin-top:2px;font-weight:500">New enrollments</div>'+
+      '</div>'+
+      '<div style="flex:1;background:'+(expiredThisWeek?'#fef2f2':'#f8fafc')+';border-radius:10px;padding:12px;text-align:center">'+
+        '<div style="font-size:22px;font-weight:900;color:'+(expiredThisWeek?'#dc2626':'#94a3b8')+';letter-spacing:-.04em">'+expiredThisWeek+'</div>'+
+        '<div style="font-size:10px;color:#64748b;margin-top:2px;font-weight:500">Expired</div>'+
+      '</div>'+
+      '<div style="flex:1;background:#f8fafc;border-radius:10px;padding:12px;text-align:center">'+
+        '<div style="font-size:22px;font-weight:900;color:var(--ink);letter-spacing:-.04em">'+retPct+'%</div>'+
+        '<div style="font-size:10px;color:#64748b;margin-top:2px;font-weight:500">Retention</div>'+
+      '</div>'+
+    '</div>');
+
+  // Fee breakdown card
+  var feeHtml=aCard_('Fee Collection Status','💳',
+    '<div style="display:flex;gap:8px;margin-bottom:12px">'+
+      '<div style="flex:1;text-align:center;background:#f0fdf4;border-radius:9px;padding:10px 4px">'+
+        '<div style="font-size:18px;font-weight:800;color:#16a34a">'+fullyPaid+'</div>'+
+        '<div style="font-size:9.5px;color:#64748b;font-weight:500">Fully Paid</div>'+
+      '</div>'+
+      '<div style="flex:1;text-align:center;background:#fffbeb;border-radius:9px;padding:10px 4px">'+
+        '<div style="font-size:18px;font-weight:800;color:#d97706">'+partialCount+'</div>'+
+        '<div style="font-size:9.5px;color:#64748b;font-weight:500">Partial</div>'+
+      '</div>'+
+      '<div style="flex:1;text-align:center;background:#fef2f2;border-radius:9px;padding:10px 4px">'+
+        '<div style="font-size:18px;font-weight:800;color:#dc2626">'+unpaidCount+'</div>'+
+        '<div style="font-size:9.5px;color:#64748b;font-weight:500">Unpaid</div>'+
+      '</div>'+
+    '</div>'+
+    '<div style="height:8px;border-radius:99px;overflow:hidden;background:#f1f5f9;display:flex">'+
+      '<div style="height:100%;background:#16a34a;width:'+Math.round(fullyPaid/Math.max(1,totalAct)*100)+'%;transition:width .5s"></div>'+
+      '<div style="height:100%;background:#fde68a;width:'+Math.round(partialCount/Math.max(1,totalAct)*100)+'%;transition:width .5s"></div>'+
+      '<div style="height:100%;background:#fecaca;width:'+Math.round(unpaidCount/Math.max(1,totalAct)*100)+'%;transition:width .5s"></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:12px;margin-top:8px;font-size:10px;color:#94a3b8">'+
+      '<span>'+Math.round(fullyPaid/Math.max(1,totalAct)*100)+'% paid</span>'+
+      '<span>of '+totalAct+' active members</span>'+
+    '</div>');
+
+  // Shift utilization card
+  var sfRows=sfUtil.map(function(s){
+    var clr=sfColors[s.key]||'#6366f1';
+    return '<div style="margin-bottom:10px">'+
+      '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'+
+        '<span style="font-size:12px;font-weight:600;color:var(--ink)">'+E(s.lbl)+'</span>'+
+        '<span style="font-size:12px;font-weight:700;color:'+clr+'">'+s.cnt+' / '+cap+' <span style="font-size:10px;font-weight:500;color:#94a3b8">('+s.pct+'%)</span></span>'+
+      '</div>'+
+      '<div style="height:6px;background:#f1f5f9;border-radius:99px;overflow:hidden">'+
+        '<div style="height:100%;background:'+clr+';border-radius:99px;width:'+s.pct+'%;transition:width .5s ease"></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  var sfHtml=aCard_('Seat Utilization by Shift','🪑',sfRows);
+
+  // Top plans card
+  var planRows=topPlans.map(function(p,i){
+    var barPct=maxPlanRev>0?Math.round(p.revenue/maxPlanRev*100):0;
+    var medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f8fafc">'+
+      '<span style="font-size:14px;flex-shrink:0">'+medals[i]+'</span>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+E(p.name)+'</div>'+
+        '<div style="height:4px;background:#f1f5f9;border-radius:99px;margin-top:4px;overflow:hidden">'+
+          '<div style="height:100%;background:var(--brand);border-radius:99px;width:'+barPct+'%"></div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="text-align:right;flex-shrink:0">'+
+        '<div style="font-size:12.5px;font-weight:800;color:var(--brand)">'+cur+Math.round(p.revenue).toLocaleString('en-IN')+'</div>'+
+        '<div style="font-size:10px;color:#94a3b8">'+p.count+' members</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  var plansHtml=aCard_('Top Plans by Revenue','📈',planRows||(topPlans.length===0?'<div style="text-align:center;color:#94a3b8;font-size:12px;padding:8px 0">No payment data yet</div>':''));
+
+  el.innerHTML=
+    '<div style="padding:12px 0 32px">'+
+      '<div style="font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.03em;margin-bottom:16px">📊 Analytics</div>'+
+      todayHtml+weekHtml+feeHtml+sfHtml+plansHtml+
+    '</div>';
+}
+
 function renderInsights(){
-  if(_revHistLoaded)renderRevTrend_();
+  if(_revHistLoaded){renderRevTrend_();}
+  else{loadRevHistory_(function(){renderRevTrend_();});}
   var cycle=billingCycle_();
   var cur=cfg('currency','₹');
   var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -3748,7 +4030,7 @@ function renderInsights(){
   act.forEach(function(m){
     var sk=(m.shift||'').toUpperCase();
     if(!sfMap[sk])return;
-    var sd=parseMD_(m.startdate);
+    var sd=cashDate_(m); // use PaymentDate if set, else StartDate
     if(!sd||sd<cycle.start||sd>cycle.end)return;
     var paid=parseFloat(m.totalpaid||0)||0;
     var disc=parseFloat(m.discount||0)||0;
@@ -3766,7 +4048,9 @@ function renderInsights(){
   var colPct=expected>0?Math.round(collected/expected*100):100;
 
   // Cycle revenue = fees paid by new members this cycle
-  var cycleRev=newM.reduce(function(s,m){var n=parseFloat(m.totalpaid||0);return s+(isNaN(n)?0:n);},0);
+  // Cash-based cycle revenue: members whose PaymentDate (or StartDate) falls in this cycle
+  var cycleRevM=act.filter(function(m){var d=cashDate_(m);return d&&d>=cycle.start&&d<=cycle.end;});
+  var cycleRev=cycleRevM.reduce(function(s,m){return s+(parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0);},0);
 
   // ── Cycle banner ──
   var barPct=Math.round(cycle.elapsed/cycle.total*100);
@@ -4515,6 +4799,7 @@ function openMemberSheet(memberId){
       '<div class="msh-fv" style="color:'+feeColor+'">'+E(feeLabel)+'</div>'+
       (discAmt?'<div style="font-size:10px;color:#1d4ed8;font-weight:600;margin-top:2px">🏷 -'+cur+discAmt.toLocaleString('en-IN')+' discount</div>':'')+
       '<span class="msh-fchip '+feeChipCls+'">'+feeChipTxt+'</span>'+
+      ((m.paymentdate||m.paymentDate)?'<div style="font-size:9.5px;color:#6366f1;font-weight:600;margin-top:5px">💳 '+fmtDate(m.paymentdate||m.paymentDate)+'</div>':'')+
     '</div>'+
   '</div>';
 
@@ -4552,7 +4837,9 @@ function openMemberSheet(memberId){
 
   // ─── Membership section ───
   var expRowSuffix=d!=null?(d<0?' · '+Math.abs(d)+' days ago':' · '+d+' days left'):'';
-  var feeValHtml=totalSettledAmt===0?cur+'0 — not paid':(discAmt?cur+paidAmt.toLocaleString('en-IN')+' paid + '+cur+discAmt.toLocaleString('en-IN')+' disc = '+cur+totalSettledAmt.toLocaleString('en-IN'):cur+paidAmt.toLocaleString('en-IN')+' for '+E(m.plan||'plan'));
+  var payDateRaw=m.paymentdate||m.paymentDate||'';
+  var payDateDisp=payDateRaw?(' · paid '+fmtDate(payDateRaw)):'';
+  var feeValHtml=totalSettledAmt===0?cur+'0 — not paid':(discAmt?cur+paidAmt.toLocaleString('en-IN')+' paid + '+cur+discAmt.toLocaleString('en-IN')+' disc = '+cur+totalSettledAmt.toLocaleString('en-IN'):cur+paidAmt.toLocaleString('en-IN')+' for '+E(m.plan||'plan'))+payDateDisp;
   var feeRowHtml='<div class="msh-drow">'+
     '<div class="msh-drow-ic">'+I_WARN+'</div>'+
     '<div class="msh-drow-tx"><div class="msh-drow-l">Fee status</div>'+
@@ -4715,6 +5002,7 @@ function openEditMember(memberId){
         '<div class="ef-field"><div class="ef-label">Preparation for</div><input id="ef-prep" placeholder="e.g. UPSC, JEE, NEET" value="'+E(m.preparation||'')+'"></div>'+
         '<div class="ef-field"><div class="ef-label">Exam details</div><input id="ef-exam" placeholder="e.g. Prelims 2026" value="'+E(m.examdetails||'')+'"></div>'+
       '</div>'+
+      '<div class="ef-field"><div class="ef-label">Payment Date <span style="font-size:10px;font-weight:400;color:var(--ink-3)">when cash was received</span></div><input id="ef-paydate" type="date" value="'+E(m.paymentdate||m.paymentDate||'')+'"></div>'+
       '<div class="ef-field"><div class="ef-label">Notes</div><textarea id="ef-notes">'+E(m.notes||'')+'</textarea></div>'+
       '<div class="m-edit-actions">'+
         '<button class="ef-cancel" onclick="openMemberSheet(\''+E(memberId)+'\')">Cancel</button>'+
@@ -4770,6 +5058,7 @@ function saveEditMember(memberId){
     seat:String($('ef-seat').value||''),
     totalPaid:String(($('ef-paid').value||'0').trim()),
     discount:String(($('ef-discount').value||'0').trim()),
+    paymentDate:String(($('ef-paydate').value||'').trim()),
     photoURL:String(_editPhotoURL||''),
     preparation:String(($('ef-prep').value||'').trim()),
     examDetails:String(($('ef-exam').value||'').trim()),
@@ -4802,12 +5091,16 @@ function updatePayTotal(){
 function savePayModal(memberId){
   var paidEl=document.getElementById('pm-paid');
   var discEl=document.getElementById('pm-discount');
+  var dateEl=document.getElementById('pm-paydate');
   var amt=parseFloat((paidEl?paidEl.value:'0').replace(/[^\d.]/g,''));
   var disc=parseFloat((discEl?discEl.value:'0').replace(/[^\d.]/g,''));
   if(isNaN(amt)||amt<0){toast('Invalid amount','err');return}
   if(isNaN(disc)||disc<0){toast('Invalid discount','err');return}
+  var payDate=dateEl?dateEl.value:'';
   var modal=document.getElementById('pay-modal');if(modal)modal.remove();
-  sendCmd({action:'updateMember',memberId:String(memberId),totalPaid:String(amt),discount:String(disc)},function(res){
+  var params={action:'updateMember',memberId:String(memberId),totalPaid:String(amt),discount:String(disc)};
+  if(payDate)params.paymentDate=payDate;
+  sendCmd(params,function(res){
     if(res&&res.error){toast(res.hint||'Save failed','err');return}
     toast('Payment updated ✓','ok');
     gviz(SHEET_ID,'Members',function(rm){
@@ -4824,19 +5117,24 @@ function quickMarkPaid(memberId){
   var existingPaid=parseFloat(m.totalpaid||'0')||0;
   var existingDisc=parseFloat(m.discount||'0')||0;
   var existing=document.getElementById('pay-modal');if(existing)existing.remove();
+  var existingDate=m.paymentdate||m.paymentDate||todayISO();
   var modal=document.createElement('div');
   modal.id='pay-modal';
   modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
   modal.innerHTML=
-    '<div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:340px;box-shadow:0 8px 40px rgba(0,0,0,.18)">'+
+    '<div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 8px 40px rgba(0,0,0,.18)">'+
       '<div style="font-size:16px;font-weight:700;color:#111;margin-bottom:18px">'+(existingPaid||existingDisc?'Update Payment':'Mark Paid')+'</div>'+
       '<div style="margin-bottom:12px">'+
         '<label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Amount Paid ('+cur+')</label>'+
         '<input id="pm-paid" type="number" min="0" value="'+existingPaid+'" oninput="updatePayTotal()" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:15px;font-weight:600;box-sizing:border-box">'+
       '</div>'+
-      '<div style="margin-bottom:14px">'+
+      '<div style="margin-bottom:12px">'+
         '<label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Discount ('+cur+')</label>'+
         '<input id="pm-discount" type="number" min="0" value="'+existingDisc+'" oninput="updatePayTotal()" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:15px;font-weight:600;box-sizing:border-box">'+
+      '</div>'+
+      '<div style="margin-bottom:14px">'+
+        '<label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px">Payment Date <span style="font-size:10px;color:#94a3b8;font-weight:400">— when cash was received</span></label>'+
+        '<input id="pm-paydate" type="date" value="'+existingDate+'" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box;color:#334155">'+
       '</div>'+
       '<div style="background:#f0fdf4;border-radius:8px;padding:10px 14px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center">'+
         '<span style="font-size:12px;color:#166534;font-weight:600">Total Settled</span>'+
