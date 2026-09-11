@@ -21,7 +21,7 @@ var MEMBERS_HEADERS = [
   'MemberID', 'EnrolledAt', 'Name', 'FatherName', 'Phone', 'DOB',
   'Email', 'Aadhar', 'Preparation', 'ExamDetails', 'PhotoURL',
   'Plan', 'StartDate', 'ExpiryDate', 'Seat', 'Shift',
-  'TotalPaid', 'Discount', 'Status', 'LastReminderSent', 'Notes',
+  'TotalPaid', 'Discount', 'PaymentDate', 'Status', 'LastReminderSent', 'Notes',
   'AadharPhotoURL', 'EnrollmentMode'
 ];
 
@@ -226,6 +226,7 @@ function saveMember_(p) {
       case 'Shift':            return p.shift || '';
       case 'TotalPaid':        return p.total || '';
       case 'Discount':         return p.discount || '';
+      case 'PaymentDate':      return p.paymentDate || '';
       case 'Status':           return decideInitialStatus_(p.status || '', isAuthenticated);
       case 'LastReminderSent': return '';
       case 'Notes':            return p.notes || '';
@@ -360,6 +361,15 @@ function updateMember_(p) {
     if (p.shift)             set('Shift',      p.shift);
     if (p.seat != null)      set('Seat',       p.seat);
     if (p.totalPaid != null) set('TotalPaid',  p.totalPaid);
+    if (p.paymentDate != null) {
+      if (info.idx['PaymentDate'] == null) {
+        var pdc = sh.getLastColumn() + 1;
+        sh.getRange(1, pdc).setValue('PaymentDate').setFontWeight('bold').setBackground('#0f766e').setFontColor('#ffffff');
+        sh.getRange(2, pdc, sh.getMaxRows() - 1, 1).setNumberFormat('@');
+        info.idx['PaymentDate'] = pdc - 1;
+      }
+      set('PaymentDate', p.paymentDate);
+    }
     if (p.discount != null) {
       if (info.idx['Discount'] == null) {
         var dc = sh.getLastColumn() + 1;
@@ -1272,7 +1282,9 @@ function snapshotCycle_() {
   info.rows.forEach(function(row){
     var status=String(row[info.idx['Status']]||'').toLowerCase();
     if(status==='rejected')return;
-    var sd=parseDate_(String(row[info.idx['StartDate']]||''));
+    // Cash-based: use PaymentDate if set, else StartDate
+    var rawPd=info.idx['PaymentDate']!=null?String(row[info.idx['PaymentDate']]||''):'';
+    var sd=parseDate_(rawPd)||parseDate_(String(row[info.idx['StartDate']]||''));
     if(!sd||sd<prevStart||sd>prevEnd)return;
     revenue+=parseFloat(String(row[info.idx['TotalPaid']]||'').replace(/[^\d.]/g,''))||0;
     discount+=parseFloat(String(row[info.idx['Discount']]||'').replace(/[^\d.]/g,''))||0;
@@ -1300,7 +1312,8 @@ function backfillRevenue_() {
     var row=entry.row,idx=entry.idx;
     var status=String(row[idx['Status']]||'').toLowerCase();
     if(status==='rejected')return;
-    var sd=parseDate_(String(row[idx['StartDate']]||''));
+    var rawPd2=idx['PaymentDate']!=null?String(row[idx['PaymentDate']]||''):'';
+    var sd=parseDate_(rawPd2)||parseDate_(String(row[idx['StartDate']]||''));
     if(!sd)return;
     var c=cycleForDate_(sd);
     if(c.end>=today)return; // skip in-progress cycle
