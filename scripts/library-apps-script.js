@@ -65,12 +65,15 @@ function doGet(e) {
   if (a === 'sendRenewalEmail')     return jsonOut_(sendRenewalEmail_(p.memberId || '', p.customMsg || ''));
   if (a === 'lockPlan')             return ok(lockPlan_(p.planName || '', p.locked || ''));
   if (a === 'changePin')            return jsonOut_(changePin_(p.oldPin || '', p.newPin || ''));
+  if (a === 'restorePayments')      return jsonOut_(restorePaymentsFromArchive_());
   if (a === 'snapshotCycle')        return jsonOut_(snapshotCycle_());
+  if (a === 'forceSnapshotCycle')   return jsonOut_(forceSnapshotCycle_());
+  if (a === 'resnapshotCycleForDate') return jsonOut_(resnapshotCycleForDate_(p.date || ''));
   if (a === 'backfillRevenue')      return jsonOut_(backfillRevenue_());
   if (a === 'getRevenueSummary')    return jsonOut_(getRevenueSummary_());
   if (a === 'renewMember') {
     archiveMemberSnapshot_(p.memberId, 'Renewed');
-    return ok(updateMember_({memberId:p.memberId, startDate:p.startDate, expiryDate:p.expiryDate, plan:p.plan||'', status:'Active', totalPaid:'0', discount:'0'}));
+    return ok(updateMember_({memberId:p.memberId, startDate:p.startDate, expiryDate:p.expiryDate, plan:p.plan||'', status:'Active'}));
   }
   if (a === 'archiveSnapshot') {
     var result = archiveMemberSnapshot_(p.memberId, p.reason || 'Manual');
@@ -1229,6 +1232,56 @@ function sendNewMemberAlert_(row, headers) {
 
 
 // ═══════════════════════════════════
+// ─── One-time payment restore ──────────────────────────────────
+
+function restorePaymentsFromArchive_() {
+  var sh = getMembersSheet_();
+  var info = membersIndex_(sh);
+  var archSh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Members_Archive');
+  var archInfo = archSh ? membersIndex_(archSh) : null;
+
+  // Build archive lookup: memberId → most recent archived TotalPaid
+  var archMap = {};
+  if (archInfo) {
+    archInfo.rows.forEach(function(row) {
+      var mid = String(row[archInfo.idx['MemberID']] || '').trim();
+      var tp = parseFloat(String(row[archInfo.idx['TotalPaid']] || '').replace(/[^\d.]/g,'')) || 0;
+      var reason = String(row[archInfo.idx['ArchivedReason']] || '');
+      if (mid && tp > 0 && reason === 'Renewed') {
+        // Keep the highest TotalPaid found (most recent meaningful payment)
+        if (!archMap[mid] || tp > archMap[mid]) archMap[mid] = tp;
+      }
+    });
+  }
+
+  var fixed = 0, skipped = 0;
+  var idCol = info.idx['MemberID'];
+  var tpCol = info.idx['TotalPaid'];
+  var statusCol = info.idx['Status'];
+
+  for (var i = 0; i < info.rows.length; i++) {
+    var row = info.rows[i];
+    var status = String(row[statusCol] || '').toLowerCase();
+    if (status !== 'active') { skipped++; continue; }
+
+    var mid = String(row[idCol] || '').trim();
+    var currentTp = String(row[tpCol] || '').trim();
+
+    // Only fix members where TotalPaid is empty or '0'
+    if (currentTp !== '' && currentTp !== '0') { skipped++; continue; }
+
+    // Restore from archive if available
+    if (archMap[mid] && tpCol != null) {
+      sh.getRange(i + 2, tpCol + 1).setValue(String(archMap[mid]));
+      fixed++;
+    } else {
+      skipped++;
+    }
+  }
+
+  return { fixed: fixed, skipped: skipped };
+}
+
 // REVENUE HISTORY
 // ═══════════════════════════════════
 
@@ -1293,6 +1346,85 @@ function snapshotCycle_() {
   var now=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});
   sh.appendRow([label,fmtDate_(prevStart),fmtDate_(prevEnd),revenue,discount,revenue+discount,count,now]);
   return{saved:true,label:label,revenue:revenue,discount:discount,totalSettled:revenue+discount,memberCount:count};
+}
+
+function forceSnapshotCycle_() {
+  var today=new Date();
+  var day=today.getDate(),m=today.getMonth(),y=today.getFullYear();
+  var prevStart,prevEnd;
+  if(day>=26){prevStart=new Date(y,m-1,26);prevEnd=new Date(y,m,25);}
+  else{prevStart=new Date(y,m-2,26);prevEnd=new Date(y,m-1,25);}
+  prevEnd.setHours(23,59,59,999);
+  if(prevEnd>=today)return{skipped:true,reason:'cycle not yet ended'};
+
+  var label=cycleLabel_(prevStart,prevEnd);
+  var sh=getOrCreateRevenueHistorySheet_();
+  var vals=sh.getDataRange().getValues();
+
+  // Find and delete existing row for this cycle label
+  var deletedOld=false;
+  for(var i=vals.length-1;i>=1;i--){
+    if(String(vals[i][0]).trim()===label){sh.deleteRow(i+1);deletedOld=true;break;}
+  }
+
+  // Re-compute
+  var msh=getMembersSheet_();
+  var info=membersIndex_(msh);
+  var revenue=0,discount=0,count=0;
+  info.rows.forEach(function(row){
+    var status=String(row[info.idx['Status']]||'').toLowerCase();
+    if(status==='rejected')return;
+    var rawPd=info.idx['PaymentDate']!=null?String(row[info.idx['PaymentDate']]||''):'';
+    var sd=parseDate_(rawPd)||parseDate_(String(row[info.idx['StartDate']]||''));
+    if(!sd||sd<prevStart||sd>prevEnd)return;
+    revenue+=parseFloat(String(row[info.idx['TotalPaid']]||'').replace(/[^\d.]/g,''))||0;
+    discount+=parseFloat(String(row[info.idx['Discount']]||'').replace(/[^\d.]/g,''))||0;
+    count++;
+  });
+  var now=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});
+  sh.appendRow([label,fmtDate_(prevStart),fmtDate_(prevEnd),revenue,discount,revenue+discount,count,now]);
+  return{updated:true,label:label,revenue:revenue,discount:discount,totalSettled:revenue+discount,memberCount:count,deletedOld:deletedOld};
+}
+
+function resnapshotCycleForDate_(dateStr) {
+  if (!dateStr) return { skipped: true, reason: 'no-date' };
+  var d = parseDate_(dateStr);
+  if (!d) return { skipped: true, reason: 'invalid-date' };
+
+  var today = new Date();
+  var cycle = cycleForDate_(d);
+
+  // Only re-snapshot past cycles, not the current one
+  if (cycle.end >= today) return { skipped: true, reason: 'current-or-future-cycle' };
+
+  var label = cycleLabel_(cycle.start, cycle.end);
+  var sh = getOrCreateRevenueHistorySheet_();
+  var vals = sh.getDataRange().getValues();
+
+  // Delete existing row for this cycle
+  var deleted = false;
+  for (var i = vals.length - 1; i >= 1; i--) {
+    if (String(vals[i][0]).trim() === label) { sh.deleteRow(i + 1); deleted = true; break; }
+  }
+
+  // Re-compute from Members sheet
+  var msh = getMembersSheet_();
+  var info = membersIndex_(msh);
+  var revenue = 0, discount = 0, count = 0;
+  info.rows.forEach(function(row) {
+    var status = String(row[info.idx['Status']] || '').toLowerCase();
+    if (status === 'rejected') return;
+    var rawPd = info.idx['PaymentDate'] != null ? String(row[info.idx['PaymentDate']] || '') : '';
+    var sd = parseDate_(rawPd) || parseDate_(String(row[info.idx['StartDate']] || ''));
+    if (!sd || sd < cycle.start || sd > cycle.end) return;
+    revenue += parseFloat(String(row[info.idx['TotalPaid']] || '').replace(/[^\d.]/g, '')) || 0;
+    discount += parseFloat(String(row[info.idx['Discount']] || '').replace(/[^\d.]/g, '')) || 0;
+    count++;
+  });
+
+  var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  sh.appendRow([label, fmtDate_(cycle.start), fmtDate_(cycle.end), revenue, discount, revenue + discount, count, now]);
+  return { updated: true, label: label, totalSettled: revenue + discount, memberCount: count, deleted: deleted };
 }
 
 function backfillRevenue_() {
