@@ -77,6 +77,11 @@
 
   @keyframes card-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
   /* ── Cards ── */
+  .fac-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;text-align:center;margin-bottom:12px}
+  .fac-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px 6px;text-align:center}
+  .fac-item svg{width:34px;height:34px;display:block;margin:0 auto}
+  .fac-item span{display:block;margin-top:6px;font-size:11px;font-weight:600;line-height:1.25;color:#334155}
+  @media(max-width:520px){.fac-grid{grid-template-columns:repeat(3,1fr)}}
   .card{background:#fff;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.05),0 6px 20px rgba(0,0,0,.05);animation:card-in .35s ease both}
   .card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.15s}.card:nth-child(4){animation-delay:.2s}.card:nth-child(5){animation-delay:.25s}
   .card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
@@ -469,6 +474,8 @@
 <!-- Desktop sidebars -->
 
 <form class="wrap" id="form" onsubmit="return false">
+
+  <div class="card" id="facilitiesCard" style="display:none;padding:16px 14px"></div>
 
   <div class="card">
     <div class="card-header">
@@ -901,6 +908,28 @@ function render(){
   var logo=cfg('logourl','');
   var logoEl=$('topLogo');
   if(logoEl){if(logo){logoEl.style.backgroundImage='url('+JSON.stringify(logo)+')';logoEl.textContent=''}else{logoEl.textContent=(name.match(/[A-Z]/g)||['L']).slice(0,2).join('')}}
+  var facEl=$('facilitiesCard');
+  if(facEl){
+    var facImg=cfg('facilitiesimage','');
+    var facHtml='';
+    if(/^(off|no|none|hide)$/i.test(String(facImg).trim())){
+      facHtml='';
+    }else if(facImg){
+      facHtml='<img src="'+E(facImg)+'" alt="Facilities" style="width:100%;height:auto;display:block">';
+    }else if(/study\s*point/i.test(name)){
+      var FAC=[
+        ['Air Conditioned','<rect x="4" y="10" width="40" height="14" rx="3"/><path d="M10 19H38M14 30v6M24 30v10M34 30v6"/>'],
+        ['Drinking Water','<path d="M24 6C24 6 10 22 10 30a14 14 0 0 0 28 0C38 22 24 6 24 6Z"/><path d="M17 31a7 7 0 0 0 7 7"/>'],
+        ['Ergonomic Chairs','<rect x="13" y="6" width="9" height="18" rx="3"/><path d="M16 24V28M16 28H36M20 28V42M34 28V42"/>'],
+        ['High-Speed Wi-Fi','<path d="M18.34 30.34A8 8 0 0 1 29.66 30.34"/><path d="M12.69 24.69A16 16 0 0 1 35.31 24.69"/><path d="M7.03 19.03A24 24 0 0 1 40.97 19.03"/><circle cx="24" cy="38" r="2.5" fill="currentColor"/>'],
+        ['Reading Lights','<path d="M24 6a12 12 0 0 0-6 22v4h12v-4a12 12 0 0 0-6-22Z"/><path d="M19 38H29M21 42H27"/>']
+      ];
+      facHtml='<div class="fac-title">What you get</div><div class="fac-grid">'+FAC.map(function(f){
+        return '<div class="fac-item"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand)" aria-hidden="true">'+f[1]+'</svg><span>'+f[0]+'</span></div>';
+      }).join('')+'</div>';
+    }
+    if(facHtml){facEl.innerHTML=facHtml;facEl.style.display='';}
+  }
   var phone=cfg('phone','')||cfg('whatsapp','');
   var address=cfg('address','');
   var timing=cfg('timing','');

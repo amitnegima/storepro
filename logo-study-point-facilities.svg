@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120" width="640" height="120" role="img" aria-label="Facilities at The Study Point Library">
+  <g font-family="'Plus Jakarta Sans','Segoe UI',Helvetica,Arial,sans-serif" font-size="12" font-weight="600" fill="#334155" text-anchor="middle">
+    <g transform="translate(40 14)" fill="none" stroke="#0f766e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="10" width="40" height="14" rx="3"/>
+      <path d="M10 19 H38"/>
+      <path d="M14 30 v6 M24 30 v10 M34 30 v6"/>
+    </g>
+    <text x="64" y="86">Air Conditioned</text>
+
+    <g transform="translate(168 14)" fill="none" stroke="#0f766e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24 6 C24 6 10 22 10 30 a14 14 0 0 0 28 0 C38 22 24 6 24 6 Z"/>
+      <path d="M17 31 a7 7 0 0 0 7 7"/>
+    </g>
+    <text x="192" y="86">Drinking Water</text>
+
+    <g transform="translate(296 14)" fill="none" stroke="#0f766e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="13" y="6" width="9" height="18" rx="3"/>
+      <path d="M16 24 V28 M16 28 H36 M20 28 V42 M34 28 V42"/>
+    </g>
+    <text x="320" y="86">Ergonomic Chairs</text>
+
+    <g transform="translate(424 14)" fill="none" stroke="#0f766e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18.34 30.34 A8 8 0 0 1 29.66 30.34"/>
+      <path d="M12.69 24.69 A16 16 0 0 1 35.31 24.69"/>
+      <path d="M7.03 19.03 A24 24 0 0 1 40.97 19.03"/>
+      <circle cx="24" cy="38" r="2.5" fill="#0f766e"/>
+    </g>
+    <text x="448" y="86">High-Speed Wi-Fi</text>
+
+    <g transform="translate(552 14)" fill="none" stroke="#0f766e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24 6 a12 12 0 0 0 -6 22 v4 h12 v-4 a12 12 0 0 0 -6 -22 Z"/>
+      <path d="M19 38 H29 M21 42 H27"/>
+    </g>
+    <text x="576" y="86">Reading Lights</text>
+  </g>
+</svg>
