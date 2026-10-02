@@ -434,6 +434,60 @@
   /* ─── Seats grid ─── */
   .seats-card{padding:20px;border-radius:var(--r-lg);box-shadow:var(--shadow)}
   .seats-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .sheet{max-width:760px;margin-left:auto;margin-right:auto}
+  .msh-hd{padding:14px 16px;gap:12px}
+  .msh-hd .msh-av{width:46px;height:46px;font-size:16px}
+  .msh-hd .msh-name{font-size:17px}
+  .msh-hd .msh-meta{font-size:11.5px}
+  .msh-body{padding:12px 14px 20px}
+  .mh-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:560px){.mh-facts{grid-template-columns:1fr 1fr}}
+  .mh-fact{background:var(--card);border:1px solid var(--line-dk);border-radius:12px;padding:9px 11px;min-width:0}
+  .mh-fl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .mh-fv{font-size:15px;font-weight:800;color:var(--ink);margin-top:3px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mh-fs{font-size:10.5px;color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mh-bar{height:3px;background:var(--line);border-radius:99px;margin-top:6px;overflow:hidden}
+  .mh-bar i{display:block;height:100%;border-radius:99px}
+  .mh-acts{display:flex;gap:8px;margin:10px 0 2px}
+  .mh-act{appearance:none;flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:11px;border:1px solid var(--line-dk);background:var(--card);color:var(--ink);font:700 12.5px var(--F);cursor:pointer;white-space:nowrap;transition:border-color .15s,transform .12s}
+  .mh-act svg{width:15px;height:15px;flex-shrink:0}
+  .mh-act:hover{border-color:var(--brand)}
+  .mh-act:active{transform:scale(.98)}
+  .mh-act.call,.mh-act.wa{color:var(--ok-dk)}
+  .mh-act.primary{background:var(--brand-dk);border-color:var(--brand-dk);color:#fff;flex:1.4}
+  .mh-act.more{flex:0 0 auto;padding:10px 14px}
+  .mh-sec{margin-top:12px}
+  .mh-grps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:480px){.mh-grps{grid-template-columns:1fr}}
+  .mh-grp{background:var(--card);border:1px solid var(--line-dk);border-radius:12px;padding:8px 10px}
+  .mh-grp-l{font-size:11px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;gap:6px;margin-bottom:7px}
+  .mh-grp-l svg{width:13px;height:13px;color:var(--ink-3)}
+  .mh-grp-b{display:flex;gap:6px}
+  .mh-chip{appearance:none;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 6px;border-radius:9px;border:1px solid var(--line-dk);background:var(--bg);color:var(--ink-2);font:600 12px var(--F);cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s}
+  .mh-chip svg{width:13px;height:13px;flex-shrink:0}
+  .mh-chip:hover{border-color:var(--brand);background:var(--brand-bg);color:var(--brand-dk)}
+  .mh-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:8px}
+  .mh-tool{appearance:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 8px;border-radius:10px;border:1px solid var(--line-dk);background:var(--card);color:var(--ink);font:600 12.5px var(--F);cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s}
+  .mh-tool svg{width:14px;height:14px;flex-shrink:0;color:var(--ink-3)}
+  .mh-tool:hover{border-color:var(--brand);background:var(--brand-bg)}
+  .mh-tool.danger{color:var(--err-dk)}
+  .mh-tool.danger svg{color:var(--err-dk)}
+  .mh-tool.danger:hover{border-color:var(--err);background:var(--err-bg)}
+  .mh-link{appearance:none;border:none;background:none;color:var(--ink-3);font:500 11px var(--F);cursor:pointer;text-decoration:underline;padding:0}
+  .mh-link:hover{color:var(--ink-2)}
+  .m-enrolled-at{text-align:center;margin-top:12px}
+  .mh-sec-h{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:0 2px 6px}
+  .mh-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line-dk);border:1px solid var(--line-dk);border-radius:12px;overflow:hidden}
+  @media(max-width:480px){.mh-grid{grid-template-columns:1fr}}
+  .mh-kv{background:var(--card);padding:9px 12px;min-width:0}
+  .mh-kv.wide,.mh-kv:last-child:nth-child(odd){grid-column:1/-1}
+  .mh-kl{font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:.03em}
+  .mh-kvv{font-size:13px;font-weight:600;color:var(--ink);margin-top:2px;word-break:break-word}
+  .mh-kvv a{color:var(--brand);text-decoration:none}
+  .sb-menu .mi-head{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:6px 10px 2px}
+  .sb-menu button.danger{color:var(--err-dk)}
+  .sb-menu button.muted{color:var(--ink-3);font-weight:500;font-size:11.5px}
+
   .seats-sub{font-size:11.5px;color:var(--ink-3);margin-top:2px;font-weight:500}
   .sb-card{position:relative}
   .sb-kebab{position:absolute;top:3px;right:4px;width:22px;height:22px;border-radius:50%;border:none;background:transparent;color:#fff;opacity:.9;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
@@ -5417,149 +5471,142 @@ function openMemberSheet(memberId){
     '<button class="msh-edit" onclick="openEditMember(\''+E(memberId)+'\')">'+I_EDIT+' Edit</button>'+
   '</div>';
 
-  // ─── Key facts ───
+  // ─── Key facts (compact strip) ───
   var totalDays=0;
   if(m.startdate&&m.expirydate){var s=new Date(m.startdate),e2=new Date(m.expirydate);totalDays=Math.round((e2-s)/(86400000))||1}
   var pct=totalDays>0&&d!=null?Math.max(0,Math.min(100,Math.round((totalDays-Math.max(0,d))/totalDays*100))):0;
-  var expColor=d==null?'#0f766e':d<0?'#dc2626':d<=7?'#d97706':'#0f766e';
-  var feeColor=totalSettledAmt===0?'#dc2626':planPrice&&totalSettledAmt<planPrice?'#d97706':'#16a34a';
-  var feeLabel=totalSettledAmt===0?'Due':(planPrice&&totalSettledAmt<planPrice?'Partial':cur+totalSettledAmt.toLocaleString('en-IN'));
-  var feeChipCls=totalSettledAmt===0?'unpaid':(planPrice&&totalSettledAmt<planPrice?'partial':'ok');
-  var feeChipTxt=totalSettledAmt===0?'Unpaid':(planPrice&&totalSettledAmt<planPrice?'Partial':'Paid');
-  var facts='<div class="msh-facts">'+
-    '<div class="msh-fact" style="--fc:var(--brand-dk)">'+
-      '<div class="msh-fl">'+I_CAL+' Plan</div>'+
-      '<div class="msh-fv">'+E(m.plan||'—')+'</div>'+
-      '<div class="msh-fsub">'+E(planDur||shiftLbl||'—')+'</div>'+
-    '</div>'+
-    '<div class="msh-fact" style="--fc:#d97706">'+
-      '<div class="msh-fl">'+I_SEAT+' Seat</div>'+
-      '<div class="msh-fv">'+E(m.seat||'—')+'</div>'+
-      '<div class="msh-fsub">'+E(shiftLbl||'—')+'</div>'+
-    '</div>'+
-    '<div class="msh-fact'+(d!=null&&d<0?' msh-due':'')+'" style="--fc:'+expColor+'">'+
-      '<div class="msh-fl">'+I_CLOCK+' Expires</div>'+
-      '<div class="msh-fv" style="color:'+expColor+'">'+E(d==null?'—':Math.abs(d))+' <small>'+(d==null?'':d<0?'days ago':'days left')+'</small></div>'+
-      '<div class="msh-fsub">'+E(fmtDate(m.expirydate)||'—')+'</div>'+
-      (totalDays>0?'<div class="msh-prog"><div class="msh-prog-track"><div class="msh-prog-fill" style="width:'+pct+'%;background:'+expColor+'"></div></div></div>':'')+
-    '</div>'+
-    '<div class="msh-fact'+(totalSettledAmt===0?' msh-due':'')+'" style="--fc:'+feeColor+'">'+
-      '<div class="msh-fl">'+I_WARN+' Fee Status</div>'+
-      '<div class="msh-fv" style="color:'+feeColor+'">'+E(feeLabel)+'</div>'+
-      (discAmt?'<div style="font-size:10px;color:#1d4ed8;font-weight:600;margin-top:2px">🏷 -'+cur+discAmt.toLocaleString('en-IN')+' discount</div>':'')+
-      '<span class="msh-fchip '+feeChipCls+'">'+feeChipTxt+'</span>'+
-      (totalSettledAmt>0&&(m.paymentdate||m.paymentDate)?'<div style="font-size:9.5px;color:#6366f1;font-weight:600;margin-top:5px">💳 '+fmtDate(m.paymentdate||m.paymentDate)+'</div>':'')+
-    '</div>'+
+  var expColor=d==null?'var(--brand-dk)':d<0?'var(--err-dk)':d<=7?'var(--warn-dk)':'var(--brand-dk)';
+  var pinfo=payInfo(m);
+  var feeColor=pinfo.settled===0?'var(--err-dk)':pinfo.isDue?'var(--warn-dk)':'var(--ok-dk)';
+  var payDateRaw=m.paymentdate||m.paymentDate||'';
+  var feeVal=pinfo.settled===0?'Unpaid':cur+Math.round(pinfo.paid||pinfo.settled).toLocaleString('en-IN');
+  var feeSub=pinfo.settled===0?(pinfo.price?cur+pinfo.price.toLocaleString('en-IN')+' due':'not paid'):pinfo.isDue?'Partial · '+cur+Math.round(pinfo.due).toLocaleString('en-IN')+' due':'Paid'+(payDateRaw?' · '+fmtDate(payDateRaw):'');
+  function mhFact(lbl,val,sub,clr,extra){
+    return '<div class="mh-fact"><div class="mh-fl">'+lbl+'</div><div class="mh-fv"'+(clr?' style="color:'+clr+'"':'')+'>'+val+'</div>'+(sub?'<div class="mh-fs">'+sub+'</div>':'')+(extra||'')+'</div>';
+  }
+  var facts='<div class="mh-facts">'+
+    mhFact('Plan',E(m.plan||'—'),E(planDur||shiftLbl||''),'')+
+    mhFact('Seat',E(m.seat||'—'),E(shiftLbl||''),'')+
+    mhFact('Expires',d==null?'—':(d<0?Math.abs(d)+'d ago':d+'d left'),E(fmtDate(m.expirydate)||''),expColor,totalDays>0?'<div class="mh-bar"><i style="width:'+pct+'%;background:'+expColor+'"></i></div>':'')+
+    mhFact('Fee',E(feeVal),E(feeSub),feeColor)+
   '</div>';
 
   // ─── Status-specific actions (pending / deleted) ───
   var statusActs='';
   if(status==='pending'&&(d==null||d>=0)){
-    statusActs='<div class="msh-pend-acts">'+
+    statusActs='<div class="msh-pend-acts" style="margin-top:10px">'+
       '<button class="approve" onclick="approveMember(\''+E(memberId)+'\')">'+I_CHECK+' Approve enrollment</button>'+
       '<button class="reject" onclick="rejectMember(\''+E(memberId)+'\')">✕ Reject</button>'+
     '</div>';
   } else if(status==='deleted'||status==='rejected'){
-    statusActs='<div class="msh-restore"><button onclick="restoreMember()">'+I_RENEW+' Restore as active</button></div>';
+    statusActs='<div class="msh-restore" style="margin-top:10px"><button onclick="restoreMember()">'+I_RENEW+' Restore as active</button></div>';
   }
 
-  // ─── Primary action buttons (active members only) ───
+  // ─── Action bar (active members only) ───
   var primaryActs='';
   if(status==='active'||status==='expired'){
-    var callBtn=hasPhone?'<button class="msh-acta call" onclick="location.href=\'tel:'+phoneRaw+'\'">'+I_PHONE+' Call</button>':'';
-    var waBtn=hasPhone?'<button class="msh-acta wa" onclick="location.href=\'https://wa.me/'+(phoneRaw.length===10?'91':'')+phoneRaw+'\'">'+I_WA+' WhatsApp</button>':'';
-    var rowActs=(callBtn||waBtn)?'<div class="msh-acts1">'+callBtn+waBtn+'</div>':'';
-    var renewBtn=status==='active'?'<button class="msh-renew-btn" onclick="openRenewMember(\''+E(memberId)+'\')">'+I_RENEW+' Renew Membership</button>':'';
-    var remindersLabel='<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:14px 0 6px;padding:0 18px">Fee Reminders</div>';
-    var waReminderBtn='<button class="msh-actb" onclick="waRenew(\''+E(memberId)+'\')" title="Send fee payment reminder on WhatsApp" style="flex:1">📲 WhatsApp — Fee Due</button>';
-    var emailReminderBtn=m.email?'<button class="msh-actb" onclick="sendFeeReminderEmail(\''+E(memberId)+'\')" title="Send fee reminder email" style="flex:1">✉️ Email — Fee Due</button>':'';
-    var renewalWaBtn=hasPhone?'<button class="msh-actb" onclick="waRenewal(\''+E(memberId)+'\')" title="Send membership renewal reminder on WhatsApp" style="flex:1">📲 WhatsApp — Renew</button>':'';
-    var renewalEmailBtn=m.email?'<button class="msh-actb" onclick="sendRenewalEmail(\''+E(memberId)+'\')" title="Send renewal email" style="flex:1">✉️ Email — Renew</button>':'';
-    var renewalLabel='<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:14px 0 6px;padding:0 18px">Renewal Reminders</div>';
-    var receiptBtn=totalSettledAmt?'<button class="msh-actb" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_DOC+' Update Payment</button>':'<button class="msh-actb" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_CHECK+' Mark Paid</button>';
-    var feeReceiptBtn=totalSettledAmt?'<button class="msh-actb" onclick="openReceipt_(\''+E(memberId)+'\')">🧾 Fee Receipt</button>':'';
-    primaryActs=rowActs+renewBtn+
-      remindersLabel+'<div class="msh-acts2">'+waReminderBtn+emailReminderBtn+'</div>'+
-      renewalLabel+'<div class="msh-acts2">'+renewalWaBtn+renewalEmailBtn+'</div>'+
-      '<div class="msh-acts2" style="margin-top:10px">'+receiptBtn+(feeReceiptBtn||'')+'</div>';
+    primaryActs='<div class="mh-acts">'+
+      (hasPhone?'<button class="mh-act call" onclick="location.href=\'tel:'+phoneRaw+'\'">'+I_PHONE+' Call</button>':'')+
+      (hasPhone?'<button class="mh-act wa" onclick="location.href=\'https://wa.me/'+(phoneRaw.length===10?'91':'')+phoneRaw+'\'">'+I_WA+' WhatsApp</button>':'')+
+      (status==='active'?'<button class="mh-act primary" onclick="openRenewMember(\''+E(memberId)+'\')">'+I_RENEW+' Renew</button>':'')+
+    '</div>';
   }
 
-  // ─── Membership section ───
-  var expRowSuffix=d!=null?(d<0?' · '+Math.abs(d)+' days ago':' · '+d+' days left'):'';
-  var payDateRaw=m.paymentdate||m.paymentDate||'';
-  var payDateDisp=payDateRaw?(' · paid '+fmtDate(payDateRaw)):'';
-  var feeValHtml=totalSettledAmt===0?cur+'0 — not paid':(discAmt?cur+paidAmt.toLocaleString('en-IN')+' paid + '+cur+discAmt.toLocaleString('en-IN')+' disc = '+cur+totalSettledAmt.toLocaleString('en-IN'):cur+paidAmt.toLocaleString('en-IN')+' for '+E(m.plan||'plan'))+payDateDisp;
-  var feeRowHtml='<div class="msh-drow">'+
-    '<div class="msh-drow-ic">'+I_WARN+'</div>'+
-    '<div class="msh-drow-tx"><div class="msh-drow-l">Fee status</div>'+
-      '<div class="msh-drow-v">'+feeValHtml+'</div>'+
-    '</div>'+
-    (totalSettledAmt===0?'<span class="msh-fee-pill">Due</span>':'')+
-    (status==='active'?'<button class="msh-drow-act" onclick="quickMarkPaid(\''+E(memberId)+'\')">'+I_CHECK+(totalSettledAmt?' Update':' Mark Paid')+'</button>':'')+
-  '</div>';
-  var membershipSec='<div class="msh-sec">'+
-    '<div class="msh-sec-h">Membership</div>'+
-    '<div class="msh-rows">'+
-      mshDrow(I_CAL,'Plan',m.plan||'—')+
-      mshDrow(I_CAL,'Start date',fmtDate(m.startdate)||'—')+
-      mshDrow(I_CLOCK,'Expires on',m.expirydate?fmtDate(m.expirydate)+expRowSuffix:'—')+
-      feeRowHtml+
-      (m.lastremindersent?mshDrow(I_BELL,'Last reminder',m.lastremindersent):'')+
-    '</div>'+
-  '</div>';
+  // ─── Reminders + manage (all visible) ───
+  var remindSec='',manageSec='',testLink='';
+  if(status==='active'||status==='expired'){
+    var idq='\''+E(memberId)+'\'';
+    var feeWa=hasPhone?'<button class="mh-chip" onclick="waRenew('+idq+')">'+I_WA+' WhatsApp</button>':'';
+    var feeEm=m.email?'<button class="mh-chip" onclick="sendFeeReminderEmail('+idq+')">'+I_MAIL+' Email</button>':'';
+    var renWa=hasPhone?'<button class="mh-chip" onclick="waRenewal('+idq+')">'+I_WA+' WhatsApp</button>':'';
+    var renEm=m.email?'<button class="mh-chip" onclick="sendRenewalEmail('+idq+')">'+I_MAIL+' Email</button>':'';
+    var grpFee=(feeWa||feeEm)?'<div class="mh-grp"><div class="mh-grp-l">'+I_BELL+' Fee reminder</div><div class="mh-grp-b">'+feeWa+feeEm+'</div></div>':'';
+    var grpRen=(renWa||renEm)?'<div class="mh-grp"><div class="mh-grp-l">'+I_RENEW+' Renewal reminder</div><div class="mh-grp-b">'+renWa+renEm+'</div></div>':'';
+    remindSec=(grpFee||grpRen)?'<div class="mh-sec"><div class="mh-sec-h">Reminders</div><div class="mh-grps">'+grpFee+grpRen+'</div></div>':'';
+    manageSec='<div class="mh-sec"><div class="mh-sec-h">Payment &amp; manage</div><div class="mh-tools">'+
+      '<button class="mh-tool" onclick="quickMarkPaid('+idq+')">'+(pinfo.settled?I_DOC+' Update payment':I_CHECK+' Mark paid')+'</button>'+
+      (pinfo.settled?'<button class="mh-tool" onclick="openReceipt_('+idq+')">'+I_DOC+' Fee receipt</button>':'')+
+      '<button class="mh-tool" onclick="openExtendDate()">'+I_CAL+' Set expiry</button>'+
+      '<button class="mh-tool" onclick="reassignPrompt()">'+I_SEAT+' Reassign seat</button>'+
+      '<button class="mh-tool danger" onclick="deleteMember()">'+I_TRASH+' Delete</button>'+
+    '</div></div>';
+    testLink='<button class="mh-link" onclick="testArchiveSnapshot('+idq+')" title="Saves this record to Members_Archive without changing anything">Test archive (admin)</button>';
+  }
 
-  // ─── Personal section ───
-  var personalRows='';
-  if(m.phone)personalRows+=mshDrowAct(I_PHONE,'Phone',m.phone,I_PHONE+' Call','location.href=\'tel:'+phoneRaw+'\'');
-  if(m.email)personalRows+=mshDrowAct(I_MAIL,'Email',m.email,'Send','location.href=\'mailto:'+E(m.email)+'\'');
-  if(m.fathername)personalRows+=mshDrow('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z"/></svg>','Father\'s name',m.fathername);
-  if(m.dob)personalRows+=mshDrow(I_CAL,'Date of birth',fmtDate(m.dob));
-  if(m.preparation)personalRows+=mshDrow('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>','Preparation',m.preparation);
-  if(m.examdetails)personalRows+=mshDrow('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h6"/></svg>','Exam details',m.examdetails);
-  var personalSec=personalRows?'<div class="msh-sec"><div class="msh-sec-h">Personal</div><div class="msh-rows">'+personalRows+'</div></div>':'';
+  // ─── Details (compact two-column grid) ───
+  function kv(lbl,valHtml,wide){return '<div class="mh-kv'+(wide?' wide':'')+'"><div class="mh-kl">'+E(lbl)+'</div><div class="mh-kvv">'+valHtml+'</div></div>';}
+  var payDetail=pinfo.settled===0?cur+'0 — not paid':(discAmt?cur+paidAmt.toLocaleString('en-IN')+' paid + '+cur+discAmt.toLocaleString('en-IN')+' discount':cur+paidAmt.toLocaleString('en-IN')+' for '+E(m.plan||'plan'))+(payDateRaw?' · '+E(fmtDate(payDateRaw)):'');
+  var cells='';
+  cells+=kv('Start date',E(fmtDate(m.startdate)||'—'));
+  cells+=kv('Payment',payDetail);
+  if(m.lastremindersent)cells+=kv('Last reminder',E(m.lastremindersent));
+  if(m.phone)cells+=kv('Phone',E(m.phone));
+  if(m.email)cells+=kv('Email','<a href="mailto:'+E(m.email)+'">'+E(m.email)+'</a>');
+  if(m.fathername)cells+=kv('Father\'s name',E(m.fathername));
+  if(m.dob)cells+=kv('Date of birth',E(fmtDate(m.dob)));
+  if(m.preparation)cells+=kv('Preparation',E(m.preparation));
+  if(m.examdetails)cells+=kv('Exam details',E(m.examdetails));
 
-  // ─── Aadhar ───
   var aadharNum=m.aadhar||'';
   var aadharPhoto=m.aadharphotourl||'';
   var notesPhotoMatch=(m.notes||'').match(/AadharPhoto:\s*(https?:\/\/\S+)/);
   if(notesPhotoMatch)aadharPhoto=notesPhotoMatch[1];
-  var aadharSec='';
   if(aadharNum||aadharPhoto){
     var fmtAadhar=aadharNum.length===12?aadharNum.replace(/(\d{4})(\d{4})(\d{4})/,'$1 $2 $3'):aadharNum;
-    aadharSec='<div class="msh-sec"><div class="msh-sec-h">Identity</div>'+
-      '<div class="m-aadhar-card">'+
-        '<div class="m-aadhar-head">'+
-          '<div class="m-ac-icon">🪪</div>'+
-          '<div><div class="m-ac-title">Aadhar Card</div>'+(fmtAadhar?'<div class="m-ac-sub">'+E(fmtAadhar)+'</div>':'')+'</div>'+
-        '</div>'+
-        (aadharPhoto?'<div class="m-aadhar-img" onclick="window.open(\''+E(aadharPhoto)+'\',\'_blank\')"><img src="'+E(aadharPhoto)+'" alt="Aadhar"><div class="m-ai-expand">⤢</div></div>':'')+
-      '</div></div>';
+    cells+=kv('Aadhar',(fmtAadhar?E(fmtAadhar):'')+(aadharPhoto?' <a href="'+E(aadharPhoto)+'" target="_blank" rel="noopener">View photo</a>':''));
   }
-
-  // ─── Notes ───
+  if(hasLibPass(m)){
+    var libPassAmt=parseFloat(String(cfg('librarypassprice','500')).replace(/[^\d.]/g,''))||0;
+    cells+=kv('Add-on',E(cfg('librarypasslabel','Library Pass'))+' · '+cur+libPassAmt.toLocaleString('en-IN'));
+  }
   var notesText=(m.notes||'').replace(/AadharPhoto:\s*https?:\/\/\S+/g,'').replace(/\[Library Pass opted\]/g,'').trim();
-  var libPassAmt=parseFloat(String(cfg('librarypassprice','500')).replace(/[^\d.]/g,''))||0;
-  var libPassSec=hasLibPass(m)?'<div class="msh-sec"><div class="msh-sec-h">Add-ons</div><div style="display:flex;align-items:center;gap:8px;padding:8px 0"><span style="font-size:18px">🎫</span><div><div style="font-size:13px;font-weight:700;color:var(--ink)">'+E(cfg('librarypasslabel','Library Pass'))+'</div><div style="font-size:11px;color:var(--ink-3);margin-top:1px">Opted at enrollment · '+cfg('currency','₹')+libPassAmt.toLocaleString('en-IN')+'</div></div></div></div>':'';
-  var notesSec=notesText?'<div class="msh-sec"><div class="msh-sec-h">Notes</div><div class="m-notes">'+E(notesText)+'</div></div>':'';
+  if(notesText)cells+=kv('Notes',E(notesText),true);
+  var detailsSec='<div class="mh-sec"><div class="mh-sec-h">Details</div><div class="mh-grid">'+cells+'</div></div>';
 
-  // ─── Manage section ───
-  var manageSec='';
-  if(status==='active'||status==='expired'){
-    manageSec='<div class="msh-sec"><div class="msh-sec-h">Manage</div>'+
-      '<div class="msh-manage">'+
-        '<button class="msh-mbtn" onclick="openRenewMember(\''+E(memberId)+'\')">'+I_RENEW+' Renew</button>'+
-        '<button class="msh-mbtn" onclick="openExtendDate()">'+I_CAL+' Set expiry</button>'+
-        '<button class="msh-mbtn" onclick="reassignPrompt()">'+I_SEAT+' Reassign seat</button>'+
-        '<button class="msh-mbtn danger" onclick="deleteMember()">'+I_TRASH+' Delete</button>'+
-        '<button class="msh-mbtn" onclick="testArchiveSnapshot(\''+E(memberId)+'\')" style="border-color:#6366f1;color:#4f46e5" title="Test: saves this member\'s current record to Members_Archive without changing anything">🗃 Test Archive</button>'+
-      '</div>'+
-    '</div>';
-  }
+  var enrolledAt='<div class="m-enrolled-at">'+(m.enrolledat?'Enrolled '+E(fmtDate(m.enrolledat)):'')+(testLink?(m.enrolledat?' · ':'')+testLink:'')+'</div>';
 
-  var enrolledAt=m.enrolledat?'<div class="m-enrolled-at">Enrolled '+E(fmtDate(m.enrolledat))+'</div>':'';
-
-  $('sheetBody').innerHTML=header+'<div class="msh-body">'+facts+statusActs+primaryActs+membershipSec+personalSec+aadharSec+libPassSec+notesSec+manageSec+enrolledAt+'</div>';
+  $('sheetBody').innerHTML=header+'<div class="msh-body">'+facts+statusActs+primaryActs+remindSec+manageSec+detailsSec+enrolledAt+'</div>';
   openSheet();
+}
+
+function openMemberMore_(btn,memberId){
+  closeSeatMenu_();
+  var m=members.filter(function(x){return x.memberid===memberId})[0];
+  if(!m)return;
+  openMemberId=memberId;
+  var status=(m.status||'').toLowerCase();
+  var hasPhone=!!(m.phone||'').replace(/\D/g,'');
+  var settled=payInfo(m).settled;
+  var menu=document.createElement('div');
+  menu.className='sb-menu';menu.id='seatMenu';menu.setAttribute('role','menu');
+  function head(t){var h=document.createElement('div');h.className='mi-head';h.textContent=t;menu.appendChild(h);}
+  function sep(){var x=document.createElement('div');x.className='mi-sep';menu.appendChild(x);}
+  function add(label,fn,cls){var b=document.createElement('button');b.textContent=label;b.setAttribute('role','menuitem');if(cls)b.className=cls;b.onclick=function(e){e.stopPropagation();closeSeatMenu_();fn();};menu.appendChild(b);}
+  if(hasPhone||m.email){
+    head('Fee reminder');
+    if(hasPhone)add('WhatsApp',function(){waRenew(memberId)});
+    if(m.email)add('Email',function(){sendFeeReminderEmail(memberId)});
+    sep();
+    head('Renewal reminder');
+    if(hasPhone)add('WhatsApp',function(){waRenewal(memberId)});
+    if(m.email)add('Email',function(){sendRenewalEmail(memberId)});
+    sep();
+  }
+  head('Payment');
+  add(settled?'Update payment':'Mark paid',function(){quickMarkPaid(memberId)});
+  if(settled)add('Fee receipt',function(){openReceipt_(memberId)});
+  sep();
+  head('Manage');
+  add('Set expiry date',function(){openExtendDate()});
+  add('Reassign seat',function(){reassignPrompt()});
+  add('Delete member',function(){deleteMember()},'danger');
+  add('Test archive (admin)',function(){testArchiveSnapshot(memberId)},'muted');
+  document.body.appendChild(menu);
+  var r=btn.getBoundingClientRect();
+  var w=menu.offsetWidth,h=menu.offsetHeight;
+  var left=Math.min(window.innerWidth-w-8,Math.max(8,r.right-w));
+  var top=r.bottom+4;if(top+h>window.innerHeight-8)top=Math.max(8,r.top-h-4);
+  menu.style.left=left+'px';menu.style.top=top+'px';
 }
 
 function mshDrow(ic,lbl,val){
