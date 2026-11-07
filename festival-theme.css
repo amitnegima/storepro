@@ -1,0 +1,254 @@
+.festival-banner:not(.festival-diwali) { border: 1px solid #e8bd66; border-radius: 12px; background: #fff4d8; color: #593710; }
+.festival-diwali {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff0cc !important;
+  border: 1px solid #b98545;
+  background: radial-gradient(ellipse at 84% 100%, #803a38, transparent 60%), linear-gradient(115deg, #241435, #492044);
+}
+.festival-diwali:not([hidden]) { display: inline-block; }
+.festival-diwali .diwali-title { position: relative; z-index: 1; }
+.festival-diwali .diwali-diya { color: #ffe0a1; }
+.festival-diwali .diwali-art { display: none; }
+.festival-compact.festival-diwali { padding: 3px 9px; border-radius: 999px; }
+.festival-banner.festival-diwali {
+  display: block;
+  padding: 24px 18px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px #28143126;
+}
+.festival-banner.festival-diwali[hidden] { display: none; }
+.festival-banner .diwali-title { font: 700 clamp(25px, 6vw, 38px)/1.1 Georgia, serif; text-shadow: 0 2px 12px #251234; }
+.festival-banner .diwali-diya { display: block; margin-bottom: 6px; font-size: 27px; }
+.festival-banner .diwali-kicker { display: block; margin: 0 0 5px; font: 800 9px/1.3 system-ui, sans-serif; letter-spacing: .25em; text-transform: uppercase; color: #ffd891; }
+.festival-banner .diwali-art { display: block; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.festival-banner .diwali-sparks { transform-box: fill-box; transform-origin: center; animation: diwali-bloom 1.2s ease-out both; }
+.festival-banner .diwali-sparks:last-child { animation-delay: .2s; }
+@keyframes diwali-bloom { from { opacity: .12; transform: scale(.68); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .festival-banner .diwali-sparks { animation: none; } }
+/* Diwali accents outside the greeting, scoped to the active theme. */
+.diwali-active #heroTop {
+  background: radial-gradient(ellipse at 50% 0%, #77394e 0%, transparent 58%), linear-gradient(150deg, #241435, #492044 72%, #793c40);
+}
+.diwali-active #heroTop::before,
+.diwali-active #hdr::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 9px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 8px 4px, #ffdb8b 0 2px, #ffbf6555 3px, transparent 6px) 0 0 / 32px 9px repeat-x,
+    radial-gradient(circle at 8px 5px, #ffb1c7 0 2px, #ff8ab855 3px, transparent 6px) 16px 0 / 32px 9px repeat-x;
+}
+.diwali-active #hdr::before {
+  inset: auto 0 -4px;
+  height: 7px;
+}
+.diwali-active #topLogo,
+.diwali-active #hdrLogo,
+.diwali-active #navLogo {
+  outline: 1px solid #e7ad5b;
+  outline-offset: 2px;
+  box-shadow: 0 0 15px #eaa75470;
+}
+.diwali-active .step-badge {
+  position: relative;
+  color: #fff4de;
+  background: linear-gradient(135deg, #5b2451, #8a423e);
+  box-shadow: 0 0 0 1px #c99552, 0 3px 8px #8a423e30;
+}
+.diwali-active .step-badge::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  background: #ffca69;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  pointer-events: none;
+}
+.splash.splash-diwali {
+  background: radial-gradient(ellipse at 50% 42%, #663149, transparent 58%), linear-gradient(145deg, #241435, #421e3d);
+}
+.splash.splash-diwali::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 16px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10px 5px, #ffdc89 0 2px, #ffbf6566 3px, transparent 8px) 0 0 / 40px 16px repeat-x,
+    radial-gradient(circle at 10px 8px, #ffb1c7 0 2px, #ff8ab866 3px, transparent 8px) 20px 0 / 40px 16px repeat-x;
+}
+.splash-diwali .splash-logo { box-shadow: 0 0 26px #ffc06970; }
+.splash-festival {
+  margin: 0 12px 22px;
+  color: #fff0cc;
+  text-align: center;
+  font: 700 clamp(27px, 8vw, 43px)/1.1 Georgia, serif;
+}
+.splash-festival small {
+  display: block;
+  margin-top: 7px;
+  font: 800 10px/1.4 system-ui, sans-serif;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: #ffd891;
+}
+.splash-diwali .msg, .splash-diwali .msg b { color: #fff0cc; }
+.splash-diwali .splash-step { background: #ffffff35; }
+.splash-diwali .splash-step.done, .splash-diwali .splash-step.active, .splash-diwali .splash-dots span { background: #ffce7c; }
+@media (prefers-reduced-motion: reduce) {
+  .splash-diwali .splash-logo, .splash-diwali .splash-dots span { animation: none; }
+}
+.festival-settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 20px 20px;
+}
+.festival-settings-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--brand-bg);
+  color: var(--ink);
+}
+.festival-settings-preview[data-theme-option="diwali"] {
+  color: #fff0cc;
+  background: radial-gradient(ellipse at 100% 100%, #854540, transparent 65%), linear-gradient(120deg, #241435, #522448);
+  border-color: #aa754c;
+}
+.festival-settings-preview[data-theme-option="newyear"] {
+  color: #eef3ff;
+  background: linear-gradient(120deg, #182648, #43346e);
+  border-color: #68629b;
+}
+.festival-preview-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  height: 42px;
+  border: 1px solid currentColor;
+  border-radius: 12px;
+  font-size: 23px;
+}
+.festival-settings-preview small,
+.festival-settings-preview strong,
+.festival-settings-preview div > span { display: block; }
+.festival-settings-preview small { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+.festival-settings-preview strong { margin: 3px 0; font-size: clamp(17px, 2vw, 24px); }
+.festival-settings-preview div > span { font-size: 12px; }
+.festival-settings-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; gap: 8px 12px; }
+.festival-settings-fields label { display: grid; gap: 6px; color: var(--ink); font-size: 13px; font-weight: 700; }
+.festival-settings-fields small, .festival-settings-fields p { color: var(--ink-3); font-size: 11px; font-weight: 500; }
+.festival-settings-fields p { grid-column: 1 / -1; margin: 0; }
+.festival-settings-fields select, .festival-settings-fields input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card, white);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+}
+[data-theme="dark"] .festival-settings-fields { color-scheme: dark; }
+@media (max-width: 760px) { .festival-settings { grid-template-columns: 1fr; padding: 14px; } }
+@media (max-width: 350px) { .festival-settings-fields { grid-template-columns: 1fr; } }
+.festival-newyear,
+.festival-banner.festival-newyear,
+.splash.splash-newyear,
+.newyear-active #heroTop {
+  color: #fff1cc;
+  background:
+    radial-gradient(circle, #ffd88c 0 1px, transparent 2px) 7px 9px / 53px 41px,
+    radial-gradient(circle, #a4baff 0 1px, transparent 2px) 23px 4px / 47px 59px,
+    linear-gradient(135deg, #131e3d, #362b60);
+}
+.festival-banner.festival-newyear { padding: 22px 16px; border-color: #9b7e50; border-radius: 16px; font: 700 clamp(24px, 5vw, 36px)/1.15 Georgia, serif; }
+.festival-compact.festival-newyear { padding: 3px 9px; border: 1px solid #9b7e50; border-radius: 999px; }
+.festival-compact.festival-newyear:not([hidden]) { display: inline-block; }
+.splash-newyear .msg, .splash-newyear .msg b { color: #fff1cc; }
+.splash-newyear .splash-step { background: #ffffff35; }
+.splash-newyear .splash-step.done, .splash-newyear .splash-step.active, .splash-newyear .splash-dots span { background: #ffd88c; }
+.splash-newyear .splash-logo, .newyear-active #topLogo, .newyear-active #navLogo { box-shadow: 0 0 18px #b9b0ff80; }
+@media (prefers-reduced-motion: reduce) {
+  .splash-newyear .splash-logo, .splash-newyear .splash-dots span { animation: none; }
+}
+.festival-compact.festival-newyear { color: #fff1cc !important; }
+
+.hdr-title-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.hdr-diwali-diya { display: none; width: 28px; height: 28px; flex: none; filter: drop-shadow(0 0 5px #ffb94f80); }
+@media (min-width: 761px) {
+  .diwali-active .hdr-diwali-diya { display: block; }
+  .diwali-active #festivalGreeting .diwali-diya { display: none; }
+}
+
+/* Alternate the two strands so the lights twinkle without flashing in unison. */
+@media (prefers-reduced-motion: no-preference) {
+  .diwali-active #hdr::before {
+    background: radial-gradient(circle at 8px 4px, #ffca62 0 2px, #ffbf6570 3px, transparent 6px) 0 0 / 32px 7px repeat-x;
+    animation: diwali-light-twinkle 1.1s ease-in-out infinite alternate;
+  }
+  .diwali-active #hdr::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -4px;
+    height: 7px;
+    pointer-events: none;
+    background: radial-gradient(circle at 8px 4px, #ff9ebb 0 2px, #ff8ab870 3px, transparent 6px) 16px 0 / 32px 7px repeat-x;
+    animation: diwali-light-twinkle 1.1s ease-in-out -1.1s infinite alternate;
+  }
+  .diwali-active .hdr-diwali-diya path:nth-child(-n+2) {
+    transform-origin: 16px 20px;
+    animation: diwali-flame-flicker 1.8s ease-in-out infinite alternate;
+  }
+}
+@keyframes diwali-light-twinkle {
+  from { opacity: .16; }
+  to { opacity: 1; }
+}
+@keyframes diwali-flame-flicker {
+  0%, 55% { transform: scale(1); opacity: 1; }
+  30%, 100% { transform: scale(.92, .86); opacity: .78; }
+}
+
+.rev-diwali-mark { display: none; }
+.diwali-active #insRevTrend .rev-trend-title { display: flex; align-items: center; gap: 6px; }
+.diwali-active #insRevTrend .rev-diwali-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 5px;
+  border: 1px solid #dcaa5b;
+  border-radius: 8px;
+  background: #45203f;
+  color: #ffda8d;
+  line-height: 1.35;
+}
+.diwali-active #insRevTrend {
+  position: relative;
+}
+.diwali-active #insRevTrend::before {
+  content: "";
+  position: absolute;
+  inset: 0 15px auto;
+  height: 5px;
+  pointer-events: none;
+  background: radial-gradient(circle at 4px 2px, #e9a945 0 1px, transparent 2px) 0 0 / 15px 5px repeat-x;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .diwali-active #insRevTrend::before { animation: diwali-light-twinkle 2s ease-in-out infinite alternate; }
+  .diwali-active #insRevTrend .rev-diwali-mark span { animation: diwali-light-twinkle 2s ease-in-out -2s infinite alternate; }
+}

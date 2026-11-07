@@ -689,6 +689,18 @@
   .sb-col-btn{appearance:none;border:1px solid var(--line-dk);background:#fff;color:var(--ink-3);border-radius:7px;padding:4px 10px;font:600 11px var(--F);cursor:pointer;transition:.15s}
   .sb-col-btn.act{background:var(--brand);border-color:var(--brand);color:#fff}
   .sb-col-lbl{font-size:11px;font-weight:600;color:var(--ink-3)}
+  .fl-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .fl-tab{appearance:none;border:1.5px solid var(--line-dk);background:#fff;color:var(--ink-2);border-radius:9px;padding:6px 12px;font:700 12px var(--F);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .fl-tab.act{background:var(--brand);border-color:var(--brand);color:#fff}
+  .fl-tab .fl-cnt{font-size:10.5px;font-weight:600;opacity:.75}
+  .fl-tab.fl-add{border-style:dashed;color:var(--brand-dk)}
+  .fl-head{grid-column:1/-1;font-size:11px;font-weight:800;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin:8px 0 2px}
+  .fl-row{display:flex;align-items:center;gap:8px}
+  .fl-name{flex:1;min-width:0}
+  .fl-seats{width:70px;min-width:unset;text-align:center}
+  .fl-unit{font-size:11.5px;color:var(--ink-3);font-weight:600}
+  .fl-rm{appearance:none;border:1px solid #fecaca;background:#fef2f2;color:#dc2626;border-radius:7px;width:28px;height:28px;cursor:pointer;font-size:12px}
+  .fl-rm-sp{width:28px}
 
   /* Fully free seat */
   .seat-cell.fully-free{align-items:center;justify-content:center;background:#f9fafb;border-style:dashed;border-color:#d1d5db}
@@ -1705,7 +1717,109 @@
   .ds-ov-item.warn .ds-ov-val{color:var(--warn)}
   .ds-ov-item.err .ds-ov-val{color:var(--err)}
   .ds-ov-item.hold .ds-ov-val{color:var(--hold)}
+  .rev-cycle-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin-bottom:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(var(--brand-rgb),.035)}
+  .rev-cycle-kicker,.rev-export-label{display:block;color:var(--ink-3);font-size:10px;font-weight:750;letter-spacing:.07em;text-transform:uppercase}
+  .rev-cycle-heading{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:3px}
+  .rev-cycle-heading strong{font-size:16px;line-height:1.25;color:var(--ink)}
+  .rev-cycle-dates{margin-top:3px;font-size:11px;color:var(--ink-3)}
+  .rev-export-groups{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+  .rev-export-group{display:grid;gap:5px;padding:6px 8px;border:1px solid var(--line);border-radius:9px}
+  .rev-export-group:first-child{border-color:rgba(var(--brand-rgb),.28)}
+  .rev-export-actions{display:flex;gap:5px}
+  .rev-export-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:32px;padding:4px 8px;border:1px solid transparent;border-radius:6px;background:rgba(var(--brand-rgb),.09);color:var(--ink);cursor:pointer;white-space:nowrap}
+  .rev-export-btn{font-family:inherit;font-size:11px;font-weight:700;line-height:1.2}
+  .rev-export-btn:hover{background:rgba(var(--brand-rgb),.16);border-color:rgba(var(--brand-rgb),.3)}
+  .rev-export-btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .rev-export-btn svg{width:13px;height:13px;color:var(--brand);flex:none}
+  @media(max-width:520px){.rev-cycle-toolbar{padding:10px}.rev-export-groups{width:100%}.rev-export-group{flex:1 1 auto}.rev-export-btn{flex:1;min-height:38px}}
+  /* Member queues share the same row, badge and action treatment. */
+  .ds-card:has(.ds-member){padding:14px 12px 12px}
+  .ds-card:has(.ds-member) .ds-card-title{min-height:30px;margin:0 0 6px;padding:0 4px 8px;border-bottom:1px solid var(--line-soft);gap:8px}
+  .ds-member,.ds-member:last-child{min-height:58px;padding:8px 4px;gap:8px}
+  .ds-member:hover,.ds-member:focus-within{margin:0;padding:8px 4px;border-radius:8px;background:var(--bg)}
+  .ds-av{width:34px;height:34px;border-radius:11px}
+  .ds-name{font-weight:700;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+  .ds-meta{line-height:1.35;overflow-wrap:anywhere}
+  .ds-pill{padding:3px 7px}
+  .ds-row-status{display:grid;justify-items:end;align-content:center;gap:4px;flex:none}
+  .ds-fee-note{color:var(--err-dk);font-size:9px;font-weight:700}
+  .ds-remind,.ds-card-footer{font:700 11px var(--F);cursor:pointer;border:1px solid var(--line);border-radius:8px}
+  .ds-remind{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;background:#eaf8ef;color:#166534;border-color:#bbebcb}
+  .ds-remind svg{width:15px;height:15px}
+  .ds-card-footer{width:100%;min-height:33px;margin-top:6px;color:var(--brand);background:var(--bg)}
+  .ds-card-footer:hover,.ds-remind:hover{filter:brightness(.95)}
+  .ds-card-footer:focus-visible,.ds-remind:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  [data-theme="dark"] .ds-remind{background:#123b2b;color:#bbf7d0;border-color:#276544}
+  .premium-hero.seat-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:0;padding:0;container-type:inline-size}
+  .seat-overview-panel{min-width:0;padding:14px 16px}
+  .seat-overview-panel+.seat-overview-panel{border-left:1px solid var(--line)}
+  .seat-overview-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;color:var(--ink);font-size:13px;font-weight:750}
+  .seat-overview-title time{color:var(--ink-3);font-size:10px;font-weight:600;white-space:nowrap}
+  .seat-overview-body{display:flex;align-items:center;gap:10px}
+  .seat-overview .premium-hero-ring{width:62px;height:62px}
+  .seat-overview-metrics,.seat-overview-revenue{display:grid;gap:7px;min-width:0}
+  .seat-overview-metrics{flex:1}
+  .seat-overview-row,.seat-overview-row>span{display:flex;align-items:center;gap:5px}
+  .seat-overview-row{justify-content:space-between;font-size:11px;color:var(--ink-2)}
+  .seat-overview-row>span>span{display:flex;flex:none;color:var(--ink-3)}
+  .seat-overview-row strong{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .seat-overview-link{border:0;border-radius:6px;padding:4px 6px;background:var(--brand-bg);color:var(--brand);font:700 10px var(--F);cursor:pointer;white-space:nowrap}
+  .seat-overview-photo{width:100%;height:52px;margin-top:10px;object-fit:cover;border-radius:7px}
+  @container (max-width:489px){.seat-overview-panel+.seat-overview-panel{border-left:0;border-top:1px solid var(--line)}}
+  .hdr-brand{min-width:0;flex-shrink:1}
+  .hdr-context{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-top:4px}
+  .hdr-context .hdr-phone{margin:0}
+  .hdr-context .hdr-meta{margin:0;white-space:normal}
+  .hdr-greeting{flex-wrap:wrap;white-space:normal}
+  .hdr-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto}
+  @media(min-width:861px){
+    .hdr-row{gap:8px}
+    .hdr-brand{flex:0 1 auto;max-width:38%}
+    .hdr-stats{margin:0;min-width:0;flex:0 1 auto;justify-content:flex-start;flex-wrap:wrap;overflow:visible;gap:5px}
+    .hdr-stat-pill{padding:5px 7px;min-height:34px;gap:5px}
+    .hdr-stat-pill .sp-ic svg{width:15px;height:15px}
+    .hdr-stat-pill .sp-val{font-size:13px}
+    .hdr-stat-pill .sp-lbl{font-size:9px}
+    .hdr-actions{margin-left:0;gap:4px}
+  }
+  .seat-control-label,#seatsUtil{display:inline-flex;align-items:center;gap:6px}
+  .cycle-revenue-prompt{width:min(420px,calc(100% - 32px));padding:20px;border:1px solid var(--line-dk);border-radius:16px;background:var(--card);color:var(--ink);box-shadow:var(--shadow-lg)}
+  .cycle-revenue-prompt::backdrop{background:#0f172a66}
+  .cycle-revenue-prompt h2{margin:6px 0;font-size:20px}
+  .cycle-revenue-prompt p{margin:6px 0;color:var(--ink-3);font-size:13px}
+  #cycleRevenueRange{color:var(--ink);font-weight:700}
+  .cycle-revenue-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:16px}
+  .nc-cycle-list{display:grid;gap:6px;padding:6px;background:var(--bg);scrollbar-gutter:stable}
+  .nc-cycle-row,.nc-cycle-row:last-child{gap:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+  .nc-cycle-row:hover,.nc-cycle-row:focus-within{border-color:var(--brand);background:var(--card)}
+  .nc-cycle-row .nc-av{border-radius:11px}
+  .nc-cycle-row .nc-top,.nc-cycle-row .nc-meta,.nc-cycle-row .nc-sub{display:flex;align-items:center;flex-wrap:wrap;gap:3px 7px;white-space:normal;overflow:visible}
+  .nc-cycle-row .nc-name{white-space:normal;overflow-wrap:anywhere}
+  .nc-seat-chip{padding:1px 6px;border-radius:5px;background:var(--brand-bg);color:var(--brand-dk);font-size:10px;font-weight:750}
+  .nc-detail-bit{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+  .nc-cycle-row .nc-right{min-width:65px;max-width:37%}
+  .nc-cycle-row .nc-amt{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+  .nc-section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+  .nc-section-head h3{margin:0;color:var(--ink);font-size:13px;font-weight:750}
+  @media(max-width:420px){.nc-cycle-row,.nc-cycle-row:last-child{gap:7px;padding:8px}.nc-cycle-row .nc-av{width:28px;height:28px}}
+  .xr-cycle-summary .xr-sum-item{display:flex;align-items:center;gap:8px;min-width:0}
+  .xr-summary-err{--xr-accent:var(--err-dk);--xr-tint:var(--err-bg)}
+  .xr-summary-warn{--xr-accent:var(--warn-dk);--xr-tint:var(--warn-bg)}
+  .xr-summary-ok{--xr-accent:var(--brand-dk);--xr-tint:var(--brand-bg)}
+  .xr-cycle-summary .xr-sum-n,.xr-cycle-group{color:var(--xr-accent)}
+  .xr-summary-icon{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:8px;color:var(--xr-accent);background:var(--xr-tint)}
+  .xr-cycle-group{display:flex;align-items:center;gap:6px;padding:7px 9px;border-radius:7px;background:var(--xr-tint)}
+  .xr-cycle-group span{margin-left:auto;font-weight:750}
+  .nc-cycle-row .xr-seat{background:var(--brand-bg);color:var(--brand-dk);border-radius:8px}
+  @media(max-width:480px){.xr-cycle-summary .xr-sum-item{align-items:flex-start;flex-direction:column;gap:5px}.xr-summary-icon{width:24px;height:24px}}
+  .report-downloads{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:8px;margin-bottom:14px}
+  .report-download-card{display:grid;grid-template-columns:32px minmax(0,1fr);gap:8px;align-content:start;padding:10px;border:1px solid var(--line-dk);border-radius:11px;background:var(--card)}
+  .report-download-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:var(--brand-bg);color:var(--brand)}
+  .report-download-copy h3{margin:0;font-size:13px;color:var(--ink)}
+  .report-download-copy p{margin:3px 0 0;font-size:11px;color:var(--ink-3)}
+  .report-download-actions{display:flex;flex-wrap:wrap;gap:5px;grid-column:2}
 </style>
+<link rel="stylesheet" href="festival-theme.css">
 </head>
 <body>
 
@@ -1760,6 +1874,7 @@
       <path d="M100 108 L100 158" stroke="#0f766e" stroke-width="3" stroke-linecap="round"/>
     </svg>
   </div>
+  <div id="splashFestival" class="splash-festival" hidden><span aria-hidden="true">&#129684;</span> <strong>Happy Diwali</strong> <small>Festival of Lights</small></div>
   <div class="splash-steps" id="splashSteps">
     <div class="splash-step active" id="sStep1"></div>
     <div class="splash-step" id="sStep2"></div>
@@ -1836,13 +1951,16 @@
       <div class="hdr-logo" id="hdrLogo"><img src="logo-study-point-mark.svg" alt="" style="width:100%;height:100%;object-fit:cover"></div>
       <div class="hdr-info">
         <div class="hdr-greeting" id="hdrGreeting">Good morning</div>
-        <div class="hdr-name" id="hdrName">Library</div>
+        <div class="hdr-title-row"><div class="hdr-name" id="hdrName">Library</div><svg class="hdr-diwali-diya" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="#ffb43b" d="M16 2c1 4 6 7 6 12a6 6 0 0 1-12 0c0-4 4-7 6-12Z"/><path fill="#fff1a3" d="M16 10c2 2 3 4 3 6a3 3 0 0 1-6 0c0-2 2-5 3-6Z"/><path fill="#b85229" d="M2 20h28c-1 6-6 9-14 9S3 26 2 20Z"/><path d="M3 20h26" stroke="#ffcf69" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="hdr-context">
+        <span id="festivalGreeting" class="festival-compact" hidden style="color:var(--ink);font-size:12px;font-weight:700"></span>
         <div class="hdr-meta" id="hdrMeta">—</div>
         <a class="hdr-phone" id="hdrPhone" style="display:none"></a>
+        </div>
       </div>
     </div>
     <div class="hdr-stats" id="hdrStats"></div>
-    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+    <div class="hdr-actions">
       <button class="hdr-btn" id="hdrPendingBtn" onclick="goTab('Active');scrollToPending()" style="display:none" title="Pending approvals">⏳<span class="badge" id="hdrPendingBadge">0</span></button>
       <button class="hdr-btn" id="hdrMaintBtn" onclick="toggleMaintenanceMode()" title="Toggle maintenance mode" style="font-size:15px">🔧</button>
       <button class="hdr-btn" id="hdrThemeBtn" onclick="toggleTheme()" title="Toggle dark/light theme" style="font-size:16px">🌙</button>
@@ -2012,6 +2130,26 @@
       </summary>
       <div id="setShifts"></div>
     </details>
+    <details>
+      <summary><div class="sum-wrap"><div class="sum-ic">&#10024;</div><div><div>Appearance</div><div class="sum-sub">Festival greetings on the dashboard and enrollment page</div></div></div></summary>
+      <div class="festival-settings">
+        <div id="festivalPreview" class="festival-settings-preview" data-theme-option="off">
+          <span id="festivalPreviewIcon" class="festival-preview-icon" aria-hidden="true">&#10024;</span>
+          <div><small>Greeting preview</small><strong id="festivalPreviewTitle">Theme off</strong><span id="festivalPreviewStatus">Pages use their regular appearance.</span></div>
+        </div>
+        <div class="festival-settings-fields">
+          <label for="festivalTheme"><span>Festival theme</span>
+            <select id="festivalTheme" onchange="saveFestivalSetting_('FestivalTheme',this.value)">
+              <option value="auto">Automatic</option><option value="off">Off</option><option value="diwali">Diwali</option><option value="newyear">New Year</option>
+            </select>
+          </label>
+          <label for="festivalEndDate"><span>End date <small>Optional</small></span>
+            <input id="festivalEndDate" type="date" aria-describedby="festivalEndHint" onchange="saveFestivalSetting_('FestivalEndDate',this.value)">
+          </label>
+          <p id="festivalEndHint">The greeting stays visible through the selected date.</p>
+        </div>
+      </div>
+    </details>
     <details><summary><div class="sum-wrap"><div class="sum-ic">📝</div><div><div>Enrollment fields &amp; approval</div><div class="sum-sub">Required fields, approval, maintenance, facilities banner</div></div></div></summary><div id="setEnroll"></div></details>
     <details><summary><div class="sum-wrap"><div class="sum-ic">🎫</div><div><div>Library Pass</div><div class="sum-sub">Optional add-on shown on the enrollment page</div></div></div></summary><div id="setLibraryPass"></div></details>
     <details><summary><div class="sum-wrap"><div class="sum-ic">⏰</div><div><div>Expiry reminders</div><div class="sum-sub">Email, SMS and WhatsApp templates</div></div></div></summary><div id="setReminders"></div></details>
@@ -2021,6 +2159,7 @@
 
     <h2>Tests &amp; tools</h2>
     <div class="tool-list">
+      <button type="button" class="tool-row" onclick="showCycleRevenuePrompt_(true)"><span class="tool-ic" aria-hidden="true">&#8595;</span><span class="tool-tx"><b>Test revenue download prompt</b><i>Use the current billing cycle only</i></span><span class="tool-go" aria-hidden="true">&#8250;</span></button>
       <button class="tool-row" onclick="testEmail()"><span class="tool-ic">✉️</span><span class="tool-tx"><b>Send test email</b><i>Sends a sample reminder to your email</i></span><span class="tool-go">›</span></button>
       <button class="tool-row" onclick="testSms()"><span class="tool-ic">💬</span><span class="tool-tx"><b>Send test SMS</b><i>Sends a sample reminder to your phone</i></span><span class="tool-go">›</span></button>
       <button class="tool-row" onclick="testWA()"><span class="tool-ic">🟢</span><span class="tool-tx"><b>Open test WhatsApp</b><i>Opens a sample message in WhatsApp</i></span><span class="tool-go">›</span></button>
@@ -2165,9 +2304,22 @@
   </div>
 </div>
 
+<dialog id="cycleRevenuePrompt" class="cycle-revenue-prompt" aria-labelledby="cycleRevenueTitle">
+  <span class="rev-cycle-kicker" id="cycleRevenueMode">New billing cycle</span>
+  <h2 id="cycleRevenueTitle">Download current revenue</h2>
+  <p id="cycleRevenueRange"></p>
+  <p>Export the current cycle so far, including available member payment details.</p>
+  <div class="cycle-revenue-actions">
+    <form method="dialog"><button class="rev-export-btn" type="submit" autofocus>Later</button></form>
+    <button type="button" class="rev-export-btn" onclick="downloadPromptRevenue_(false)">PDF</button>
+    <button type="button" class="rev-export-btn" onclick="downloadPromptRevenue_(true)">Excel</button>
+  </div>
+</dialog>
+<script src="festival-theme.js"></script>
+<script src="revenue-report.js"></script>
 <script>
 var MASTER_SHEET_ID='1U1T-OS6xx3xRRn2O7KoTw8NE6C-IwrQs6r88sACpejo';
-var EXPECTED_SCRIPT_VERSION=5;  // bump when the Apps Script needs redeploying
+var EXPECTED_SCRIPT_VERSION=8;  // bump when the Apps Script needs redeploying
 var SHEET_ID='',SCRIPT_URL='',SLUG='',DASH_TOKEN='';
 var config={},members=[],plans=[];
 var currentTab='Seats';
@@ -2430,6 +2582,7 @@ function splashStep(n,msg){
   });
 }
 function loadAll(){
+  updateFestivalSplash_(SLUG);
   // Check that the deployed Apps Script is recent enough. If not, surface a
   // toast so the shopkeeper knows to redeploy — out-of-date scripts can quietly
   // skip the approval flow and write members as Active.
@@ -2454,6 +2607,7 @@ function loadAll(){
       var k=row.key||row.config||Object.keys(row)[0]||'',v=row.value||row[Object.keys(row)[1]||'']||'';
       if(k)config[k.toLowerCase().replace(/\s+/g,'')]=v;
     });
+    updateFestivalSplash_(SLUG,cfg('festivaltheme','auto'),cfg('festivalenddate',''));
     console.log('[dash] config:',Object.keys(config).length,'keys');
     splashStep(2,'Loading members…');
     gviz(SHEET_ID,'Products',function(rp){
@@ -2535,7 +2689,7 @@ function updateMaintBtn_(){
 // ─── Silent auto-refresh (so the shopkeeper sees new enrollments while
 // the student is still at the counter — no manual reload needed). Plays a
 // soft chime and flashes the sticky bar when the pending count goes up. ───
-var POLL_INTERVAL=30000, lastPendingCount=0, pollTimer=null, audioPrimed=false;
+var POLL_INTERVAL=60000, lastPendingCount=0, pollTimer=null, audioPrimed=false;
 
 function primeAudio(){
   // Browsers block audio until a user gesture. Wire ANY tap to unlock it.
@@ -2593,6 +2747,13 @@ function flashSticky(){}
 function renderSticky(){}
 
 var ICO_={
+  floor:'<path d="m3 8 9-5 9 5-9 5-9-5Zm0 4 9 5 9-5M3 16l9 5 9-5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/>',
+  camera:'<path d="M4 7h4l2-3h4l2 3h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3"/>',
+  columns:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 5v14m6-14v14"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
   seat:'<rect x="7" y="3" width="5" height="9" rx="1.6"/><path d="M8 12v2.2h10M10 14.2V21M17 14.2V21"/>',
   free:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',
   expiring:'<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.4"/>',
@@ -2614,18 +2775,19 @@ function render(){
   var ownerName=cfg('shopkeepername','')||cfg('ownername','')||(/study\s*point/i.test(cfg('shopname',''))?'Kailash Rawat':'');
   var shopName=cfg('shopname','Library');
   $('hdrName').textContent=shopName;
+  updateFestivalGreeting_();
   $('hdrGreeting').innerHTML=E(getGreeting())+(ownerName?'<span class="hdr-owner"><span class="hdr-owner-av">'+E(ini(ownerName).charAt(0))+'</span>'+E(ownerName)+'</span>':'');
   var act=activeMembers(),pend=pendingMembers();
   var timing=cfg('timing','');
   var phone=cfg('shopkeeperphone','')||cfg('phone','');
-  var meta=act.length+' active'+(pend.length?' · '+pend.length+' pending':'')+' · '+cfg('seatcapacity','40')+' seats';
+  var meta=act.length+' active'+(pend.length?' · '+pend.length+' pending':'')+' · '+totalSeats_()+' seats';
   if(timing)meta+=' · '+timing;
   $('hdrMeta').textContent=meta;
   var phoneEl=$('hdrPhone');
   if(phoneEl){if(phone){phoneEl.href='tel:'+phone.replace(/\D/g,'');phoneEl.innerHTML=ico_('phone',12)+E(phone);phoneEl.style.display='inline-flex'}else{phoneEl.style.display='none';}}
 
   // Right quick-stats pills
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var seatSet={};holdingMembers().forEach(function(m){if(m.seat)seatSet[m.seat]=true;});
   var occ=Object.keys(seatSet).length;
   var free=Math.max(0,cap-occ);
@@ -2679,18 +2841,127 @@ function render(){
   if(window.innerWidth<1120)$('tabs').style.display='flex';else $('tabs').style.display='none';
   $('fab').style.display='flex';
   if(window.innerWidth>=1120&&$('navSb'))$('navSb').style.display='flex';
-  $('splash').classList.add('hide');setTimeout(function(){$('splash').style.display='none'},250);
+  $('splash').classList.add('hide');setTimeout(function(){$('splash').style.display='none';showCycleRevenuePrompt_(false);},250);
 }
 
 function activeMembers(){return members.filter(function(m){return (m.status||'').toLowerCase()==='active'})}
 function pendingMembers(){return members.filter(function(m){return (m.status||'').toLowerCase()==='pending'})}
 function holdingMembers(){return members.filter(function(m){var s=(m.status||'').toLowerCase();return s==='active'||s==='pending'})}
+function floorList_(){
+  var list=[{n:1,name:cfg('floor1name','Floor 1'),count:Math.max(0,parseInt(cfg('seatcapacity','40'),10)||40)}];
+  var def=Math.max(1,parseInt(cfg('defaultfloorseats','60'),10)||60);
+  String(cfg('floors','')).split('|').forEach(function(p){
+    var a=p.split('~');var n=parseInt(a[0],10);
+    if(!n||n<2)return;
+    var c=parseInt(a[2],10);
+    var locked=a[3]==='1'||(!a[3]&&n===2&&/^study-point(?:-library)?$/i.test(cfg('slug',SLUG)));
+    list.push({n:n,name:(a[1]||'').trim()||('Floor '+n),count:c>0?c:def,locked:locked,message:a[4]||'Coming soon'});
+  });
+  return list;
+}
+function openFloors_(){return floorList_().filter(function(f){return !f.locked})}
+function totalSeats_(){return openFloors_().reduce(function(s,f){return s+f.count},0)}
+function floorSeatId_(f,i){return f.n===1?cfg('seatprefix','S')+i:'F'+f.n+'_'+i}
+function allSeatIds_(){var a=[];openFloors_().forEach(function(f){for(var i=1;i<=f.count;i++)a.push(floorSeatId_(f,i))});return a}
+function floorOfSeat_(id){var m=String(id||'').match(/^F(\d+)_\d+$/i);return m?parseInt(m[1],10):1}
+function seatNumOf_(id){var m=String(id||'').match(/(\d+)\D*$/);return m?parseInt(m[1],10):0}
+function floorsToCfg_(list){return list.filter(function(f){return f.n>=2}).map(function(f){return f.n+'~'+String(f.name).replace(/[|~]/g,' ')+'~'+f.count+'~'+(f.locked?'1':'0')+'~'+String(f.message||'').replace(/[|~]/g,' ')}).join('|')}
+function persistFloors_(list){
+  saveCfg('Floors',floorsToCfg_(list),true);
+  refreshFloorViews_();
+}
+function refreshFloorViews_(){
+  try{renderOccupancy()}catch(e){}
+  try{renderSeats()}catch(e){}
+  try{renderSeatsHero()}catch(e){}
+  var el=$('setShifts');if(el)el.innerHTML=buildShiftsCard_();
+}
+var seatFloor=parseInt(localStorage.getItem('dash_seat_floor')||'1',10)||1;
+function currentFloor_(){var l=openFloors_();return l.filter(function(f){return f.n===seatFloor})[0]||l[0]}
+function setSeatFloor_(n){seatFloor=n;try{localStorage.setItem('dash_seat_floor',n)}catch(e){}renderSeats()}
+function floorOccupied_(f){
+  var seen={};holdingMembers().forEach(function(m){if(m.seat&&floorOfSeat_(m.seat)===f.n)seen[m.seat]=true});
+  return Object.keys(seen).length;
+}
+function buildFloorTabs_(){
+  var cur=currentFloor_().n;
+  var tabs=floorList_().map(function(f){
+    if(f.locked)return '<button type="button" class="fl-tab" style="cursor:not-allowed" disabled>'+ico_('lock',15)+E(f.name)+'<span class="fl-cnt">'+E(f.message)+'</span></button>';
+    return '<button class="fl-tab'+(f.n===cur?' act':'')+'" onclick="setSeatFloor_('+f.n+')" aria-pressed="'+(f.n===cur)+'">'+ico_('floor',15)+E(f.name)+'<span class="fl-cnt">'+floorOccupied_(f)+'/'+f.count+'</span></button>';
+  }).join('');
+  return '<div class="fl-tabs">'+tabs+'<button class="fl-tab fl-add" onclick="addFloor_()" title="Add a new floor">'+ico_('plus',15)+'Add floor</button></div>';
+}
+function addFloor_(){
+  var l=floorList_();
+  var nextN=l.reduce(function(m,f){return Math.max(m,f.n)},1)+1;
+  var def=Math.max(1,parseInt(cfg('defaultfloorseats','60'),10)||60);
+  var name=prompt('Name for the new floor:','Floor '+nextN);
+  if(name===null)return;
+  name=String(name).replace(/[|~]/g,' ').trim()||('Floor '+nextN);
+  var cnt=prompt('How many seats on "'+name+'"?',String(def));
+  if(cnt===null)return;
+  cnt=parseInt(cnt,10);
+  if(!(cnt>0)){toast('Enter a valid seat count','err');return}
+  l.push({n:nextN,name:name,count:cnt});
+  seatFloor=nextN;try{localStorage.setItem('dash_seat_floor',nextN)}catch(e){}
+  persistFloors_(l);
+  toast(name+' added · '+cnt+' seats','ok');
+}
+function renameFloor_(n,val){
+  val=String(val||'').replace(/[|~]/g,' ').trim();if(!val)return;
+  if(n===1){saveCfg('Floor1Name',val);refreshFloorViews_();return}
+  var l=floorList_();l.forEach(function(f){if(f.n===n)f.name=val});persistFloors_(l);toast('Saved ✓','ok');
+}
+function resizeFloor_(n,val){
+  var c=parseInt(val,10);
+  if(!(c>0)){toast('Enter a valid seat count','err');refreshFloorViews_();return}
+  var l=floorList_();var f=l.filter(function(x){return x.n===n})[0];if(!f)return;
+  var maxHeld=0;
+  holdingMembers().forEach(function(m){if(m.seat&&floorOfSeat_(m.seat)===n){var k=seatNumOf_(m.seat);if(k>maxHeld)maxHeld=k}});
+  if(c<maxHeld){toast('Seat '+maxHeld+' on '+f.name+' is in use — free it first','err');refreshFloorViews_();return}
+  if(n===1){saveCfg('SeatCapacity',String(c));refreshFloorViews_();return}
+  f.count=c;persistFloors_(l);toast('Saved ✓','ok');
+}
+function removeFloor_(n){
+  var l=floorList_();var f=l.filter(function(x){return x.n===n})[0];if(!f||n===1)return;
+  if(floorOccupied_(f)>0){toast(f.name+' still has members seated — move them first','err');return}
+  if(!confirm('Remove "'+f.name+'" ('+f.count+' seats)?'))return;
+  if(seatFloor===n){seatFloor=1;try{localStorage.setItem('dash_seat_floor','1')}catch(e){}}
+  persistFloors_(l.filter(function(x){return x.n!==n}));
+  toast('Floor removed','ok');
+}
+function setFloorLock_(n,locked){
+  var list=floorList_(),f=list.find(function(x){return x.n===n});
+  if(locked&&floorOccupied_(f)){toast('Move seated members before locking this floor','err');refreshFloorViews_();return}
+  f.locked=locked;persistFloors_(list);
+}
+function setFloorMessage_(n,value){
+  var list=floorList_(),f=list.find(function(x){return x.n===n});
+  f.message=value.trim()||'Coming soon';persistFloors_(list);
+}
+function buildFloorsCard_(){
+  var rows=floorList_().map(function(f){
+    return '<div class="fl-row"><input type="text" class="ss-inline-input fl-name" value="'+E(f.name)+'" onchange="renameFloor_('+f.n+',this.value)">'+
+      '<input type="number" min="1" class="ss-inline-input fl-seats" value="'+f.count+'" onchange="resizeFloor_('+f.n+',this.value)"><span class="fl-unit">seats</span>'+
+      (f.n===1?'<span class="fl-rm-sp"></span>':'<button class="fl-rm" onclick="removeFloor_('+f.n+')" title="Remove floor">✕</button>')+'</div>'+
+      (f.n===1?'':'<div class="fl-row" style="flex-wrap:wrap"><label><input type="checkbox" '+(f.locked?'checked':'')+' onchange="setFloorLock_('+f.n+',this.checked)"> Locked</label><input type="text" class="ss-inline-input" aria-label="Locked floor message" value="'+E(f.message)+'" onchange="setFloorMessage_('+f.n+',this.value)"></div>');
+  }).join('');
+  return '<div class="ss-row-setting" style="flex-direction:column;align-items:stretch;gap:10px">'+
+    '<div class="ss-row-desc"><div class="ss-row-lab">Floors</div><div class="ss-row-hint">Each floor has its own seat map. Floor 1 keeps the seat IDs you already use; other floors use F2_1, F2_2, …</div></div>'+
+    rows+
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+
+      '<button class="fl-tab fl-add" onclick="addFloor_()">'+ico_('plus',15)+'Add floor</button>'+
+      '<span class="fl-unit">New floors default to</span>'+
+      '<input type="number" min="1" class="ss-inline-input fl-seats" value="'+E(cfg('defaultfloorseats','60'))+'" onchange="saveCfg(\'DefaultFloorSeats\',this.value)"><span class="fl-unit">seats</span>'+
+    '</div>'+
+  '</div>';
+}
 function deletedMembers(){return members.filter(function(m){return ['deleted','expired','paused','rejected'].indexOf((m.status||'').toLowerCase())>=0})}
 
 // ─── Reusable premium hero card builder ───
 // kind: 'occupancy' (seats tab) or 'today' (active tab)
 function buildPremiumHero(kind){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var act=activeMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
   var pend=pendingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
   // Seat is physically occupied until member is deleted — include expired members
@@ -2708,35 +2979,28 @@ function buildPremiumHero(kind){
     var dashFill=Math.max(0,Math.min(C,(occPct/100)*C));
     var expiring7=allAct.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=0&&d<=7}).length;
     var ringColor='var(--brand)';
-    var libPhotoSet=cfg('libraryphoto','');
-    var libPhoto=libPhotoSet||cfg('logourl','')||'logo-study-point-mark.svg';
-    var photoSz=libPhotoSet?112:80;
-    var divHtml='<div class="hero-div" style="width:1px;align-self:stretch;background:var(--line-dk);flex-shrink:0"></div>';
-    var dateTxt=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short'});
-    var hrow=function(icon,label,valHtml){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);font-weight:500"><span style="color:var(--ink-3);display:flex">'+ico_(icon,16)+'</span>'+label+'</span><span style="font-size:13px;font-weight:800;font-variant-numeric:tabular-nums">'+valHtml+'</span></div>';};
-    return '<div class="premium-hero" style="padding:16px">'+
-      '<div style="display:flex;align-items:center;gap:22px">'+
-        (libPhoto?'<img class="hero-photo" src="'+E(libPhoto)+'" alt="" loading="lazy" style="width:'+photoSz+'px;height:'+photoSz+'px;object-fit:'+(libPhotoSet?'cover':'contain')+';border-radius:'+(libPhotoSet?14:22)+'px;flex-shrink:0;background:var(--bg)" onerror="this.style.display=\'none\'">':'')+
-        (libPhoto?divHtml:'')+
-        '<div class="premium-hero-ring" style="width:100px;height:100px;flex-shrink:0">'+
+    var libPhoto=cfg('libraryphoto','');
+    var dateTxt=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+    var hrow=function(icon,label,valHtml){return '<div class="seat-overview-row"><span><span aria-hidden="true">'+ico_(icon,16)+'</span>'+label+'</span><strong>'+valHtml+'</strong></div>';};
+    return '<div class="premium-hero seat-overview">'+
+      '<section class="seat-overview-panel"><div class="seat-overview-title"><span>Occupancy</span><time>'+E(dateTxt)+'</time></div>'+
+      '<div class="seat-overview-body">'+
+        '<div class="premium-hero-ring">'+
           '<svg viewBox="0 0 100 100">'+
             '<circle class="pr-bg" cx="50" cy="50" r="40" fill="none" stroke-width="9"/>'+
             '<circle class="pr-fg" cx="50" cy="50" r="40" fill="none" stroke-width="9" stroke="'+ringColor+'" stroke-dasharray="'+dashFill+' '+(C-dashFill)+'"/>'+
           '</svg>'+
           '<div class="pr-center"><span class="pr-num" style="font-size:16px;color:var(--ink)">'+occPct+'%</span><span class="pr-lbl">full</span></div>'+
         '</div>'+
-        divHtml+
-        '<div style="flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column">'+
-          '<div style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">'+E(dateTxt)+'</div>'+
-          '<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:7px">'+
+        '<div class="seat-overview-metrics">'+
             hrow('users','Occupied','<span style="color:var(--ink)">'+occSeats+'</span> <span style="color:var(--ink-3);font-weight:500">/ '+cap+'</span>')+
             hrow('free','Full seats free','<span style="color:'+(free>0?'var(--ok-dk)':'var(--ink-3)')+'">'+free+'</span>')+
             (expiring7?hrow('calendar','Expiring in 7 days','<span style="color:var(--warn-dk)">'+expiring7+'</span>'):'')+
             (expired?hrow('expired','Expired','<span style="color:var(--err-dk)">'+expired+'</span>'):'')+
-          '</div>'+
-        '</div>'+
-        heroRevenueHtml_(divHtml)+
-      '</div>'+
+        '</div></div>'+
+        (libPhoto?'<img class="seat-overview-photo" src="'+E(libPhoto)+'" alt="" loading="lazy" onerror="this.hidden=true">':'')+
+      '</section>'+
+      heroRevenueHtml_()+
     '</div>';
   }
 
@@ -2780,7 +3044,7 @@ function buildPremiumHero(kind){
     '</div>'+
   '</div>';
 }
-function heroRevenueHtml_(divHtml){
+function heroRevenueHtml_(){
   var cur=cfg('currency','₹');
   var fmt=function(n){return cur+Math.round(n).toLocaleString('en-IN');};
   var hist=(_revHistory||[]).slice(-2).reverse();
@@ -2802,10 +3066,10 @@ function heroRevenueHtml_(divHtml){
       '<span style="font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap">'+fmt(r.amt)+chg+'</span>'+
     '</div>';
   }).join('');
-  return divHtml+'<div class="hero-rev" role="button" tabindex="0" onclick="goTab(&quot;Insights&quot;)" title="Open revenue details" style="cursor:pointer;min-width:220px;flex-shrink:0;align-self:stretch;display:flex;flex-direction:column">'+
-    '<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px"><span>Revenue</span><span style="font-size:15px;line-height:1;font-weight:400">›</span></div>'+
-    '<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:8px">'+body+'</div>'+
-  '</div>';
+  return '<section class="seat-overview-panel">'+
+    '<div class="seat-overview-title"><span>Revenue</span><button type="button" class="seat-overview-link" onclick="goTab(&quot;Insights&quot;)">View details &#8594;</button></div>'+
+    '<div class="seat-overview-revenue">'+body+'</div>'+
+  '</section>';
 }
 function renderSeatsHero(){if($('seatsHero'))$('seatsHero').innerHTML=buildPremiumHero('occupancy')}
 function renderActiveHero(){var h=$('activeHero');h.innerHTML=buildPremiumHero('today');animateCounts_(h)}
@@ -2813,7 +3077,7 @@ function renderActiveHero(){var h=$('activeHero');h.innerHTML=buildPremiumHero('
 function renderOccupancy(){
   $('occ').style.display='flex';
   var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var html='';
   var activeHolding=holdingMembers().filter(function(m){var d=daysToExpiry(m);return d==null||d>=0});
   if(isYes('enableshifts','yes')){
@@ -2909,6 +3173,8 @@ function daysToExpiry(m){if(!m.expirydate)return null;var s=m.expirydate;var d;v
 function seatSortKey_(seat){
   var s=String(seat||'').trim().toUpperCase();
   if(!s)return {prefix:'ZZZ',num:999999,suffix:''};
+  var fm=s.match(/^F(\d+)_(\d+)$/i);
+  if(fm)return {prefix:'~F'+('0'+fm[1]).slice(-2),num:parseInt(fm[2],10),suffix:''};
   var m=s.match(/^([^\d]*)(\d+)(.*)$/);
   if(!m)return {prefix:s,num:999999,suffix:''};
   return {prefix:m[1]||'',num:parseInt(m[2],10)||999999,suffix:m[3]||''};
@@ -2997,12 +3263,14 @@ function _setSeatCols_modern_only(n){
 }
 function renderSeatsModern(){
   $('seatGrid').style.gridTemplateColumns='';
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var prefix=cfg('seatprefix','S');
+  var curFloor=currentFloor_();
+  var floorBar=buildFloorTabs_();
   var seenSeats={};holdingMembers().forEach(function(m){if(m.seat)seenSeats[m.seat]=true});
   var occ=Object.keys(seenSeats).length;
   if($('seatsTitle'))$('seatsTitle').textContent='Seat map';
-  if($('seatsUtil'))$('seatsUtil').textContent=occ+' / '+cap+' occupied';
+  if($('seatsUtil'))$('seatsUtil').innerHTML=ico_('seat',15)+'<span>'+occ+' / '+cap+' occupied</span>';
   var blocked=blockedSeats();
   var lbl1=cfg('shift1label','Morning'),lbl2=cfg('shift2label','Evening'),lblFd=cfg('fulldaylabel','Full Day');
   var bySeat={};
@@ -3078,16 +3346,15 @@ function renderSeatsModern(){
   var colsBtns=[4,5,6,8].map(function(n){
     return '<button class="sb-col-btn'+(seatCardCols===n?' act':'')+'" onclick="setSeatCols('+n+')">'+n+'</button>';
   }).join('');
-  var photoToggle='<button class="sb-col-btn'+(seatShowPhotos?' act':'')+'" onclick="setSeatPhotos('+(seatShowPhotos?'false':'true')+')" title="Toggle student photos" style="margin-left:10px;gap:4px">📷 Photos</button>';
-  var GRID_IC='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
-  var LIST_IC='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>';
-  var viewToggle='<span class="sb-view"><button class="sb-col-btn'+(seatView==='grid'?' act':'')+'" onclick="setSeatView(\'grid\')" title="Grid view" aria-label="Grid view">'+GRID_IC+'</button><button class="sb-col-btn'+(seatView==='list'?' act':'')+'" onclick="setSeatView(\'list\')" title="List view" aria-label="List view">'+LIST_IC+'</button></span>';
-  var toolbar='<div class="sb-toolbar" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">'+viewToggle+(seatView==='grid'?'<span class="sb-col-lbl">Columns:</span>'+colsBtns+photoToggle:'')+'</div>';
+  var photoToggle='<button class="sb-col-btn'+(seatShowPhotos?' act':'')+'" onclick="setSeatPhotos('+(seatShowPhotos?'false':'true')+')" title="Toggle student photos" aria-pressed="'+seatShowPhotos+'" style="margin-left:10px;gap:5px">'+ico_('camera',16)+'Photos</button>';
+  var GRID_IC=ico_('grid',16),LIST_IC=ico_('list',16);
+  var viewToggle='<span class="sb-view"><button class="sb-col-btn'+(seatView==='grid'?' act':'')+'" onclick="setSeatView(\'grid\')" title="Grid view" aria-label="Grid view" aria-pressed="'+(seatView==='grid')+'">'+GRID_IC+'</button><button class="sb-col-btn'+(seatView==='list'?' act':'')+'" onclick="setSeatView(\'list\')" title="List view" aria-label="List view" aria-pressed="'+(seatView==='list')+'">'+LIST_IC+'</button></span>';
+  var toolbar='<div class="sb-toolbar" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">'+viewToggle+(seatView==='grid'?'<span class="sb-col-lbl seat-control-label">'+ico_('columns',15)+'Columns</span>'+colsBtns+photoToggle:'')+'</div>';
 
   if(seatView==='list'){
     var lhtml='<div class="sb-list">';
-    for(var li=1;li<=cap;li++){
-      var lid=prefix+li,llist=bySeat[lid]||[];
+    for(var li=1;li<=curFloor.count;li++){
+      var lid=floorSeatId_(curFloor,li),llist=bySeat[lid]||[];
       if(blocked[lid.toUpperCase()]){
         lhtml+='<div class="sb-lrow free" data-seat="'+lid+'" data-free="1"><div class="lr-seat">'+lid+'</div><div class="lr-body"><div class="lr-line"><span class="lr-free">Held · '+E(blocked[lid.toUpperCase()])+'</span></div></div></div>';
         continue;
@@ -3114,14 +3381,14 @@ function renderSeatsModern(){
       lhtml+='<div class="sb-lrow" data-seat="'+lid+'"><div class="lr-seat">'+lid+'</div><div class="lr-body">'+lines+'</div><div class="lr-right"><span class="xr-pill '+wcls+'">'+wtxt+'</span>'+payChip(lpay)+'</div></div>';
     }
     lhtml+='</div>';
-    $('seatGrid').innerHTML=toolbar+lhtml;
+    $('seatGrid').innerHTML=floorBar+toolbar+lhtml;
     return;
   }
 
   var html='<div class="sb-wrap"><div class="sb-grid" style="grid-template-columns:repeat('+seatCardCols+',1fr)">';
 
-  for(var i=1;i<=cap;i++){
-    var id=prefix+i,list=bySeat[id]||[];
+  for(var i=1;i<=curFloor.count;i++){
+    var id=floorSeatId_(curFloor,i),list=bySeat[id]||[];
     var byShift={};list.forEach(function(m){byShift[(m.shift||'').toUpperCase()]=m;});
 
     if(blocked[id.toUpperCase()]){
@@ -3178,7 +3445,7 @@ function renderSeatsModern(){
     }
   }
   html+='</div></div>';
-  $('seatGrid').innerHTML=toolbar+html;
+  $('seatGrid').innerHTML=floorBar+toolbar+html;
 }
 
 function blockedSeats(){
@@ -3373,6 +3640,8 @@ function applyActiveFilter(rows){
 function seatNum_(m){
   var s=String(m.seat||'').trim();
   if(!s)return 99999;
+  var fm=s.match(/^F(\d+)_(\d+)$/i);
+  if(fm)return parseInt(fm[1],10)*1000+parseInt(fm[2],10);
   var n=parseInt(s.replace(/\D/g,''),10);
   return isNaN(n)?99998:n;
 }
@@ -3676,7 +3945,7 @@ function renderDsFeeDue(){
     '</div>';
 }
 function renderDsOcc(){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var hold=holdingMembers();
   var act=activeMembers();
 
@@ -3764,7 +4033,6 @@ function renderDsExpiredMembers(){
     .sort(function(a,b){return (daysToExpiry(b)||0)-(daysToExpiry(a)||0)}); // most overdue first
   if(!expired.length){el.innerHTML='';el.style.display='none';return}
   el.style.display='';
-  var cur=cfg('currency','₹');
   el.innerHTML=
     '<div class="ds-card-title" style="gap:7px">'+
       '<span style="display:flex;align-items:center;gap:5px">'+
@@ -3784,15 +4052,14 @@ function renderDsExpiredMembers(){
           '<div class="ds-name">'+E(m.name)+'</div>'+
           '<div class="ds-meta">'+(m.seat?E(m.seat)+' · ':'')+E(m.plan||'—')+'</div>'+
         '</div>'+
-        '<div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px">'+
+        '<div class="ds-row-status">'+
           '<span class="ds-pill err">'+daysAgo+'d ago</span>'+
-          (feeDue?'<span style="font-size:9px;color:#dc2626;font-weight:700">Fee Due</span>':'')+
-          (waPh?'<button onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" style="appearance:none;border:none;background:#25d366;color:#fff;border-radius:5px;width:22px;height:22px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center" title="Remind on WhatsApp">💬</button>':'')+
+          (feeDue?'<span class="ds-fee-note">Fee due</span>':'')+
+          (waPh?'<button type="button" class="ds-remind" aria-label="Remind on WhatsApp" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="Remind on WhatsApp"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16.5 9.5a6.5 6.5 0 0 1-6.5 6.5H8l-3.5 2 .7-3.7A6.5 6.5 0 1 1 16.5 9.5Z"/><path d="M7 9.5h6m-6 2.5h4"/></svg></button>':'')+
         '</div>'+
       '</div>';
     }).join('')+
-    (expired.length>6?'<div style="font-size:11px;color:var(--brand);text-align:center;padding:6px 0;cursor:pointer;font-weight:600" onclick="goTab(\'Active\');setFilter(\'expired\')">View all '+expired.length+' →</div>':
-    '<div style="font-size:11px;color:var(--brand);text-align:center;padding:6px 0;cursor:pointer;font-weight:600" onclick="goTab(\'Active\');setFilter(\'expired\')">View in Active tab →</div>');
+    '<button type="button" class="ds-card-footer" onclick="goTab(\'Active\');setFilter(\'expired\')">View expired members ('+expired.length+') &#8594;</button>';
 }
 
 function renderDsBirthdays(){
@@ -3942,9 +4209,16 @@ function watchCycleRollover_(){
   var c=billingCycle_();
   var key=c.start.getFullYear()+'-'+c.start.getMonth()+'-'+c.start.getDate();
   if(!_lastCycleKey_){_lastCycleKey_=key;return;}
-  if(key!==_lastCycleKey_){_lastCycleKey_=key;checkCycleRollover_();}
+  if(key!==_lastCycleKey_){_lastCycleKey_=key;checkCycleRollover_();showCycleRevenuePrompt_(false);}
 }
 
+function keepRevenueHistoryRow_(row, slug){
+  if(!row.label)return false;
+  if(!/^study-point(?:-library)?$/i.test(slug))return true;
+  // Exclude the Study Point mock cycle from dashboard revenue totals.
+  var end=parseMD_(row.cycleend);
+  return !(end&&end.getFullYear()===2026&&end.getMonth()===5&&end.getDate()===25);
+}
 function loadRevHistory_(cb){
   if(_revHistLoaded){if(cb)cb();return;}
   gviz(SHEET_ID,'Revenue_History',function(r){
@@ -3960,17 +4234,18 @@ function loadRevHistory_(cb){
           totalsettled:parseFloat(row.totalsettled||row['total settled'])||0,
           membercount:parseInt(row.membercount||row['member count'])||0
         };
-      }).filter(function(r){return r.label;});
+      }).filter(function(r){return keepRevenueHistoryRow_(r,SLUG);});
     }
     _revHistLoaded=true;
     if(cb)cb();
   });
 }
 
-var _selectedRevIdx=-1; // which bar is selected (-1 = none yet, auto-selects last)
+var _selectedRevIdx=-1;
+var _selectedRevLabel=''; // Set only when a cycle is selected manually.
 var _revBars=[]; // current bar data for detail rendering
 
-var _revChartMode='bar'; // 'bar' | 'line'
+var _revChartMode='bar'; // 'bar' | 'line' | 'breakdown'
 
 function _revNiceMax_(v){
   if(v<=0)return 1000;
@@ -3987,7 +4262,26 @@ function _revFmt_(v,cur){
   return cur+v;
 }
 
+function revBreakdown_(bars,selIdx,maxNice,cur){
+  var series=[['Received','var(--brand)'],['Pending','#d97706'],['Discount','#64748b'],['Expected renewals','#2563eb']];
+  return '<div style="display:grid;gap:8px;width:100%;min-width:0">'+bars.map(function(b,i){
+    var amounts=[b.revenue,b.pending,b.discount,Math.max(0,(b.projected||0)-b.val)];
+    var segments='',values=[];
+    series.forEach(function(entry,j){
+      var amount=amounts[j]||0;
+      if(!amount&&j!==0)return;
+      var value=E(cur+amount.toLocaleString('en-IN'));
+      values.push('<span><span aria-hidden="true" style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+entry[1]+'"></span> '+entry[0]+' <strong>'+value+'</strong></span>');
+      if(amount>0)segments+='<span style="width:'+(amount/maxNice*100)+'%;background:'+entry[1]+'"></span>';
+    });
+    return '<button type="button" aria-pressed="'+(i===selIdx)+'" onclick="selectRevCycle_('+i+')" style="display:grid;gap:6px;text-align:left;padding:8px 10px;border:1px solid '+(i===selIdx?'var(--brand)':'var(--ink-3)')+';border-radius:8px;background:transparent;color:var(--ink);font:inherit;cursor:pointer">'+
+      '<span style="font-size:12px;font-weight:700">'+E(revCycleMonth_(b))+' <span style="font-weight:400;color:var(--ink-3)">'+E(b.label)+(b.done?'':' · In progress')+'</span></span>'+
+      '<span aria-hidden="true" style="display:flex;height:10px;overflow:hidden;border-radius:4px;background:rgba(var(--brand-rgb),.08)">'+segments+'</span>'+
+      '<span style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px">'+values.join('')+'</span></button>';
+  }).join('')+'</div>';
+}
 function _revBuildChart_(bars,selIdx,maxNice,chartH,cur,mode){
+  if(mode==='breakdown')return revBreakdown_(bars,selIdx,maxNice,cur);
   var n=bars.length;
   if(!n)return '';
   var yLabels=4;
@@ -4041,7 +4335,7 @@ function _revBuildChart_(bars,selIdx,maxNice,chartH,cur,mode){
     }
     pts.forEach(function(p){
       var isSel=p.i===selIdx;
-      var lbl=p.b.label.split('–')[0].replace(' 26','').trim();
+      var lbl=revCycleMonth_(p.b);
       dotsHtml+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+(isSel?5:3)+'" fill="'+(isSel?'#fff':'var(--card,#fff)')+'" stroke="var(--brand)" stroke-width="'+(isSel?2.5:1.8)+'" onclick="selectRevCycle_('+p.i+')" style="cursor:pointer"><title>'+E(p.b.label)+': '+cur+Math.round(p.b.val||0).toLocaleString('en-IN')+'</title></circle>';
       labelsHtml+='<text x="'+p.x+'" y="'+(svgH-2)+'" text-anchor="middle" font-size="9" fill="'+(isSel?'var(--brand)':'#94a3b8')+'" font-weight="'+(isSel?'700':'500')+'">'+lbl+'</text>';
       if(isSel){
@@ -4079,7 +4373,7 @@ function _revBuildChart_(bars,selIdx,maxNice,chartH,cur,mode){
     var hPx=Math.max(3,Math.round(hPct*innerH));
     var isSel=i===selIdx;
     var barClr=isSel?'var(--brand)':b.done?'var(--brand)':'rgba(var(--brand-rgb),.4)';
-    var lbl=b.label.split('–')[0].replace(' 26','').trim();
+    var lbl=revCycleMonth_(b);
     var momHtml='';
     if(b.mom!==null&&b.mom!==undefined&&b.done){var up=b.mom>=0;momHtml='<div style="font-size:8px;font-weight:700;color:'+(up?'#16a34a':'#dc2626')+';line-height:1">'+(up?'▲':'▼')+Math.abs(Math.round(b.mom))+'%</div>';}
     var ghostPx=(!b.done&&b.projected>b.val)?Math.max(2,Math.round((b.projected-b.val)/maxNice*innerH)):0;
@@ -4097,7 +4391,7 @@ function _revBuildChart_(bars,selIdx,maxNice,chartH,cur,mode){
   '<div style="display:flex;gap:3px;height:18px;margin-top:2px">'+
   bars.map(function(b,i){
     var isSel=i===selIdx;
-    var lbl=b.label.split('–')[0].replace(' 26','').trim();
+    var lbl=revCycleMonth_(b);
     return '<div style="flex:1;text-align:center;font-size:9.5px;color:'+(isSel?'var(--brand)':'var(--ink-3)')+';font-weight:'+(isSel?'700':'500')+'">'+lbl+'</div>';
   }).join('')+'</div>';
   return yHtml+'<div style="flex:1;min-width:0">'+barHtml+'</div>';
@@ -4121,9 +4415,16 @@ function cycleOutlook_(mems){
   var renewalAmt=Math.round(renewals.reduce(function(s,m){return s+planPrice_(m.plan,(m.shift||'').toUpperCase());},0));
   return{expTotal:expTotal,collected:collected,extras:extras,outstanding:outstanding,renewals:renewals,renewalAmt:renewalAmt,booked:Math.round(settledAll)+outstanding,projected:Math.round(settledAll)+outstanding+renewalAmt};
 }
-function renderRevTrend_(){
-  var el=$('insRevTrend');if(!el)return;
-  var cur=cfg('currency','₹');
+function revCycleMonth_(bar){
+  var end=bar.label.split('–').pop().trim();
+  return end.replace(/\s+25$/, '');
+}
+function revenueHistoryBar_(h){
+    var settled=parseFloat(h.totalsettled)||((parseFloat(h.revenue)||0)+(parseFloat(h.discount)||0));
+    return{label:h.label,val:settled,revenue:parseFloat(h.revenue)||0,discount:parseFloat(h.discount)||0,count:parseInt(h.membercount)||0,done:true,cyclestart:h.cyclestart,cycleend:h.cycleend,mom:null};
+}
+
+function currentRevenueBar_(){
   var cycle=billingCycle_();
   var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var curLabel=mo[cycle.start.getMonth()]+' 26–'+mo[cycle.end.getMonth()]+' 25';
@@ -4132,13 +4433,16 @@ function renderRevTrend_(){
   var cycleMembers=allActive.filter(function(m){var d=parseMD_(m.startdate);return d&&d>=cycle.start&&d<=cycle.end;});
   var curBk=cycleBooked_(cycleMembers);
 
-  var history=_revHistory.slice(-11);
-  _revBars=history.map(function(h){
-    var settled=parseFloat(h.totalsettled)||((parseFloat(h.revenue)||0)+(parseFloat(h.discount)||0));
-    return{label:h.label,val:settled,revenue:parseFloat(h.revenue)||0,discount:parseFloat(h.discount)||0,count:parseInt(h.membercount)||0,done:true,cyclestart:h.cyclestart,cycleend:h.cycleend,mom:null};
-  });
   var curOutlook=cycleOutlook_(cycleMembers);
-  _revBars.push({label:curLabel,val:curBk.booked,revenue:curBk.paid,discount:curBk.disc,pending:curBk.pending,count:cycleMembers.length,done:false,members:cycleMembers,projected:Math.max(curBk.booked,curBk.booked+curOutlook.renewalAmt),mom:null});
+  return {label:curLabel,val:curBk.booked,revenue:curBk.paid,discount:curBk.disc,pending:curBk.pending,count:cycleMembers.length,done:false,members:cycleMembers,projected:Math.max(curBk.booked,curBk.booked+curOutlook.renewalAmt),mom:null};
+}
+
+function renderRevTrend_(){
+  var el=$('insRevTrend');if(!el)return;
+  var cur=cfg('currency','₹');
+  var cycle=billingCycle_();
+  _revBars=_revHistory.slice(-11).map(revenueHistoryBar_);
+  _revBars.push(currentRevenueBar_());
 
   for(var i=1;i<_revBars.length;i++){
     var prev=_revBars[i-1].val,curr2=_revBars[i].val;
@@ -4146,7 +4450,8 @@ function renderRevTrend_(){
   }
 
   if(!_revBars.length){el.innerHTML='';return;}
-  _selectedRevIdx=_revBars.length-1; // always default to current month
+  _selectedRevIdx=_revBars.findIndex(function(b){return b.label===_selectedRevLabel;});
+  if(_selectedRevIdx<0){_selectedRevLabel='';_selectedRevIdx=_revBars.length-1;}
 
   var rawMax=Math.max.apply(null,_revBars.map(function(b){return Math.max(b.val||0,b.projected||0);}));
   var maxNice=_revNiceMax_(rawMax||1);
@@ -4169,7 +4474,7 @@ function renderRevTrend_(){
     '<div style="background:#fff;border-radius:14px;padding:16px 16px 14px;margin:0 0 12px;border:1px solid #e8edf2;box-shadow:0 1px 4px rgba(0,0,0,.06)">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
         '<div>'+
-          '<div style="font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.02em">Revenue Trend</div>'+
+          '<div style="font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.02em" class="rev-trend-title">Revenue Trend<span class="rev-diwali-mark" aria-hidden="true">&#129684;<span>&#10022;</span></span></div>'+
           '<div style="font-size:11px;color:var(--ink-3);margin-top:1px">Overview of revenue by month</div>'+
         '</div>'+
         '<div style="display:flex;align-items:center;gap:6px">'+
@@ -4178,11 +4483,12 @@ function renderRevTrend_(){
           '<div style="display:flex;border:1.5px solid #e8edf2;border-radius:8px;overflow:hidden;margin-left:6px">'+
             '<button onclick="setRevMode_(\'bar\')" style="padding:4px 9px;border:none;font-size:11px;font-weight:600;cursor:pointer;background:'+(_revChartMode==='bar'?'var(--brand)':'#fff')+';color:'+(_revChartMode==='bar'?'#fff':'var(--ink-3)')+'">Bar</button>'+
             '<button onclick="setRevMode_(\'line\')" style="padding:4px 9px;border:none;font-size:11px;font-weight:600;cursor:pointer;background:'+(_revChartMode==='line'?'var(--brand)':'#fff')+';color:'+(_revChartMode==='line'?'#fff':'var(--ink-3)')+'">Line</button>'+
+            '<button onclick="setRevMode_(\'breakdown\')" style="padding:4px 9px;border:none;font-size:11px;font-weight:600;cursor:pointer;background:'+(_revChartMode==='breakdown'?'var(--brand)':'#fff')+';color:'+(_revChartMode==='breakdown'?'#fff':'var(--ink-3)')+'">Breakdown</button>'+
           '</div>'+
         '</div>'+
       '</div>'+
       '<div style="display:flex;gap:0;align-items:stretch" id="revChartArea">'+chartHtml+'</div>'+
-      '<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:9.5px;color:var(--ink-3)">'+
+      '<div id="revTrendLegend" style="display:'+(_revChartMode==='breakdown'?'none':'flex')+';gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:9.5px;color:var(--ink-3)">'+
         '<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--brand);margin-right:4px;vertical-align:-1px"></span>Completed</span>'+
         '<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:rgba(var(--brand-rgb),.4);margin-right:4px;vertical-align:-1px"></span>In progress</span>'+
         (_revBars.some(function(b){return (b.pending||0)>0;})?'<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#f59e0b;opacity:.75;margin-right:4px;vertical-align:-1px"></span>Pending</span>':'')+
@@ -4205,8 +4511,9 @@ function setRevMode_(mode){
   var maxNice=_revNiceMax_(rawMax||1);
   var cur=cfg('currency','₹');
   area.innerHTML=_revBuildChart_(_revBars,_selectedRevIdx,maxNice,160,cur,mode);
+  $('revTrendLegend').style.display=mode==='breakdown'?'none':'flex';
   // update toggle buttons
-  area.parentNode.querySelectorAll('button').forEach(function(btn){
+  area.parentNode.querySelectorAll('button[onclick^="setRevMode_"]').forEach(function(btn){
     var m=btn.textContent.toLowerCase();
     if(m===mode){btn.style.background='var(--brand)';btn.style.color='#fff';}
     else{btn.style.background='#fff';btn.style.color='var(--ink-3)';}
@@ -4214,6 +4521,7 @@ function setRevMode_(mode){
 }
 
 function selectRevCycle_(idx){
+  _selectedRevLabel=_revBars[idx].label;
   _selectedRevIdx=idx;
   var rawMax=Math.max.apply(null,_revBars.map(function(b){return Math.max(b.val||0,b.projected||0);}));
   var maxNice=_revNiceMax_(rawMax||1);
@@ -4231,26 +4539,137 @@ function newCycleRow_(m,i,cur){
   var shiftKey=(m.shift||'').toUpperCase();
   var shiftLbl=shiftKey==='FULL'?cfg('fulldaylabel','Full Day'):shiftKey?cfg('shift'+(shiftKey.slice(1))+'label',shiftKey):'';
   var plan=(m.plan||'').replace(/\s*(full\s*day|shift)\s*$/i,'').trim()||(m.plan||'');
-  var meta=[m.seat,shiftLbl,plan].filter(Boolean).map(E).join(' · ');
+  var meta=[shiftLbl,plan].filter(Boolean).map(E).join(' · ');
   var sd=parseMD_(m.startdate),ed=parseMD_(m.expirydate);
   var period=(sd?fmtMD_(sd):'?')+' → '+(ed?fmtMD_(ed):'?');
-  var sub=[period,m.phone].filter(Boolean).map(E).join(' · ');
   var av=_ncColors[i%_ncColors.length];
   var hasPhone=!!(m.phone||'').replace(/\D/g,'');
   var amtClr=state==='unpaid'?'var(--err-dk)':state==='partial'?'var(--warn-dk)':'var(--ink)';
   var amtSub=state==='paid'?(pi.disc?'incl. '+cur+Math.round(pi.disc).toLocaleString('en-IN')+' discount':'received'):'of '+cur+Math.round(pi.price).toLocaleString('en-IN');
-  return '<div class="nc-row" onclick="if(!event.target.closest(\'button\'))openMemberSheet(\''+E(m.memberid)+'\')">'+
+  return '<div class="nc-row nc-cycle-row" onclick="if(!event.target.closest(\'button\'))openMemberSheet(\''+E(m.memberid)+'\')">'+
     '<div class="nc-av" style="background:'+av+'22;color:'+av+'">'+(m.photourl?'<img src="'+E(m.photourl)+'" alt="" style="width:100%;height:100%;object-fit:cover">':E(ini(m.name)))+'</div>'+
     '<div class="nc-body">'+
       '<div class="nc-top"><div class="nc-name">'+E(m.name||'Unknown')+'</div><span class="nc-st '+state+'">'+stLbl+'</span></div>'+
-      (meta?'<div class="nc-meta">'+meta+'</div>':'')+
-      (sub?'<div class="nc-sub">'+sub+'</div>':'')+
+      (m.seat||meta?'<div class="nc-meta">'+(m.seat?'<span class="nc-seat-chip">'+E(m.seat)+'</span>':'')+(meta?'<span>'+meta+'</span>':'')+'</div>':'')+
+      '<div class="nc-sub"><span class="nc-detail-bit">'+ico_('calendar',12)+E(period)+'</span>'+ (m.phone?'<span class="nc-detail-bit">'+ico_('phone',12)+E(m.phone)+'</span>':'')+'</div>'+
     '</div>'+
     '<div class="nc-right">'+
       '<div><div class="nc-amt" style="color:'+amtClr+'">'+cur+Math.round(pi.paid||pi.settled).toLocaleString('en-IN')+'</div><div class="nc-amt-sub">'+amtSub+'</div></div>'+
       (state!=='paid'&&hasPhone?'<button class="ins-remind-btn" onclick="event.stopPropagation();waRenew(\''+E(m.memberid)+'\')" title="Send fee reminder" aria-label="Remind '+E(m.name)+'">Remind</button>':'')+
     '</div>'+
   '</div>';
+}
+var _shownRevenuePromptKey="";
+function showCycleRevenuePrompt_(test){
+  var dialog=$('cycleRevenuePrompt');
+  if(!dialog||dialog.open||!SHEET_ID)return;
+  var cycle=billingCycle_();
+  var key='storepro:revenue-prompt:'+SHEET_ID;
+  var cycleKey=cycle.start.getFullYear()+"-"+(cycle.start.getMonth()+1)+"-"+cycle.start.getDate();
+  if(!test){
+    if(_shownRevenuePromptKey===key+cycleKey)return;
+    try{if(localStorage.getItem(key)===cycleKey)return;}catch(e){}
+  }
+  $('cycleRevenueMode').textContent=test?'Test preview':'New billing cycle';
+  $('cycleRevenueRange').textContent=revenueReportRange_(cycle);
+  dialog.showModal();
+  if(!test){
+    _shownRevenuePromptKey=key+cycleKey;
+    try{localStorage.setItem(key,cycleKey);}catch(e){}
+  }
+}
+function downloadPromptRevenue_(excel){
+  var cycle=currentRevenueBar_();
+  $('cycleRevenuePrompt').close();
+  if(excel)downloadRevenueExcel_(false,cycle);
+  else openRevenuePdf_([revenueReportEntry_(cycle)],false);
+}
+function downloadRevenuePdf_(){
+  var cycle=_revBars[_selectedRevIdx];
+  if(!cycle)return;
+  openRevenuePdf_([revenueReportEntry_(cycle)],false);
+}
+
+function allRevenueEntries_(){
+  var current=currentRevenueBar_();
+  var cycles=_revHistory.map(revenueHistoryBar_).sort(function(a,b){
+    return (parseMD_(a.cyclestart)||0)-(parseMD_(b.cyclestart)||0);
+  });
+  cycles.push(current);
+  cycles.forEach(function(cycle,i){
+    var prev=cycles[i-1];
+    cycle.mom=prev&&prev.val>0?(cycle.val-prev.val)/prev.val*100:null;
+  });
+  return cycles.map(revenueReportEntry_);
+}
+
+function downloadAllRevenuePdf_(){
+  if(!_revHistLoaded){toast('Revenue history is loading. Try again shortly.','err');return;}
+  var entries=allRevenueEntries_();
+  if(entries.length)openRevenuePdf_(entries,true);
+}
+
+var revenueExcelLibrary_;
+function loadRevenueExcelLibrary_(){
+  if(!revenueExcelLibrary_){
+    revenueExcelLibrary_=new Promise(function(resolve,reject){
+      var script=document.createElement('script');
+      script.src='vendor/sheetjs-0.20.3.mini.js';
+      script.onload=function(){resolve(window.XLSX);};
+      script.onerror=function(){script.remove();reject(new Error("Excel library failed to load"));};
+      document.head.appendChild(script);
+    }).catch(function(error){revenueExcelLibrary_=null;throw error;});
+  }
+  return revenueExcelLibrary_;
+}
+
+async function downloadRevenueExcel_(allMonths,cycle){
+  cycle=cycle||_revBars[_selectedRevIdx];
+  if(!cycle)return;
+  if(allMonths&&!_revHistLoaded){toast('Revenue history is loading. Try again shortly.','err');return;}
+  var entries=allMonths?allRevenueEntries_():[revenueReportEntry_(cycle)];
+  if(!entries.length)return;
+  try{
+    var xlsx=await loadRevenueExcelLibrary_();
+    var workbook=revenueWorkbook_(xlsx,entries,cfg('currency','₹'));
+    var label=allMonths?'all-months':cycle.label.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+    xlsx.writeFile(workbook,'storepro-revenue-'+label+'.xlsx');
+  }catch(error){toast('Could not download the Excel file. Please try again.','err');}
+}
+
+function revenueReportEntry_(cycle){
+  var current=cycle.done?null:billingCycle_();
+  var reportCycle=Object.assign({},cycle,{
+    start:current?current.start:parseMD_(cycle.cyclestart),
+    end:current?current.end:parseMD_(cycle.cycleend)
+  });
+  var list=cycle.done?getMembersForCycle_(cycle.cyclestart,cycle.cycleend):cycle.members||[];
+  var rows=list.map(function(member){
+    var payment=payInfo(member);
+    return {name:member.name,seat:member.seat,plan:member.plan,shift:member.shift,paid:payment.paid,discount:payment.disc,due:payment.due};
+  }).sort(function(a,b){return b.due-a.due||String(a.name||"").localeCompare(String(b.name||""));});
+  var outlook=cycle.done?null:cycleOutlook_(list);
+  return {cycle:reportCycle,rows:rows,outlook:outlook};
+}
+
+function openRevenuePdf_(entries,allMonths){
+  var report=window.open('','_blank');
+  if(!report){toast('Allow pop-ups to open the PDF report','err');return;}
+  report.opener=null;
+  report.document.write(revenueReportHtml_(entries,cfg('shopname','Library'),cfg('currency','₹'),new Date(),allMonths));
+  report.document.close();
+  report.focus();
+  report.print();
+}
+function revenueExportControls_(current){
+  var icon='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8m-3-3 3 3 3-3M3 11v3h10v-3"/></svg>';
+  function group(label,pdfAction,excelAction){
+    return '<div class="rev-export-group" role="group" aria-label="'+label+' exports"><span class="rev-export-label">'+label+'</span><div class="rev-export-actions">'+
+      '<button type="button" class="rev-export-btn" aria-label="Download '+label+' PDF" onclick="'+pdfAction+'">'+icon+'PDF</button>'+
+      '<button type="button" class="rev-export-btn" aria-label="Download '+label+' Excel" onclick="'+excelAction+'">'+icon+'Excel</button></div></div>';
+  }
+  return '<div class="rev-export-groups">'+group('Selected cycle','downloadRevenuePdf_()','downloadRevenueExcel_(false)')+
+    (current?group('All months','downloadAllRevenuePdf_()','downloadRevenueExcel_(true)'):'')+'</div>';
 }
 function renderRevDetail_(){
   var el=$('revDetail');if(!el)return;
@@ -4260,8 +4679,6 @@ function renderRevDetail_(){
   var statusBadge=b.done
     ?'<span style="font-size:10px;font-weight:700;background:#f0fdf4;color:#15803d;border-radius:5px;padding:2px 7px">✓ Completed</span>'
     :'<span style="font-size:10px;font-weight:700;background:#eff6ff;color:#1d4ed8;border-radius:5px;padding:2px 7px">↗ In Progress</span>';
-
-  var momBadge='';
 
   // KPI cards (icon + value + label + mom)
   function kpiCard_(icon,val,lbl,momTxt,momUp){
@@ -4319,16 +4736,15 @@ function renderRevDetail_(){
   var avColors=['#6366f1','#0d9488','#d97706','#3b82f6','#dc2626','#7c3aed','#16a34a'];
   var memberListHtml=mList.length
     ?'<div style="margin-top:14px">'+
-        '<div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">New This Cycle</div>'+
-        '<div class="nc-list">'+mList.map(function(m,i){return newCycleRow_(m,i,cur);}).join('')+'</div></div>'
+        '<div class="nc-section-head"><h3>New This Cycle</h3><span class="nc-seat-chip">'+mList.length+' '+(mList.length===1?'member':'members')+'</span></div>'+
+        '<div class="nc-list nc-cycle-list">'+mList.map(function(m,i){return newCycleRow_(m,i,cur);}).join('')+'</div></div>'
     :'';
 
   el.innerHTML=
     '<div style="border-top:1px solid #f1f5f9;padding-top:12px">'+
-      '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+
-        '<div style="font-size:12px;font-weight:700;color:var(--ink)">'+E(b.label)+'</div>'+
-        statusBadge+momBadge+
-      '</div>'+
+      '<div class="rev-cycle-toolbar"><div><span class="rev-cycle-kicker">Revenue details</span>'+
+        '<div class="rev-cycle-heading"><strong>'+E(revCycleMonth_(b))+' revenue</strong>'+statusBadge+'</div>'+
+        '<div class="rev-cycle-dates">'+E(b.label)+'</div></div>'+revenueExportControls_(!b.done)+'</div>'+
       outlookHtml+
       '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
         (b.done
@@ -4432,7 +4848,7 @@ function renderMorningBrief(){
   var shop=cfg('shopname','');
 
   // ── Always-visible stats row ──
-  var totalSeats=parseInt(cfg('seatcapacity','40'),10)||40;
+  var totalSeats=totalSeats_();
   var occPct=Math.round(act.length/totalSeats*100);
   var paidCount=act.filter(function(m){return (parseFloat(m.totalpaid||0)||0)+(parseFloat(m.discount||0)||0)>0;}).length;
   var paidPct=act.length?Math.round(paidCount/act.length*100):0;
@@ -4511,11 +4927,107 @@ function downloadPaymentsCsv_(){
   setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
 }
 
+function downloadReportRevenue_(allMonths,excel){
+  var cycle=currentRevenueBar_();
+  if(excel)downloadRevenueExcel_(allMonths,cycle);
+  else if(allMonths)downloadAllRevenuePdf_();
+  else openRevenuePdf_([revenueReportEntry_(cycle)],false);
+}
+
+function reportDownloadsHtml_(period){
+  function card(icon,title,description,actions){
+    return '<article class="report-download-card"><span class="report-download-icon">'+ico_(icon,18)+'</span><div class="report-download-copy"><h3>'+title+'</h3><p>'+description+'</p></div><div class="report-download-actions">'+actions+'</div></article>';
+  }
+  function button(label,action,scope){
+    return '<button type="button" class="rev-export-btn" aria-label="Download '+scope+' '+label+'" onclick="'+action+'">'+label+'</button>';
+  }
+  return '<section class="report-downloads" aria-label="Report downloads">'+
+    card('cash','Current cycle revenue','Revenue so far, projection and member payments.',
+      button('PDF','downloadReportRevenue_(false,false)','current cycle revenue')+button('Excel','downloadReportRevenue_(false,true)','current cycle revenue'))+
+    card('calendar','All months revenue','Compare saved cycles and the current cycle.',
+      button('PDF','downloadReportRevenue_(true,false)','all months revenue')+button('Excel','downloadReportRevenue_(true,true)','all months revenue'))+
+    card('list','Payment register',E(period)+' &middot; Cash, discounts and balances.',
+      button('CSV','downloadPaymentsCsv_()','payment register')+button('Excel','downloadOperationsReport_(false)','payment register'))+
+    card('users','Library operations','Dues, renewals, members, occupancy and plan performance.',
+      button('Excel','downloadOperationsReport_(true)','library operations'))+'</section>';
+}
+
+function operationsReportSheets_(includeOperations){
+  var period=reportPayments_();
+  var currency=cfg('currency','INR');
+  function date(value){return value?revenueReportDate_(value):'';}
+  function paymentRow(m){
+    var p=payInfo(m);
+    return [m.name||'',String(m.phone||''),m.seat||'',m.shift||'',m.plan||'',date(cashDate_(m)),p.paid,p.disc,p.settled,p.due,currency];
+  }
+  var payments=[['Member','Phone','Seat','Shift','Plan','Payment date','Received','Discount','Settled','Balance due','Currency']].concat(period.list.map(paymentRow));
+  var sheets=[['Payments',payments]];
+  if(!includeOperations)return sheets;
+  var active=activeMembers();
+  var holding=holdingMembers();
+  var dues=[['Member','Phone','Seat','Shift','Plan','Payment date','Received','Discount','Settled','Balance due','Currency']].concat(
+    active.filter(function(m){return payInfo(m).isDue;}).map(paymentRow).sort(function(a,b){return b[9]-a[9];}));
+  var renewals=[['Member','Seat','Plan','Shift','Expires','Days left','Status','Estimated renewal fee','Currency']];
+  active.map(function(m){return {member:m,days:daysToExpiry(m)};}).filter(function(row){return row.days!=null&&row.days<=7;})
+    .sort(function(a,b){return a.days-b.days;}).forEach(function(row){
+      var m=row.member,days=row.days;
+      renewals.push([m.name||'',m.seat||'',m.plan||'',m.shift||'',date(parseMD_(m.expirydate)),days,days<0?'Expired':'Expiring within 7 days',planPrice_(m.plan,(m.shift||'').toUpperCase()),currency]);
+    });
+  var roster=[['Member','Seat','Shift','Plan','Membership status','Starts','Expires','Fee status']].concat(holding.map(function(m){
+    var p=payInfo(m);
+    return [m.name||'',m.seat||'',m.shift||'',m.plan||'',m.status||'',date(parseMD_(m.startdate)),date(parseMD_(m.expirydate)),p.settled===0?'Unpaid':p.isDue?'Partial':'Paid'];
+  }));
+  var occupied=new Set(holding.map(function(m){return String(m.seat||'').toUpperCase();}).filter(Boolean));
+  var floors=[['Floor','Status','Configured seats','Bookable floor capacity','Occupied','Unoccupied on open floors']].concat(floorList_().map(function(f){
+    var count=0;
+    for(var i=1;i<=f.count;i++)if(occupied.has(floorSeatId_(f,i).toUpperCase()))count++;
+    return [f.name,f.locked?'Locked':'Open',f.count,f.locked?0:f.count,count,f.locked?0:f.count-count];
+  }));
+  var shifts=[['Shift','Active members','Open floor capacity']];
+  var shiftCount=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
+  function shiftRow(key,label){
+    shifts.push([label,active.filter(function(m){return (m.shift||'').toUpperCase()===key;}).length,totalSeats_()]);
+  }
+  if(isYes('enableshifts','yes'))for(var i=1;i<=shiftCount;i++)shiftRow('S'+i,cfg('shift'+i+'label','Shift '+i));
+  if(isYes('enablefullday'))shiftRow('FULL',cfg('fulldaylabel','Full Day'));
+  var plans=new Map();
+  period.list.forEach(function(m){
+    var name=m.plan||'Unknown',p=payInfo(m);
+    var totals=plans.get(name)||[name,0,0,0,0,currency];
+    totals[1]++;totals[2]+=p.paid;totals[3]+=p.disc;totals[4]+=p.settled;plans.set(name,totals);
+  });
+  var planRows=[['Plan','Payments','Received','Discounts','Settled','Currency']].concat(Array.from(plans.values()).sort(function(a,b){return b[4]-a[4];}));
+  var summary=[['Metric','Value'],['Library',cfg('shopname','Library')],['Generated',todayISO()],['Payment and plan period',period.label],
+    ['Active members',active.length],['Pending members',pendingMembers().length],['Open floor capacity',totalSeats_()],
+    ['Payments in period',period.list.length],['Members with dues',dues.length-1],
+    ['Outstanding balance',dues.slice(1).reduce(function(total,row){return total+row[9];},0)],['Currency',currency],
+    ['Renewal scope','Expired active members and active members expiring within 7 days'],
+    ['Occupancy scope','Active and pending seat assignments. Locked floors contribute zero open capacity.']];
+  return [['Overview',summary],['Payments',payments],['Outstanding dues',dues],['Renewals',renewals],['Member roster',roster],['Floor occupancy',floors],['Shift utilization',shifts],['Plan performance',planRows]];
+}
+
+async function downloadOperationsReport_(includeOperations){
+  var sheets=operationsReportSheets_(includeOperations);
+  var filename='storepro-'+(includeOperations?'operations':'payments')+'-'+_rpPeriod+'-'+todayISO()+'.xlsx';
+  try{
+    var xlsx=await loadRevenueExcelLibrary_();
+    var workbook=xlsx.utils.book_new();
+    sheets.forEach(function(entry){
+      var rows=entry[1],sheet=xlsx.utils.aoa_to_sheet(rows);
+      sheet['!cols']=rows[0].map(function(header,i){
+        return {wch:Math.min(48,rows.reduce(function(width,row){return Math.max(width,String(row[i]==null?'':row[i]).length+2);},12))};
+      });
+      if(entry[0]!=='Overview')sheet['!autofilter']={ref:sheet['!ref']};
+      xlsx.utils.book_append_sheet(workbook,sheet,entry[0]);
+    });
+    xlsx.writeFile(workbook,filename);
+  }catch(error){toast('Could not download the Excel file. Please try again.','err');}
+}
 function renderAnalytics(){
   var el=$('pgAnalytics');if(!el)return;
   var cur=cfg('currency','₹');
   var act=activeMembers();
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var now=new Date();
   var t0=new Date();t0.setHours(0,0,0,0);
   var fmtC=function(n){return cur+Math.round(n).toLocaleString('en-IN');};
@@ -4698,7 +5210,7 @@ function renderAnalytics(){
   el.innerHTML=
     '<div style="padding:12px 0 32px">'+
       '<div style="font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.03em;margin-bottom:12px">📊 Reports</div>'+
-      switcher+collHtml+recentHtml+duesHtml+weekHtml+feeHtml+sfHtml+plansHtml+
+      switcher+reportDownloadsHtml_(rp.label)+collHtml+recentHtml+duesHtml+weekHtml+feeHtml+sfHtml+plansHtml+
     '</div>';
 }
 
@@ -4764,7 +5276,7 @@ function renderInsights(){
     '<div class="ins-cycle-foot"><span>Day '+cycle.elapsed+' of '+cycle.total+'</span><span>Ends '+cycle.end.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})+'</span></div>';
 
   // ── KPI cards ──
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var free=Math.max(0,cap-act.length-pend.length);
   var newUnpaid=newM.filter(function(m){return payInfo(m).isDue;}).length;
   var expSoonN=expM.filter(function(m){var d=daysToExpiry(m);return d!=null&&d>=0&&d<=7;}).length;
@@ -4829,7 +5341,7 @@ function renderInsights(){
     if($('insNew'))$('insNew').innerHTML='<div class="ins-empty-sm">No new enrollments this cycle</div>';
   } else {
     var newCardsHtml=newM.map(function(m,i){return newCycleRow_(m,i,cur);}).join('');
-    if($('insNew'))$('insNew').innerHTML='<div class="nc-list">'+newCardsHtml+'</div>';
+    if($('insNew'))$('insNew').innerHTML='<div class="nc-list nc-cycle-list">'+newCardsHtml+'</div>';
   }
 
 
@@ -4849,16 +5361,16 @@ function renderInsights(){
     ];
     var grpCount=[0,0,0];
     xr.forEach(function(x){grpCount[x.grp]++;});
-    var sumHtml='<div class="xr-sum">'+
-      '<div class="xr-sum-item"><div class="xr-sum-n" style="color:'+(grpCount[0]?'var(--err-dk)':'var(--ink-3)')+'">'+grpCount[0]+'</div><div class="xr-sum-l">Expired</div></div>'+
-      '<div class="xr-sum-item"><div class="xr-sum-n" style="color:'+(grpCount[1]?'var(--warn-dk)':'var(--ink-3)')+'">'+grpCount[1]+'</div><div class="xr-sum-l">Within 7 days</div></div>'+
-      '<div class="xr-sum-item"><div class="xr-sum-n" style="color:var(--ink)">'+grpCount[2]+'</div><div class="xr-sum-l">Later</div></div>'+
-    '</div>';
+    var sumHtml='<div class="xr-sum xr-cycle-summary">'+grpDefs.map(function(g){
+      var icon=['expired','expiring','calendar'][g.key];
+      return '<div class="xr-sum-item xr-summary-'+g.cls+'"><span class="xr-summary-icon">'+ico_(icon,16)+'</span>'+
+        '<div><div class="xr-sum-n">'+grpCount[g.key]+'</div><div class="xr-sum-l">'+E(g.label)+'</div></div></div>';
+    }).join('')+'</div>';
     var expRowsHtml=grpDefs.map(function(g){
       var items=xr.filter(function(x){return x.grp===g.key;});
       if(!items.length)return '';
       items.sort(function(x,y){return g.key===0?(y.d||0)-(x.d||0):(x.d==null?1:x.d)-(y.d==null?1:y.d);});
-      return '<div class="xr-grp"><b>'+g.label+'</b><span>'+items.length+'</span></div>'+items.map(function(x){
+      return '<div class="xr-grp xr-cycle-group xr-summary-'+g.cls+'">'+ico_(['expired','expiring','calendar'][g.key],14)+'<b>'+E(g.label)+'</b><span>'+items.length+'</span></div>'+items.map(function(x){
         var m=x.m,d=x.d;
         var lbl=d==null?'—':d<0?Math.abs(d)+'d ago':d===0?'Today':d+'d left';
         var cls=d==null?'':d<0?'err':d<=3?'err':d<=7?'warn':'ok';
@@ -4868,17 +5380,17 @@ function renderInsights(){
         var meta=[shiftLbl,plan].filter(Boolean).map(E).join(' · ');
         var ed=parseMD_(m.expirydate);
         var pi=payInfo(m);
-        return '<div class="nc-row" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
+        return '<div class="nc-row nc-cycle-row" onclick="openMemberSheet(\''+E(m.memberid)+'\')">'+
           '<div class="xr-seat">'+(m.seat?E(m.seat):'—')+'</div>'+
           '<div class="nc-body">'+
             '<div class="nc-top"><div class="nc-name">'+E(m.name||'Unknown')+'</div>'+(pi.isDue?'<span class="xr-due">'+cur+Math.round(pi.due).toLocaleString('en-IN')+' due</span>':'')+'</div>'+
             (meta?'<div class="nc-meta">'+meta+'</div>':'')+
           '</div>'+
-          '<div class="nc-right"><span class="xr-pill '+cls+'">'+lbl+'</span><div class="nc-sub" style="margin-top:0">'+(ed?fmtMD_(ed):'')+'</div></div>'+
+          '<div class="nc-right"><span class="xr-pill '+cls+'">'+lbl+'</span><div class="nc-sub nc-detail-bit">'+(ed?ico_('calendar',12)+E(fmtMD_(ed)):'')+'</div></div>'+
         '</div>';
       }).join('');
     }).join('');
-    $('insExp').innerHTML=sumHtml+'<div class="nc-list">'+expRowsHtml+'</div>';
+    $('insExp').innerHTML=sumHtml+'<div class="nc-list nc-cycle-list">'+expRowsHtml+'</div>';
   }
 }
 function statCard(label,icon,val,kind,sub,extra){
@@ -5085,14 +5597,13 @@ function buildShiftsCard_(){
     '</div>'+
     '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Recommended shift</div><div class="ss-row-hint">Shift number (1–4) or label shown with a "Recommended" ribbon on the enrollment page. Leave blank to hide.</div></div>'+
       '<input type="text" class="ss-inline-input" value="'+E(cfg('recommendedshift',''))+'" placeholder="e.g. 2 or Evening" style="width:110px;min-width:unset" onchange="saveCfg(\'RecommendedShift\',this.value)"></div>'+
-    '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Total seats</div><div class="ss-row-hint">Physical seat capacity of your library.</div></div>'+
-      '<input type="number" class="ss-inline-input" value="'+E(cfg('seatcapacity','40'))+'" style="width:70px;min-width:unset;text-align:center" onchange="saveCfg(\'SeatCapacity\',this.value)"></div>'+
     '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Seat ID prefix</div><div class="ss-row-hint">Seats become S1, S2, … — change A for A1, A2, …</div></div>'+
       '<input type="text" class="ss-inline-input" value="'+E(cfg('seatprefix','S'))+'" style="width:70px;min-width:unset;text-align:center" onchange="saveCfg(\'SeatPrefix\',this.value)"></div>'+
     '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Grid columns</div><div class="ss-row-hint">Visual layout — e.g. 8 cols × 5 rows = 40 seats</div></div>'+
       '<input type="number" class="ss-inline-input" value="'+E(cfg('seatgridcols','8'))+'" style="width:70px;min-width:unset;text-align:center" onchange="saveCfg(\'SeatGridCols\',this.value)"></div>'+
     '<div class="ss-row-setting"><div class="ss-row-desc"><div class="ss-row-lab">Coming soon message</div><div class="ss-row-hint">Shown on the enrollment page below the seat map. Leave blank to hide. e.g. "10 new seats opening from 1 Aug"</div></div>'+
       '<input type="text" class="ss-inline-input" value="'+E(cfg('comingsoonseats',''))+'" placeholder="e.g. 10 new seats from 1 Aug" style="width:160px;min-width:unset" onchange="saveCfg(\'ComingSoonSeats\',this.value)"></div>'+
+    buildFloorsCard_()+
     buildHalfShiftSeatsCard_()+
   '</div>';
 }
@@ -5105,16 +5616,15 @@ function _hssActive(){
 }
 
 function buildHalfShiftSeatsCard_(){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var pfx=cfg('seatprefix','S');
   var saved=(cfg('halfshiftseats','')||'').split(',').map(function(s){return s.trim().toUpperCase()}).filter(Boolean);
   var active=_hssActive();
   var isDirty=_hssPending!==null;
   var chips='';
-  for(var i=1;i<=cap;i++){
-    var sid=pfx+i;
+  allSeatIds_().forEach(function(sid){
     chips+='<span class="hss-chip'+(active.indexOf(sid.toUpperCase())>=0?' on':'')+'" onclick="toggleHalfShiftSeat(\''+sid+'\')">'+sid+'</span>';
-  }
+  });
   var barHtml=isDirty
     ?'<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0">'+
         '<span style="font-size:12px;color:#15803d;font-weight:600;flex:1">'+
@@ -5137,16 +5647,15 @@ function buildHalfShiftSeatsCard_(){
 function _hssRender(){
   var el=$('halfShiftChips'),bar=$('hssActionBar');
   if(!el||!bar)return;
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var pfx=cfg('seatprefix','S');
   var saved=(cfg('halfshiftseats','')||'').split(',').map(function(s){return s.trim().toUpperCase()}).filter(Boolean);
   var active=_hssActive();
   var isDirty=_hssPending!==null;
   var chips='';
-  for(var i=1;i<=cap;i++){
-    var sid=pfx+i;
+  allSeatIds_().forEach(function(sid){
     chips+='<span class="hss-chip'+(active.indexOf(sid.toUpperCase())>=0?' on':'')+'" onclick="toggleHalfShiftSeat(\''+sid+'\')">'+sid+'</span>';
-  }
+  });
   el.innerHTML=chips;
   bar.innerHTML=isDirty
     ?'<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0">'+
@@ -5194,7 +5703,37 @@ function setShiftCount_(n){
 }
 
 // ─── Settings ───
+function updateFestivalGreeting_(){
+  renderFestivalGreeting_($('festivalGreeting'),cfg('festivaltheme','auto'),cfg('festivalenddate',''));
+}
+function saveFestivalSetting_(key,value){
+  saveCfg(key,value);
+  if(key==='FestivalTheme'&&value==='newyear'){
+    var end=nextNewYearEnd_(new Date());
+    $('festivalEndDate').value=end;
+    saveCfg('FestivalEndDate',end,true);
+  }
+  updateFestivalSplash_(SLUG,cfg('festivaltheme','auto'),cfg('festivalenddate',''));
+  updateFestivalGreeting_();
+  renderFestivalPreview_();
+}
+function renderFestivalPreview_(){
+  var mode=$('festivalTheme').value, end=$('festivalEndDate').value;
+  var theme=mode==='auto'?'newyear':mode;
+  $('festivalEndDate').disabled=mode==='auto'||mode==='off';
+  var title=theme==='diwali'?'Happy Diwali':theme==='newyear'?'Happy New Year':'Theme off';
+  $('festivalPreview').dataset.themeOption=theme;
+  $('festivalPreviewIcon').textContent=theme==='diwali'?'🪔':'✨';
+  $('festivalPreviewTitle').textContent=title;
+  $('festivalPreviewStatus').textContent=mode==='auto'?'Shown automatically on January 1.':theme==='off'?'Pages use their regular appearance.':
+    !festivalDateActive_(end,new Date())?'Ended on '+end:end?'Visible through '+end:'Visible until switched off.';
+}
+setInterval(function(){updateFestivalGreeting_();renderFestivalPreview_();},60000);
+
 function renderSettings(){
+  $('festivalTheme').value=cfg('festivaltheme','auto');
+  $('festivalEndDate').value=cfg('festivalenddate','');
+  renderFestivalPreview_();
   function tog(key,label,hint,def){return '<div class="setting"><div class="desc"><div class="lab">'+E(label)+'</div>'+(hint?'<div class="hint">'+E(hint)+'</div>':'')+'</div><div class="switch'+(isYes(key,def)?' on':'')+'" onclick="toggleCfg(\''+E(key)+'\',this)"></div></div>'}
   function txt(key,label,hint,def){return '<div class="setting"><div class="desc"><div class="lab">'+E(label)+'</div>'+(hint?'<div class="hint">'+E(hint)+'</div>':'')+'</div><input type="text" value="'+E(cfg(key,def||''))+'" onchange="saveCfg(\''+E(key)+'\',this.value)"></div>'}
   function num(key,label,hint,def){return '<div class="setting"><div class="desc"><div class="lab">'+E(label)+'</div>'+(hint?'<div class="hint">'+E(hint)+'</div>':'')+'</div><input type="number" value="'+E(cfg(key,def||''))+'" onchange="saveCfg(\''+E(key)+'\',this.value)"></div>'}
@@ -5341,7 +5880,7 @@ function toggleCfg(key,el){
   el.classList.toggle('on',newVal==='yes');
   config[key.toLowerCase().replace(/\s+/g,'')]=newVal;
   saveCfg(key,newVal,true);
-  if(/EnableShifts|EnableFullDay|ShiftCount|SeatCapacity|SeatPrefix|SeatGridCols|ShowHistory/i.test(key)){
+  if(/EnableShifts|EnableFullDay|ShiftCount|SeatCapacity|SeatPrefix|SeatGridCols|ShowHistory|Floor/i.test(key)){
     renderOccupancy();renderSeats();renderHistoryBlock();
   }
 }
@@ -5681,10 +6220,15 @@ function openEditMember(memberId){
     var label=nm+(dur?' · '+dur:'')+(price?' — '+cfg('currency','₹')+price:'');
     return '<option value="'+E(nm)+'"'+(m.plan===nm?' selected':'')+'>'+E(label)+'</option>';
   }).join('');
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var pfx=cfg('seatprefix','S');
   var seatOpts='<option value="">— Unassigned —</option>';
-  for(var s=1;s<=cap;s++){var sid=pfx+s;seatOpts+='<option value="'+sid+'"'+(m.seat===sid?' selected':'')+'>'+sid+'</option>'}
+  var _fl=openFloors_();
+  _fl.forEach(function(f){
+    if(_fl.length>1)seatOpts+='<optgroup label="'+E(f.name)+'">';
+    for(var s=1;s<=f.count;s++){var sid=floorSeatId_(f,s);seatOpts+='<option value="'+sid+'"'+(m.seat===sid?' selected':'')+'>'+sid+'</option>'}
+    if(_fl.length>1)seatOpts+='</optgroup>';
+  });
   var thumbStyle=m.photourl?'background-image:url('+JSON.stringify(m.photourl)+')':'';
   var thumbInner=m.photourl?'<img src="'+E(m.photourl)+'" alt="">':E(ini(m.name));
   var cur=cfg('currency','₹');
@@ -6219,12 +6763,15 @@ function renderReassign_(m){
   }
 
   // Seat grid (with availability math based on current shift selection)
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var cols=Math.max(2,Math.min(12,parseInt(cfg('seatgridcols','8'),10)||8));
   var prefix=cfg('seatprefix','S');
   var grid='<div class="rs-seatgrid" style="grid-template-columns:repeat('+cols+',1fr)">';
-  for(var s=1;s<=cap;s++){
-    var sid=prefix+s;
+  var _rsFl=openFloors_();
+  for(var _fi=0;_fi<_rsFl.length;_fi++){
+  if(_rsFl.length>1)grid+='<div class="fl-head">'+E(_rsFl[_fi].name)+'</div>';
+  for(var s=1;s<=_rsFl[_fi].count;s++){
+    var sid=floorSeatId_(_rsFl[_fi],s);
     var cls='';
     if(sid===_rsSeat) cls='sel';
     else {
@@ -6239,6 +6786,7 @@ function renderReassign_(m){
       }
     }
     grid+='<div class="rs-seat '+cls+'" onclick="pickReassignSeat(\''+sid+'\')">'+sid+'</div>';
+  }
   }
   grid+='</div>';
 
@@ -6509,7 +7057,7 @@ function renderEnrollForm_(){
   var enableShifts=isYes('enableshifts','yes');
   var enableFull=isYes('enablefullday','yes');
   var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var cols=Math.max(2,Math.min(12,parseInt(cfg('seatgridcols','8'),10)||8));
   var prefix=cfg('seatprefix','S');
   var cur=cfg('currency','₹');
@@ -6527,8 +7075,11 @@ function renderEnrollForm_(){
   }
 
   var grid='<div class="ef-seats" style="grid-template-columns:repeat('+cols+',1fr)">';
-  for(var s=1;s<=cap;s++){
-    var sid=prefix+s;var cls='';
+  var _efFl=openFloors_();
+  for(var _fi=0;_fi<_efFl.length;_fi++){
+  if(_efFl.length>1)grid+='<div class="fl-head">'+E(_efFl[_fi].name)+'</div>';
+  for(var s=1;s<=_efFl[_fi].count;s++){
+    var sid=floorSeatId_(_efFl[_fi],s);var cls='';
     if(sid===_efSeat) cls='sel';
     else{
       var others=holdingMembers().filter(function(x){return x.seat===sid});
@@ -6542,6 +7093,7 @@ function renderEnrollForm_(){
       }
     }
     grid+='<div class="ef-seat '+cls+'" onclick="pickEnrollSeat(\''+sid+'\')">'+sid+'</div>';
+  }
   }
   grid+='</div>';
 

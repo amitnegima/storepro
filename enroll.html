@@ -250,6 +250,10 @@
   .seatmap-front-lbl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:6px}
   .seatmap-front-lbl svg{width:12px;height:12px;color:var(--brand)}
   .seatmap{display:grid;gap:6px;padding:10px 16px 4px}
+  .fl-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:6px 16px 0}
+  .fl-tab{appearance:none;border:1.5px solid var(--line-dk,#e5e7eb);background:#fff;color:var(--ink-2,#475569);border-radius:10px;padding:7px 13px;font:700 12px var(--F);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+  .fl-tab.act{background:var(--brand);border-color:var(--brand);color:#fff}
+  .fl-tab .fl-cnt{font-size:10.5px;font-weight:600;opacity:.8}
 
   /* Base seat */
   .seat{
@@ -442,6 +446,7 @@
   .approved-screen h2{margin:0 0 6px;font-size:24px;color:var(--ok-dk)}
   .approved-screen p{color:var(--ink-2);font-size:14px;margin:6px 0}
 </style>
+<link rel="stylesheet" href="festival-theme.css">
 </head>
 <body>
 
@@ -449,6 +454,7 @@
   <div class="splash-logo">
     <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
   </div>
+  <div id="splashFestival" class="splash-festival" hidden><span aria-hidden="true">&#129684;</span> <strong>Happy Diwali</strong> <small>Festival of Lights</small></div>
   <div class="splash-steps" id="splashSteps">
     <div class="splash-step active" id="sStep1"></div>
     <div class="splash-step" id="sStep2"></div>
@@ -475,6 +481,7 @@
 
 <form class="wrap" id="form" onsubmit="return false">
 
+  <div id="festivalGreeting" class="festival-banner" hidden style="margin:0 0 12px;padding:14px 16px;text-align:center;font-size:17px;font-weight:800"></div>
   <div class="card" id="facilitiesCard" style="display:none;padding:16px 14px"></div>
 
   <div class="card">
@@ -582,6 +589,7 @@
       </div>
     </div>
     <div class="seat-avail" id="seatAvail"></div>
+    <div class="fl-tabs" id="floorTabs" style="display:none"></div>
     <div class="seatmap-wrap">
       <div class="seatmap-front">
         <div class="seatmap-front-bar"></div>
@@ -641,6 +649,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="festival-theme.js"></script>
 <script>
 (function(){
   window.addEventListener('error',function(ev){
@@ -777,6 +786,7 @@ function splashErr(msg){
 function boot(){
   SLUG=resolveSlug();
   if(!SLUG){ splashErr('No store specified in the URL.<br><small>Add ?store=yourname to the URL.</small>');return }
+  updateFestivalSplash_(SLUG);
   setSplashStep_(1,'Looking up library…');
   lookupTenant(SLUG,function(ok){
     if(!ok){ splashErr('Could not find library "<b>'+SLUG+'</b>".<br><small>The master registry may be inaccessible or the store slug is wrong.</small>');return}
@@ -836,6 +846,7 @@ function loadAll(){
       k=String(k||'').trim();v=String(v||'').trim();
       if(k)config[k.toLowerCase().replace(/\s+/g,'')]=v;
     });
+    updateFestivalSplash_(SLUG,cfg('festivaltheme','auto'),cfg('festivalenddate',''));
     console.log('[enroll] config loaded:',Object.keys(config).length,'keys →',Object.keys(config).slice(0,8));
     if(!Object.keys(config).length)console.warn('[enroll] Config still empty — raw first row was:',JSON.stringify(configRows[0]));
     setSplashStep_(3,'Loading plans…');
@@ -887,6 +898,11 @@ function showMaintenance(reason){
     '</div>';
 }
 
+function updateFestivalGreeting_(){
+  renderFestivalGreeting_($('festivalGreeting'),cfg('festivaltheme','auto'),cfg('festivalenddate',''));
+}
+setInterval(updateFestivalGreeting_,60000);
+
 function render(){
   // ── Maintenance mode check ──
   var manualMaint=cfg('maintenancemode','no').toLowerCase();
@@ -901,6 +917,7 @@ function render(){
   var name=cfg('shopname','Library');
   document.title=name+' · Enrollment';
   $('shopTitle').textContent=name;
+  updateFestivalGreeting_();
   $('shopSub').textContent=cfg('tagline','')||'Fill the details below to enroll';
   var bsn=$('btnShopName');if(bsn)bsn.textContent=name;
   var holdSN=$('holdShopName');if(holdSN)holdSN.textContent=name;
@@ -981,7 +998,7 @@ function renderEsLib(){
 }
 
 function renderEsShifts(){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var hold=holdingMembers();
   var rows='';
   if(isYes('enableshifts')){
@@ -1175,6 +1192,25 @@ function activeMembers(){
 function holdingMembers(){
   return members.filter(function(m){var s=(m.status||'').toLowerCase();return s==='active'||s==='pending'});
 }
+function floorList_(){
+  var list=[{n:1,name:cfg('floor1name','Floor 1'),count:Math.max(0,parseInt(cfg('seatcapacity','40'),10)||40)}];
+  var def=Math.max(1,parseInt(cfg('defaultfloorseats','60'),10)||60);
+  String(cfg('floors','')).split('|').forEach(function(p){
+    var a=p.split('~');var n=parseInt(a[0],10);
+    if(!n||n<2)return;
+    var c=parseInt(a[2],10);
+    var locked=a[3]==='1'||(!a[3]&&n===2&&/^study-point(?:-library)?$/i.test(cfg('slug',SLUG)));
+    list.push({n:n,name:(a[1]||'').trim()||('Floor '+n),count:c>0?c:def,locked:locked,message:a[4]||'Coming soon'});
+  });
+  return list;
+}
+function openFloors_(){return floorList_().filter(function(f){return !f.locked})}
+function totalSeats_(){return openFloors_().reduce(function(s,f){return s+f.count},0)}
+function floorSeatId_(f,i){return f.n===1?cfg('seatprefix','S')+i:'F'+f.n+'_'+i}
+function allSeatIds_(){var a=[];openFloors_().forEach(function(f){for(var i=1;i<=f.count;i++)a.push(floorSeatId_(f,i))});return a}
+function floorOfSeat_(id){var m=String(id||'').match(/^F(\d+)_\d+$/i);return m?parseInt(m[1],10):1}
+var selectedFloor=1,floorTouched=false;
+function pickFloor(n){selectedFloor=n;floorTouched=true;renderSeatMap()}
 function shiftCount(shiftKey){
   var activeHold=holdingMembers();
   return activeHold.filter(function(m){return (m.shift||'').toUpperCase()===shiftKey}).length;
@@ -1192,7 +1228,7 @@ function shiftLeft(shiftKey){
   return shiftLeftCounter_(shiftKey,hold);
 }
 function renderShiftCounter(){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var hold=holdingMembers();
   var totalOccupied=0,seen={};
   hold.forEach(function(m){var s=String(m.seat||'').trim();if(s&&!seen[s]){seen[s]=1;totalOccupied++}});
@@ -1229,69 +1265,13 @@ function renderShiftCounter(){
   $('counter').style.display='block';
 }
 function shiftLeftCounter_(shiftKey,hold){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
-  var allBlocked=blockedSeats();
-  var reservedCount=Object.keys(allBlocked).filter(function(k){
-    var d=k.lastIndexOf('-');
-    return d<0||k.slice(d+1)===shiftKey;
-  }).length;
-  cap=Math.max(0,cap-reservedCount);
+  var blocked=blockedSeats();
   var highOcc=isHighOccupancy();
-
-  if(shiftKey==='FULL'){
-    var blocked1=blockedSeats();
-    var occupiedSeats={};
-    hold.forEach(function(m){
-      var s=String(m.seat||'').trim().toUpperCase();
-      if(s&&!blocked1[s])occupiedSeats[s]=true;
-    });
-    return Math.max(0,cap-Object.keys(occupiedSeats).length);
-  }
-
-  if(highOcc){
-    // Single shift at >50%: only half-occupied seats where THIS shift is still free.
-    // Exclude blocked seats — a blocked seat with a Morning member must NOT count
-    // as available for Evening.
-    var blocked2=blockedSeats();
-    var bySeat={};
-    hold.forEach(function(m){
-      if(!m.seat)return;
-      var s=m.seat.toUpperCase();
-      if(blocked2[s])return;  // skip blocked seats entirely
-      bySeat[s]=bySeat[s]||[];
-      bySeat[s].push((m.shift||'').toUpperCase());
-    });
-    var count=0;
-    Object.keys(bySeat).forEach(function(seat){
-      if(blocked2[seat+'-'+shiftKey])return;
-      var shifts=bySeat[seat];
-      var thisShiftFree=shifts.indexOf(shiftKey)<0&&shifts.indexOf('FULL')<0;
-      var hasOtherOccupant=shifts.some(function(s){return s!==shiftKey&&s!=='FULL'});
-      if(thisShiftFree&&hasOtherOccupant)count++;
-    });
-    // Also count fully free half-shift seats (they bypass the 50% rule)
-    var hss=halfShiftSeats();
-    var pfx2=cfg('seatprefix','S');
-    var cap2=parseInt(cfg('seatcapacity','40'),10)||40;
-    for(var hi=1;hi<=cap2;hi++){
-      var hsId=(pfx2+hi).toUpperCase();
-      if(hss.indexOf(hsId)<0)continue;
-      if(blocked2[hsId]||blocked2[hsId+'-'+shiftKey])continue;
-      if(bySeat[hsId])continue; // already counted above or occupied
-      count++;
-    }
-    return count;
-  }
-
-  // <= 50% occupancy: also exclude members on blocked seats from the count
-  var blocked3=blockedSeats();
-  var cnt=hold.filter(function(m){
-    return (m.shift||'').toUpperCase()===shiftKey && !blocked3[String(m.seat||'').toUpperCase()];
+  return allSeatIds_().filter(function(seat){
+    var id=seat.toUpperCase();
+    if(blocked[id]||blocked[id+'-'+shiftKey])return false;
+    return seatStatus(seat,shiftKey,hold,highOcc,blocked)==='free';
   }).length;
-  var fullCnt=hold.filter(function(m){
-    return (m.shift||'').toUpperCase()==='FULL' && !blocked3[String(m.seat||'').toUpperCase()];
-  }).length;
-  return Math.max(0,cap-cnt-fullCnt);
 }
 
 // ─── Shifts ───
@@ -1325,7 +1305,7 @@ function shiftDuration_(time){
 function renderShifts(){
   if(!isYes('enableshifts')){$('cardShift').style.display='none';$('cardPlan').style.display='block';return}
   var n=Math.min(4,Math.max(1,parseInt(cfg('shiftcount','2'),10)||2));
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var html='';
   var recIdx=-1;
   var lefts=[];
@@ -1420,7 +1400,7 @@ function isHalfShiftSeat(seatId){
   return halfShiftSeats().indexOf((seatId||'').toUpperCase())>=0;
 }
 function isHighOccupancy(){
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var reserved=Object.keys(blockedSeats()).length;
   var effective=Math.max(1,cap-reserved);
   var hold=holdingMembers();
@@ -1443,38 +1423,39 @@ function freeShiftsForSeat(seatId){
   }
   return free;
 }
-function seatStatus(seatId){
-  var hold=holdingMembers();
+function seatStatus(seatId,shiftKey,hold,highOcc,blocked){
+  shiftKey=shiftKey||selectedShift;
+  hold=hold||holdingMembers();
+  blocked=blocked||blockedSeats();
+  if(highOcc==null)highOcc=isHighOccupancy();
   function occupants(filter){return hold.filter(filter)}
 
   // Full-day occupant always blocks everything
-  var fullActive=occupants(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()==='FULL'&&(m.status||'').toLowerCase()==='active'});
+  var fullActive=occupants(function(m){return String(m.seat||'').trim().toUpperCase()===seatId.toUpperCase()&&(m.shift||'').toUpperCase()==='FULL'&&(m.status||'').toLowerCase()==='active'});
   if(fullActive.length)return 'full-taken';
-  var fullPending=occupants(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()==='FULL'&&(m.status||'').toLowerCase()==='pending'});
+  var fullPending=occupants(function(m){return String(m.seat||'').trim().toUpperCase()===seatId.toUpperCase()&&(m.shift||'').toUpperCase()==='FULL'&&(m.status||'').toLowerCase()==='pending'});
   if(fullPending.length)return 'pending';
 
-  var anyHold=occupants(function(m){return m.seat===seatId});
+  var anyHold=occupants(function(m){return String(m.seat||'').trim().toUpperCase()===seatId.toUpperCase()});
   var isSeatFree=anyHold.length===0;
-  var fs=freeShiftsForSeat(seatId);   // shifts not yet booked on this seat
-  var highOcc=isHighOccupancy();
 
-  if(selectedShift==='FULL'){
+  if(shiftKey==='FULL'){
     if(isShiftLocked('FULL'))return 'taken';             // Full Day locked globally
-    if(isSeatFree)return shiftLeft('FULL')<=0?'taken':'free';
+    if(isSeatFree)return 'free';
     return anyHold.every(function(m){return (m.status||'').toLowerCase()==='pending'})?'pending':'taken';
   }
 
   // Single-shift selected
-  if(isShiftLocked(selectedShift))return 'taken';       // globally locked shift
-  var shiftBlockKey=seatId.toUpperCase()+'-'+selectedShift;
-  if(blockedSeats()[shiftBlockKey])return 'taken';      // seat-level shift block
+  if(isShiftLocked(shiftKey))return 'taken';       // globally locked shift
+  var shiftBlockKey=seatId.toUpperCase()+'-'+shiftKey;
+  if(blocked[shiftBlockKey])return 'taken';      // seat-level shift block
 
   if(highOcc&&isSeatFree&&!isHalfShiftSeat(seatId)){
     // Fully free seat at >50% occupancy: must be booked as Full Day only
     // (seats in HalfShiftSeats config bypass this rule)
     return 'restricted';
   }
-  var same=occupants(function(m){return m.seat===seatId&&(m.shift||'').toUpperCase()===selectedShift});
+  var same=occupants(function(m){return String(m.seat||'').trim().toUpperCase()===seatId.toUpperCase()&&(m.shift||'').toUpperCase()===shiftKey});
   if(!same.length)return 'free';
   return same.every(function(m){return (m.status||'').toLowerCase()==='pending'})?'pending':'taken';
 }
@@ -1492,16 +1473,47 @@ function blockedSeats(){
 function renderSeatMap(){
   if(!selectedShift){$('cardSeat').style.display='none';return}
   $('cardSeat').style.display='';
-  var cap=parseInt(cfg('seatcapacity','40'),10)||40;
+  var cap=totalSeats_();
   var cols=Math.max(2,Math.min(12,parseInt(cfg('seatgridcols','8'),10)||8));
   var prefix=cfg('seatprefix','S');
   var blocked=blockedSeats();
   $('seatMap').style.gridTemplateColumns='repeat('+cols+',1fr)';
+  var floors=floorList_();
+  var tFree=0,tPart=0,tOcc=0,floorFree={};
+  floors.forEach(function(f){
+    if(f.locked)return;
+    var ff=0;
+    for(var j=1;j<=f.count;j++){
+      var sid0=floorSeatId_(f,j),u0=sid0.toUpperCase();
+      if(blocked[u0]||(selectedShift&&blocked[u0+'-'+selectedShift])){tOcc++;continue}
+      var s0=seatStatus(sid0);
+      if(s0==='free'){tFree++;ff++}
+      else if(s0==='half-available'){tPart++;ff++}
+      else tOcc++;
+    }
+    floorFree[f.n]=ff;
+  });
+  if(!floors.some(function(f){return !f.locked&&f.n===selectedFloor}))selectedFloor=1;
+  if(!floorTouched&&floorFree[selectedFloor]===0){
+    var alt=floors.filter(function(f){return floorFree[f.n]>0})[0];
+    if(alt)selectedFloor=alt.n;
+  }
+  var curFloor=floors.filter(function(f){return f.n===selectedFloor})[0]||floors[0];
+  var ft=$('floorTabs');
+  if(ft){
+    if(floors.length>1){
+      ft.style.display='';
+      ft.innerHTML=floors.map(function(f){
+        if(f.locked)return '<button type="button" class="fl-tab" style="cursor:not-allowed" disabled>&#128274; '+E(f.name)+'<span class="fl-cnt">'+E(f.message)+'</span></button>';
+        return '<button type="button" class="fl-tab'+(f.n===curFloor.n?' act':'')+'" onclick="pickFloor('+f.n+')">'+E(f.name)+'<span class="fl-cnt">'+floorFree[f.n]+' free</span></button>';
+      }).join('');
+    }else{ft.style.display='none';ft.innerHTML=''}
+  }
   // count states for availability pills
   var cFree=0,cPartial=0,cOccupied=0;
   var html='';
-  for(var i=1;i<=cap;i++){
-    var id=prefix+i;
+  for(var i=1;i<=curFloor.count;i++){
+    var id=floorSeatId_(curFloor,i);
     if(blocked[id.toUpperCase()]){
       cOccupied++;
       html+='<div class="seat blocked" title="'+E(blocked[id.toUpperCase()])+'">'+
@@ -1552,9 +1564,9 @@ function renderSeatMap(){
   // update availability pills
   var ap=$('seatAvail');
   if(ap)ap.innerHTML=
-    '<span class="sa hl"><b>'+cFree+'</b> available</span>'+
-    (cPartial?'<span class="sa"><b>'+cPartial+'</b> part-time</span>':'')+
-    '<span class="sa"><b>'+cOccupied+'</b> occupied</span>';
+    '<span class="sa hl"><b>'+tFree+'</b> available</span>'+
+    (tPart?'<span class="sa"><b>'+tPart+'</b> part-time</span>':'')+
+    '<span class="sa"><b>'+tOcc+'</b> occupied</span>';
   // coming soon banner
   var csb=$('comingSoonBanner');
   if(csb){
@@ -1576,6 +1588,7 @@ function renderSeatMap(){
   }
 }
 function pickSeat(id){
+  if(!allSeatIds_().includes(id))return;
   var el=document.querySelector('#seatMap .seat[onclick*="\''+id+'\'"]');
   if(el&&el.classList.contains('restricted')){
     toast('Library is >50% full — seat '+id+' must be booked as Full Day. Please select Full Day shift.','err');
@@ -1772,7 +1785,7 @@ function validate(){
   else if(aad)need('fAadhar',/^\d{12}$/.test(aad));
   if(!selectedPlan){toast('Pick a plan','err');ok=false}
   if(isYes('enableshifts')&&!selectedShift){toast('Pick a shift','err');ok=false}
-  if(selectedShift&&!selectedSeat){toast('Pick a seat','err');ok=false}
+  if(selectedShift&&!allSeatIds_().includes(selectedSeat)){toast('Pick an available seat','err');ok=false}
 
   if(!ok){
     var first=document.querySelector('label.err, .card.err');

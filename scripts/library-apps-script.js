@@ -15,7 +15,7 @@
 // this via the `version` action and warns the shopkeeper if it's older than
 // expected (so they know to redeploy after pulling new code).
 // ═══════════════════════════════════════════════════════════════════
-var SCRIPT_VERSION = 7;  // 7: Archive-on-renewal, archiveMemberSnapshot_, ArchivedReason/ArchivedAt columns
+var SCRIPT_VERSION = 8;  // 8: Enforce locked floors for seat assignments.
 
 var MEMBERS_HEADERS = [
   'MemberID', 'EnrolledAt', 'Name', 'FatherName', 'Phone', 'DOB',
@@ -194,7 +194,17 @@ function decideInitialStatus_(clientHint, isAuthenticated) {
   return 'Active';
 }
 
+function isLockedFloorSeat_(seat) {
+  var match = String(seat || '').match(/^F(\d+)_\d+$/i);
+  if (!match) return false;
+  var floor = Number(match[1]);
+  var entry = getCfg_('Floors', '').split('|').map(function(row) { return row.split('~'); }).find(function(row) { return Number(row[0]) === floor; });
+  if (entry && entry[3]) return entry[3] === '1';
+  return floor === 2 && /^study-point(?:-library)?$/i.test(getCfg_('Slug', ''));
+}
+
 function saveMember_(p) {
+  if (isLockedFloorSeat_(p.seat)) return 'Error: Floor is locked';
   var sh = getMembersSheet_();
   var memberId = (p.memberId || '').toString().trim() ||
                  ('MEM-' + new Date().getTime().toString(36).toUpperCase());
@@ -347,6 +357,7 @@ function updateMember_(p) {
   var idCol = info.idx['MemberID'];
   for (var i = 0; i < info.rows.length; i++) {
     if (String(info.rows[i][idCol] || '').trim() !== p.memberId) continue;
+    if (p.seat != null && String(p.seat) !== String(info.rows[i][info.idx['Seat']]) && isLockedFloorSeat_(p.seat)) return 'Error: Floor is locked';
     var row = i + 2;
     var set = function(key, val) {
       var col = info.idx[key];
@@ -424,6 +435,7 @@ function extendMember_(memberId, days) {
 }
 
 function reassignSeat_(memberId, seat, shift) {
+  if (isLockedFloorSeat_(seat)) return 'Error: Floor is locked';
   if (!memberId) return 'missing-args';
   var sh = getMembersSheet_();
   var info = membersIndex_(sh);
@@ -1335,7 +1347,6 @@ function snapshotCycle_() {
   info.rows.forEach(function(row){
     var status=String(row[info.idx['Status']]||'').toLowerCase();
     if(status==='rejected')return;
-    // Cash-based: use PaymentDate if set, else StartDate
     var rawPd=info.idx['PaymentDate']!=null?String(row[info.idx['PaymentDate']]||''):'';
     var sd=parseDate_(rawPd)||parseDate_(String(row[info.idx['StartDate']]||''));
     if(!sd||sd<prevStart||sd>prevEnd)return;
